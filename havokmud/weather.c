@@ -333,7 +333,7 @@ void ChangeWeather(int change)
         if (time_info.month > 3 && time_info.month < 14) {
             send_to_desert("You are caught in a blinding sandstorm\n\r");
             send_to_arctic("You are caught in a blinding blizzard\n\r");
-            send_to_out_other("You are caught in lightning storm.\n\r");
+            send_to_out_other("You are caught in a lightning storm.\n\r");
         } else {
             send_to_desert("You are caught in a blinding sandstorm\n\r");
             send_to_arctic("You are caught in a blizzard\n\r");

@@ -5888,7 +5888,8 @@ const char     *att_kick_hit_ch[] = {
     "Your kick hits $N, sending small branches and leaves everywhere.",
     "Your kick contacts with $N, dislodging little pieces of $M.",
     "Your kick hits $N right in the stomach, $N is rendered breathless.",
-    "You stomp on $N's foot. After all, thats about all you can do to a giant.",
+    "You stomp on $N's foot. After all, that's about all you can do to a "
+        "giant.",
     ".",                        /* GHOST */
     "Your kick  sends $N reeling through the air.",
     "You kick $N and feel rotten bones crunch from the blow.",

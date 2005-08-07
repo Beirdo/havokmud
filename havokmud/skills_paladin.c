@@ -380,7 +380,7 @@ void spell_circle_protection(int level, struct char_data *ch,
             send_to_char("You feel protected from dragon breath!\n\r", ch);
         }
     } else {
-        send_to_char("You are allready protected!\n\r", ch);
+        send_to_char("You are already protected!\n\r", ch);
         return;
     }
 }

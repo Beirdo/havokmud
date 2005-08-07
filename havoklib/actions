@@ -293,7 +293,7 @@ Clap, clap, clap.
 $n gives a round of applause.
 You applaud $N for their great work!
 $n applauds $N for their great work!
-$n applauds you for your great work! You start to make a thankyou speach.
+$n applauds you for your great work! You start to make a thank you speech.
 Uh... who?!?!?
 You applaud yourself. Yep.. that's something to be proud of alright!
 $n applauds $mself cause noone else will.
@@ -846,10 +846,17 @@ $n slowly crumples into nothingness, in fear of $mself.
 You cringe at the thought of loosing $p.
 $n cringes at the thought of loosing $p.
 
-181 1 0
-You dream of better times.
-$n looks absent-minded, $s eyes staring into space.
-#
+181 0 0
+You cackle gleefully.
+$n throws back $s head and cackles with insane glee!
+You spitefully cackle right in $S face.
+$n cackles spitefully at $N.
+$n cackles patronizingly right in your face!
+Hmmm, no-one here answering to that name, Schmuck!
+You patronize yourself down to the boots, hee hee hee.
+$n seems to hate $s own guts.
+You cackle gleefully at $p.
+$n starts cackling gleefully at $p.
 
 182 1 5
 Take it easy now! count to ten, very slowly.
@@ -1164,7 +1171,7 @@ $n paces back and forth holding $p.
 320 0 0
 You stick your tongue out.
 $n sticks $s tongue out.
-You stick you tongue out at $M.
+You stick your tongue out at $M.
 $n sticks $s tongue out at $N.
 $n sticks $s tongue out at you.
 Well, that would be more effective if they were around to see it.

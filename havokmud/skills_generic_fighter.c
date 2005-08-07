@@ -331,7 +331,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             /* Red */
             vicwait = 0;
             chwait = 3;
-            act("$c000RYou throw yourself at $N, who sidesteps you neatly."
+            act("$c000RYou throw yourself at $N, who sidesteps you neatly. "
                 "You end up $c000Wfalling flat on your face"
                 "$c000R, making you dizzy and disoriented.",
                 FALSE, ch, 0, victim, TO_CHAR);
@@ -354,7 +354,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 "$c000Wsitting on the ground $c000Rin front of you.",
                 FALSE, ch, 0, victim, TO_VICT);
             act("$c000R$n tries to slam into $N, but trips and doesn't "
-                "come even close and actually ends up $c000Wsiting on the "
+                "come even close and actually ends up $c000Wsitting on the "
                 "ground $c000Rin front of $N looking stupid.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         } else if(goodbash <= -4) {
@@ -401,7 +401,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 FALSE, ch, 0, victim, TO_VICT);
             act("$c000Y$n attempt to slam into $N, but misses and ends up "
                 "on the ground instead.  However, $e is recovering quickly "
-                "and already $c000Wsurging back to their feet.",
+                "and already $c000Wsurging back to $s feet.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         } else {
             /* Yellow */

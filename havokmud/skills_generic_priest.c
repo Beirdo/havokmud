@@ -711,7 +711,7 @@ void cast_control_weather(int level, struct char_data *ch, char *arg,
 
         if (weather_info.sky == SKY_RAINING) {
             if (time_info.month > 3 && time_info.month < 14) {
-                send_to_outdoor("You are caught in lightning storm.\n\r");
+                send_to_outdoor("You are caught in a lightning storm.\n\r");
             } else {
                 send_to_outdoor("You are caught in a blizzard. \n\r");
             }

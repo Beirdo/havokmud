@@ -1053,7 +1053,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RCON(ch) >= MaxConForRace(ch)) {
-                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
                               "maximum con for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1094,7 +1094,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RSTR(ch) >= MaxStrForRace(ch)) {
-                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1143,7 +1143,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RCHR(ch) >= MaxChrForRace(ch)) {
-                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1167,7 +1167,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RINT(ch) >= MaxIntForRace(ch)) {
-                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1191,7 +1191,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RWIS(ch) >= MaxWisForRace(ch)) {
-                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);

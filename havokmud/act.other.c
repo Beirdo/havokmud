@@ -435,7 +435,7 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
         do_mobTell(ch, "A Tiny Voice",
                    "Psst. You should really rent at an Inn Keeper.");
         do_mobTell(ch, "A Tiny Voice",
-                   "But if you wanna loose your stuff.. Type 'quit now'");
+                   "But if you wanna lose your stuff.. Type 'quit now'");
         return;
     }
     if (GET_POS(ch) == POSITION_FIGHTING) {

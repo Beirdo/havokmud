@@ -480,7 +480,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
         if ((GET_HIT(ch) < -50) && (killedbytype == TYPE_SLASH ||
                                     killedbytype == TYPE_CLEAVE)) {
                  if(make_severed_head(NULL, ch, corpse)) {
-                     act("The head of $n flies through the air "
+                     act("The head of $n flies through the air, "
                              "bouncing as it hits the ground.", FALSE, ch,
                              0, 0, TO_ROOM);
             }

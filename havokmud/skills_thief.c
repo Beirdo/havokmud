@@ -79,7 +79,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!ch->equipment[WIELD]) {
-        send_to_char("You need to wield a weapon, to make it a success.\n\r",
+        send_to_char("You need to wield a weapon to make it a success.\n\r",
                      ch);
         return;
     }
@@ -214,7 +214,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
                 damrollpenalty = ((int) howgood / 10) + 5;
             } else if(howgood > 20) {
                 base += 2;
-                strcat(buf,"$c000GYour stab lands in a vital spot on the "
+                strcat(buf,"$c000GYour stab lands in a vital spot on "
                            "the victim, they will almost certainly be "
                            "$c000Wblinded "
                            "$c000Gby the pain.");

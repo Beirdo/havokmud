@@ -3327,7 +3327,7 @@ void do_load(struct char_data *ch, char *argument, int cmd)
         act("$n makes a quaint, magical gesture with one hand.", TRUE, ch,
             0, 0, TO_ROOM);
         act("$n has summoned $N from the ether!", FALSE, ch, 0, mob, TO_ROOM);
-        act("You bring forth $N from the the cosmic ether.", FALSE, ch, 0,
+        act("You bring forth $N from the cosmic ether.", FALSE, ch, 0,
             mob, TO_CHAR);
     } else if (is_abbrev(type, "object")) {
         if (number < 0) {

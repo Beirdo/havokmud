@@ -1398,7 +1398,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
             obj_to_char(ms, ch);
             act("$n unloads $p.", FALSE, ch, ms, 0, TO_ROOM);
         } else {
-            send_to_char("Your hands are to full to unload.\n\r", ch);
+            send_to_char("Your hands are too full to unload.\n\r", ch);
             return;
         }
     }
@@ -1717,7 +1717,7 @@ void do_induct(struct char_data *ch, char *argument, int cmd)
     GET_CLAN(victim) = GET_CLAN(ch);
     ch_printf(victim, "You have just been inducted into the clan, %s.\n\r",
               clan_list[GET_CLAN(victim)].name);
-    ch_printf(ch, "You just initated %s into the clan, %s.\n\r",
+    ch_printf(ch, "You just initiated %s into the clan, %s.\n\r",
               GET_NAME(victim), clan_list[GET_CLAN(victim)].name);
 }
 

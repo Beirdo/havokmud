@@ -133,7 +133,7 @@ void spell_blindness(int level, struct char_data *ch,
         return;
     }
     if (affected_by_spell(victim, SPELL_BLINDNESS)) {
-        act("$n is allready blind!", TRUE, victim, 0, 0, TO_CHAR);
+        act("$n is already blind!", TRUE, victim, 0, 0, TO_CHAR);
         return;
     }
     act("$n seems to be blinded!", TRUE, victim, 0, 0, TO_ROOM);

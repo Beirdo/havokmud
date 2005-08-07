@@ -274,7 +274,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
     
     if (GET_COND(ch, FULL) > 20 && 
         !affected_by_spell(ch, SKILL_MIND_OVER_BODY)) {
-        act("You are to full to eat more!", FALSE, ch, 0, 0, TO_CHAR);
+        act("You are too full to eat more!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 

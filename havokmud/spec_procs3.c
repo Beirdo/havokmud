@@ -7049,9 +7049,9 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                     do_say(vict, "Don't you think your special!! Here ya go",
                             0);
                     /* 
-                     * questpoint token 
+                     * questpoint potion 
                      */
-                    itemgranted = 1002;
+                    itemgranted = 27;
                     break;
                 default:
                     do_say(vict, "Thanks!!  Damn!! You are good!!", 0);
@@ -7076,10 +7076,10 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                     }
                 }
 
-                if (itemgranted == 1002 || itemgranted == 1003 || 
+                if (itemgranted == 27 || itemgranted == 1003 || 
                     itemgranted == 1004) {
                     ch->specials.questwon = 0;
-                    sprintf(buf, "%s just won a token.. Received item %s\n\r",
+                    sprintf(buf, "%s just won a quest potion.. Received item %s\n\r",
                             GET_NAME(ch), obj2->name);
                     qlog(buf);
                 }
