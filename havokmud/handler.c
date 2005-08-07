@@ -545,42 +545,9 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             break;
 
         case APPLY_DEX:
-            temp = GET_DEX(ch);
-            GET_DEX(ch) += mod;
-            temp2 = GET_DEX(ch);
-
-            if(temp > MaxDexForRace(ch)) {
-                temp=MaxDexForRace(ch);
-            }
             if(GET_DEX(ch) > MaxDexForRace(ch)) {
                 GET_DEX(ch)=MaxDexForRace(ch);
             }
-
-#if 0
-            /* Temporary for debugging */
-            {
-                char buf[1024];
-                sprintf(buf, "%s AC = %d, temp = %d, new dex = %d, -(%d) +(%d)",
-                        GET_NAME(ch), GET_AC(ch), temp, GET_DEX(ch),
-                        dex_app[temp].defensive,
-                        dex_app[(int)GET_DEX(ch)].defensive );
-                Log(buf);
-            }
-#endif
-
-#if 0
-            GET_AC(ch) -= dex_app[temp].defensive;
-            GET_AC(ch) += dex_app[(int)GET_DEX(ch)].defensive; 
-
-            /*
-             * I think dex items cause this to wack peoples AC out... msw 
-             */
-            if (GET_AC(ch) < -100)
-                GET_AC(ch) = -100;
-            if (GET_AC(ch) > 100)
-                GET_AC(ch) = 100;
-#endif
-
             break;
 
         case APPLY_INT:

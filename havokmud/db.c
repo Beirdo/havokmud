@@ -5245,8 +5245,6 @@ void reset_char(struct char_data *ch)
 {
     char            buf[100];
     struct affected_type *af;
-    extern struct dex_app_type dex_app[];
-
     int             i;
 
     for (i = 0; i < MAX_WEAR; i++) {
@@ -5354,18 +5352,11 @@ void reset_char(struct char_data *ch)
     if (ch->specials.sev > 9 || ch->specials.sev < 0) {
         ch->specials.sev = 0;
     }
+    
     for (af = ch->affected; af; af = af->next) {
         affect_modify(ch, af->location, af->modifier, af->bitvector, TRUE);
     }
     affect_total(ch);
-    if (!HasClass(ch, CLASS_MONK)) {
-        GET_AC(ch) += dex_app[(int)GET_DEX(ch)].defensive;
-    }
-
-    /*
-     * could add barbarian double dex bonus here.... ... Nah!
-     */
-
     if (GET_AC(ch) > 100) {
         GET_AC(ch) = 100;
     }

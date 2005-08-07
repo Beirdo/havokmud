@@ -2855,19 +2855,23 @@ int HitOrMiss(struct char_data *ch, struct char_data *victim, int calc_thaco)
 
     diceroll = number(1, 20);
 
+    victim_ac = GET_AC(victim);
+
+    if (AWAKE(victim)) {
+        victim_ac += dex_app[(int) GET_DEX(victim)].defensive;
+    }
+    
     if (victim->style == FIGHTING_STYLE_BERSERKED ||
         victim->style == FIGHTING_STYLE_AGGRESSIVE) {
-        victim_ac = (GET_AC(victim) + 20) / 10;
+        victim_ac += 20;
     } else if (victim->style == FIGHTING_STYLE_EVASIVE ||
                victim->style == FIGHTING_STYLE_DEFENSIVE) {
-        victim_ac = (GET_AC(victim) - 25) / 10;
-    } else {
-        victim_ac = (GET_AC(victim)) / 10;
+        victim_ac += -25;
     }
 
-    if (!AWAKE(victim)) {
-        victim_ac -= dex_app[(int) GET_DEX(victim)].defensive;
-    }
+    victim_ac = victim_ac / 10;
+
+    victim_ac = MIN(10, victim_ac);
     victim_ac = MAX(-10, victim_ac);
     /*
      * -10 is lowest
@@ -5870,11 +5874,17 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
     }
 
     diceroll = number(1, 20);
-    victim_ac = GET_AC(targ) / 10;
 
+    victim_ac = GET_AC(targ);
     if (AWAKE(targ)) {
         victim_ac += dex_app[(int) GET_DEX(targ)].defensive;
     }
+
+    victim_ac = GET_AC(targ) / 10;
+    /*
+     * External AC -100 to 100
+     * Internal AC -10 to 10
+     */
     victim_ac = MAX(-10, victim_ac);
     /*
      * -10 is lowest
