@@ -2816,23 +2816,30 @@ void spell_know_alignment(int level, struct char_data *ch,
     if (ap > 700) {
         sprintf(buf, "%s has an aura as white as the driven snow.\n\r", name);
     } else if (ap > 350) {
-        sprintf(buf, "%s is of excellent moral character.\n\r", name);
+        sprintf(buf, "%s is of excellent moral character, whose aura glows"
+                     " off-white.\n\r", name);
     } else if (ap > 100) {
-        sprintf(buf, "%s is often kind and thoughtful.\n\r", name);
+        sprintf(buf, "%s is often kind and thoughtful, their aura is"
+                     " predominantly white.\n\r", name);
     } else if (ap > 25) {
-        sprintf(buf, "%s isn't a bad sort...\n\r", name);
+        sprintf(buf, "%s's aura is a light shade of grey, they do more"
+                     " good than harm.\n\r", name);
     } else if (ap > -25) {
-        sprintf(buf, "%s doesn't seem to have a firm moral commitment\n\r",
+        sprintf(buf, "%s doesn't seem to have a firm moral commitment, their"
+                     " aura is a dull grey.\n\r",
                 name);
     } else if (ap > -100) {
-        sprintf(buf, "%s isn't the worst you've come across\n\r", name);
+        sprintf(buf, "%s's aura is grey, with a tinge of red around the"
+                     " edges.\n\r", name);
     } else if (ap > -350) {
-        sprintf(buf, "%s could be a little nicer, but who couldn't?\n\r", name);
+        sprintf(buf, "%s is very close to being considered evil, with a"
+                     " predominantly red aura.\n\r", name);
     } else if (ap > -700) {
-        sprintf(buf, "%s probably just had a bad childhood\n\r", name);
+        sprintf(buf, "%s's reddish aura shows that they are on the path"
+                     " of darkness.\n\r", name);
     } else {
-        sprintf(buf, "I'd rather just not say anything at all about %s\n\r",
-                name);
+        sprintf(buf, "%s has a red, pulsing aura, showing no compassion or"
+                     " mercy.\n\r", name);
     }
     send_to_char(buf, ch);
 }
