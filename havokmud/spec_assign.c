@@ -215,6 +215,7 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( mazekeeper_riddle_three, PROC_MOBILE ),
     REGISTER_PROC( mazekeeper_riddle_four, PROC_MOBILE ),
     REGISTER_PROC( dragon, PROC_MOBILE ),
+    REGISTER_PROC( crhero, PROC_MOBILE ),
 
     REGISTER_PROC( altarofsin, PROC_OBJECT ),
     REGISTER_PROC( applepie, PROC_OBJECT ),
@@ -1732,7 +1733,12 @@ struct special_proc_entry mobSpecials[] = {
     {6595, mazekeeper_riddle_one},
     {6596, mazekeeper_riddle_two},
     {6597, mazekeeper_riddle_three},
-    {6598, mazekeeper_riddle_four}
+    {6598, mazekeeper_riddle_four},
+
+    /*
+     * corpse recovery hero
+     */
+    {800, crhero}
 };
 int mobSpecialCount = NELEMS(mobSpecials);
 

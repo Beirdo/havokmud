@@ -3286,6 +3286,8 @@ int             close_doors(struct char_data *ch, struct room_data *rp,
 int             generic_guildmaster(struct char_data *ch, int cmd,
                                     char *arg, struct char_data *mob,
                                     int type);
+int             crhero(struct char_data *ch, int cmd, char *arg,
+                    struct char_data *mob);
 /* Temporary guy to fix skills */
 int skillfixer(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type);

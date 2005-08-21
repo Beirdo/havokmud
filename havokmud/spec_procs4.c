@@ -6206,6 +6206,137 @@ int dragon(struct char_data *ch, int cmd, char *arg,
     }
     return(TRUE);
 }
+
+int crhero(struct char_data *ch, int cmd, char *arg,
+          struct char_data *mob)
+{
+    struct obj_data *i,
+                    *corpse = NULL;
+    char    name[255];
+    char    buf[255];
+    int     xpcost = 0,
+            found = 0,
+            player_loc = 0,
+            corpse_loc = 0,
+            ISHSHAKE = 0;
+    
+    if (cmd == 15) {
+        /*
+         * look
+         */
+        if ((arg && !(strcmp(lower(arg), "hero"))) ||
+            (arg && !(strcmp(lower(arg), "nebanthor")))) {
+            do_look(ch, arg, 0);
+            act("$c000W$n says 'Hello there, adventurer!'", 
+                FALSE, mob, 0, 0, TO_ROOM);
+            
+            act("$c000W$n says 'Have you need of my services?'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'If you have died, perhaps I could recover "
+                "your corpse...'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'Would you like to hear more?'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            return (TRUE);
+        }
+        return (FALSE);
+    }
+    if (cmd == 17 || cmd == 169) {
+        /*
+         * say
+         */
+        xpcost = (-GET_EXP(ch) * (GetMaxLevel(ch) / 100.0));
+        
+        if (arg && !(strcmp(lower(arg), "yes"))) {
+            do_say(ch, "yes", 0);
+            act("$c000W$n says 'So, you think you want me to recover your "
+                "corpse?'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'Excellent!! However, I must warn you...'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            sprintf(buf, "$c000W$n says 'It will cost you %d experience "
+                         "points.'", xpcost);
+            act(buf, FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'And if a monster has already stolen "
+                "your equipment...'", FALSE, mob, 0, 0, TO_ROOM);
+            do_action(mob, NULL, 36); 
+            act("$c000W$n says 'I will not be able to recover it.'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'But, I will still have to charge you the "
+                "experience just the same for my trouble.'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$c000W$n says 'If you are sure you agree, let's shake on it!'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            act("$n holds out his hand.", 
+                FALSE, mob, 0, 0, TO_ROOM);
+                        
+            return TRUE;
+        }
+        return FALSE;
+    }
+    if (cmd == 537) {
+        /*
+         * handshake
+         */
+        if (arg && !(strcmp(lower(arg), "nebanthor"))) {
+            ISHSHAKE = TRUE;
+        } else if (arg && !(strcmp(lower(arg), "hero"))) {
+            ISHSHAKE = TRUE;
+        } else {
+            ISHSHAKE = FALSE;
+        }
+        if (ISHSHAKE) {
+            assert(ch);
+            sprintf(name, "%s", GET_NAME(ch));
+            buf[0] = '\0';
+            found = 0;
+            
+            for (i = object_list; i && !found; i = i->next) {
+                if (isname(name, i->name) && i->obj_flags.value[3]) {
+                    found = 1;
+                    if (i->carried_by || i->equipped_by || i->in_obj) {
+                        act("$c000W$n says 'Alas, Your corpse has allready "
+                            "been recovered...by someone else.'",
+                            FALSE, mob, 0, 0, TO_ROOM);
+                        return TRUE;
+                    } else {
+                        act("$c000W$n says 'Ahh yes, I know just where it is.'",
+                            FALSE, mob, 0, 0, TO_ROOM);
+                        act("$c000W$n says 'This will only take a moment.'",
+                            FALSE, mob, 0, 0, TO_ROOM);
+                        corpse = i;
+                        
+                        if (ch->in_room) {
+                            player_loc = ch->in_room;
+                        }
+                        if (corpse->in_room) {
+                            corpse_loc = corpse->in_room;
+                        }
+                    }
+                    obj_from_room(corpse);
+                    obj_to_room(corpse, player_loc);
+                    act("$n suddenly disapears, then appears again just as"
+                        " quickly.", FALSE, mob, 0, 0, TO_ROOM);
+                    act("$n gently places a corpse on the ground.",
+                        FALSE, mob, 0, 0, TO_ROOM);
+                    xpcost = (-GET_EXP(ch) * (GetMaxLevel(ch) / 100.0));
+                    gain_exp(ch, xpcost);
+                    return TRUE;
+                } else {
+                }
+            }
+            act("$c000W$n says 'I'm afraid I cannot find your corpse.'",
+                FALSE, mob, 0, 0, TO_ROOM);
+            return TRUE;
+        }
+        return FALSE;
+    }
+    return FALSE;
+}
+                    
+                
+            
+        
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
