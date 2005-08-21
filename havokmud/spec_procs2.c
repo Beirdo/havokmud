@@ -5551,8 +5551,8 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
     }
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].virtual == 6005 && !number(0, 3)) {
-            command_interpreter(ch, "emote sees the damn fox and runs like "
-                                    "hell.");
+            command_interpreter(ch, "emote sees the fox and runs like "
+                                    "crazy.");
             do_flee(ch, NULL, 0);
             return TRUE;
         }

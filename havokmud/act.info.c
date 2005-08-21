@@ -1738,7 +1738,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     } else if (GET_POS(ch) == POSITION_SLEEPING) {
         send_to_char("You can't see anything, you're sleeping!\n\r", ch);
     } else if (IS_AFFECTED(ch, AFF_BLIND)) {
-        send_to_char("You can't see a damn thing, you're blinded!\n\r",
+        send_to_char("You can't see a thing, you're blinded!\n\r",
                      ch);
     } else if ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) && 
                (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
@@ -4479,7 +4479,7 @@ char           *HitRollDesc(int a)
     } else if (a < 8) {
         return ("Pretty good");
     } else if (a < 15) {
-        return ("Damn good");
+        return ("Dang good");
     } else if (a < 30) {
         return ("Very good");
     } else if (a < 40) {
@@ -4501,7 +4501,7 @@ char           *DamRollDesc(int a)
     } else if (a < 8) {
         return ("Pretty good");
     } else if (a < 15) {
-        return ("Damn good");
+        return ("Dang good");
     } else if (a < 30) {
         return ("Very good");
     } else if (a < 40) {

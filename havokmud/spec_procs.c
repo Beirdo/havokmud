@@ -1138,7 +1138,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (type == EVENT_DWARVES_STRIKE) {
         command_interpreter(ch, "shout Ack! Of all the stupid things! Those "
-                                "damned dwarves are on strike again!");
+                                "dang dwarves are on strike again!");
         return (TRUE);
     }
 
@@ -1404,7 +1404,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
         return (TRUE);
     case 39:
-        command_interpreter(ch, "say I'm Puff the Magic Dragon, who the hell "
+        command_interpreter(ch, "say I'm Puff the Magic Dragon, who the heck "
                                 "are you?");
         return (TRUE);
     case 40:
@@ -2241,7 +2241,7 @@ int Ringwraith(struct char_data *ch, int cmd, char *arg,
                 return (TRUE);
                 break;
             default:
-                if (check_peaceful(ch, "Damn, he's in a safe spot.")) {
+                if (check_peaceful(ch, "He's in a safe spot.")) {
                     if (!check_soundproof(ch))
                         act("$n says 'You can't stay here forever, $N'.",
                             FALSE, ch, NULL, victim, TO_ROOM);

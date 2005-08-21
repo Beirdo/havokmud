@@ -4513,7 +4513,7 @@ int stu(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     switch (number(0, 60)) {
     case 0:
-        command_interpreter(ch, "say I'm so damn cool, I'm too cool to hang "
+        command_interpreter(ch, "say I'm so darn cool, I'm too cool to hang "
                                 "out with myself!");
         break;
     case 1:
@@ -7054,7 +7054,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                     itemgranted = 27;
                     break;
                 default:
-                    do_say(vict, "Thanks!!  Damn!! You are good!!", 0);
+                    do_say(vict, "Thanks!!  Wow!! You are good!!", 0);
                     /* 
                      * sanc potion 
                      */
