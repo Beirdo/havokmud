@@ -274,5 +274,5 @@ HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
 
 CFLAGS=$CFLAGS_SAVE
 
-AC_CONFIG_FILES([Makefile convert/Makefile])
+AC_CONFIG_FILES([Makefile convert/Makefile threads/Makefile])
 AC_OUTPUT

@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "environment.h"
 #include "platform.h"
 #include <stdio.h>
 #include <stdlib.h>

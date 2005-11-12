@@ -11,8 +11,10 @@
 #define STATE(d) ((d)->connected)
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
 
+#if 0
 #define NELEMS(x)   (sizeof(x) / sizeof(x[0]))
 #define OFFSETOF(type,elem) ((int)&(((type *)NULL)->elem))
+#endif
 
 #define URANGE(a, b, c)          ((b) < (a) ? (a) : ((b) > (c) ? (c) : (b)))
 

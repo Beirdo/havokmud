@@ -1,0 +1,58 @@
+##
+## The compiler your gonna use to compile this with..
+##
+CC=@CC@
+##
+LD=$(CC)
+
+ROOT=..
+
+## Include dirs
+INCDIRS = -I${ROOT} -I${ROOT}/include -I/usr/include/mysql
+
+##  these are architecture dependent flags
+CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
+	 ${INCDIRS}
+
+##  Libraries
+LIBS = @LIBS@
+LDFLAGS = @LDFLAGS@
+
+
+SRCS =	connections.c
+ARCHIVE =	libhavokthread.a
+
+OBJS = ${SRCS:.c=.o}
+DEPS = ${SRCS:.c=.d}
+
+all : $(ARCHIVE)
+
+$(ARCHIVE) : ${OBJS}
+	$(AR) rcv $@ $+
+	ranlib $@
+
+depend : ${DEPS}
+
+${DEPS} : Makefile
+
+%.d: %.c
+	@echo "Making $@ (dependencies for $<)"
+	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
+
+.PHONY: clean cleanall
+
+clean:
+	rm -f $(OBJS) $(EXE)
+
+cleanall: clean
+	rm -f ${DEPS}
+
+distclean: cleanall
+	rm -f Makefile
+
+Makefile: Makefile.in ${ROOT}/configure
+	@echo Your Makefile is out of date, rerun ./configure
+	
+
+-include ${DEPS}
+

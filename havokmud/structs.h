@@ -14,7 +14,9 @@ typedef char    sbyte;
 typedef unsigned char ubyte;
 typedef short int sh_int;
 typedef unsigned short int ush_int;
+#if 0
 typedef char    bool;
+#endif
 typedef char    byte;
 
 #define MAX_MESSAGE_LENGTH 2048

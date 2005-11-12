@@ -5,9 +5,14 @@ CC=@CC@
 ##
 LD=$(CC)
 
+ROOT = .
+
+## Include dirs
+INCDIRS = -I${ROOT} -I${ROOT}/include @INCLUDES@
+
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
-	 @INCLUDES@
+	 ${INCDIRS}
 
 ##  Libraries
 LIBS = @LIBS@
