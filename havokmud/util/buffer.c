@@ -56,7 +56,6 @@ BufferObject_t * BufferCreate( uint32 size )
 {
     BufferObject_t *buffer;
     int status;
-    uint32 i;
 
     if( size == 0 )
     {
@@ -107,14 +106,14 @@ void BufferDestroy( BufferObject_t *buffer )
 void BufferLock( BufferObject_t *buffer )
 {
     if( buffer ) {
-        pthread_lock_mutex( buffer->mutex );
+        pthread_mutex_lock( buffer->mutex );
     }
 }
 
 void BufferUnlock( BufferObject_t *buffer )
 {
     if( buffer ) {
-        pthread_unlock_mutex( buffer->mutex );
+        pthread_mutex_unlock( buffer->mutex );
     }
 }
 
