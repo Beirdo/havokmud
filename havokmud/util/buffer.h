@@ -75,3 +75,7 @@ void BufferReadBytes( BufferObject_t *buffer, uint32 count );
 #endif
 
 #endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */

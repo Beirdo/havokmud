@@ -44,6 +44,7 @@
 #include <time.h>
 #include "linked_list.h"
 #include "buffer.h"
+#include "queue.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -73,6 +74,8 @@ void *ConnectionThread( void *arg )
     socklen_t salen;
     struct timeval timeout;
     ConnectionItem_t *item;
+    PlayerStruct_t *player;
+    ConnInputItem_t *connItem;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
@@ -142,11 +145,34 @@ void *ConnectionThread( void *arg )
                 memset(item, 0, sizeof(ConnectionItem_t));
                 item->fd = newFd;
                 item->buffer = BufferCreate(MAX_BUFSIZE);
-                LinkedListAdd( ConnectionList, (LinkedListItem_t *)item, 
-                               UNLOCKED, AT_TAIL );
-                /*
-                 * Pass the info on to the other threads...  TODO
-                 */
+
+                player = (PlayerStruct_t *)malloc(sizeof(PlayerStruct_t));
+                if( !player ) {
+                    /*
+                     * No memory!
+                     */
+                    BufferDestroy(item->buffer);
+                    close(newFd);
+                    free(item);
+                } else {
+                    item->player = player;
+                    player->connection = item;
+                    player->in_buffer = item->buffer;
+
+                    LinkedListAdd( ConnectionList, (LinkedListItem_t *)item, 
+                                   UNLOCKED, AT_TAIL );
+                    /*
+                     * Pass the info on to the other threads...
+                     */
+                    connItem = (ConnInputItem_t *)
+                                  malloc(sizeof(ConnInputItem_t));
+                    if( connItem ) {
+                        connItem->type = CONN_NEW_CONNECT;
+                        connItem->player = player;
+
+                        QueueEnqueueItem(ConnectInputQ, (QueueItem_t)connItem);
+                    }
+                }
             }
 
             fdCount--;
@@ -211,8 +237,16 @@ void *ConnectionThread( void *arg )
                     BufferUnlock( item->buffer );
 
                     /*
-                     * Tell any waiting thread?  TODO
+                     * Tell the input thread
                      */
+                    connItem = (ConnInputItem_t *)
+                                  malloc(sizeof(ConnInputItem_t));
+                    if( connItem ) {
+                        connItem->type = CONN_INPUT_AVAIL;
+                        connItem->player = item->player;
+
+                        QueueEnqueueItem(ConnectInputQ, (QueueItem_t)connItem);
+                    }
                 }
 
                 if( item && FD_ISSET( item->fd, &writeFds ) ) {

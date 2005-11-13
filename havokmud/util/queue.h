@@ -70,3 +70,7 @@ uint32 QueueUsed( QueueObject_t *queue );
 #endif
 
 #endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */

@@ -34,6 +34,7 @@
 #include <pthread.h>
 #include "linked_list.h"
 #include "buffer.h"
+#include "queue.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -45,11 +46,66 @@ typedef struct {
     int timeout_usec;
 } connectThreadArgs_t;
 
+typedef enum {
+    STATE_INITIAL
+} PlayerState_t;
+
+struct _PlayerStruct_t;
+
 typedef struct {
     LinkedListItem_t link;
     int fd;
     BufferObject_t *buffer;
+    struct _PlayerStruct_t *player;
 } ConnectionItem_t;
 
+typedef struct _PlayerStruct_t
+{
+    LinkedListItem_t    link;
+    ConnectionItem_t   *connection;
+    BufferObject_t     *in_buffer;
+    PlayerState_t       state;
+    QueueObject_t      *handlingQ;
+    char               *in_remain;
+    int                 in_remain_len;
+} PlayerStruct_t;
+
+typedef enum
+{
+    CONN_NEW_CONNECT,
+    CONN_INPUT_AVAIL
+} ConnInputType_t;
+
+typedef struct
+{
+    ConnInputType_t     type;
+    PlayerStruct_t     *player;
+} ConnInputItem_t;
+
+typedef enum
+{
+    INPUT_INITIAL,
+    INPUT_AVAIL
+} InputStateType_t;
+
+typedef struct
+{
+    InputStateType_t    type;
+    PlayerStruct_t     *player;
+    char               *line;
+} InputStateItem_t;
+
+
+/*
+ * Externals used for interthread communication
+ */
+extern QueueObject_t *ConnectInputQ;
+extern QueueObject_t *InputLoginQ;
+extern QueueObject_t *InputPlayerQ;
+extern QueueObject_t *InputImmortQ;
 
 #endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
