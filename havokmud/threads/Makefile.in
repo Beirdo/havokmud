@@ -20,7 +20,7 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	connections.c input.c
+SRCS =	master.c connections.c input.c login.c
 ARCHIVE =	libhavokthread.a
 
 OBJS = ${SRCS:.c=.o}

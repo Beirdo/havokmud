@@ -155,6 +155,7 @@ void *ConnectionThread( void *arg )
                     close(newFd);
                     free(item);
                 } else {
+                    memset(player, 0, sizeof(PlayerStruct_t));
                     item->player = player;
                     player->connection = item;
                     player->in_buffer = item->buffer;

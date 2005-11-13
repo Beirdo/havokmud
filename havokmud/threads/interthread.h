@@ -104,6 +104,14 @@ extern QueueObject_t *InputLoginQ;
 extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
 
+/*
+ * Prototypes of the thread entry points
+ */
+void *ConnectionThread( void *arg );
+void *InputThread( void *arg );
+void *LoginThread( void *arg );
+
+
 #endif
 
 /*

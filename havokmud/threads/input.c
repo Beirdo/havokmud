@@ -88,6 +88,7 @@ void *InputThread( void *arg )
 
             stateItem->player = player;
             stateItem->type   = INPUT_INITIAL;
+            stateItem->line   = NULL;
             player->handlingQ = InputLoginQ;
             QueueEnqueueItem( player->handlingQ, stateItem );
 
