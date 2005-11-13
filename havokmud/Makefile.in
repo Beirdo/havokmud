@@ -8,7 +8,7 @@ LD=$(CC)
 ROOT = .
 
 ## Include dirs
-INCDIRS = -I${ROOT} -I${ROOT}/include @INCLUDES@
+INCDIRS = -I${ROOT} -I${ROOT}/include -I${ROOT}/util @INCLUDES@
 
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \

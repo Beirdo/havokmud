@@ -41,6 +41,8 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <time.h>
+#include "linked_list.h"
+#include "buffer.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -48,13 +50,25 @@ static char ident[] _UNUSED_ =
 static int listenFd = -1;
 static int maxFd = -1;
 
-static void connAddFd( int fd, fd_set *fds );
+
+#define MAX_BUFSIZE 8192
 
 typedef struct {
     int port;
-    int timeoutSec;
-    int timeoutUsec;
+    int timeout_sec;
+    int timeout_usec;
 } connectThreadArgs_t;
+
+typedef struct {
+    LinkedListItem_t link;
+    int fd;
+    BufferObject_t *buffer;
+} ConnectionItem_t;
+
+LinkedList_t *ConnectionList = NULL;
+
+static ConnectionItem_t *connRemove(ConnectionItem_t *item);
+static void connAddFd( int fd, fd_set *fds );
 
 void *ConnectionThread( void *arg )
 {
@@ -63,16 +77,15 @@ void *ConnectionThread( void *arg )
     struct sockaddr_in sa;
     fd_set readFds, writeFds, exceptFds;
     fd_set saveReadFds, saveWriteFds, saveExceptFds;
-    struct timeval saveTimeout, timeout, lastTime, now;
     int count;
-    int ticked;
+    int fdCount;
     int newFd;
     socklen_t salen;
+    struct timeval timeout;
+    ConnectionItem_t *item;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
-    saveTimeout.tv_sec = argStruct->timeoutSec;
-    saveTimeout.tv_usec = argStruct->timeoutUsec;
 
     /*
      * Start listening
@@ -105,41 +118,20 @@ void *ConnectionThread( void *arg )
     FD_ZERO(&saveExceptFds);
 
     connAddFd(listenFd, &saveReadFds);
-    memcpy(&timeout, &saveTimeout, sizeof(timeout));
-    gettimeofday(&lastTime, NULL);
+
+    ConnectionList = LinkedListCreate();
 
     while( 1 ) {
         /*
          * Select on connected and listener
          */
-        readFds = saveReadFds;
-        writeFds = saveWriteFds;
+        readFds   = saveReadFds;
+        writeFds  = saveWriteFds;
         exceptFds = saveExceptFds;
-        ticked = 0;
+        timeout.tv_sec  = argStruct->timeout_sec;
+        timeout.tv_usec = argStruct->timeout_usec;
         
-        count = select(maxFd+1, &readFds, &writeFds, &exceptFds, &timeout);
-        gettimeofday(&now, NULL);
-
-        /*
-         * Adjust the tick timer
-         */
-        timeout.tv_sec  -= (now.tv_sec - lastTime.tv_sec);
-        timeout.tv_usec -= (now.tv_usec - lastTime.tv_usec);
-        while(timeout.tv_usec >= 1000000) {
-            timeout.tv_usec -= 1000000;
-            timeout.tv_sec++;
-        }
-        while(timeout.tv_usec < 0) {
-            timeout.tv_usec += 1000000;
-            timeout.tv_sec--;
-        }
-
-        memcpy(&lastTime, &now, sizeof(lastTime));
-        if( (timeout.tv_sec < 0) || 
-            (timeout.tv_sec == 0 && timeout.tv_usec == 0)) {
-            ticked = 1;
-            memcpy(&timeout, &saveTimeout, sizeof(timeout));
-        }
+        fdCount = select(maxFd+1, &readFds, &writeFds, &exceptFds, &timeout);
 
         /*
          * Open a connection for listener
@@ -147,22 +139,102 @@ void *ConnectionThread( void *arg )
         if( FD_ISSET(listenFd, &readFds) ) {
             newFd = accept(listenFd, (struct sockaddr *)&sa, &salen);
 
+            connAddFd(newFd, &saveReadFds);
+            connAddFd(newFd, &saveExceptFds);
+
+            item = (ConnectionItem_t *)malloc(sizeof(ConnectionItem_t));
+            if( !item ) {
+                /*
+                 * No memory!
+                 */
+                close(newFd);
+            } else {
+                memset(item, 0, sizeof(ConnectionItem_t));
+                item->fd = newFd;
+                item->buffer = BufferCreate(MAX_BUFSIZE);
+                LinkedListAdd( ConnectionList, (LinkedListItem_t *)item, 
+                               UNLOCKED, AT_TAIL );
+                /*
+                 * Pass the info on to the other threads...  TODO
+                 */
+            }
+
+            fdCount--;
         }
 
-        /*
-         * Close closed and funky connections
-         */
+        if( fdCount ) {
+            LinkedListLock( ConnectionList );
 
-        /*
-         * If tick timer clicked over, send the prompt, etc
-         */
-        if( ticked ) {
+            for( item = (ConnectionItem_t *)(ConnectionList->head); 
+                   item && fdCount; 
+                   item = (item ? (ConnectionItem_t *)item->link.next
+                                : (ConnectionItem_t *)ConnectionList->head) ) {
+                if( FD_ISSET( item->fd, &exceptFds ) ) {
+                    /*
+                     * This connection's borked, close it, remove it, move on
+                     */
+                    if( FD_ISSET( item->fd, &readFds ) ) {
+                        fdCount--;
+                    }
+
+                    if( FD_ISSET( item->fd, &writeFds ) ) {
+                        fdCount--;
+                    }
+
+                    BufferLock( item->buffer );
+                    item = connRemove(item);
+                    fdCount--;
+                    continue;
+                }
+
+                if( item && FD_ISSET( item->fd, &readFds ) ) {
+                    /*
+                     * This connection has data ready
+                     */
+                    count = BufferAvailWrite( item->buffer, TRUE );
+                    if( !count ) {
+                        /*
+                         * No buffer space, the buffer's unlocked, move on
+                         */
+                        continue;
+                    }
+
+                    /*
+                     * The buffer's locked
+                     */
+                    count = read( item->fd, BufferGetWrite( item->buffer ),
+                                  count );
+                    if( !count ) {
+                        /*
+                         * We hit EOF, close and remove
+                         */
+                        if( FD_ISSET( item->fd, &writeFds ) ) {
+                            fdCount--;
+                        }
+
+                        item = connRemove(item);
+                        fdCount--;
+                        continue;
+                    }
+
+                    BufferWroteBytes( item->buffer, count );
+                    BufferUnlock( item->buffer );
+
+                    /*
+                     * Tell any waiting thread?  TODO
+                     */
+                }
+
+                if( item && FD_ISSET( item->fd, &writeFds ) ) {
+                    /*
+                     * This connection just finished a write?  Do I give a
+                     * crap?  TODO
+                     */
+                    fdCount--;
+                }
+            }
+            LinkedListUnlock( ConnectionList );
         }
-
-        /*
-         * read all available inputs
-         */
-
     }
 
     return( NULL );
@@ -174,6 +246,35 @@ static void connAddFd( int fd, fd_set *fds )
     if( fd > maxFd ) {
         maxFd = fd;
     }
+}
+
+static ConnectionItem_t *connRemove(ConnectionItem_t *item)
+{
+    ConnectionItem_t *prev;
+
+    close(item->fd);
+
+    if( item->link.prev ) {
+        item->link.prev->next = item->link.next;
+    } else {
+        ConnectionList->head = item->link.next;
+    }
+
+    if( item->link.next ) {
+        item->link.next->prev = item->link.prev;
+    } else {
+        ConnectionList->tail = item->link.prev;
+    }
+
+    prev = (ConnectionItem_t *)(item->link.prev);
+
+    /*
+     * must be locked before entering...
+     */
+    BufferDestroy( item->buffer );
+    free( item );
+
+    return( prev );
 }
 
 /*

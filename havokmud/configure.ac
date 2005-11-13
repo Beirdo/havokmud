@@ -35,6 +35,7 @@ AC_GNU_SOURCE
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_RANLIB
 
 # Checks for libraries.
 AC_CHECK_LIB([crypt], [crypt])
