@@ -20,8 +20,8 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	connections.c
-ARCHIVE =	libhavokthread.a
+SRCS =	linked_list.c logging.c queue.c buffer.c
+ARCHIVE =	libhavokutils.a
 
 OBJS = ${SRCS:.c=.o}
 DEPS = ${SRCS:.c=.d}

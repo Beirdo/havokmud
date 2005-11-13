@@ -32,6 +32,7 @@
 #include <pthread.h>
 #include "protos.h"
 #include "externs.h"
+#include "interthread.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -53,17 +54,6 @@ static int maxFd = -1;
 
 #define MAX_BUFSIZE 8192
 
-typedef struct {
-    int port;
-    int timeout_sec;
-    int timeout_usec;
-} connectThreadArgs_t;
-
-typedef struct {
-    LinkedListItem_t link;
-    int fd;
-    BufferObject_t *buffer;
-} ConnectionItem_t;
 
 LinkedList_t *ConnectionList = NULL;
 
