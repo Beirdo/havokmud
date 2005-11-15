@@ -57,6 +57,9 @@ static int maxFd = -1;
 
 
 LinkedList_t *ConnectionList = NULL;
+static int recalcMaxFd = FALSE;
+static fd_set readFds, writeFds, exceptFds;
+static fd_set saveReadFds, saveWriteFds, saveExceptFds;
 
 static ConnectionItem_t *connRemove(ConnectionItem_t *item);
 static void connAddFd( int fd, fd_set *fds );
@@ -66,8 +69,6 @@ void *ConnectionThread( void *arg )
     connectThreadArgs_t *argStruct;
     int portNum;
     struct sockaddr_in sa;
-    fd_set readFds, writeFds, exceptFds;
-    fd_set saveReadFds, saveWriteFds, saveExceptFds;
     int count;
     int fdCount;
     int newFd;
@@ -125,6 +126,8 @@ void *ConnectionThread( void *arg )
         timeout.tv_usec = argStruct->timeout_usec;
         
         fdCount = select(maxFd+1, &readFds, &writeFds, &exceptFds, &timeout);
+
+        recalcMaxFd = FALSE;
 
         /*
          * Open a connection for listener
@@ -252,10 +255,33 @@ void *ConnectionThread( void *arg )
 
                 if( item && FD_ISSET( item->fd, &writeFds ) ) {
                     /*
-                     * This connection just finished a write?  Do I give a
-                     * crap?  TODO
+                     * We have space to output, so write if we have anything
+                     * to write
                      */
+                    if( item->outBufDesc ) {
+                        write( item->fd, item->outBufDesc->buf, 
+                               item->outBufDesc->len );
+                        free( item->outBufDesc->buf );
+                        free( item->outBufDesc );
+                    }
+                    /*
+                     * Kick the next output
+                     */
+                    connKickOutput( item );
                     fdCount--;
+                }
+            }
+            LinkedListUnlock( ConnectionList );
+        }
+
+        if( recalcMaxFd ) {
+            LinkedListLock( ConnectionList );
+            maxFd = listenFd;
+
+            for( item = (ConnectionItem_t *)(ConnectionList->head); item; 
+                 item = (ConnectionItem_t *)item->link.next ) {
+                if( item->fd > maxFd ) {
+                    maxFd = item->fd;
                 }
             }
             LinkedListUnlock( ConnectionList );
@@ -271,6 +297,11 @@ static void connAddFd( int fd, fd_set *fds )
     if( fd > maxFd ) {
         maxFd = fd;
     }
+}
+
+static void connDelFd( int fd, fd_set *fds )
+{
+    FD_CLR(fd, fds);
 }
 
 static ConnectionItem_t *connRemove(ConnectionItem_t *item)
@@ -299,7 +330,32 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
     BufferDestroy( item->buffer );
     free( item );
 
+    recalcMaxFd = TRUE;
+
     return( prev );
+}
+
+void connKickOutput( ConnectionItem_t *connItem )
+{
+    PlayerStruct_t *player;
+    OutputBuffer_t *bufDesc;
+
+    if( !connItem ) {
+        return;
+    }
+
+    player = connItem->player;
+
+    bufDesc = (OutputBuffer_t *)QueueDequeueItem( player->outputQ, 0 );
+    if( !bufDesc ) {
+        if( !connItem->outBufDesc ) {
+            connDelFd( connItem->fd, &saveWriteFds );
+        }
+        connItem->outBufDesc = NULL;
+    } else {
+        connAddFd( connItem->fd, &saveWriteFds );
+        connItem->outBufDesc = bufDesc;
+    }
 }
 
 /*

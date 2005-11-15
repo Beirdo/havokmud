@@ -50,6 +50,13 @@ typedef enum {
     STATE_INITIAL
 } PlayerState_t;
 
+typedef struct
+{
+    char               *buf;
+    int                 len;
+} OutputBuffer_t;
+
+
 struct _PlayerStruct_t;
 
 typedef struct {
@@ -57,17 +64,22 @@ typedef struct {
     int fd;
     BufferObject_t *buffer;
     struct _PlayerStruct_t *player;
+    OutputBuffer_t *outBufDesc;
 } ConnectionItem_t;
 
 typedef struct _PlayerStruct_t
 {
     LinkedListItem_t    link;
     ConnectionItem_t   *connection;
-    BufferObject_t     *in_buffer;
+
     PlayerState_t       state;
     QueueObject_t      *handlingQ;
+
+    BufferObject_t     *in_buffer;
     char               *in_remain;
     int                 in_remain_len;
+
+    QueueObject_t      *outputQ;
 } PlayerStruct_t;
 
 typedef enum
@@ -111,6 +123,10 @@ void *ConnectionThread( void *arg );
 void *InputThread( void *arg );
 void *LoginThread( void *arg );
 
+/*
+ * Prototypes of connections thread callbacks
+ */
+void connKickOutput( ConnectionItem_t *connItem );
 
 #endif
 
