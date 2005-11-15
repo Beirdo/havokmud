@@ -4,12 +4,11 @@
 CC=@CC@
 ##
 LD=$(CC)
-RANLIB=@RANLIB@
 
-ROOT=..
+ROOT = ..
 
 ## Include dirs
-INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util -I/usr/include/mysql
+INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util @INCLUDES@
 
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
@@ -20,8 +19,8 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	master.c connections.c input.c login.c
-ARCHIVE =	libhavokthread.a
+SRCS =	login-sm.c
+ARCHIVE =	libhavokcore.a
 
 OBJS = ${SRCS:.c=.o}
 DEPS = ${SRCS:.c=.d}

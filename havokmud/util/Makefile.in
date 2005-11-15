@@ -52,7 +52,7 @@ distclean: cleanall
 	rm -f Makefile
 
 Makefile: Makefile.in ${ROOT}/configure
-	@echo Your Makefile is out of date, rerun ./configure
+	@echo Your Makefile is out of date, rerun ${ROOT}/configure
 	
 
 -include ${DEPS}

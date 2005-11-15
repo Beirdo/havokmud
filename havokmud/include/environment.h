@@ -38,7 +38,9 @@
 #define _UNUSED_ __attribute__ ((unused))
 #define _PACKED_ __attribute__ ((packed))
 #ifndef __cplusplus
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #endif
 #ifndef _REENTRANT
 #define _REENTRANT

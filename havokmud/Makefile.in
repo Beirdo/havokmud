@@ -67,8 +67,8 @@ configure: configure.ac
 config.in.h: configure.in
 	autoheader
 
-Makefile: Makefile.in configure
-	@echo Your Makefile is out of date, rerun ./configure
+Makefile: Makefile.in ${ROOT}/configure
+	@echo Your Makefile is out of date, rerun ${ROOT}/configure
 	
 
 -include ${DEPS}
