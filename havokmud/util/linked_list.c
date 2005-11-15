@@ -201,3 +201,7 @@ void LinkedListRemove( LinkedList_t *list, LinkedListItem_t *item,
         LinkedListUnlock( list );
     }
 }
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
