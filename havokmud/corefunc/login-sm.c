@@ -10,6 +10,7 @@
 
 #include "protos.h"
 #include "externs.h"
+#include "interthread.h"
 
 #define STATE(d) ((d)->connected)
 
@@ -19,8 +20,16 @@
                          ((x >= 13 && x<= 15) ? "-]>>>>>>>" : \
                           ((x >= 16 && x<18) ? "-]>>>>>>>>" : ((x >= 18) ? \
                            "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
+#define MAX_NAME_LENGTH 11
 
-void EnterState(struct descriptor_data *d, int newstate);
+void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
+void show_class_selection(struct descriptor_data *d, int r);
+
+unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
+unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
+int             Silence = 0;
+int             plr_tick_count = 0;
+char           *Sex[] = { "Neutral", "Male", "Female" };
 
 char *newbie_note[] = {
     "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
@@ -339,39 +348,40 @@ void show_menu(struct descriptor_data *d)
     send_to_char(bufx, d->character);
 }
 
-void EnterState(struct descriptor_data *d, int newstate)
+void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
     char            buf[MAX_STRING_LENGTH];
     int             chosen = 0;
     int             i;
 
-    if( !d ) {
+    if( !player ) {
         return;
     }
 
     switch( newstate ) {
-    case CON_QSEX:
-        SEND_TO_Q("What is your sex (M/F) ? ", d);
+    case STATE_CHOOSE_SEX:
+        SendOutput("What is your sex (M/F) ? ", player);
         break;
-    case CON_ANSI:
-        SEND_TO_Q("Would you like ansi colors? (Yes or No)", d);
+    case STATE_CHOOSE_ANSI:
+        SendOutput("Would you like ansi colors? (Yes or No)", player);
         break;
-    case CON_QRACE:
+    case STATE_CHOOSE_RACE:
         show_race_choice(d);
-        SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
+        SendOutput("For help type '?'- will list level limits. \n\r RACE:  ", 
+                   player);
         d->character->player.class = 0;
         d->character->specials.remortclass = 0;
         break;
-    case CON_QCLASS:
+    case STATE_CHOOSE_CLASS:
         GET_ALIGNMENT(d->character) = 0;
         GET_CON(d->character) = 0;
-        SEND_TO_Q("\n\rSelect your class now.\n\r", d);
+        SendOutput("\n\rSelect your class now.\n\r", player);
         show_class_selection(d, GET_RACE(d->character));
-        SEND_TO_Q("Enter ? for help.\n\r", d);
-        SEND_TO_Q("\n\rClass :", d);
+        SendOutput("Enter ? for help.\n\r\n\rClass :", player);
         break;
-    case CON_MCLASS:
-        SEND_TO_Q("\n\rSelect your main class from the options below.\n\r", d);
+    case STATE_CHOOSE_MAIN_CLASS:
+        SendOutput("\n\rSelect your main class from the options below.\n\r",
+                   player);
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(d->character, pc_num_class(chosen))) {
@@ -379,19 +389,19 @@ void EnterState(struct descriptor_data *d, int newstate)
                           classes[chosen].name);
             }
         }
-        SEND_TO_Q("\n\rMain Class :", d);
+        SendOutput("\n\rMain Class :", player);
         break;
-    case CON_STAT_LIST:
-        SEND_TO_Q("\n\rSelect your stat priority, by listing them from"
-                  " highest to lowest\n\r", d);
-        SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-        SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest"
-                  " roll in Strength, \n\r", d);
-        SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly"
-                  " charisma\n\r", d);
-        SEND_TO_Q("Your choices? ", d);
+    case STATE_CHOOSE_STATS:
+        SendOutput("\n\rSelect your stat priority, by listing them from"
+                   " highest to lowest\n\r", player);
+        SendOutput("Seperated by spaces.. don't duplicate\n\r", player);
+        SendOutput("for example: 'S I W D Co Ch' would put the highest"
+                   " roll in Strength, \n\r", player);
+        SendOutput("next in intelligence, Wisdom, Dex, Con, and lastly"
+                   " charisma\n\r", player);
+        SendOutput("Your choices? ", player);
         break;
-    case CON_ALIGNMENT:
+    case STATE_CHOOSE_ALIGNMENT:
         ch_printf(d->character,
                   "Your alignment is an indication of how well or badly you"
                   " have morally\n\r"
@@ -423,90 +433,91 @@ void EnterState(struct descriptor_data *d, int newstate)
         }
         break;
 
-    case CON_RMOTD:
+    case STATE_SHOW_MOTD:
         send_to_char(motd, d->character);
-        SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
+        SendOutput("\n\r\n*** PRESS RETURN: ", player);
         break;
 
-    case CON_CREATION_MENU:
+    case STATE_SHOW_CREATION_MENU:
         show_menu(d);
         break;
 
-    case CON_PWDNRM:
-        SEND_TO_Q("Password: ", d);
-        write(d->descriptor, echo_off, 4);
+    case STATE_GET_PASSWORD:
+        SendOutput("Password: ", player);
+        SendOutputRaw(echo_off, 4, player);
         break;
-    case CON_NMECNF:
+    case STATE_CONFIRM_NAME:
         sprintf(buf, "Did I get that right, %s (Y/N)? ",
                 GET_NAME(d->character));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         break;
-    case CON_PWDGET:
+    case STATE_GET_NEW_USER_PASSWORD:
         sprintf(buf, "Give me a password for %s: ", GET_NAME(d->character));
-        SEND_TO_Q(buf, d);
-        write(d->descriptor, echo_off, 4);
+        SendOutput(buf, player);
+        SendOutputRaw(echo_off, 4, player);
         break;
-    case CON_NME:
+    case STATE_GET_NAME:
         if (GET_NAME(d->character)) {
             free(GET_NAME(d->character));
             GET_NAME(d->character) = NULL;
         }
         break;
-    case CON_PLYNG:
+    case STATE_PLAYING:
         break;
-    case CON_PWDCNF:
-    case CON_PWDNCNF:
-        SEND_TO_Q("Please retype password: ", d);
-        write(d->descriptor, echo_off, 4);
+    case STATE_CONFIRM_PASSWORD:
+    case STATE_CONFIRM_NEW_PASSWORD:
+        SendOutput("Please retype password: ", player);
+        SendOutputRaw(echo_off, 4, player);
         break;
-    case CON_REROLL:
-        SEND_TO_Q("Your current stats are:\n\r", d);
+    case STATE_REROLL:
+        SendOutput("Your current stats are:\n\r", player);
         sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any"
                      " other key to keep.\n\r", d->character->reroll);
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         break;
-    case CON_CHECK_MAGE_TYPE:
+    case STATE_CHECK_MAGE_TYPE:
         for( i = 0; ru_sorcerer[i]; i++ ) {
-            SEND_TO_Q(ru_sorcerer[i], d);
+            SendOutput(ru_sorcerer[i], player);
         }
         break;
-    case CON_AUTH:
-        SEND_TO_Q("Please Wait for authorization.\n\r", d);
+    case STATE_WAIT_FOR_AUTH:
+        SendOutput("Please Wait for authorization.\n\r", player);
         break;
-    case CON_WIZLOCK:
-        SEND_TO_Q("Goodbye.\n\r", d);
+    case STATE_WIZLOCKED:
+        SendOutput("Goodbye.\n\r", player);
         break;
-    case CON_WMOTD:
+    case STATE_SHOW_WMOTD:
         send_to_char(wmotd, d->character);
-        SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
+        SendOutput("\n\r\n[PRESS RETURN]", player);
         break;
-    case CON_SLCT:
+    case STATE_SHOW_LOGIN_MENU:
         send_to_char(MENU, d->character);
         break;
-    case CON_EXDSCR:
-        SEND_TO_Q("<type /w to save.>\n\r", d);
+    case STATE_EDIT_EXTRA_DESCR:
+        SendOutput("<type /w to save.>\n\r", player);
         break;
-    case CON_PRESS_ENTER:
-        SEND_TO_Q("\n\r<Press enter to continue>", d);
+    case STATE_PRESS_ENTER:
+        SendOutput("\n\r<Press enter to continue>", player);
         break;
-    case CON_PWDNEW:
-        SEND_TO_Q("Enter a new password: ", d);
-        write(d->descriptor, echo_off, 4);
+    case STATE_GET_NEW_PASSWORD:
+        SendOutput("Enter a new password: ", player);
+        SendOutputRaw(echo_off, 4, player);
         break;
-    case CON_DELETE_ME:
-        SEND_TO_Q("Are you sure you want to delete yourself? (yes/no) ", d);
+    case STATE_DELETE_USER:
+        SendOutput("Are you sure you want to delete yourself? (yes/no) ", 
+                   player);
         break;
     }
 
@@ -537,10 +548,10 @@ void nanny(struct descriptor_data *d, char *arg)
     FILE           *char_file;
     struct obj_data *obj;
 
-    write(d->descriptor, echo_on, 6);
+    SendOutputRaw(echo_on, 6, player);
 
     switch (STATE(d)) {
-    case CON_CREATION_MENU:
+    case STATE_SHOW_CREATION_MENU:
 #if 0
         show_menu(d);
 #endif
@@ -553,34 +564,34 @@ void nanny(struct descriptor_data *d, char *arg)
 
         switch (*arg) {
         case '1':
-            EnterState(d, CON_QSEX);
+            EnterState(player, STATE_CHOOSE_SEX);
             break;
         case '2':
-            EnterState(d, CON_ANSI);
+            EnterState(player, STATE_CHOOSE_ANSI);
             break;
         case '3':
-            EnterState(d, CON_QRACE);
+            EnterState(player, STATE_CHOOSE_RACE);
             break;
         case '4':
-            EnterState(d, CON_QCLASS);
+            EnterState(player, STATE_CHOOSE_CLASS);
             break;
         case '5':
             if (d->character->player.class != 0) {
-                EnterState(d, CON_MCLASS);
+                EnterState(player, STATE_CHOOSE_MAIN_CLASS);
             } else {
-                SEND_TO_Q("\nPlease select a class first.\n\r", d);
+                SendOutput("\nPlease select a class first.\n\r", player);
             }
             break;
         case '6':
             d->character->reroll = 20;
             if (d->character->player.class != 0) {
-                EnterState(d, CON_STAT_LIST);
+                EnterState(player, STATE_CHOOSE_STATS);
             } else {
-                SEND_TO_Q("\nPlease select a class first.\n\r", d);
+                SendOutput("\nPlease select a class first.\n\r", player);
             }
             break;
         case '7':
-            EnterState(d, CON_ALIGNMENT);
+            EnterState(player, STATE_CHOOSE_ALIGNMENT);
             break;
 
         case 'd':
@@ -592,25 +603,25 @@ void nanny(struct descriptor_data *d, char *arg)
                 }
             }
             if (count_players <= 0) {
-                SEND_TO_Q("Please enter a valid class.", d);
+                SendOutput("Please enter a valid class.", player);
                 return;
             }
             if (d->character->specials.remortclass <= 0) {
-                SEND_TO_Q("Please enter a valid main class.", d);
+                SendOutput("Please enter a valid main class.", player);
                 return;
             }
 
             if (GET_SEX(d->character) == 0) {
-                SEND_TO_Q("Please enter a proper sex.", d);
+                SendOutput("Please enter a proper sex.", player);
                 return;
             }
 
             if (!GET_ALIGNMENT(d->character)) {
-                SEND_TO_Q("Please choose an alignment.", d);
+                SendOutput("Please choose an alignment.", player);
                 return;
             }
             if (!GET_CON(d->character) || GET_CON(d->character) == 0) {
-                SEND_TO_Q("Please pick your stats.", d);
+                SendOutput("Please pick your stats.", player);
                 return;
             }
 
@@ -628,10 +639,10 @@ void nanny(struct descriptor_data *d, char *arg)
             save_char(d->character, AUTO_RENT);
 
             for( i = 0; newbie_note[i]; i++ ) {
-                SEND_TO_Q(newbie_note[i], d);
+                SendOutput(newbie_note[i], player);
             }
 
-            EnterState(d, CON_RMOTD);
+            EnterState(player, STATE_SHOW_MOTD);
             break;
         default:
             show_menu(d);
@@ -639,10 +650,10 @@ void nanny(struct descriptor_data *d, char *arg)
             break;
         }
         break;
-    case CON_ALIGNMENT:
+    case STATE_CHOOSE_ALIGNMENT:
         arg = skip_spaces(arg);
         if( !arg ) {
-            SEND_TO_Q("Please select a alignment.\n\r", d);
+            SendOutput("Please select a alignment.\n\r", player);
             return;
         }
 
@@ -653,7 +664,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 GET_ALIGNMENT(d->character) = 1;
                 send_to_char("You have chosen to be Neutral in "
                              "alignment.\n\r\n\r", d->character);
-                EnterState(d, CON_CREATION_MENU);
+                EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
         case 'g':
@@ -662,7 +673,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 GET_ALIGNMENT(d->character) = 1000;
                 send_to_char("You have chosen to be a follower of "
                              "light.\n\r\n\r", d->character);
-                EnterState(d, CON_CREATION_MENU);
+                EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
         case 'e':
@@ -672,24 +683,21 @@ void nanny(struct descriptor_data *d, char *arg)
                 GET_ALIGNMENT(d->character) = -1000;
                 send_to_char("You have chosen the dark side.\n\r\n\r",
                              d->character);
-                EnterState(d, CON_CREATION_MENU);
+                EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
 
         default:
-            SEND_TO_Q("Please select a alignment.\n\r", d);
+            SendOutput("Please select a alignment.\n\r", player);
             break;
         }
         break;
 
-    case CON_ANSI:
+    case STATE_CHOOSE_ANSI:
         arg = skip_spaces(arg);
         if( !arg ) {
-            SEND_TO_Q("Please type Yes or No.\n\r", d);
-            SEND_TO_Q("Would you like ansi colors? :", d);
-#if 0
-            STATE(d) = CON_ANSI;
-#endif
+            SendOutput("Please type Yes or No.\n\r"
+                       "Would you like ansi colors? :", player);
             return;
         }
 
@@ -702,48 +710,48 @@ void nanny(struct descriptor_data *d, char *arg)
 
             send_to_char("$c0012A$c0010n$c0011s$c0014i$c0007 colors "
                     "enabled.\n\r\n\r", d->character);
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
         case 'n':
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
         default:
-            SEND_TO_Q("Please type Yes or No.\n\r", d);
-            SEND_TO_Q("Would you like ansi colors? :", d);
+            SendOutput("Please type Yes or No.\n\r"
+                       "Would you like ansi colors? :", player);
             return;
             break;
         }
         break;
 
-    case CON_QRACE:
+    case STATE_CHOOSE_RACE:
         d->character->reroll = 20;
         arg = skip_spaces(arg);
         if (!arg) {
-            EnterState(d, CON_QRACE);
+            EnterState(player, STATE_CHOOSE_RACE);
             return;
         } 
         
        if (*arg == '?') {
             for( i = 0; racehelp[i]; i++ ) {
-                SEND_TO_Q(racehelp[i], d);
+                SendOutput(racehelp[i], player);
             }
-            EnterState(d, CON_QRACE);
+            EnterState(player, STATE_CHOOSE_RACE);
             return;
         } 
        
         tmpi = atoi(arg);
         if (tmpi >= 1 && tmpi <= race_choice_count) {
             GET_RACE(d->character) = race_choice[tmpi - 1].raceNum;
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
-            SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
-            EnterState(d, CON_QRACE);
+            SendOutput("\n\rThat's not a race.\n\rRACE?:", player);
+            EnterState(player, STATE_CHOOSE_RACE);
         }
         break;
 
-    case CON_NME:
+    case STATE_GET_NAME:
     /*
      * wait for input of name
      */
@@ -760,14 +768,14 @@ void nanny(struct descriptor_data *d, char *arg)
         } 
         
         if (_parse_name(arg, tmp_name)) {
-            SEND_TO_Q("Illegal name, please try another.\r\n", d);
-            SEND_TO_Q("Name: ", d);
+            SendOutput("Illegal name, please try another.\r\n", player);
+            SendOutput("Name: ", player);
             return;
         }
 
         if (SiteLock(d->host)) {
-            SEND_TO_Q("Sorry, this site is temporarily banned.\n\r", d);
-            EnterState(d, CON_WIZLOCK);
+            SendOutput("Sorry, this site is temporarily banned.\n\r", player);
+            EnterState(player, STATE_WIZLOCKED);
             return;
         }
 
@@ -778,20 +786,20 @@ void nanny(struct descriptor_data *d, char *arg)
             store_to_char(&tmp_store, d->character);
             strcpy(d->pwd, tmp_store.pwd);
             d->pos = player_table[player_i].nr;
-            EnterState(d, CON_PWDNRM);
+            EnterState(player, STATE_GET_PASSWORD);
         } else {
             /*
              * player unknown gotta make a new
              */
             if (_check_ass_name(tmp_name)) {
-                SEND_TO_Q("\n\rIllegal name, please try another.", d);
-                SEND_TO_Q("Name: ", d);
+                SendOutput("\n\rIllegal name, please try another.", player);
+                SendOutput("Name: ", player);
                 return;
             }
 
             if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
                 sprintf(buf, "Sorry, no new characters at this time\n\r");
-                EnterState(d, CON_WIZLOCK);
+                EnterState(player, STATE_WIZLOCKED);
                 return;
             }
 
@@ -800,11 +808,11 @@ void nanny(struct descriptor_data *d, char *arg)
              */
             CREATE(GET_NAME(d->character), char, strlen(tmp_name) + 1);
             strcpy(GET_NAME(d->character), CAP(tmp_name));
-            EnterState(d, CON_NMECNF);
+            EnterState(player, STATE_CONFIRM_NAME);
         }
         break;
 
-    case CON_NMECNF:
+    case STATE_CONFIRM_NAME:
         /*
          * wait for conf. of new name
          */
@@ -816,27 +824,27 @@ void nanny(struct descriptor_data *d, char *arg)
             /*
              * Please do Y or N
              */
-            SEND_TO_Q("Please type Yes or No? ", d);
+            SendOutput("Please type Yes or No? ", player);
             return;
         }
 
         switch(tolower(*arg)) {
         case 'y':
-            write(d->descriptor, echo_on, 4);
-            SEND_TO_Q("New character.\n\r", d);
-            EnterState(d, CON_PWDGET);
+            SendOutputRaw(echo_on, 4, player);
+            SendOutput("New character.\n\r", player);
+            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             break;
         case 'n':
-            SEND_TO_Q("Ok, what IS it, then? ", d);
-            EnterState(d, CON_NME);
+            SendOutput("Ok, what IS it, then? ", player);
+            EnterState(player, STATE_GET_NAME);
             break;
         default:
-            SEND_TO_Q("Please type Yes or No? ", d);
+            SendOutput("Please type Yes or No? ", player);
             break;
         }
         break;
 
-    case CON_PWDNRM:
+    case STATE_GET_PASSWORD:
         /*
          * get pwd for known player
          */
@@ -848,7 +856,7 @@ void nanny(struct descriptor_data *d, char *arg)
             close_socket(d);
         } else {
             if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
-                SEND_TO_Q("Wrong password.\n\r", d);
+                SendOutput("Wrong password.\n\r", player);
                 Log("%s entered a wrong password", GET_NAME(d->character));
                 close_socket(d);
                 return;
@@ -860,12 +868,14 @@ void nanny(struct descriptor_data *d, char *arg)
                     switch (SecCheck(GET_NAME(d->character), d->host)) {
                     case -1:
                     case 0:
-                        SEND_TO_Q("Security check reveals invalid site\n\r", d);
-                        SEND_TO_Q("Speak to an implementor to fix problem\n\r",
-                                  d);
-                        SEND_TO_Q("If you are an implementor, add yourself to"
-                                  " the\n\r", d);
-                        SEND_TO_Q("Security directory (lib/security)\n\r", d);
+                        SendOutput("Security check reveals invalid site\n\r",
+                                   player);
+                        SendOutput("Speak to an implementor to fix problem\n\r",
+                                   player);
+                        SendOutput("If you are an implementor, add yourself to"
+                                   " the\n\r", player);
+                        SendOutput("Security directory (lib/security)\n\r",
+                                   player);
                         close_socket(d);
                         break;
                     }
@@ -915,8 +925,8 @@ void nanny(struct descriptor_data *d, char *arg)
                      !strcasecmp(GET_NAME(d->character),
                                  GET_NAME(tmp_ch->orig)))) {
 
-                    write(d->descriptor, echo_on, 6);
-                    SEND_TO_Q("Reconnecting.\n\r", d);
+                    SendOutputRaw(echo_on, 6, player);
+                    SendOutput("Reconnecting.\n\r", player);
 
                     free_char(d->character);
                     tmp_ch->desc = d;
@@ -947,7 +957,7 @@ void nanny(struct descriptor_data *d, char *arg)
                     d->character->specials.hostip = strdup(d->host);
 
                     write_char_extra(d->character);
-                    EnterState(d, CON_PLYNG);
+                    EnterState(player, STATE_PLAYING);
                     return;
                 }
             }
@@ -973,11 +983,11 @@ void nanny(struct descriptor_data *d, char *arg)
             d->character->last_tell = NULL;
 
             write_char_extra(d->character);
-            EnterState(d, CON_RMOTD);
+            EnterState(player, STATE_SHOW_MOTD);
         }
         break;
 
-    case CON_PWDGET:
+    case STATE_GET_NEW_USER_PASSWORD:
         /*
          * get pwd for new player
          */
@@ -986,19 +996,19 @@ void nanny(struct descriptor_data *d, char *arg)
          */
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
-            write(d->descriptor, echo_on, 6);
-            SEND_TO_Q("Illegal password.\n\r", d);
-            EnterState(d, CON_PWDGET);
+            SendOutputRaw(echo_on, 6, player);
+            SendOutput("Illegal password.\n\r", player);
+            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         }
 
         strncpy(d->pwd, (char *) crypt(arg, d->character->player.name), 10);
         d->pwd[10] = '\0';
-        write(d->descriptor, echo_on, 6);
-        EnterState(d, CON_PWDCNF);
+        SendOutputRaw(echo_on, 6, player);
+        EnterState(player, STATE_CONFIRM_PASSWORD);
         break;
 
-    case CON_PWDCNF:
+    case STATE_CONFIRM_PASSWORD:
         /*
          * get confirmation of new pwd
          */
@@ -1007,18 +1017,18 @@ void nanny(struct descriptor_data *d, char *arg)
          */
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
-            write(d->descriptor, echo_on, 6);
+            SendOutputRaw(echo_on, 6, player);
 
-            SEND_TO_Q("Passwords don't match.\n\r", d);
-            EnterState(d, CON_PWDGET);
+            SendOutput("Passwords don't match.\n\r", player);
+            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         } 
 
-        write(d->descriptor, echo_on, 6);
-        EnterState(d, CON_ANSI);
+        SendOutputRaw(echo_on, 6, player);
+        EnterState(player, STATE_CHOOSE_ANSI);
         break;
 
-    case CON_QSEX:
+    case STATE_CHOOSE_SEX:
         /*
          * query sex of new user
          */
@@ -1027,8 +1037,8 @@ void nanny(struct descriptor_data *d, char *arg)
          */
         arg = skip_spaces(arg);
         if( !arg ) {
-            SEND_TO_Q("That's not a sex..\n\r", d);
-            EnterState(d, CON_QSEX);
+            SendOutput("That's not a sex..\n\r", player);
+            EnterState(player, STATE_CHOOSE_SEX);
             return;
         }
 
@@ -1048,16 +1058,16 @@ void nanny(struct descriptor_data *d, char *arg)
             break;
 
         default:
-            SEND_TO_Q("That's not a sex..\n\r", d);
-            EnterState(d, CON_QSEX);
+            SendOutput("That's not a sex..\n\r", player);
+            EnterState(player, STATE_CHOOSE_SEX);
             return;
             break;
         }
 
-        EnterState(d, CON_CREATION_MENU);
+        EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
-    case CON_STAT_LIST:
+    case STATE_CHOOSE_STATS:
         /*
          * skip whitespaces
          */
@@ -1088,8 +1098,8 @@ void nanny(struct descriptor_data *d, char *arg)
                 } 
                 /* If neither Co or Ch, fall through to default */
             default:
-                SEND_TO_Q("That was an invalid choice.\n\r", d);
-                EnterState(d, CON_STAT_LIST);
+                SendOutput("That was an invalid choice.\n\r", player);
+                EnterState(player, STATE_CHOOSE_STATS);
                 return;
                 break;
             }
@@ -1103,9 +1113,9 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         if (index < MAX_STAT) {
-            SEND_TO_Q("You did not enter enough legal stats\n\r", d);
-            SEND_TO_Q("That was an invalid choice.\n\r", d);
-            EnterState(d, CON_STAT_LIST);
+            SendOutput("You did not enter enough legal stats\n\r", player);
+            SendOutput("That was an invalid choice.\n\r", player);
+            EnterState(player, STATE_CHOOSE_STATS);
             return;
         } 
         
@@ -1119,68 +1129,68 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         d->character->reroll--;
-        EnterState(d, CON_REROLL);
+        EnterState(player, STATE_REROLL);
         break;
 
-    case CON_REROLL:
+    case STATE_REROLL:
         arg = skip_spaces(arg);
         d->character->reroll--;
 
         if (!arg || tolower(*arg) != 'r') {
-            SEND_TO_Q("Stats chosen!\n\r", d);
+            SendOutput("Stats chosen!\n\r", player);
 
             if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-                EnterState(d, CON_AUTH);
+                EnterState(player, STATE_WAIT_FOR_AUTH);
             } else {
-                EnterState(d, CON_CREATION_MENU);
+                EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             return;
         } 
         
         roll_abilities(d->character);
         if (d->character->reroll != 0) {
-            EnterState(d, CON_REROLL);
+            EnterState(player, STATE_REROLL);
             return;
         } 
         
-        SEND_TO_Q("Your final stats are:\n\r", d);
+        SendOutput("Your final stats are:\n\r", player);
         sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(d->character)));
-        SEND_TO_Q(buf, d);
+        SendOutput(buf, player);
         sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
-        SEND_TO_Q(buf, d);
-        SEND_TO_Q("Stats chosen!", d);
+        SendOutput(buf, player);
+        SendOutput("Stats chosen!", player);
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-            EnterState(d, CON_AUTH);
+            EnterState(player, STATE_WAIT_FOR_AUTH);
         } else {
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         }
         break;
 
-    case CON_MCLASS:
+    case STATE_CHOOSE_MAIN_CLASS:
         arg = skip_spaces(arg);
         d->character->specials.remortclass = 0;
 
         if (arg && (pick = atoi(arg)) &&
             HasClass(d->character, pc_num_class(pick-1))) {
             d->character->specials.remortclass = pick;
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             return;
         } 
         
-        SEND_TO_Q("\n\rInvalid class picked.\n\r", d);
-        EnterState(d, CON_MCLASS);
+        SendOutput("\n\rInvalid class picked.\n\r", player);
+        EnterState(player, STATE_CHOOSE_MAIN_CLASS);
         break;
 
-    case CON_QCLASS:
+    case STATE_CHOOSE_CLASS:
         /*
          * skip whitespaces
          */
@@ -1188,16 +1198,16 @@ void nanny(struct descriptor_data *d, char *arg)
 
         arg = skip_spaces(arg);
         if( !arg ) {
-            SEND_TO_Q("Invalid selection!\n\r", d);
-            EnterState(d, CON_QCLASS);
+            SendOutput("Invalid selection!\n\r", player);
+            EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
         if( *arg == '?' ) {
             for( i = 0; class_help[i]; i++ ) {
-                SEND_TO_Q(class_help[i], d);
+                SendOutput(class_help[i], player);
             }
-            EnterState(d, CON_QCLASS);
+            EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
@@ -1205,8 +1215,8 @@ void nanny(struct descriptor_data *d, char *arg)
         race  = GET_RACE(d->character);
 
         if( class <= 0 ) {
-            SEND_TO_Q("Invalid selection!\n\r", d);
-            EnterState(d, CON_QCLASS);
+            SendOutput("Invalid selection!\n\r", player);
+            EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
@@ -1216,8 +1226,8 @@ void nanny(struct descriptor_data *d, char *arg)
                  * Found it.  Time to check the class
                  */
                 if( class > race_choice[i].classCount ) {
-                    SEND_TO_Q("Invalid selection!\n\r", d);
-                    EnterState(d, CON_QCLASS);
+                    SendOutput("Invalid selection!\n\r", player);
+                    EnterState(player, STATE_CHOOSE_CLASS);
                     return;
                 }
 
@@ -1229,27 +1239,27 @@ void nanny(struct descriptor_data *d, char *arg)
         }
                     
         if (d->character->player.class == 0) {
-            SEND_TO_Q("Invalid selection!\n\r", d);
-            EnterState(d, CON_QCLASS);
+            SendOutput("Invalid selection!\n\r", player);
+            EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
         if( found ) {
             if (HasClass(d->character, CLASS_MAGIC_USER)) {
-                EnterState(d, CON_CHECK_MAGE_TYPE);
+                EnterState(player, STATE_CHECK_MAGE_TYPE);
                 return;
             }
 
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
-            SEND_TO_Q("Your race seems to be incorrect, please reselect\n\r", 
-                      d);
+            SendOutput("Your race seems to be incorrect, please reselect\n\r", 
+                       player);
             Log("Couldn't find a race in creation, screwy!!");
-            EnterState(d, CON_CREATION_MENU);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         }
         break;
 
-    case CON_AUTH:
+    case STATE_WAIT_FOR_AUTH:
         if (d->character->generic >= NEWBIE_START) {
             /*
              ** now that classes are set, initialize
@@ -1260,7 +1270,7 @@ void nanny(struct descriptor_data *d, char *arg)
              */
             d->pos = create_entry(GET_NAME(d->character));
             save_char(d->character, AUTO_RENT);
-            EnterState(d, CON_RMOTD);
+            EnterState(player, STATE_SHOW_MOTD);
             return;
         } 
         
@@ -1289,32 +1299,32 @@ void nanny(struct descriptor_data *d, char *arg)
             d->character->generic--;
             sprintf(buf, "Please wait. You have %d requests remaining.\n\r",
                     d->character->generic);
-            SEND_TO_Q(buf, d);
+            SendOutput(buf, player);
             if (d->character->generic == 0) {
-                EnterState(d, CON_WIZLOCK);
+                EnterState(player, STATE_WIZLOCKED);
             } else {
-                EnterState(d, CON_AUTH);
+                EnterState(player, STATE_WAIT_FOR_AUTH);
             }
         } else {
-            EnterState(d, CON_WIZLOCK);
+            EnterState(player, STATE_WIZLOCKED);
         }
         break;
 
-    case CON_CHECK_MAGE_TYPE:
+    case STATE_CHECK_MAGE_TYPE:
         arg = skip_spaces(arg);
         if (arg && tolower(*arg) == 'y') {
             d->character->player.class -= CLASS_MAGIC_USER;
             d->character->player.class += CLASS_SORCERER;
         }
-        EnterState(d, CON_CREATION_MENU);
+        EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
-    case CON_RMOTD:
+    case STATE_SHOW_MOTD:
         /*
          * read CR after printing motd
          */
         if (IS_IMMORTAL(d->character)) {
-            EnterState(d, CON_WMOTD);
+            EnterState(player, STATE_SHOW_WMOTD);
             break;
         }
 
@@ -1327,14 +1337,14 @@ void nanny(struct descriptor_data *d, char *arg)
             !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
-            SEND_TO_Q(buf, d);
-            EnterState(d, CON_WIZLOCK);
+            SendOutput(buf, player);
+            EnterState(player, STATE_WIZLOCKED);
         } else {
-            EnterState(d, CON_SLCT);
+            EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
         break;
 
-    case CON_WMOTD:
+    case STATE_SHOW_WMOTD:
         /*
          * read CR after printing motd
          */
@@ -1342,18 +1352,18 @@ void nanny(struct descriptor_data *d, char *arg)
             !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
-            SEND_TO_Q(buf, d);
-            EnterState(d, CON_WIZLOCK);
+            SendOutput(buf, player);
+            EnterState(player, STATE_WIZLOCKED);
         } else {
-            EnterState(d, CON_SLCT);
+            EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
         break;
 
-    case CON_WIZLOCK:
+    case STATE_WIZLOCKED:
         close_socket(d);
         break;
 
-    case CON_DELETE_ME:
+    case STATE_DELETE_USER:
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(d->character))) {
@@ -1397,22 +1407,22 @@ void nanny(struct descriptor_data *d, char *arg)
             close_socket(d);
         }
 
-        EnterState(d, CON_SLCT);
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
-    case CON_PRESS_ENTER:
-        EnterState(d, CON_SLCT);
+    case STATE_PRESS_ENTER:
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
-    case CON_SLCT:
+    case STATE_SHOW_LOGIN_MENU:
         /* get selection from main menu */
         /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
         if(!arg) {
-            SEND_TO_Q("Wrong option.\n\r", d);
-            EnterState(d, CON_SLCT);
+            SendOutput("Wrong option.\n\r", player);
+            EnterState(player, STATE_SHOW_LOGIN_MENU);
             break;
         }
 
@@ -1490,7 +1500,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 plr_tick_count = 0;
             }
             act("$n has entered the game.", TRUE, d->character, 0, 0, TO_ROOM);
-            EnterState(d, CON_PLYNG);
+            EnterState(player, STATE_PLAYING);
 
             if (!GetMaxLevel(d->character)) {
                 do_start(d->character);
@@ -1520,11 +1530,11 @@ void nanny(struct descriptor_data *d, char *arg)
             break;
 
         case '2':
-            SEND_TO_Q("Enter a text you'd like others to see when they look "
-                      "at you.\n\r", d);
+            SendOutput("Enter a text you'd like others to see when they look "
+                       "at you.\n\r", player);
             if (d->character->player.description) {
-                SEND_TO_Q("Old description :\n\r", d);
-                SEND_TO_Q(d->character->player.description, d);
+                SendOutput("Old description :\n\r", player);
+                SendOutput(d->character->player.description, player);
                 if (d->character->player.description) {
                     free(d->character->player.description);
                 }
@@ -1532,82 +1542,82 @@ void nanny(struct descriptor_data *d, char *arg)
             }
             d->str = &d->character->player.description;
             d->max_str = 240;
-            EnterState(d, CON_EXDSCR);
+            EnterState(player, STATE_EDIT_EXTRA_DESCR);
             break;
 
         case '3':
-            SEND_TO_Q(STORY, d);
-            EnterState(d, CON_PRESS_ENTER);
+            SendOutput(STORY, player);
+            EnterState(player, STATE_PRESS_ENTER);
             break;
 
         case '4':
-            SEND_TO_Q(credits, d);
-            EnterState(d, CON_PRESS_ENTER);
+            SendOutput(credits, player);
+            EnterState(player, STATE_PRESS_ENTER);
             break;
 
         case '5':
-            EnterState(d, CON_PWDNEW);
+            EnterState(player, STATE_GET_NEW_PASSWORD);
             break;
 
         case 'k':
-            EnterState(d, CON_DELETE_ME);
+            EnterState(player, STATE_DELETE_USER);
             break;
 
         default:
-            SEND_TO_Q("Wrong option.\n\r", d);
-            EnterState(d, CON_SLCT);
+            SendOutput("Wrong option.\n\r", player);
+            EnterState(player, STATE_SHOW_LOGIN_MENU);
             break;
         }
         break;
 
-    case CON_PWDNEW:
+    case STATE_GET_NEW_PASSWORD:
         /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
-            write(d->descriptor, echo_on, 6);
+            SendOutputRaw(echo_on, 6, player);
 
-            SEND_TO_Q("Illegal password.\n\r", d);
-            EnterState(d, CON_PWDNEW);
+            SendOutput("Illegal password.\n\r", player);
+            EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
 
         strncpy(d->pwd, (char *) crypt(arg, d->character->player.name), 10);
         *(d->pwd + 10) = '\0';
-        write(d->descriptor, echo_on, 6);
+        SendOutputRaw(echo_on, 6, player);
 
-        EnterState(d, CON_PWDNCNF);
+        EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
         break;
 
-    case CON_EXDSCR:
-        EnterState(d, CON_SLCT);
+    case STATE_EDIT_EXTRA_DESCR:
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
-    case CON_PWDNCNF:
+    case STATE_CONFIRM_NEW_PASSWORD:
         /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
-            write(d->descriptor, echo_on, 6);
-            SEND_TO_Q("Passwords don't match.\n\r", d);
-            EnterState(d, CON_PWDNEW);
+            SendOutputRaw(echo_on, 6, player);
+            SendOutput("Passwords don't match.\n\r", player);
+            EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
 
-        write(d->descriptor, echo_on, 6);
+        SendOutputRaw(echo_on, 6, player);
 
-        SEND_TO_Q("\n\rDone. You must enter the game to make the change "
-                  "final\n\r", d);
+        SendOutput("\n\rDone. You must enter the game to make the change "
+                   "final\n\r", player);
 
-        EnterState(d, CON_SLCT);
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
     default:
         Log("Nanny: illegal state of con'ness (%d)", STATE(d));
-        SEND_TO_Q("The mud has lost its brain on your connection, please "
-                  "reconnect.\n\r", d);
+        SendOutput("The mud has lost its brain on your connection, please "
+                   "reconnect.\n\r", player);
         close_socket(d);
         break;
     }
@@ -1630,7 +1640,7 @@ void show_class_selection(struct descriptor_data *d, int r)
                               buf2);
                 strcat(buf, buf2);
                 strcat(buf, "\n\r");
-                SEND_TO_Q(buf, d);
+                SendOutput(buf, player);
             }
 
             found = TRUE;
@@ -1650,12 +1660,12 @@ void show_race_choice(struct descriptor_data *d)
     char            buf[255],
                     buf2[254];
 
-    SEND_TO_Q("                                  Level Limits\n\r", d);
+    SendOutput("                                  Level Limits\n\r", player);
     sprintf(buf, "%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s "
                  "%-3s %-3s %-3s\n\r",
             "#", "Race", "ma", "cl", "wa", "th", "dr", "mk", "ba", "so",
             "pa", "ra", "ps", "ne");
-    SEND_TO_Q(buf, d);
+    SendOutput(buf, player);
 
     for (i = 0; i < race_choice_count; i++) {
         sprintf(buf, "%s$c000W%-3d)$c0007 %-15s", 
@@ -1680,6 +1690,7 @@ void show_race_choice(struct descriptor_data *d)
     send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,"
                  "ne=necromancer\n\r\n\r", d->character);
 }
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

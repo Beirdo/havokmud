@@ -47,7 +47,33 @@ typedef struct {
 } connectThreadArgs_t;
 
 typedef enum {
-    STATE_INITIAL
+    STATE_INITIAL,
+    STATE_CHOOSE_SEX,
+    STATE_CHOOSE_ANSI,
+    STATE_CHOOSE_RACE,
+    STATE_CHOOSE_CLASS,
+    STATE_CHOOSE_MAIN_CLASS,
+    STATE_CHOOSE_STATS,
+    STATE_CHOOSE_ALIGNMENT,
+    STATE_SHOW_MOTD,
+    STATE_SHOW_CREATION_MENU,
+    STATE_SHOW_LOGIN_MENU,
+    STATE_GET_PASSWORD,
+    STATE_CONFIRM_PASSWORD,
+    STATE_CONFIRM_NAME,
+    STATE_GET_NEW_USER_PASSWORD,
+    STATE_GET_NEW_PASSWORD,
+    STATE_CONFIRM_NEW_PASSWORD,
+    STATE_GET_NAME,
+    STATE_REROLL,
+    STATE_CHECK_MAGE_TYPE,
+    STATE_WAIT_FOR_AUTH,
+    STATE_WIZLOCKED,
+    STATE_SHOW_WMOTD,
+    STATE_EDIT_EXTRA_DESCR,
+    STATE_PRESS_ENTER,
+    STATE_DELETE_USER,
+    STATE_PLAYING
 } PlayerState_t;
 
 typedef struct
@@ -127,6 +153,13 @@ void *LoginThread( void *arg );
  * Prototypes of connections thread callbacks
  */
 void connKickOutput( ConnectionItem_t *connItem );
+
+/*
+ * Other prototypes to move later
+ */
+void SendOutput( char *string, PlayerStruct_t *player );
+void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player );
+
 
 #endif
 

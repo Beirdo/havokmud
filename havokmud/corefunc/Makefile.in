@@ -4,11 +4,13 @@
 CC=@CC@
 ##
 LD=$(CC)
+RANLIB=@RANLIB@
 
 ROOT = ..
 
 ## Include dirs
-INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util @INCLUDES@
+INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util -I${ROOT}/threads \
+	  @INCLUDES@
 
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
@@ -19,7 +21,7 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	login-sm.c
+SRCS =	login-sm.c output.c
 ARCHIVE =	libhavokcore.a
 
 OBJS = ${SRCS:.c=.o}
