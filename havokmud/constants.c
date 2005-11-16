@@ -1591,13 +1591,13 @@ const struct skillset loreskills[] = {
     {"orcish", LANG_ORCISH, 1, 94},
     {"None", -1, -1, -1}
 };
-const int loreskillCount = NELEMS(loreskills) - 1;
+const int loreskillCount = NELEMENTS(loreskills) - 1;
 
 const struct skillset archerskills[] = {
     {"spot", SKILL_SPOT, 1, 94},
     {"None", -1, -1, -1}
 };
-const int archerskillCount = NELEMS(archerskills) - 1;
+const int archerskillCount = NELEMENTS(archerskills) - 1;
 
 /*
  * divided ninjaskills into 3 parts, seems easier
@@ -1607,21 +1607,21 @@ const struct skillset thfninjaskills[] = {
     {"disguise", SKILL_HIDE, 1, 94},
     {"None", -1, -1, -1}
 };
-const int thfninjaskillCount = NELEMS(thfninjaskills) - 1;
+const int thfninjaskillCount = NELEMENTS(thfninjaskills) - 1;
 
 const struct skillset warninjaskills[] = {
     {"disarm", SKILL_DISARM, 1, 94},
     {"doorbash", SKILL_DOORBASH, 1, 94},
     {"None", -1, -1, -1}
 };
-const int warninjaskillCount = NELEMS(warninjaskills) - 1;
+const int warninjaskillCount = NELEMENTS(warninjaskills) - 1;
 
 const struct skillset allninjaskills[] = {
     {"riding", SKILL_RIDE, 1, 94},
     {"disengage", SKILL_DISENGAGE, 1, 94},
     {"None", -1, -1, -1}
 };
-const int allninjaskillCount = NELEMS(allninjaskills) - 1;
+const int allninjaskillCount = NELEMENTS(allninjaskills) - 1;
 
 const struct skillset warmonkskills[] = {
     {"dodge", SKILL_DODGE, 1, 94},
@@ -1629,7 +1629,7 @@ const struct skillset warmonkskills[] = {
     {"switch opponents", SKILL_SWITCH_OPP, 1, 45},
     {"None", -1, -1, -1}
 };
-const int warmonkskillCount = NELEMS(warmonkskills);
+const int warmonkskillCount = NELEMENTS(warmonkskills);
 
 
 const char     *AttackType[] = {
@@ -1695,7 +1695,7 @@ const struct skillset styleskillset[] = {
     {"evasive", STYLE_EVASIVE, 10, 94},
     {"None", -1, -1, -1}
 };
-const int styleskillCount = NELEMS(styleskillset);
+const int styleskillCount = NELEMENTS(styleskillset);
 
 const struct skillset weaponskills[] = {
     {"short sword", WEAPON_SHORT_SWORD, 1, 45},
@@ -1760,7 +1760,7 @@ const struct skillset weaponskills[] = {
     {"generic", WEAPON_GENERIC, 1, 45},
     {"none", -1, -1, -1}
 };
-const int weaponskillCount = NELEMS(weaponskills) - 1;
+const int weaponskillCount = NELEMENTS(weaponskills) - 1;
 
 
 const int       zoneloc[171] = { 1792,

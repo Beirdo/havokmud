@@ -272,7 +272,7 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( traproom, PROC_ROOM ),
     REGISTER_PROC( ventroom, PROC_ROOM )
 };
-int specProcCount = NELEMS(specProcs);
+int specProcCount = NELEMENTS(specProcs);
 
 
 /*

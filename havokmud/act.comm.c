@@ -560,7 +560,7 @@ char           *RandomWord()
         "yaazr",
         "bipsnop",              /* 50 */
     };
-    int rstringcount = NELEMS(rstring);
+    int rstringcount = NELEMENTS(rstring);
 
     /*
      * count max number in

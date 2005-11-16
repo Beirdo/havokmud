@@ -256,32 +256,32 @@ const int       drow_class_choice[] = {
  * these are the allowable PC races
  */
 const struct pc_race_choice race_choice[] = {
-    { RACE_DWARF, dwarf_class_choice, NELEMS(dwarf_class_choice) },
-    { RACE_MOON_ELF, moon_elf_class_choice, NELEMS(moon_elf_class_choice) },
-    { RACE_GOLD_ELF, gold_elf_class_choice, NELEMS(gold_elf_class_choice) },
-    { RACE_WILD_ELF, wild_elf_class_choice, NELEMS(wild_elf_class_choice) },
-    { RACE_AVARIEL, avariel_class_choice, NELEMS(avariel_class_choice) },
-    { RACE_HUMAN, human_class_choice, NELEMS(human_class_choice) },
+    { RACE_DWARF, dwarf_class_choice, NELEMENTS(dwarf_class_choice) },
+    { RACE_MOON_ELF, moon_elf_class_choice, NELEMENTS(moon_elf_class_choice) },
+    { RACE_GOLD_ELF, gold_elf_class_choice, NELEMENTS(gold_elf_class_choice) },
+    { RACE_WILD_ELF, wild_elf_class_choice, NELEMENTS(wild_elf_class_choice) },
+    { RACE_AVARIEL, avariel_class_choice, NELEMENTS(avariel_class_choice) },
+    { RACE_HUMAN, human_class_choice, NELEMENTS(human_class_choice) },
     { RACE_ROCK_GNOME, rock_gnome_class_choice, 
-      NELEMS(rock_gnome_class_choice) },
+      NELEMENTS(rock_gnome_class_choice) },
     { RACE_FOREST_GNOME, forest_gnome_class_choice, 
-      NELEMS(forest_gnome_class_choice) },
-    { RACE_HALFLING, halfling_class_choice, NELEMS(halfling_class_choice) },
-    { RACE_HALF_ELF, half_elf_class_choice, NELEMS(half_elf_class_choice) },
-    { RACE_HALF_ORC, half_orc_class_choice, NELEMS(half_orc_class_choice) },
-    { RACE_HALF_OGRE, half_ogre_class_choice, NELEMS(half_ogre_class_choice) },
+      NELEMENTS(forest_gnome_class_choice) },
+    { RACE_HALFLING, halfling_class_choice, NELEMENTS(halfling_class_choice) },
+    { RACE_HALF_ELF, half_elf_class_choice, NELEMENTS(half_elf_class_choice) },
+    { RACE_HALF_ORC, half_orc_class_choice, NELEMENTS(half_orc_class_choice) },
+    { RACE_HALF_OGRE, half_ogre_class_choice, NELEMENTS(half_ogre_class_choice) },
     { RACE_HALF_GIANT, half_giant_class_choice, 
-      NELEMS(half_giant_class_choice) },
+      NELEMENTS(half_giant_class_choice) },
     /* Put all races with racial hatreds after here, DROW *must* be first */
-    { RACE_DROW, drow_class_choice, NELEMS(drow_class_choice) },
-    { RACE_ORC, orc_class_choice, NELEMS(orc_class_choice) },
-    { RACE_GOBLIN, goblin_class_choice, NELEMS(goblin_class_choice) },
-    { RACE_TROLL, troll_class_choice, NELEMS(troll_class_choice) },
+    { RACE_DROW, drow_class_choice, NELEMENTS(drow_class_choice) },
+    { RACE_ORC, orc_class_choice, NELEMENTS(orc_class_choice) },
+    { RACE_GOBLIN, goblin_class_choice, NELEMENTS(goblin_class_choice) },
+    { RACE_TROLL, troll_class_choice, NELEMENTS(troll_class_choice) },
     { RACE_DARK_DWARF, dark_dwarf_class_choice, 
-      NELEMS(dark_dwarf_class_choice) }
+      NELEMENTS(dark_dwarf_class_choice) }
 };
 
-const int race_choice_count = NELEMS(race_choice);
+const int race_choice_count = NELEMENTS(race_choice);
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

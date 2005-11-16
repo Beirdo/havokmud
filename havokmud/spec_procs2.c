@@ -5221,7 +5221,7 @@ int astral_destination[] = {
     31908,    /* Ash's winterfell */
     49302    /* Tarantis Bazaar */
 };
-int astral_dest_count = NELEMS(astral_destination);
+int astral_dest_count = NELEMENTS(astral_destination);
 
 int astral_portal(struct char_data *ch, int cmd, char *arg,
                   struct char_data *mob, int type)
@@ -5291,7 +5291,7 @@ const int       post_list[] = {
     32803,
     32802
 };
-int post_count = NELEMS(post_list);
+int post_count = NELEMENTS(post_list);
 
 const int       post_destination[] = {
     31804,

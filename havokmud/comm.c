@@ -424,7 +424,7 @@ void game_loop(int s)
     static struct timeval opt_time;
     static int      sigs[] = { SIGUSR1, SIGUSR2, SIGINT, SIGPIPE, SIGALRM, 
                                SIGTERM, SIGHUP };
-    static int      sigcount = NELEMS(sigs);
+    static int      sigcount = NELEMENTS(sigs);
 
     extern int      pulse;
     extern int      maxdesc;
@@ -588,7 +588,9 @@ void game_loop(int s)
                 } else if (point->connected == CON_TFD_EDITING) {
                     TfdEdit(point->character, comm);
                 } else {
+#ifdef TODO
                     nanny(point, comm);
+#endif
                 }
             }
         }

@@ -1721,7 +1721,7 @@ struct spell_info_type spell_info[] = {
       IMMORTAL, IMMORTAL, 40, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_OBJ_WORLD, 0, 0 }
 };
-int spell_info_count = NELEMS(spell_info);
+int spell_info_count = NELEMENTS(spell_info);
 int spell_index[MAX_SPL_LIST];
 
 

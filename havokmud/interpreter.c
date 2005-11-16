@@ -872,7 +872,7 @@ struct command_def commandList[] = {
     { "sail", do_sea_commands, 624, POSITION_STANDING, 1 },
     { "steer", do_sea_commands, 625, POSITION_STANDING, 1 }
 };
-int commandCount = NELEMS(commandList);
+int commandCount = NELEMENTS(commandList);
 
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
@@ -1633,6 +1633,7 @@ void show_menu(struct descriptor_data *d)
     send_to_char(bufx, d->character);
 }
 
+#ifdef TODO
 void EnterState(struct descriptor_data *d, int newstate)
 {
     char            buf[MAX_STRING_LENGTH];
@@ -2974,6 +2975,7 @@ void show_race_choice(struct descriptor_data *d)
     send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,"
                  "ne=necromancer\n\r\n\r", d->character);
 }
+#endif
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

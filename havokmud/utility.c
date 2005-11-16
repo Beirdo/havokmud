@@ -3334,7 +3334,7 @@ char           *advicelist[] = {
     "Use $c0015GET ALL.<ITEMNAME>$c0007 to pick up all of a specific item in "
         "a room, such as all.coins"
 };
-int advicecount = NELEMS(advicelist);
+int advicecount = NELEMENTS(advicelist);
 
 void AdvicePulseStuff(int pulse)
 {

@@ -5894,7 +5894,7 @@ int mazekeeper_riddle_one(struct char_data *ch, int cmd, char *arg,
         return(FALSE);
     }
     
-    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMENTS(rid),
                                      10000, 6576) );
 }
 
@@ -5911,7 +5911,7 @@ int mazekeeper_riddle_two(struct char_data *ch, int cmd, char *arg,
         return(FALSE);
     }
 
-    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMENTS(rid),
                                      25000, 6577) );
 }
     
@@ -5928,7 +5928,7 @@ int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
         return(FALSE);
     }
 
-    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMENTS(rid),
                                      50000, 6578) );
 }
  
@@ -5945,7 +5945,7 @@ int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
         return(FALSE);
     }
 
-    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMENTS(rid),
                                      100000, 6579) );
 }
 
@@ -6115,7 +6115,7 @@ struct dragon_def dragonTable[] = {
     { RACE_DRAGON_TURTLE,
       { { "$c000CA cloud of scalding steam", spell_vapor_breath } }, 1 }
 };
-int dragonTableCount = NELEMS(dragonTable);
+int dragonTableCount = NELEMENTS(dragonTable);
 
 int dragon(struct char_data *ch, int cmd, char *arg, 
            struct char_data *mob, int type)
