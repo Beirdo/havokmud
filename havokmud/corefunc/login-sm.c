@@ -23,7 +23,8 @@
 #define MAX_NAME_LENGTH 11
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
-void show_class_selection(struct descriptor_data *d, int r);
+void show_race_choice(PlayerStruct_t *player);
+void show_class_selection(PlayerStruct_t *player, int r);
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
@@ -351,7 +352,9 @@ void show_menu(struct descriptor_data *d)
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
     char            buf[MAX_STRING_LENGTH];
+#ifdef TODO
     int             chosen = 0;
+#endif
     int             i;
 
     if( !player ) {
@@ -366,29 +369,37 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput("Would you like ansi colors? (Yes or No)", player);
         break;
     case STATE_CHOOSE_RACE:
-        show_race_choice(d);
+        show_race_choice(player);
         SendOutput("For help type '?'- will list level limits. \n\r RACE:  ", 
                    player);
+#ifdef TODO
         d->character->player.class = 0;
         d->character->specials.remortclass = 0;
+#endif
         break;
     case STATE_CHOOSE_CLASS:
+#ifdef TODO
         GET_ALIGNMENT(d->character) = 0;
         GET_CON(d->character) = 0;
+#endif
         SendOutput("\n\rSelect your class now.\n\r", player);
-        show_class_selection(d, GET_RACE(d->character));
+#ifdef TODO
+        show_class_selection(player, GET_RACE(d->character));
+#endif
         SendOutput("Enter ? for help.\n\r\n\rClass :", player);
         break;
     case STATE_CHOOSE_MAIN_CLASS:
         SendOutput("\n\rSelect your main class from the options below.\n\r",
                    player);
 
+#ifdef TODO
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(d->character, pc_num_class(chosen))) {
                 ch_printf(d->character, "[%2d] %s\n\r", chosen + 1,
                           classes[chosen].name);
             }
         }
+#endif
         SendOutput("\n\rMain Class :", player);
         break;
     case STATE_CHOOSE_STATS:
@@ -402,6 +413,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput("Your choices? ", player);
         break;
     case STATE_CHOOSE_ALIGNMENT:
+#ifdef TODO
         ch_printf(d->character,
                   "Your alignment is an indication of how well or badly you"
                   " have morally\n\r"
@@ -431,15 +443,20 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                                     "($c000WGood$c000w/Neutral$c000w/"
                                     "$c000REvil$c000w)");
         }
+#endif
         break;
 
     case STATE_SHOW_MOTD:
+#ifdef TODO
         send_to_char(motd, d->character);
+#endif
         SendOutput("\n\r\n*** PRESS RETURN: ", player);
         break;
 
     case STATE_SHOW_CREATION_MENU:
+#ifdef TODO
         show_menu(d);
+#endif
         break;
 
     case STATE_GET_PASSWORD:
@@ -447,20 +464,26 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutputRaw(echo_off, 4, player);
         break;
     case STATE_CONFIRM_NAME:
+#ifdef TODO
         sprintf(buf, "Did I get that right, %s (Y/N)? ",
                 GET_NAME(d->character));
+#endif
         SendOutput(buf, player);
         break;
     case STATE_GET_NEW_USER_PASSWORD:
+#ifdef TODO
         sprintf(buf, "Give me a password for %s: ", GET_NAME(d->character));
+#endif
         SendOutput(buf, player);
         SendOutputRaw(echo_off, 4, player);
         break;
     case STATE_GET_NAME:
+#ifdef TODO
         if (GET_NAME(d->character)) {
             free(GET_NAME(d->character));
             GET_NAME(d->character) = NULL;
         }
+#endif
         break;
     case STATE_PLAYING:
         break;
@@ -470,6 +493,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutputRaw(echo_off, 4, player);
         break;
     case STATE_REROLL:
+#ifdef TODO
         SendOutput("Your current stats are:\n\r", player);
         sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
         SendOutput(buf, player);
@@ -485,6 +509,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(buf, player);
         sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any"
                      " other key to keep.\n\r", d->character->reroll);
+#endif
         SendOutput(buf, player);
         break;
     case STATE_CHECK_MAGE_TYPE:
@@ -499,11 +524,15 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput("Goodbye.\n\r", player);
         break;
     case STATE_SHOW_WMOTD:
+#ifdef TODO
         send_to_char(wmotd, d->character);
+#endif
         SendOutput("\n\r\n[PRESS RETURN]", player);
         break;
     case STATE_SHOW_LOGIN_MENU:
+#ifdef TODO
         send_to_char(MENU, d->character);
+#endif
         break;
     case STATE_EDIT_EXTRA_DESCR:
         SendOutput("<type /w to save.>\n\r", player);
@@ -519,46 +548,60 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput("Are you sure you want to delete yourself? (yes/no) ", 
                    player);
         break;
+    case STATE_INITIAL:
+        break;
     }
 
-    STATE(d) = newstate;
+    player->state = newstate;
 }
 
-void nanny(struct descriptor_data *d, char *arg)
+void nanny(PlayerStruct_t *player, char *arg)
 {
+#ifdef TODO
     struct descriptor_data *desc;
     char            buf[1024];
+#endif
 
-    int             player_i,
-                    class,
+#ifdef TODO
+    int             player_i;
+#endif
+    int             class,
                     race,
                     found,
                     index = 0;
+#ifdef TODO
     char            tmp_name[20];
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
     struct descriptor_data *k;
-    int             count_players = 0,
-                    bit = 0;
-    int             i = 0,
-                    tmpi = 0;
+#endif
+    int             count_players = 0;
+#ifdef TODO
+    int             bit = 0;
+#endif
+    int             i = 0;
+#ifdef TODO
+    int             tmpi = 0;
     int             already_p = 0;
     int             pick = 0;
     struct char_file_u ch_st;
     FILE           *char_file;
     struct obj_data *obj;
+#endif
 
     SendOutputRaw(echo_on, 6, player);
 
-    switch (STATE(d)) {
+    switch (player->state) {
     case STATE_SHOW_CREATION_MENU:
 #if 0
         show_menu(d);
 #endif
         arg = skip_spaces(arg);
         if( !arg ) {
+#ifdef TODO
             show_menu(d);
-            send_to_char("Invalid Choice.. Try again..", d->character);
+#endif
+            SendOutput("Invalid Choice.. Try again..\n\r", player);
             return;
         }
 
@@ -576,19 +619,23 @@ void nanny(struct descriptor_data *d, char *arg)
             EnterState(player, STATE_CHOOSE_CLASS);
             break;
         case '5':
+#ifdef TODO
             if (d->character->player.class != 0) {
                 EnterState(player, STATE_CHOOSE_MAIN_CLASS);
             } else {
                 SendOutput("\nPlease select a class first.\n\r", player);
             }
+#endif
             break;
         case '6':
+#ifdef TODO
             d->character->reroll = 20;
             if (d->character->player.class != 0) {
                 EnterState(player, STATE_CHOOSE_STATS);
             } else {
                 SendOutput("\nPlease select a class first.\n\r", player);
             }
+#endif
             break;
         case '7':
             EnterState(player, STATE_CHOOSE_ALIGNMENT);
@@ -597,6 +644,7 @@ void nanny(struct descriptor_data *d, char *arg)
         case 'd':
         case 'D':
             count_players = 0;
+#ifdef TODO
             for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
                 if (HasClass(d->character, pc_num_class(bit))) {
                     count_players++;
@@ -637,6 +685,7 @@ void nanny(struct descriptor_data *d, char *arg)
              */
             d->pos = create_entry(GET_NAME(d->character));
             save_char(d->character, AUTO_RENT);
+#endif
 
             for( i = 0; newbie_note[i]; i++ ) {
                 SendOutput(newbie_note[i], player);
@@ -645,8 +694,10 @@ void nanny(struct descriptor_data *d, char *arg)
             EnterState(player, STATE_SHOW_MOTD);
             break;
         default:
+#ifdef TODO
             show_menu(d);
-            send_to_char("Invalid Choice.. Try again..", d->character);
+#endif
+            SendOutput("Invalid Choice.. Try again..\n\r", player);
             break;
         }
         break;
@@ -657,6 +708,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
+#ifdef TODO
         switch (tolower(*arg)) {
         case 'n':
             if (!HasClass(d->character, CLASS_PALADIN) &&
@@ -691,6 +743,7 @@ void nanny(struct descriptor_data *d, char *arg)
             SendOutput("Please select a alignment.\n\r", player);
             break;
         }
+#endif
         break;
 
     case STATE_CHOOSE_ANSI:
@@ -701,6 +754,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
+#ifdef TODO
         switch (tolower(*arg)) {
         case 'y':
             /*
@@ -723,10 +777,13 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
             break;
         }
+#endif
         break;
 
     case STATE_CHOOSE_RACE:
+#ifdef TODO
         d->character->reroll = 20;
+#endif
         arg = skip_spaces(arg);
         if (!arg) {
             EnterState(player, STATE_CHOOSE_RACE);
@@ -741,6 +798,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         } 
        
+#ifdef TODO
         tmpi = atoi(arg);
         if (tmpi >= 1 && tmpi <= race_choice_count) {
             GET_RACE(d->character) = race_choice[tmpi - 1].raceNum;
@@ -749,12 +807,14 @@ void nanny(struct descriptor_data *d, char *arg)
             SendOutput("\n\rThat's not a race.\n\rRACE?:", player);
             EnterState(player, STATE_CHOOSE_RACE);
         }
+#endif
         break;
 
     case STATE_GET_NAME:
     /*
      * wait for input of name
      */
+#ifdef TODO
         if (!d->character) {
             CREATE(d->character, struct char_data, 1);
             clear_char(d->character);
@@ -810,6 +870,7 @@ void nanny(struct descriptor_data *d, char *arg)
             strcpy(GET_NAME(d->character), CAP(tmp_name));
             EnterState(player, STATE_CONFIRM_NAME);
         }
+#endif
         break;
 
     case STATE_CONFIRM_NAME:
@@ -851,6 +912,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
+#ifdef TODO
         arg = skip_spaces(arg);
         if (!arg) {
             close_socket(d);
@@ -985,6 +1047,7 @@ void nanny(struct descriptor_data *d, char *arg)
             write_char_extra(d->character);
             EnterState(player, STATE_SHOW_MOTD);
         }
+#endif
         break;
 
     case STATE_GET_NEW_USER_PASSWORD:
@@ -1002,8 +1065,10 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
+#ifdef TODO
         strncpy(d->pwd, (char *) crypt(arg, d->character->player.name), 10);
         d->pwd[10] = '\0';
+#endif
         SendOutputRaw(echo_on, 6, player);
         EnterState(player, STATE_CONFIRM_PASSWORD);
         break;
@@ -1015,6 +1080,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
+#ifdef TODO
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             SendOutputRaw(echo_on, 6, player);
@@ -1023,6 +1089,7 @@ void nanny(struct descriptor_data *d, char *arg)
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         } 
+#endif
 
         SendOutputRaw(echo_on, 6, player);
         EnterState(player, STATE_CHOOSE_ANSI);
@@ -1042,6 +1109,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
+#ifdef TODO
         switch (tolower(*arg)) {
         case 'm':
             /*
@@ -1063,6 +1131,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
             break;
         }
+#endif
 
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
@@ -1073,6 +1142,7 @@ void nanny(struct descriptor_data *d, char *arg)
          */
         arg = skip_spaces(arg);
         index = 0;
+#ifdef TODO
         while (arg && *arg && index < MAX_STAT) {
             switch(tolower(*arg)) {
             case 's':
@@ -1111,6 +1181,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 arg++;
             }
         }
+#endif
 
         if (index < MAX_STAT) {
             SendOutput("You did not enter enough legal stats\n\r", player);
@@ -1119,6 +1190,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         } 
         
+#ifdef TODO
         roll_abilities(d->character);
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             /*
@@ -1129,12 +1201,15 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         d->character->reroll--;
+#endif
         EnterState(player, STATE_REROLL);
         break;
 
     case STATE_REROLL:
         arg = skip_spaces(arg);
+#ifdef TODO
         d->character->reroll--;
+#endif
 
         if (!arg || tolower(*arg) != 'r') {
             SendOutput("Stats chosen!\n\r", player);
@@ -1147,6 +1222,7 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         } 
         
+#ifdef TODO
         roll_abilities(d->character);
         if (d->character->reroll != 0) {
             EnterState(player, STATE_REROLL);
@@ -1167,6 +1243,7 @@ void nanny(struct descriptor_data *d, char *arg)
         sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
         SendOutput(buf, player);
         SendOutput("Stats chosen!", player);
+#endif
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             EnterState(player, STATE_WAIT_FOR_AUTH);
@@ -1177,6 +1254,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case STATE_CHOOSE_MAIN_CLASS:
         arg = skip_spaces(arg);
+#ifdef TODO
         d->character->specials.remortclass = 0;
 
         if (arg && (pick = atoi(arg)) &&
@@ -1185,6 +1263,7 @@ void nanny(struct descriptor_data *d, char *arg)
             EnterState(player, STATE_SHOW_CREATION_MENU);
             return;
         } 
+#endif
         
         SendOutput("\n\rInvalid class picked.\n\r", player);
         EnterState(player, STATE_CHOOSE_MAIN_CLASS);
@@ -1194,7 +1273,9 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
+#ifdef TODO
         d->character->player.class = 0;
+#endif
 
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -1212,7 +1293,11 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         class = atoi(arg);
+#ifdef TODO
         race  = GET_RACE(d->character);
+#else
+        race = 0;
+#endif
 
         if( class <= 0 ) {
             SendOutput("Invalid selection!\n\r", player);
@@ -1230,14 +1315,17 @@ void nanny(struct descriptor_data *d, char *arg)
                     EnterState(player, STATE_CHOOSE_CLASS);
                     return;
                 }
+#ifdef TODO
 
                 /* Class choice is valid */
                 d->character->player.class = 
                     race_choice[i].classesAvail[class - 1];
                 found = TRUE;
+#endif
             }
         }
                     
+#ifdef TODO
         if (d->character->player.class == 0) {
             SendOutput("Invalid selection!\n\r", player);
             EnterState(player, STATE_CHOOSE_CLASS);
@@ -1257,9 +1345,11 @@ void nanny(struct descriptor_data *d, char *arg)
             Log("Couldn't find a race in creation, screwy!!");
             EnterState(player, STATE_SHOW_CREATION_MENU);
         }
+#endif
         break;
 
     case STATE_WAIT_FOR_AUTH:
+#ifdef TODO
         if (d->character->generic >= NEWBIE_START) {
             /*
              ** now that classes are set, initialize
@@ -1308,14 +1398,17 @@ void nanny(struct descriptor_data *d, char *arg)
         } else {
             EnterState(player, STATE_WIZLOCKED);
         }
+#endif
         break;
 
     case STATE_CHECK_MAGE_TYPE:
         arg = skip_spaces(arg);
+#ifdef TODO
         if (arg && tolower(*arg) == 'y') {
             d->character->player.class -= CLASS_MAGIC_USER;
             d->character->player.class += CLASS_SORCERER;
         }
+#endif
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
@@ -1323,6 +1416,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * read CR after printing motd
          */
+#ifdef TODO
         if (IS_IMMORTAL(d->character)) {
             EnterState(player, STATE_SHOW_WMOTD);
             break;
@@ -1342,12 +1436,14 @@ void nanny(struct descriptor_data *d, char *arg)
         } else {
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
+#endif
         break;
 
     case STATE_SHOW_WMOTD:
         /*
          * read CR after printing motd
          */
+#ifdef TODO
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
             !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your "
@@ -1357,14 +1453,18 @@ void nanny(struct descriptor_data *d, char *arg)
         } else {
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
+#endif
         break;
 
     case STATE_WIZLOCKED:
+#ifdef TODO
         close_socket(d);
+#endif
         break;
 
     case STATE_DELETE_USER:
         arg = skip_spaces(arg);
+#ifdef TODO
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(d->character))) {
             Log("%s just killed theirself!", GET_NAME(d->character));
@@ -1406,6 +1506,7 @@ void nanny(struct descriptor_data *d, char *arg)
             remove(buf);
             close_socket(d);
         }
+#endif
 
         EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
@@ -1428,10 +1529,13 @@ void nanny(struct descriptor_data *d, char *arg)
 
         switch (tolower(*arg)) {
         case '0':
+#ifdef TODO
             close_socket(d);
+#endif
             break;
 
         case '1':
+#ifdef TODO
             reset_char(d->character);
             total_connections++;
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
@@ -1527,11 +1631,13 @@ void nanny(struct descriptor_data *d, char *arg)
                 do_save(d->character, "", 0);
             }
             d->prompt_mode = 1;
+#endif
             break;
 
         case '2':
             SendOutput("Enter a text you'd like others to see when they look "
                        "at you.\n\r", player);
+#ifdef TODO
             if (d->character->player.description) {
                 SendOutput("Old description :\n\r", player);
                 SendOutput(d->character->player.description, player);
@@ -1542,6 +1648,7 @@ void nanny(struct descriptor_data *d, char *arg)
             }
             d->str = &d->character->player.description;
             d->max_str = 240;
+#endif
             EnterState(player, STATE_EDIT_EXTRA_DESCR);
             break;
 
@@ -1583,9 +1690,11 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
+#ifdef TODO
         strncpy(d->pwd, (char *) crypt(arg, d->character->player.name), 10);
         *(d->pwd + 10) = '\0';
         SendOutputRaw(echo_on, 6, player);
+#endif
 
         EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
         break;
@@ -1598,6 +1707,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
+#ifdef TODO
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             SendOutputRaw(echo_on, 6, player);
@@ -1605,6 +1715,7 @@ void nanny(struct descriptor_data *d, char *arg)
             EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
+#endif
 
         SendOutputRaw(echo_on, 6, player);
 
@@ -1615,15 +1726,17 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     default:
+#ifdef TODO
         Log("Nanny: illegal state of con'ness (%d)", STATE(d));
         SendOutput("The mud has lost its brain on your connection, please "
                    "reconnect.\n\r", player);
         close_socket(d);
+#endif
         break;
     }
 }
 
-void show_class_selection(struct descriptor_data *d, int r)
+void show_class_selection(PlayerStruct_t *player, int r)
 {
     int             found;
     int             i,
@@ -1653,7 +1766,7 @@ void show_class_selection(struct descriptor_data *d, int r)
 }
 
 
-void show_race_choice(struct descriptor_data *d)
+void show_race_choice(PlayerStruct_t *player)
 {
     int             i,
                     j;
@@ -1682,13 +1795,13 @@ void show_race_choice(struct descriptor_data *d)
         }
 
         strcat(buf, "\n\r");
-        send_to_char(buf, d->character);
+        SendOutput(buf, player);
     }
 
-    send_to_char("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"
-                 "dr=druid,mk=monk\n\r", d->character);
-    send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,"
-                 "ne=necromancer\n\r\n\r", d->character);
+    SendOutput("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"
+               "dr=druid,mk=monk\n\r", player);
+    SendOutput("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,"
+               "ne=necromancer\n\r\n\r", player);
 }
 
 

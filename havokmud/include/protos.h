@@ -805,7 +805,9 @@ int             special(struct char_data *ch, int cmd, char *arg);
 void            assign_command_pointers(void);
 int             find_name(char *name);
 int             _parse_name(char *arg, char *name);
+#ifdef TODO
 void            nanny(struct descriptor_data *d, char *arg);
+#endif
 
 /*
  * From limits.c 
@@ -3706,7 +3708,9 @@ void            do_set_spy(struct char_data *ch, char *argument, int cmd);
 void            do_wizset(struct char_data *ch, char *argument, int cmd);
 void            do_home(struct char_data *ch, char *argument, int cmd);
 void            do_lgos(struct char_data *ch, char *argument, int cmd);
+#ifdef TODO
 void            show_race_choice(struct descriptor_data *d);
+#endif
 void            do_glance(struct char_data *ch, char *argument, int cmd);
 void            do_startarena(struct char_data *ch, char *argument, int cmd);
 void            do_arena(struct char_data *ch, char *argument, int cmd);
