@@ -106,6 +106,8 @@ typedef struct _PlayerStruct_t
     int                 in_remain_len;
 
     QueueObject_t      *outputQ;
+
+    struct char_data   *charData;
 } PlayerStruct_t;
 
 typedef enum
