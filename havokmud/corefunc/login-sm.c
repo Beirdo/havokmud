@@ -12,8 +12,6 @@
 #include "externs.h"
 #include "interthread.h"
 
-#define STATE(d) ((d)->connected)
-
 #define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? \
                         "-]>>>>" : ((x >= 7 && x<= 9) ? "-]>>>>>" : \
                         ((x >= 10 && x<= 12) ? "-]>>>>>>" : \
@@ -25,10 +23,10 @@
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void show_race_choice(PlayerStruct_t *player);
 void show_class_selection(PlayerStruct_t *player, int r);
+void show_menu(PlayerStruct_t *player);
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
-int             Silence = 0;
 int             plr_tick_count = 0;
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
@@ -272,10 +270,12 @@ int _check_ass_name(char *name)
 }
 
 
-void show_menu(struct descriptor_data *d)
+void show_menu(PlayerStruct_t *player)
 {
 
+#ifdef TODO
     int             bit;
+#endif
     char            buf[100];
     char            bufx[1000];
     char            cls[50];
@@ -283,15 +283,18 @@ void show_menu(struct descriptor_data *d)
 
     cls[0] = '\0';
 
+#ifdef TODO
     for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
         if (HasClass(d->character, pc_num_class(bit))) {
             strcat(cls, classes[bit].abbrev);
         }
     }
+#endif
     if (!(strcmp(cls, ""))) {
         sprintf(cls, "None Selected");
     }
-    sprintf(mainclass, "%s", "");
+    mainclass[0] = '\0';
+#ifdef TODO
     if (d->character->specials.remortclass) {
        /*
         * remort == 0 means none picked
@@ -299,9 +302,11 @@ void show_menu(struct descriptor_data *d)
         strcat(mainclass, 
                classes[(d->character->specials.remortclass - 1)].abbrev);
     }
+#endif
     if (!(strcmp(mainclass, ""))) {
         sprintf(mainclass, "None Selected");
     }
+#ifdef TODO
     sprintf(bufx, "$c0009-=$c0015Havok Character Creation Menu [%s]"
                   "$c0009=-\n\r\n\r", GET_NAME(d->character));
 
@@ -325,6 +330,7 @@ void show_menu(struct descriptor_data *d)
                 races[GET_RACE(d->character)].racename);
         strcat(bufx, buf);
     }
+#endif
 
     sprintf(buf, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", cls);
     strcat(bufx, buf);
@@ -332,6 +338,7 @@ void show_menu(struct descriptor_data *d)
     sprintf(buf, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", mainclass);
     strcat(bufx, buf);
 
+#ifdef TODO
     if (!GET_CON(d->character) || GET_CON(d->character) == 0) {
         strcat(bufx, "$c00156) $c0012Character Stats.[$c0015None "
                      "Picked$c0012]\n\r");
@@ -342,11 +349,12 @@ void show_menu(struct descriptor_data *d)
             (GET_ALIGNMENT(d->character) ?
              AlignDesc(GET_ALIGNMENT(d->character)) : "None"));
     strcat(bufx, buf);
+#endif
 
     strcat(bufx, "$c0015D) $c0012Done!\n\r\n\r");
     strcat(bufx, "$c0011Please pick an option: \n\r");
 
-    send_to_char(bufx, d->character);
+    SendOutput(bufx, player);
 }
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
@@ -454,9 +462,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
 
     case STATE_SHOW_CREATION_MENU:
-#ifdef TODO
-        show_menu(d);
-#endif
+        show_menu(player);
         break;
 
     case STATE_GET_PASSWORD:
@@ -598,9 +604,7 @@ void nanny(PlayerStruct_t *player, char *arg)
 #endif
         arg = skip_spaces(arg);
         if( !arg ) {
-#ifdef TODO
-            show_menu(d);
-#endif
+            show_menu(player);
             SendOutput("Invalid Choice.. Try again..\n\r", player);
             return;
         }
@@ -694,9 +698,7 @@ void nanny(PlayerStruct_t *player, char *arg)
             EnterState(player, STATE_SHOW_MOTD);
             break;
         default:
-#ifdef TODO
-            show_menu(d);
-#endif
+            show_menu(player);
             SendOutput("Invalid Choice.. Try again..\n\r", player);
             break;
         }
@@ -1726,10 +1728,10 @@ void nanny(PlayerStruct_t *player, char *arg)
         break;
 
     default:
-#ifdef TODO
-        Log("Nanny: illegal state of con'ness (%d)", STATE(d));
+        Log("Nanny: illegal state of con'ness (%d)", player->state);
         SendOutput("The mud has lost its brain on your connection, please "
                    "reconnect.\n\r", player);
+#ifdef TODO
         close_socket(d);
 #endif
         break;
