@@ -39,9 +39,6 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-void LoginSendBanner( PlayerStruct_t *player );
-void LoginStateMachine( PlayerStruct_t *player );
-
 void *LoginThread( void *arg )
 {
     InputStateItem_t   *item;
@@ -68,7 +65,7 @@ void *LoginThread( void *arg )
             /*
              * User input, feed it to the state machine
              */
-            LoginStateMachine(player);
+            LoginStateMachine(player, line);
             break;
         default:
             break;

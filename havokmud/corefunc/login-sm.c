@@ -458,6 +458,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
             free(GET_NAME(player->charData));
             GET_NAME(player->charData) = NULL;
         }
+        SendOutput("What is thy name? ", player);
         break;
     case STATE_PLAYING:
         break;
@@ -523,7 +524,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     player->state = newstate;
 }
 
-void nanny(PlayerStruct_t *player, char *arg)
+void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
     struct descriptor_data *desc;
     char            buf[1024];
@@ -1426,8 +1427,8 @@ void nanny(PlayerStruct_t *player, char *arg)
              * get the structure from player_table[i].nr
              */
             if (!(char_file = fopen(PLAYER_FILE, "r+"))) {
-                perror("Opening player file for updating. (interpreter.c,"
-                       " nanny)");
+                perror("Opening player file for updating. (login-sm.c,"
+                       " LoginStateMachine)");
                 assert(0);
             }
             rewind(char_file);
@@ -1745,6 +1746,15 @@ void show_race_choice(PlayerStruct_t *player)
                "ne=necromancer\n\r\n\r", player);
 }
 
+void LoginSendBanner( PlayerStruct_t *player )
+{
+    SendOutput(login, player);
+    SendOutput("If you're using Tintin or Lyntin, your client may not display "
+               "the password\n\r", player);
+    SendOutput("sequence unless you change your settings. Please do not be "
+               "discouraged.\n\r\n\r", player);
+    EnterState(player, STATE_GET_NAME);
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

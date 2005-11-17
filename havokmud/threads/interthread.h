@@ -166,6 +166,8 @@ void connClose( ConnectionItem_t *connItem );
 void SendOutput( char *string, PlayerStruct_t *player );
 void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player );
 int ch_printf(PlayerStruct_t *player, char *fmt, ...);
+void LoginSendBanner( PlayerStruct_t *player );
+void LoginStateMachine(PlayerStruct_t *player, char *arg);
 
 
 #endif
