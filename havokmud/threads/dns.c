@@ -33,45 +33,42 @@
 #include "protos.h"
 #include "externs.h"
 #include "interthread.h"
-#include "queue.h"
+#include <sys/socket.h>
+#include <netdb.h>
+#include <string.h>
+#include <stdlib.h>
 
 static char ident[] _UNUSED_ =
     "$Id$";
 
-QueueObject_t *ConnectInputQ;
-QueueObject_t *ConnectDnsQ;
-QueueObject_t *InputLoginQ;
-QueueObject_t *InputPlayerQ;
-QueueObject_t *InputImmortQ;
 
-static pthread_t connectionThreadId;
-static pthread_t inputThreadId;
-static pthread_t loginThreadId;
-static pthread_t dnsThreadId;
-
-static connectThreadArgs_t connectThreadArgs;
-
-void StartThreads( void )
+void *DnsThread( void *arg )
 {
-    ConnectInputQ = QueueCreate( 256 );
-    ConnectDnsQ   = QueueCreate( 64 );
-    InputLoginQ   = QueueCreate( 256 );
-    InputPlayerQ  = QueueCreate( 256 );
-    InputImmortQ  = QueueCreate( 256 );
+    ConnDnsItem_t  *item;
+    char           *oldHost;
+    struct sockaddr_in sa;
+    struct hostent *from;
 
-    pthread_create( &dnsThreadId, NULL, DnsThread, NULL );
+    while( 1 ) {
+        item = QueueDequeueItem( ConnectDnsQ, -1 );
+        if( !item ) {
+            continue;
+        }
 
-    connectThreadArgs.port = 4000;
-    connectThreadArgs.timeout_sec = 0;
-    connectThreadArgs.timeout_usec = 100000;
-    pthread_create( &connectionThreadId, NULL, ConnectionThread, 
-                    &connectThreadArgs );
+        sa.sin_addr.s_addr = item->ipAddr;
 
-    pthread_create( &inputThreadId, NULL, InputThread, NULL );
-    pthread_create( &loginThreadId, NULL, LoginThread, NULL );
+        from = gethostbyaddr((char *)&sa.sin_addr, sizeof(sa.sin_addr), 
+                             AF_INET);
+        if( from ) {
+            oldHost = item->connection->hostName;
+            item->connection->hostName = strdup(from->h_name);
+            free(oldHost);
+        }
 
-    pthread_join( inputThreadId, NULL );
-    pthread_join( connectionThreadId, NULL );
+        free( item );
+    }
+
+    return( NULL );
 }
 
 /*

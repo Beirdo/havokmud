@@ -85,12 +85,14 @@ typedef struct
 
 struct _PlayerStruct_t;
 
-typedef struct {
-    LinkedListItem_t link;
-    int fd;
-    BufferObject_t *buffer;
+typedef struct 
+{
+    LinkedListItem_t        link;
+    int                     fd;
+    BufferObject_t         *buffer;
     struct _PlayerStruct_t *player;
-    OutputBuffer_t *outBufDesc;
+    OutputBuffer_t         *outBufDesc;
+    char                   *hostName;
 } ConnectionItem_t;
 
 typedef struct _PlayerStruct_t
@@ -138,11 +140,17 @@ typedef struct
     char               *line;
 } InputStateItem_t;
 
+typedef struct
+{
+    uint32              ipAddr;
+    ConnectionItem_t   *connection;
+} ConnDnsItem_t;
 
 /*
  * Externals used for interthread communication
  */
 extern QueueObject_t *ConnectInputQ;
+extern QueueObject_t *ConnectDnsQ;
 extern QueueObject_t *InputLoginQ;
 extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
@@ -153,6 +161,7 @@ extern QueueObject_t *InputImmortQ;
 void *ConnectionThread( void *arg );
 void *InputThread( void *arg );
 void *LoginThread( void *arg );
+void *DnsThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks

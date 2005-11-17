@@ -1460,8 +1460,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_SHOW_LOGIN_MENU:
-        /* get selection from main menu */
-        /*
+        /* 
+         * get selection from main menu
          * skip whitespaces
          */
         arg = skip_spaces(arg);

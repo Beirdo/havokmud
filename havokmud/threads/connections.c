@@ -77,6 +77,8 @@ void *ConnectionThread( void *arg )
     ConnectionItem_t *item;
     PlayerStruct_t *player;
     ConnInputItem_t *connItem;
+    ConnDnsItem_t *dnsItem;
+    uint32 i;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
@@ -148,6 +150,21 @@ void *ConnectionThread( void *arg )
                 memset(item, 0, sizeof(ConnectionItem_t));
                 item->fd = newFd;
                 item->buffer = BufferCreate(MAX_BUFSIZE);
+
+                item->hostName = (char *)malloc(16);
+                i = sa.sin_addr.s_addr;
+                sprintf(item->hostName, "%d.%d.%d.%d", (i & 0x000000FF),
+                        (i & 0x0000FF00) >> 8, (i & 0x00FF0000) >> 16,
+                        (i & 0xFF000000) >> 24);
+
+                if (!IS_SET(SystemFlags, SYS_SKIPDNS)) {
+                    dnsItem = (ConnDnsItem_t *)malloc(sizeof(ConnDnsItem_t));
+                    if( dnsItem ) {
+                        dnsItem->connection = item;
+                        dnsItem->ipAddr = sa.sin_addr.s_addr;
+                        QueueEnqueueItem(ConnectDnsQ, dnsItem);
+                    }
+                }
 
                 player = (PlayerStruct_t *)malloc(sizeof(PlayerStruct_t));
                 if( !player ) {
