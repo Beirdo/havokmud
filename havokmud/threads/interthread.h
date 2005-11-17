@@ -97,6 +97,7 @@ typedef struct _PlayerStruct_t
 {
     LinkedListItem_t    link;
     ConnectionItem_t   *connection;
+    int                 flush;
 
     PlayerState_t       state;
     QueueObject_t      *handlingQ;
@@ -113,7 +114,9 @@ typedef struct _PlayerStruct_t
 typedef enum
 {
     CONN_NEW_CONNECT,
-    CONN_INPUT_AVAIL
+    CONN_INPUT_AVAIL,
+    CONN_FLUSH_INPUT,
+    CONN_DELETE_CONNECT
 } ConnInputType_t;
 
 typedef struct
@@ -161,6 +164,7 @@ void connKickOutput( ConnectionItem_t *connItem );
  */
 void SendOutput( char *string, PlayerStruct_t *player );
 void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player );
+int ch_printf(PlayerStruct_t *player, char *fmt, ...);
 
 
 #endif

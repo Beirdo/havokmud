@@ -12,18 +12,15 @@
 #include "externs.h"
 #include "interthread.h"
 
-#define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? \
-                        "-]>>>>" : ((x >= 7 && x<= 9) ? "-]>>>>>" : \
-                        ((x >= 10 && x<= 12) ? "-]>>>>>>" : \
-                         ((x >= 13 && x<= 15) ? "-]>>>>>>>" : \
-                          ((x >= 16 && x<18) ? "-]>>>>>>>>" : ((x >= 18) ? \
-                           "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
 #define MAX_NAME_LENGTH 11
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void show_race_choice(PlayerStruct_t *player);
 void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
+
+static char     swords[] = ">>>>>>>>";
+#define STAT_SWORD(x) (((x)<18 && (x)>0) ? &(swords[5-(((x)-1)/3)]) : "ERR!")
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
@@ -384,7 +381,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(player->charData, pc_num_class(chosen))) {
-                ch_printf(player->charData, "[%2d] %s\n\r", chosen + 1,
+                ch_printf(player, "[%2d] %s\n\r", chosen + 1,
                           classes[chosen].name);
             }
         }
@@ -401,7 +398,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput("Your choices? ", player);
         break;
     case STATE_CHOOSE_ALIGNMENT:
-        ch_printf(player->charData,
+        ch_printf(player,
                   "Your alignment is an indication of how well or badly you"
                   " have morally\n\r"
                   "conducted yourself in the game. It ranges numerically, "
@@ -415,20 +412,21 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                   "the spell heal makes you good\n\r");
 
         if (HasClass(player->charData, CLASS_PALADIN)) {
-            ch_printf(player->charData, "Please select your alignment "
-                                    "($c000WGood$c000w)");
+            ch_printf(player, "Please select your alignment "
+                              "($c000WGood$c000w)");
         } else if (HasClass(player->charData, CLASS_DRUID)) {
-            ch_printf(player->charData, "Please select your alignment (Neutral)");
+            ch_printf(player, "Please select your alignment "
+                              "(Neutral)");
         } else if (HasClass(player->charData, CLASS_NECROMANCER)) {
-            ch_printf(player->charData, "Please select your alignment "
-                                    "($c000REvil$c000w)");
+            ch_printf(player, "Please select your alignment "
+                              "($c000REvil$c000w)");
         } else if (HasClass(player->charData, CLASS_RANGER)) {
-            ch_printf(player->charData, "Please select your alignment "
-                                    "($c000WGood$c000w/Neutral$c000w)");
+            ch_printf(player, "Please select your alignment "
+                              "($c000WGood$c000w/Neutral$c000w)");
         } else {
-            ch_printf(player->charData, "Please select your alignment "
-                                    "($c000WGood$c000w/Neutral$c000w/"
-                                    "$c000REvil$c000w)");
+            ch_printf(player, "Please select your alignment "
+                              "($c000WGood$c000w/Neutral$c000w/"
+                              "$c000REvil$c000w)");
         }
         break;
 
@@ -470,17 +468,17 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_REROLL:
         SendOutput("Your current stats are:\n\r", player);
-        sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(player->charData)));
+        sprintf(buf, "STR: -]%s\n\r", STAT_SWORD(GET_STR(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(player->charData)));
+        sprintf(buf, "CON: -]%s\n\r", STAT_SWORD(GET_CON(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(player->charData)));
+        sprintf(buf, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(player->charData)));
+        sprintf(buf, "INT: -]%s\n\r", STAT_SWORD(GET_INT(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(player->charData)));
+        sprintf(buf, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(player->charData)));
+        sprintf(buf, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(player->charData)));
         SendOutput(buf, player);
         sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any"
                      " other key to keep.\n\r", player->charData->reroll);
@@ -1192,17 +1190,17 @@ void nanny(PlayerStruct_t *player, char *arg)
         } 
         
         SendOutput("Your final stats are:\n\r", player);
-        sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(player->charData)));
+        sprintf(buf, "STR: -]%s\n\r", STAT_SWORD(GET_STR(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(player->charData)));
+        sprintf(buf, "CON: -]%s\n\r", STAT_SWORD(GET_CON(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(player->charData)));
+        sprintf(buf, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(player->charData)));
+        sprintf(buf, "INT: -]%s\n\r", STAT_SWORD(GET_INT(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(player->charData)));
+        sprintf(buf, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(player->charData)));
         SendOutput(buf, player);
-        sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(player->charData)));
+        sprintf(buf, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(player->charData)));
         SendOutput(buf, player);
         SendOutput("Stats chosen!", player);
 

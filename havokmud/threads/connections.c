@@ -307,8 +307,15 @@ static void connDelFd( int fd, fd_set *fds )
 static ConnectionItem_t *connRemove(ConnectionItem_t *item)
 {
     ConnectionItem_t *prev;
+    PlayerStruct_t *player;
+    ConnInputItem_t *connItem;
 
     close(item->fd);
+    connDelFd( item->fd, &saveReadFds );
+    connDelFd( item->fd, &saveWriteFds );
+    connDelFd( item->fd, &saveExceptFds );
+
+    player = item->player;
 
     if( item->link.prev ) {
         item->link.prev->next = item->link.next;
@@ -329,6 +336,19 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
      */
     BufferDestroy( item->buffer );
     free( item );
+
+    connItem = (ConnInputItem_t *)malloc(sizeof(ConnInputItem_t));
+    if( connItem ) {
+        connItem->type = CONN_DELETE_CONNECT;
+        connItem->player = player;
+
+        /*
+         * Ignore any remaining input
+         */
+        player->flush = TRUE;
+
+        QueueEnqueueItem(ConnectInputQ, (QueueItem_t)connItem);
+    }
 
     recalcMaxFd = TRUE;
 

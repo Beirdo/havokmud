@@ -36,6 +36,7 @@
 #include "queue.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -45,10 +46,12 @@ void SendOutput( char *string, PlayerStruct_t *player )
     OutputBuffer_t *buf;
 
     buf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
-    if( !buf ) {
+    if( !buf || !string ) {
         return;
     }
-    buf->buf = strdup( string );
+    buf->buf = strdup( 
+            ParseAnsiColors(IS_SET(player->charData->player.user_flags, 
+                                   USE_ANSI), string) );
     if( !buf->buf ) {
         free( buf );
         return;
@@ -63,7 +66,7 @@ void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player )
     OutputBuffer_t *buf;
 
     buf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
-    if( !buf ) {
+    if( !buf || !string || !len ) {
         return;
     }
     buf->buf = malloc(len);
@@ -78,5 +81,24 @@ void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player )
 }
 
 /*
+ * source: EOD, by John Booth <???> 
+ */
+int ch_printf(PlayerStruct_t *player, char *fmt, ...)
+{
+    char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
+    int             len;
+    va_list         args;
+
+    va_start(args, fmt);
+    len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
+    va_end(args);
+
+    SendOutput(buf, player);
+
+    return(len);
+}
+
+/*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
+

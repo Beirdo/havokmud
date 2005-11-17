@@ -1981,6 +1981,7 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
     return buf;
 }
 
+#ifdef TODO
 /*
  * source: EOD, by John Booth <???> 
  */
@@ -2006,6 +2007,7 @@ void send_to_char(char *messg, struct char_data *ch)
                   messg), ch->desc);
     }
 }
+#endif
 
 void save_all()
 {

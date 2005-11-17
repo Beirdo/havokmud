@@ -65,6 +65,11 @@ QueueItem_t QueueDequeueItem( QueueObject_t *queue, int32 ms_timeout );
 void QueueClear( QueueObject_t *queue, bool freeItems );
 uint32 QueueUsed( QueueObject_t *queue );
 
+void QueueDestroy( QueueObject_t *queue );
+void QueueLock( QueueObject_t *queue );
+void QueueUnlock( QueueObject_t *queue );
+uint32 QueueRemoveItem( QueueObject_t *queue, uint32 index, int locked );
+
 #ifdef __cplusplus
 }
 #endif

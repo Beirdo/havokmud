@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include "logging.h"
+#include <string.h>
 
 /* INTERNAL CONSTANT DEFINITIONS */
 
@@ -350,6 +351,107 @@ uint32 QueueUsed( QueueObject_t *queue )
 
     return( used );
 }
+
+void QueueDestroy( QueueObject_t *queue )
+{
+    /*
+     * Assumes: queue is empty and locked.  Any items still in the queue will
+     * be not be freed
+     */
+
+    /*
+     * get rid of the two condition vars
+     */
+    pthread_cond_broadcast( queue->cNotFull );
+    pthread_cond_destroy( queue->cNotFull );
+
+    pthread_cond_broadcast( queue->cNotEmpty );
+    pthread_cond_destroy( queue->cNotEmpty );
+
+    /*
+     * get rid of the mutex
+     */
+    pthread_mutex_unlock( queue->mutex );
+    pthread_mutex_destroy( queue->mutex );
+
+    /*
+     * get rid of the item table
+     */
+    free( queue->itemTable );
+
+    /*
+     * get rid of the queue object
+     */
+    free( queue );
+}
+
+void QueueLock( QueueObject_t *queue )
+{
+    pthread_mutex_lock( queue->mutex );
+}
+
+void QueueUnlock( QueueObject_t *queue )
+{
+    pthread_mutex_unlock( queue->mutex );
+}
+
+uint32 QueueRemoveItem( QueueObject_t *queue, uint32 index, int locked )
+{
+    /*
+     * Assumes queue is locked!  We will be messing with it!
+     */
+
+    if( index == queue->head ) {
+        queue->itemTable[queue->head] = NULL;
+        queue->head++;
+        queue->head &= queue->numMask;
+        QueueConditionUpdate( queue );
+        return( index );
+    }
+
+    if( index == queue->tail ) {
+        queue->itemTable[queue->tail] = NULL;
+        queue->tail--;
+        queue->tail &= queue->numMask;
+        QueueConditionUpdate( queue );
+        return( (index - 1) & queue->numMask );
+    }
+    
+    /* 
+     * OK, those were the simple cases.
+     */
+    if( queue->tail < index ) {
+        /*
+         * The tail is wrapped, we have to move 3 times
+         */
+        if( index != queue->numElements - 1 ) {
+            memmove( &(queue->itemTable[index]), &(queue->itemTable[index+1]),
+                     sizeof(QueueItem_t) * ( queue->numElements - index - 1 ));
+        }
+
+        memcpy( &(queue->itemTable[queue->numElements - 1]), 
+                &(queue->itemTable[0]), sizeof(QueueItem_t) );
+
+        if( queue->tail ) {
+            memmove( &(queue->itemTable[0]), &(queue->itemTable[1]),
+                     sizeof(QueueItem_t) * queue->tail );
+        }
+    } else {
+        /*
+         * tail is not wrapped from our current position, much easier
+         */
+        memmove( &(queue->itemTable[index]), &(queue->itemTable[index+1]),
+                 sizeof(QueueItem_t) * ( queue->tail - index ) );
+    }
+
+    queue->itemTable[queue->tail] = NULL;
+    queue->tail--;
+    queue->tail &= queue->numMask;
+    QueueConditionUpdate( queue );
+    return( (index - 1) & queue->numMask );
+}
+
+
 
 
 /*

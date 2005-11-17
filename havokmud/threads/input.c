@@ -44,12 +44,16 @@ static char ident[] _UNUSED_ =
 
 static LinkedList_t *PlayerList;
 
+void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
+
 void *InputThread( void *arg )
 {
     ConnInputItem_t    *connItem;
     ConnInputType_t     type;
     PlayerStruct_t     *player;
     InputStateItem_t   *stateItem;
+    OutputBuffer_t     *outputItem;
+    QueueObject_t      *outputQ;
     int                 totalLen, len;
     char               *buf, *bufend, *bufloc;
     int                 i;
@@ -97,6 +101,18 @@ void *InputThread( void *arg )
                            AT_TAIL );
             break;
         case CONN_INPUT_AVAIL:
+            /*
+             * If we've been asked to flush for this user, flush
+             */
+            if( player->flush ) {
+                if( player->in_remain ) {
+                    free( player->in_remain );
+                }
+                player->in_remain = NULL;
+                player->in_remain_len = 0;
+                break;
+            }
+
             /*
              * Find out how many bytes are available and lock the buffer if any
              * data available
@@ -172,6 +188,50 @@ void *InputThread( void *arg )
             buf = bufend - len;
             free( buf );
             break;
+        case CONN_FLUSH_INPUT:
+            /*
+             * We hit the point we are supposed to flush to
+             */
+            player->flush = FALSE;
+            FlushQueue( player->handlingQ, player );
+            break;
+        case CONN_DELETE_CONNECT:
+            /*
+             * This player is disappearing
+             */
+            LinkedListRemove( PlayerList, (LinkedListItem_t *)player, 
+                              UNLOCKED );
+
+            FlushQueue( player->handlingQ, player );
+
+            /*
+             * Remove the output queue
+             */
+            QueueLock( player->outputQ );
+            outputQ = player->outputQ;
+            player->outputQ = NULL;
+            QueueUnlock( outputQ );
+
+            while( (outputItem = 
+                     (OutputBuffer_t *)QueueDequeueItem(outputQ, 0)) ) {
+                if( outputItem->buf ) {
+                    free( outputItem->buf );
+                }
+                free( outputItem );
+            }
+            QueueDestroy( outputQ );
+
+            BufferDestroy( player->in_buffer );
+            if( player->in_remain ) {
+                free( player->in_remain );
+            }
+
+            if( player->charData ) {
+                free( player->charData );
+            }
+
+            free( player );
+            break;
         default:
             break;
         }
@@ -180,6 +240,37 @@ void *InputThread( void *arg )
 
     return( NULL );
 }
+
+void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
+{
+    uint32 i;
+    InputStateItem_t *item;
+
+    if( !player || !queue ) {
+        return;
+    }
+
+    QueueLock( queue );
+
+    for( i = queue->head; i != queue->tail; i = ((i + 1) & queue->numMask) ) {
+        item = queue->itemTable[i];
+        if( !item ) {
+            continue;
+        }
+
+        if( item->player == player ) {
+            /*
+             * Gotta remove this one!
+             */
+            free( item->line );
+            i = QueueRemoveItem( queue, i, LOCKED );
+            free( item );
+        }
+    }
+
+    QueueUnlock( queue );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
