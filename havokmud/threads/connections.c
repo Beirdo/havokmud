@@ -355,6 +355,13 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
     return( prev );
 }
 
+void connClose( ConnectionItem_t *connItem )
+{
+    LinkedListLock( ConnectionList );
+    connRemove( connItem );
+    LinkedListUnlock( ConnectionList );
+}
+
 void connKickOutput( ConnectionItem_t *connItem )
 {
     PlayerStruct_t *player;

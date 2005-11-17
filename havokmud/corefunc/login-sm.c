@@ -767,9 +767,7 @@ void nanny(PlayerStruct_t *player, char *arg)
 
         arg = skip_spaces(arg);
         if (!arg) {
-#ifdef TODO
-            close_socket(d);
-#endif
+            connClose( player->connection );
             return;
         } 
         
@@ -863,158 +861,158 @@ void nanny(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         if (!arg) {
+            connClose( player->connection );
+            return;
+        } 
+
 #ifdef TODO
-            close_socket(d);
-#endif
-        } else {
-#ifdef TODO
-            if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
-                SendOutput("Wrong password.\n\r", player);
-                Log("%s entered a wrong password", GET_NAME(player->charData));
-                close_socket(d);
-                return;
-            }
+        if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+            SendOutput("Wrong password.\n\r", player);
+            Log("%s entered a wrong password", GET_NAME(player->charData));
+            connClose( player->connection );
+            return;
+        }
 #endif
 
 #ifdef IMPL_SECURITY
-            if (top_of_p_table > 0) {
-                if (GetMaxLevel(player->charData) >= 58) {
+        if (top_of_p_table > 0) {
+            if (GetMaxLevel(player->charData) >= 58) {
 #ifdef TODO
-                    switch (SecCheck(GET_NAME(player->charData), d->host)) {
-                    case -1:
-                    case 0:
-                        SendOutput("Security check reveals invalid site\n\r",
-                                   player);
-                        SendOutput("Speak to an implementor to fix problem\n\r",
-                                   player);
-                        SendOutput("If you are an implementor, add yourself to"
-                                   " the\n\r", player);
-                        SendOutput("Security directory (lib/security)\n\r",
-                                   player);
-                        close_socket(d);
-                        break;
-                    }
-#endif
-                }
-            }
-#endif
-            /*
-             * Check if already playing
-             */
-            for (k = descriptor_list; k; k = k->next) {
-                if ((k->character != player->charData) && k->character) {
-                    /*
-                     * check to see if 'character' was switched to by the
-                     * one trying to connect
-                     */
-                    if (k->original) {
-                        if (GET_NAME(k->original) &&
-                            strcasecmp(GET_NAME(k->original),
-                                       GET_NAME(player->charData)) == 0) {
-                            already_p = 1;
-                        }
-                    } else {
-                        /*
-                         * No switch has been made
-                         */
-                        if (GET_NAME(k->character) &&
-                            strcasecmp(GET_NAME(k->character),
-                                       GET_NAME(player->charData)) == 0) {
-                            already_p = 1;
-                        }
-                    }
-                }
-
-                if (already_p) {
-#ifdef TODO
-                    close_socket(k);
-#endif
+                switch (SecCheck(GET_NAME(player->charData), d->host)) {
+                case -1:
+                case 0:
+                    SendOutput("Security check reveals invalid site\n\r",
+                               player);
+                    SendOutput("Speak to an implementor to fix problem\n\r",
+                               player);
+                    SendOutput("If you are an implementor, add yourself to"
+                               " the\n\r", player);
+                    SendOutput("Security directory (lib/security)\n\r",
+                               player);
+                    connClose( player->connection );
                     break;
                 }
-            }
-
-            /*
-             * Check if disconnected ...
-             */
-            for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
-                if ((!strcasecmp(GET_NAME(player->charData), GET_NAME(tmp_ch)) 
-                     && !tmp_ch->desc && !IS_NPC(tmp_ch)) ||
-                    (IS_NPC(tmp_ch) && tmp_ch->orig &&
-                     !strcasecmp(GET_NAME(player->charData),
-                                 GET_NAME(tmp_ch->orig)))) {
-
-                    SendOutputRaw(echo_on, 6, player);
-                    SendOutput("Reconnecting.\n\r", player);
-
-                    free_char(player->charData);
-#ifdef TODO
-                    tmp_ch->desc = d;
-#endif
-                    player->charData = tmp_ch;
-                    tmp_ch->specials.timer = 0;
-
-                    if (!IS_IMMORTAL(tmp_ch)) {
-                        tmp_ch->invis_level = 0;
-                    }
-
-                    if (tmp_ch->orig) {
-                        tmp_ch->desc->original = tmp_ch->orig;
-                        tmp_ch->orig = 0;
-                    }
-
-                    player->charData->persist = 0;
-
-                    if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
-                        act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-#ifdef TODO
-                        Log("%s[%s] has reconnected.", 
-                            GET_NAME(player->charData), d->host);
-#endif
-                    }
-                    
-                    if (player->charData->specials.hostip) {
-                        free(player->charData->specials.hostip);
-                    }
-
-#ifdef TODO
-                    player->charData->specials.hostip = strdup(d->host);
-#endif
-
-                    write_char_extra(player->charData);
-                    EnterState(player, STATE_PLAYING);
-                    return;
-                }
-            }
-
-            load_char_extra(player->charData);
-            if (player->charData->specials.hostip == NULL) {
-                if (!IS_IMMORTAL(player->charData) ||
-                    player->charData->invis_level <= 58) {
-#ifdef TODO
-                    Log("%s[%s] has connected.\n\r", GET_NAME(player->charData),
-                        d->host);
-#endif
-                }
-            } else if (!IS_IMMORTAL(player->charData) ||
-                       player->charData->invis_level <= 58) {
-#ifdef TODO
-                Log("%s[%s] has connected - Last connected from[%s]", 
-                    GET_NAME(player->charData), d->host,
-                    player->charData->specials.hostip);
 #endif
             }
-
-            if (player->charData->specials.hostip) {
-                free(player->charData->specials.hostip);
-            }
-#ifdef TODO
-            player->charData->specials.hostip = strdup(d->host);
-#endif
-            player->charData->last_tell = NULL;
-
-            write_char_extra(player->charData);
-            EnterState(player, STATE_SHOW_MOTD);
         }
+#endif
+        /*
+         * Check if already playing
+         */
+        for (k = descriptor_list; k; k = k->next) {
+            if ((k->character != player->charData) && k->character) {
+                /*
+                 * check to see if 'character' was switched to by the
+                 * one trying to connect
+                 */
+                if (k->original) {
+                    if (GET_NAME(k->original) &&
+                        strcasecmp(GET_NAME(k->original),
+                                   GET_NAME(player->charData)) == 0) {
+                        already_p = 1;
+                    }
+                } else {
+                    /*
+                     * No switch has been made
+                     */
+                    if (GET_NAME(k->character) &&
+                        strcasecmp(GET_NAME(k->character),
+                                   GET_NAME(player->charData)) == 0) {
+                        already_p = 1;
+                    }
+                }
+            }
+
+            if (already_p) {
+#ifdef TODO
+                /* use k */
+                connClose( player->connection );
+#endif
+                break;
+            }
+        }
+
+        /*
+         * Check if disconnected ...
+         */
+        for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
+            if ((!strcasecmp(GET_NAME(player->charData), GET_NAME(tmp_ch)) 
+                 && !tmp_ch->desc && !IS_NPC(tmp_ch)) ||
+                (IS_NPC(tmp_ch) && tmp_ch->orig &&
+                 !strcasecmp(GET_NAME(player->charData),
+                             GET_NAME(tmp_ch->orig)))) {
+
+                SendOutputRaw(echo_on, 6, player);
+                SendOutput("Reconnecting.\n\r", player);
+
+                free_char(player->charData);
+#ifdef TODO
+                tmp_ch->desc = d;
+#endif
+                player->charData = tmp_ch;
+                tmp_ch->specials.timer = 0;
+
+                if (!IS_IMMORTAL(tmp_ch)) {
+                    tmp_ch->invis_level = 0;
+                }
+
+                if (tmp_ch->orig) {
+                    tmp_ch->desc->original = tmp_ch->orig;
+                    tmp_ch->orig = 0;
+                }
+
+                player->charData->persist = 0;
+
+                if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
+                    act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
+#ifdef TODO
+                    Log("%s[%s] has reconnected.", 
+                        GET_NAME(player->charData), d->host);
+#endif
+                }
+                
+                if (player->charData->specials.hostip) {
+                    free(player->charData->specials.hostip);
+                }
+
+#ifdef TODO
+                player->charData->specials.hostip = strdup(d->host);
+#endif
+
+                write_char_extra(player->charData);
+                EnterState(player, STATE_PLAYING);
+                return;
+            }
+        }
+
+        load_char_extra(player->charData);
+        if (player->charData->specials.hostip == NULL) {
+            if (!IS_IMMORTAL(player->charData) ||
+                player->charData->invis_level <= 58) {
+#ifdef TODO
+                Log("%s[%s] has connected.\n\r", GET_NAME(player->charData),
+                    d->host);
+#endif
+            }
+        } else if (!IS_IMMORTAL(player->charData) ||
+                   player->charData->invis_level <= 58) {
+#ifdef TODO
+            Log("%s[%s] has connected - Last connected from[%s]", 
+                GET_NAME(player->charData), d->host,
+                player->charData->specials.hostip);
+#endif
+        }
+
+        if (player->charData->specials.hostip) {
+            free(player->charData->specials.hostip);
+        }
+#ifdef TODO
+        player->charData->specials.hostip = strdup(d->host);
+#endif
+        player->charData->last_tell = NULL;
+
+        write_char_extra(player->charData);
+        EnterState(player, STATE_SHOW_MOTD);
         break;
 
     case STATE_GET_NEW_USER_PASSWORD:
@@ -1405,9 +1403,7 @@ void nanny(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_WIZLOCKED:
-#ifdef TODO
-        close_socket(d);
-#endif
+        connClose( player->connection );
         break;
 
     case STATE_DELETE_USER:
@@ -1452,9 +1448,7 @@ void nanny(PlayerStruct_t *player, char *arg)
             remove(buf);
             sprintf(buf, "rent/%s.aux", GET_NAME(player->charData));
             remove(buf);
-#ifdef TODO
-            close_socket(d);
-#endif
+            connClose( player->connection );
         }
 
         EnterState(player, STATE_SHOW_LOGIN_MENU);
@@ -1478,9 +1472,7 @@ void nanny(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case '0':
-#ifdef TODO
-            close_socket(d);
-#endif
+            connClose( player->connection );
             break;
 
         case '1':
@@ -1680,9 +1672,7 @@ void nanny(PlayerStruct_t *player, char *arg)
         Log("Nanny: illegal state of con'ness (%d)", player->state);
         SendOutput("The mud has lost its brain on your connection, please "
                    "reconnect.\n\r", player);
-#ifdef TODO
-        close_socket(d);
-#endif
+        connClose( player->connection );
         break;
     }
 }
