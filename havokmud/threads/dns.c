@@ -37,6 +37,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdlib.h>
+#include "protected_data.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -44,10 +45,10 @@ static char ident[] _UNUSED_ =
 
 void *DnsThread( void *arg )
 {
-    ConnDnsItem_t  *item;
-    char           *oldHost;
-    struct sockaddr_in sa;
-    struct hostent *from;
+    ConnDnsItem_t      *item;
+    ConnectionItem_t   *connect;
+    struct sockaddr_in  sa;
+    struct hostent     *from;
 
     while( 1 ) {
         item = QueueDequeueItem( ConnectDnsQ, -1 );
@@ -60,9 +61,13 @@ void *DnsThread( void *arg )
         from = gethostbyaddr((char *)&sa.sin_addr, sizeof(sa.sin_addr), 
                              AF_INET);
         if( from ) {
-            oldHost = item->connection->hostName;
-            item->connection->hostName = strdup(from->h_name);
-            free(oldHost);
+            connect = item->connection;
+            ProtectedDataLock(connect->hostName);
+            if( connect->hostName->data ) {
+                free( connect->hostName->data );
+            }
+            connect->hostName->data = strdup(from->h_name);
+            ProtectedDataUnlock(connect->hostName);
         }
 
         free( item );

@@ -7,6 +7,7 @@
 #include <arpa/telnet.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "protected_data.h"
 
 #include "protos.h"
 #include "externs.h"
@@ -626,7 +627,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             }
 
 #ifdef TODO
-            Log("%s [%s] new player.", GET_NAME(player->charData), d->host);
+            ProtectedDataLock(player->connection->hostName);
+            Log("%s [%s] new player.", GET_NAME(player->charData), 
+                (char *)player->connection->hostName->data);
+            ProtectedDataUnlock(player->connection->hostName);
 #endif
 
             /*
@@ -778,13 +782,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-#ifdef TODO
-        if (SiteLock(d->host)) {
+        ProtectedDataLock(player->connection->hostName);
+        if (SiteLock((char *)player->connection->hostName->data)) {
+            ProtectedDataUnlock(player->connection->hostName);
             SendOutput("Sorry, this site is temporarily banned.\n\r", player);
             EnterState(player, STATE_WIZLOCKED);
             return;
         }
-#endif
+        ProtectedDataUnlock(player->connection->hostName);
 
         if ((player_i = load_char(tmp_name, &tmp_store)) > -1) {
             /*
@@ -879,18 +884,22 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (top_of_p_table > 0) {
             if (GetMaxLevel(player->charData) >= 58) {
 #ifdef TODO
-                switch (SecCheck(GET_NAME(player->charData), d->host)) {
+                ProtectedDataLock(player->connection->hostName);
+                switch (SecCheck(GET_NAME(player->charData), 
+                                 (char *)player->connection->hostName->data)) {
                 case -1:
                 case 0:
-                    SendOutput("Security check reveals invalid site\n\r",
+                    SendOutput("Security check reveals invalid site\n\r"
+                               "Speak to an implementor to fix problem\n\r"
+                               "If you are an implementor, add yourself to"
+                               " the\n\r"
+                               "Security directory (lib/security)\n\r",
                                player);
-                    SendOutput("Speak to an implementor to fix problem\n\r",
-                               player);
-                    SendOutput("If you are an implementor, add yourself to"
-                               " the\n\r", player);
-                    SendOutput("Security directory (lib/security)\n\r",
-                               player);
+                    ProtectedDataUnlock(player->connection->hostname);
                     connClose( player->connection );
+                    break;
+                default:
+                    ProtectedDataUnlock(player->connection->hostname);
                     break;
                 }
 #endif
@@ -967,8 +976,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
                     act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
 #ifdef TODO
+                    ProtectedDataLock(player->connection->hostName);
                     Log("%s[%s] has reconnected.", 
-                        GET_NAME(player->charData), d->host);
+                        GET_NAME(player->charData),
+                        (char *)player->connection->hostName->data);
+                    ProtectedDataUnlock(player->connection->hostName);
 #endif
                 }
                 
@@ -976,9 +988,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     free(player->charData->specials.hostip);
                 }
 
-#ifdef TODO
-                player->charData->specials.hostip = strdup(d->host);
-#endif
+                ProtectedDataLock(player->connection->hostName);
+                player->charData->specials.hostip = 
+                            strdup((char *)player->connection->hostName->data);
+                ProtectedDataUnlock(player->connection->hostName);
 
                 write_char_extra(player->charData);
                 EnterState(player, STATE_PLAYING);
@@ -991,25 +1004,31 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if (!IS_IMMORTAL(player->charData) ||
                 player->charData->invis_level <= 58) {
 #ifdef TODO
+                ProtectedDataLock(player->connection->hostName);
                 Log("%s[%s] has connected.\n\r", GET_NAME(player->charData),
-                    d->host);
+                    (char *)player->connection->hostName->data);
+                ProtectedDataUnlock(player->connection->hostName);
 #endif
             }
         } else if (!IS_IMMORTAL(player->charData) ||
                    player->charData->invis_level <= 58) {
 #ifdef TODO
+            ProtectedDataLock(player->connection->hostName);
             Log("%s[%s] has connected - Last connected from[%s]", 
-                GET_NAME(player->charData), d->host,
+                GET_NAME(player->charData), 
+                (char *)player->connection->hostName->data,
                 player->charData->specials.hostip);
+            ProtectedDataUnlock(player->connection->hostName);
 #endif
         }
 
         if (player->charData->specials.hostip) {
             free(player->charData->specials.hostip);
         }
-#ifdef TODO
-        player->charData->specials.hostip = strdup(d->host);
-#endif
+        ProtectedDataLock(player->connection->hostName);
+        player->charData->specials.hostip = 
+                        strdup((char *)player->connection->hostName->data);
+        ProtectedDataUnlock(player->connection->hostName);
         player->charData->last_tell = NULL;
 
         write_char_extra(player->charData);
@@ -1314,8 +1333,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         
         if (player->charData->generic >= NEWBIE_REQUEST) {
 #ifdef TODO
+            ProtectedDataLock(player->connection->hostName);
             sprintf(buf, "%s [%s] new player.", GET_NAME(player->charData),
-                    d->host);
+                    (char *)player->connection->hostName->data);
+            ProtectedDataUnlock(player->connection->hostName);
 #endif
             log_sev(buf, 1);
             /*
@@ -1374,13 +1395,17 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
 
 #ifdef TODO
-        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
+        ProtectedDataLock(player->connection->hostName);
+        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
+             SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
+            ProtectedDataUnlock(player->connection->hostName);
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
             SendOutput(buf, player);
             EnterState(player, STATE_WIZLOCKED);
         } else {
+            ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
 #endif
@@ -1391,13 +1416,17 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * read CR after printing motd
          */
 #ifdef TODO
-        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
+        ProtectedDataLock(player->connection->hostName);
+        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
+             SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
+            ProtectedDataUnlock(player->connection->hostName);
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
             SendOutput(buf, player);
             EnterState(player, STATE_WIZLOCKED);
         } else {
+            ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
 #endif

@@ -20,7 +20,7 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	linked_list.c logging.c queue.c buffer.c
+SRCS =	linked_list.c logging.c queue.c buffer.c protected_data.c
 ARCHIVE =	libhavokutils.a
 
 OBJS = ${SRCS:.c=.o}

@@ -151,11 +151,14 @@ void *ConnectionThread( void *arg )
                 item->fd = newFd;
                 item->buffer = BufferCreate(MAX_BUFSIZE);
 
-                item->hostName = (char *)malloc(16);
+                item->hostName = ProtectedDataCreate();
+                ProtectedDataLock( item->hostName );
+                item->hostName->data = malloc(16);
                 i = sa.sin_addr.s_addr;
-                sprintf(item->hostName, "%d.%d.%d.%d", (i & 0x000000FF),
-                        (i & 0x0000FF00) >> 8, (i & 0x00FF0000) >> 16,
-                        (i & 0xFF000000) >> 24);
+                sprintf((char *)item->hostName->data, "%d.%d.%d.%d", 
+                        (i & 0x000000FF), (i & 0x0000FF00) >> 8, 
+                        (i & 0x00FF0000) >> 16, (i & 0xFF000000) >> 24);
+                ProtectedDataUnlock( item->hostName );
 
                 if (!IS_SET(SystemFlags, SYS_SKIPDNS)) {
                     dnsItem = (ConnDnsItem_t *)malloc(sizeof(ConnDnsItem_t));

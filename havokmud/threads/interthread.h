@@ -35,6 +35,7 @@
 #include "linked_list.h"
 #include "buffer.h"
 #include "queue.h"
+#include "protected_data.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -92,7 +93,7 @@ typedef struct
     BufferObject_t         *buffer;
     struct _PlayerStruct_t *player;
     OutputBuffer_t         *outBufDesc;
-    char                   *hostName;
+    ProtectedData_t        *hostName;
 } ConnectionItem_t;
 
 typedef struct _PlayerStruct_t
