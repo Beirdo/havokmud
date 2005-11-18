@@ -1099,6 +1099,7 @@ int init_socket(int port)
     return fd;
 }
 
+#ifdef TODO
 int new_connection(int s)
 {
     struct sockaddr_in isa;
@@ -1250,6 +1251,7 @@ int new_descriptor(int s)
 
     return (0);
 }
+#endif
 
 #ifndef BLOCK_WRITE
 int process_output(struct descriptor_data *t)
