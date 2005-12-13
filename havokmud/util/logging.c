@@ -52,7 +52,8 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 
-void LogPrint( LogLevel_t level, char *format, ... )
+void LogPrintLine( LogLevel_t level, char *file, int line, char *function,
+                   char *format, ... )
 {
     va_list arguments;
 
