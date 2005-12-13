@@ -75,7 +75,7 @@ LinkedList_t *LinkedListCreate( void )
     list = (LinkedList_t *)malloc(sizeof(LinkedList_t));
     if( list == NULL )
     {
-        LogPrint( LOG_UNKNOWN, "Couldn't create linked list" );
+        LogPrintNoArg( LOG_UNKNOWN, "Couldn't create linked list" );
         return( NULL );
     }
 

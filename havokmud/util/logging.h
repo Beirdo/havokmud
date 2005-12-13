@@ -72,8 +72,16 @@ extern int LogLevelNameCount;
 extern "C" {
 #endif
 
+#define LogPrint(level, format, ...) \
+    LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, format, \
+                 ## __VA_ARGS__)
+
+#define LogPrintNoArg(level, string) \
+    LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, string)
+
 /* Define the external prototype */
-void LogPrint( LogLevel_t level, char *format, ... );
+void LogPrintLine( LogLevel_t level, char *file, int line, char *function, 
+                   char *format, ... );
 bool LogFileAdd( char * filename );
 bool LogStdoutAdd( void );
 bool LogSyslogAdd( int facility );

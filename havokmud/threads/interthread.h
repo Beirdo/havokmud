@@ -36,6 +36,7 @@
 #include "buffer.h"
 #include "queue.h"
 #include "protected_data.h"
+#include "logging.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -147,6 +148,18 @@ typedef struct
     ConnectionItem_t   *connection;
 } ConnDnsItem_t;
 
+typedef struct
+{
+    LogLevel_t          level;
+    pthread_t           threadId;
+    char               *file;
+    int                 line;
+    char               *function;
+    uint32              time_sec;
+    uint32              time_usec;
+    char               *message;
+} LoggingItem_t;
+
 /*
  * Externals used for interthread communication
  */
@@ -155,6 +168,7 @@ extern QueueObject_t *ConnectDnsQ;
 extern QueueObject_t *InputLoginQ;
 extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
+extern QueueObject_t *LoggingQ;
 
 /*
  * Prototypes of the thread entry points
@@ -163,6 +177,7 @@ void *ConnectionThread( void *arg );
 void *InputThread( void *arg );
 void *LoginThread( void *arg );
 void *DnsThread( void *arg );
+void *LoggingThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks

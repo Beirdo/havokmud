@@ -36,6 +36,10 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "logging.h"
+#include "protos.h"
+#include "externs.h"
+#include "interthread.h"
+#include "queue.h"
 
 /* INTERNAL CONSTANT DEFINITIONS */
 
@@ -55,14 +59,53 @@ static char ident[] _UNUSED_ =
 void LogPrintLine( LogLevel_t level, char *file, int line, char *function,
                    char *format, ... )
 {
+    LoggingItem_t *item;
+    struct timeval tv;
     va_list arguments;
 
+    item = (LoggingItem_t *)malloc(sizeof(LoggingItem_t));
+    if( !item ) {
+        return;
+    }
+
+    item->level     = level;
+    item->threadId  = pthread_self();
+    item->file      = file;
+    item->line      = line;
+    item->function  = function;
+    gettimeofday( &tv, NULL );
+    item->time_sec  = tv.tv_sec;
+    item->time_usec = tv.tv_usec;
+    item->message   = (char *)malloc(LOGLINE_MAX+1);
+    if( !item->message ) {
+        free( item );
+        return;
+    }
+
     va_start(arguments, format);
-    vprintf(format, arguments);
+    vsnprintf(item->message, LOGLINE_MAX, format, arguments);
     va_end(arguments);
+
+    QueueEnqueueItem( LoggingQ, item );
 }
 
 
+void *LoggingThread( void *arg )
+{
+    LoggingItem_t      *item;
+
+    while( 1 ) {
+        item = (LoggingItem_t *)QueueDequeueItem( LoggingQ, -1 );
+
+        printf( "%d.%06d %s:%d (%s) - %s\n", item->time_sec, item->time_usec,
+                item->file, item->line, item->function, item->message );
+
+        free( item->message );
+        free( item );
+    }
+
+    return( NULL );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

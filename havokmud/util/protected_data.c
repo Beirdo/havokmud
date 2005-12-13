@@ -75,7 +75,7 @@ ProtectedData_t *ProtectedDataCreate( void )
     blob = (ProtectedData_t *)malloc(sizeof(ProtectedData_t));
     if( blob == NULL )
     {
-        LogPrint( LOG_UNKNOWN, "Couldn't create protected data blob" );
+        LogPrintNoArg( LOG_UNKNOWN, "Couldn't create protected data blob" );
         return( NULL );
     }
 

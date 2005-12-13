@@ -43,22 +43,26 @@ QueueObject_t *ConnectDnsQ;
 QueueObject_t *InputLoginQ;
 QueueObject_t *InputPlayerQ;
 QueueObject_t *InputImmortQ;
+QueueObject_t *LoggingQ;
 
 static pthread_t connectionThreadId;
 static pthread_t inputThreadId;
 static pthread_t loginThreadId;
 static pthread_t dnsThreadId;
+static pthread_t loggingThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 
 void StartThreads( void )
 {
+    LoggingQ      = QueueCreate( 1024 );
     ConnectInputQ = QueueCreate( 256 );
     ConnectDnsQ   = QueueCreate( 64 );
     InputLoginQ   = QueueCreate( 256 );
     InputPlayerQ  = QueueCreate( 256 );
     InputImmortQ  = QueueCreate( 256 );
 
+    pthread_create( &loggingThreadId, NULL, LoggingThread, NULL );
     pthread_create( &dnsThreadId, NULL, DnsThread, NULL );
 
     connectThreadArgs.port = 4000;
@@ -72,6 +76,8 @@ void StartThreads( void )
 
     pthread_join( inputThreadId, NULL );
     pthread_join( connectionThreadId, NULL );
+    pthread_join( dnsThreadId, NULL );
+    pthread_join( loggingThreadId, NULL );
 }
 
 /*

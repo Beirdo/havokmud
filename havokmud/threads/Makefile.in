@@ -12,7 +12,7 @@ ROOT=..
 INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util -I/usr/include/mysql
 
 ##  these are architecture dependent flags
-CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
+CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
 	 ${INCDIRS}
 
 ##  Libraries
@@ -20,7 +20,7 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	master.c connections.c input.c login.c dns.c
+SRCS =	master.c connections.c input.c login.c dns.c logging.c
 ARCHIVE =	libhavokthread.a
 
 OBJS = ${SRCS:.c=.o}
