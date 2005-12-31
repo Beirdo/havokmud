@@ -1,4 +1,9 @@
 *.d
+*.a
 pcedit
-dmserver
+havokmud
 config.h
+config.status
+config.log
+Makefile
+autom4te.cache
