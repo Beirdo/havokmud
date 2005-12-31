@@ -38,6 +38,7 @@
 #include "interthread.h"
 #include "queue.h"
 #include "linked_list.h"
+#include "logging.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

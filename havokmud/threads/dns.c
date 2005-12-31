@@ -38,6 +38,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "protected_data.h"
+#include "logging.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

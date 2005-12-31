@@ -55,6 +55,7 @@
 static char ident[] _UNUSED_ = 
     "$Id$";
 
+LogLevel_t LogLevel = LOG_UNKNOWN;
 
 void LogPrintLine( LogLevel_t level, char *file, int line, char *function,
                    char *format, ... )
@@ -99,8 +100,11 @@ void *LoggingThread( void *arg )
     while( 1 ) {
         item = (LoggingItem_t *)QueueDequeueItem( LoggingQ, -1 );
 
-        printf( "%d.%06d %s:%d (%s) - %s\n", item->time_sec, item->time_usec,
-                item->file, item->line, item->function, item->message );
+        if( item->level < LogLevel ) {
+            printf( "%d.%06d %s:%d (%s) - %s\n", item->time_sec, 
+                    item->time_usec, item->file, item->line, item->function, 
+                    item->message );
+        }
 
         free( item->message );
         free( item );
