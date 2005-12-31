@@ -44,6 +44,9 @@
 #include "version.h"
 #include "logging.h"
 
+static char ident[] _UNUSED_ =
+    "$Id$";
+
 void display_usage(char *progname);
 void handleCmdLineArgs(int argc, char **argv);
 void StartThreads( void );

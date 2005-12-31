@@ -40,6 +40,9 @@
 #include "externs.h"
 #include "logging.h"
 
+static char ident[] _UNUSED_ =
+    "$Id$";
+
 void            shutdown_request(int signal);
 void            logsig(int signal);
 void            hupsig(int signal);

@@ -43,6 +43,10 @@
 #include "externs.h"
 #include "interthread.h"
 
+static char ident[] _UNUSED_ =
+    "$Id$";
+
+
 #define MAX_NAME_LENGTH 11
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);

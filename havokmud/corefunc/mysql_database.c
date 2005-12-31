@@ -39,6 +39,9 @@
 #include "externs.h"
 #include "logging.h"
 
+static char ident[] _UNUSED_ =
+    "$Id$";
+
 static MYSQL *sql;
 
 static char sqlbuf[MAX_STRING_LENGTH];
