@@ -57,7 +57,6 @@
 
 void identd_test(struct sockaddr_in in_addr);
 void display_usage(char *progname);
-void sigsetmaskset( int *set, int count );
 void handleCmdLineArgs(int argc, char **argv);
 void StartThreads( void );
 
@@ -346,21 +345,6 @@ int main(int argc, char **argv)
 
     fclose(log_f);
     return (0);
-}
-
-void sigsetmaskset( int *set, int count )
-{
-    static sigset_t sigset;
-    int i;
-
-    sigemptyset(&sigset);
-    if( set ) {
-        for( i = 0; i < count; i++ ) {
-            sigaddset(&sigset, set[i]);
-        }
-    }
-
-    sigprocmask( SIG_SETMASK, &sigset, NULL );
 }
 
 /*

@@ -94,6 +94,22 @@ void logsig(int signal)
     Log("Signal received. Ignoring.");
 }
 
+void sigsetmaskset( int *set, int count )
+{
+    static sigset_t sigset;
+    int i;
+
+    sigemptyset(&sigset);
+    if( set ) {
+        for( i = 0; i < count; i++ ) {
+            sigaddset(&sigset, set[i]);
+        }
+    }
+
+    sigprocmask( SIG_SETMASK, &sigset, NULL );
+}
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

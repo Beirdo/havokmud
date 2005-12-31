@@ -91,6 +91,7 @@ int             tics = 0;       /* for extern checkpointing */
 
 void sigsetmaskset( int *set, int count );
 
+#if 0
 /*
  *********************************************************************
  *  main game loop and related stuff                                    *
@@ -100,6 +101,7 @@ int __main()
 {
     return (1);
 }
+#endif
 
 /*
  * jdb code - added to try to handle all the different ways the
@@ -126,6 +128,7 @@ void close_socket_fd(int desc)
 #endif
 }
 
+#if 0
 void display_usage(char *progname)
 {
     fprintf(stderr, "Usage:\n"
@@ -400,6 +403,7 @@ int run_the_game(int port)
     Log("Normal termination of game.");
     return( 0 );
 }
+#endif
 
 /*
  * Accept new connects, relay commands, and call 'heartbeat-functs' 
@@ -3228,6 +3232,7 @@ void identd_test(struct sockaddr_in in_addr)
     return;
 }
 
+#if 0
 void sigsetmaskset( int *set, int count )
 {
     static sigset_t sigset;
@@ -3242,6 +3247,7 @@ void sigsetmaskset( int *set, int count )
 
     sigprocmask( SIG_SETMASK, &sigset, NULL );
 }
+#endif
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
