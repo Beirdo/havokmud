@@ -42,6 +42,7 @@
 #include "externs.h"
 #include "utils.h"
 #include "version.h"
+#include "logging.h"
 
 void display_usage(char *progname);
 void handleCmdLineArgs(int argc, char **argv);
@@ -134,7 +135,8 @@ void handleCmdLineArgs(int argc, char **argv)
 
         case 's':
             no_specials = 1;
-            Log("Suppressing assignment of special routines.");
+            LogPrintNoArg(LOG_CRIT, "Suppressing assignment of special "
+                                    "routines.");
             break;
 
         case 'D':
@@ -176,26 +178,26 @@ void handleCmdLineArgs(int argc, char **argv)
 
         case 'A':
             SET_BIT(SystemFlags, SYS_NOANSI);
-            Log("Disabling ALL color");
+            LogPrintNoArg(LOG_CRIT, "Disabling ALL color");
             break;
 
         case 'N':
             SET_BIT(SystemFlags, SYS_SKIPDNS);
-            Log("Disabling DNS");
+            LogPrintNoArg(LOG_CRIT, "Disabling DNS");
             break;
 
         case 'R':
             SET_BIT(SystemFlags, SYS_REQAPPROVE);
-            Log("Newbie authorizes enabled");
+            LogPrintNoArg(LOG_CRIT, "Newbie authorizes enabled");
             break;
 
         case 'L':
             SET_BIT(SystemFlags, SYS_LOGALL);
-            Log("Logging all users");
+            LogPrintNoArg(LOG_CRIT, "Logging all users");
             break;
 
         case 'V':
-            Log("HavokMUD code version: %s", VERSION);
+            LogPrint(LOG_CRIT, "HavokMUD code version: %s", VERSION);
             exit(0);
             break;
 
@@ -231,7 +233,7 @@ void handleCmdLineArgs(int argc, char **argv)
         dir = strdup(DFLT_DIR);
     }
 
-    Log("Using %s as data directory.", dir);
+    LogPrint(LOG_CRIT, "Using %s as data directory.", dir);
 
     if (chdir(dir) < 0) {
         perror("chdir");
@@ -290,14 +292,14 @@ int main(int argc, char **argv)
     handleCmdLineArgs(argc, argv);
 
     Uptime = time(0);
-    Log("HavokMUD code version: %s", VERSION);
-    Log("Running game on port %d.", mud_port);
+    LogPrint(LOG_CRIT, "HavokMUD code version: %s", VERSION);
+    LogPrint(LOG_CRIT, "Running game on port %d.", mud_port);
 
     srandom(time(0));
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
 #ifdef SITELOCK
-    Log("Blanking denied hosts.");
+    LogPrintNoArg(LOG_CRIT, "Blanking denied hosts.");
     for (a = 0; a < MAX_BAN_HOSTS; a++) {
         strcpy(hostlist[a], " \0\0\0\0");
     }
@@ -314,21 +316,21 @@ int main(int argc, char **argv)
 
     descriptor_list = NULL;
 
-    Log("Signal trapping.");
+    LogPrintNoArg(LOG_CRIT, "Signal trapping.");
     signal_setup();
 
     boot_db();
 
-    Log("Entering game loop.");
+    LogPrintNoArg(LOG_CRIT, "Starting threads.");
     spy_flag = FALSE;
 
     StartThreads();
 
     if (reboot_now) {
-        Log("Rebooting.");
+        LogPrintNoArg(LOG_CRIT, "Rebooting.");
     }
 
-    Log("Normal termination of game.");
+    LogPrintNoArg(LOG_CRIT, "Normal termination of game.");
 
     fclose(log_f);
     return (0);

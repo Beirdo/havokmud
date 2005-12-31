@@ -38,6 +38,7 @@
 
 #include "protos.h"
 #include "externs.h"
+#include "logging.h"
 
 void            shutdown_request(int signal);
 void            logsig(int signal);
@@ -66,7 +67,7 @@ void shutdown_request(int signal)
 {
     extern int      mudshutdown;
 
-    Log("Received USR2 - shutdown request");
+    LogPrintNoArg(LOG_CRIT, "Received USR2 - shutdown request");
     mudshutdown = 1;
 }
 
@@ -77,7 +78,8 @@ void hupsig(int signal)
 {
     int             i;
 
-    Log("Received SIGHUP, SIGINT, or SIGTERM. Shutting down");
+    LogPrintNoArg(LOG_CRIT, "Received SIGHUP, SIGINT, or SIGTERM. Shutting "
+                            "down");
 
     raw_force_all("return");
     raw_force_all("save");
@@ -91,7 +93,7 @@ void hupsig(int signal)
 
 void logsig(int signal)
 {
-    Log("Signal received. Ignoring.");
+    LogPrintNoArg(LOG_CRIT, "Signal received. Ignoring.");
 }
 
 void sigsetmaskset( int *set, int count )

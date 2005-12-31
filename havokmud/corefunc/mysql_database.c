@@ -37,6 +37,7 @@
 
 #include "protos.h"
 #include "externs.h"
+#include "logging.h"
 
 static MYSQL *sql;
 
@@ -118,15 +119,15 @@ void db_setup(void)
     }
 
     if( !(sql = mysql_init(NULL)) ) {
-        Log("Unable to initialize a MySQL structure!!");
+        LogPrintNoArg(LOG_CRIT, "Unable to initialize a MySQL structure!!");
         exit(1);
     }
 
-    Log("Using database %s at %s", mysql_db, mysql_host);
+    LogPrint(LOG_CRIT, "Using database %s at %s", mysql_db, mysql_host);
 
     if( !mysql_real_connect(sql, mysql_host, mysql_user, mysql_passwd, 
                             mysql_db, 0, NULL, 0) ) {
-        Log("Unable to connect to the database");
+        LogPrintNoArg(LOG_CRIT, "Unable to connect to the database");
         mysql_error(sql);
         exit(1);
     }
@@ -197,7 +198,7 @@ struct user_report *db_get_report(int reportId, struct user_report *report)
 
         report = (struct user_report *)malloc(sizeof(struct user_report));
         if( !report ) {
-            Log( "Can't allocate a user report buffer!" );
+            LogPrintNoArg( LOG_CRIT, "Can't allocate a user report buffer!" );
             return( NULL );
         }
 
@@ -282,7 +283,7 @@ void db_load_classes(void)
     MYSQL_RES           *resClass, *resSkill;
     MYSQL_ROW           row;
 
-    Log("Loading classes[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading classes[] from SQL");
 
     strcpy(sqlbuf, "SELECT classId, className, classAbbrev "
                    "FROM classes ORDER BY classId ASC");
@@ -291,13 +292,13 @@ void db_load_classes(void)
     resClass = mysql_store_result(sql);
     if( !resClass || !(classCount = mysql_num_rows(resClass))) {
         /* No classes!? */
-        Log( "No classes defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No classes defined in the database!" );
         exit(1);
     }
 
     classes = (struct class_def *)malloc(classCount * sizeof(struct class_def));
     if( !classes ) {
-        Log( "Out of memory allocating classes[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating classes[]" );
         exit(1);
     }
 
@@ -327,7 +328,8 @@ void db_load_classes(void)
                                                      sizeof(struct skillset));
             if( !classes[i].skills ) {
                 classes[i].skillCount = 0;
-                Log( "Dumping skills due to lack of memory" );
+                LogPrintNoArg( LOG_CRIT, "Dumping skills due to lack of "
+                                         "memory" );
                 err = TRUE;
             } else {
                 for( j = 0; j < skillCount; j++ ) {
@@ -362,7 +364,8 @@ void db_load_classes(void)
                                                      sizeof(struct skillset));
             if( !classes[i].mainskills ) {
                 classes[i].mainskillCount = 0;
-                Log( "Dumping mainskills due to lack of memory" );
+                LogPrintNoArg( LOG_CRIT, "Dumping mainskills due to lack of "
+                                         "memory" );
                 err = TRUE;
             } else {
                 for( j = 0; j < skillCount; j++ ) {
@@ -392,7 +395,8 @@ void db_load_classes(void)
                                                  sizeof(struct class_level_t));
             if( !classes[i].levels ) {
                 classes[i].levelCount = 0;
-                Log( "Dumping levels due to lack of memory" );
+                LogPrintNoArg( LOG_CRIT, "Dumping levels due to lack of "
+                                         "memory" );
                 err = TRUE;
             } else {
                 for( j = 0; j < skillCount; j++ ) {
@@ -408,7 +412,7 @@ void db_load_classes(void)
         }
     }
     mysql_free_result(resClass);
-    Log("Finished loading classes[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
 
     if( err ) {
         exit(1);
@@ -425,7 +429,7 @@ void db_load_skills(void)
     MYSQL_RES      *resSkill, *resMsg;
     MYSQL_ROW       row;
 
-    Log("Loading skills[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading skills[] from SQL");
 
     strcpy(sqlbuf, "SELECT skillId, skillName, skillType "
                    "FROM skills ORDER BY skillId ASC");
@@ -434,14 +438,14 @@ void db_load_skills(void)
     resSkill = mysql_store_result(sql);
     if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
         /* No skills!? */
-        Log( "No skills defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No skills defined in the database!" );
         exit(1);
     }
 
     skills = (struct skill_def *)malloc((skillCount + 1) * 
                                         sizeof(struct skill_def));
     if( !skills ) {
-        Log( "Out of memory allocating skills[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating skills[]" );
         exit(1);
     }
 
@@ -475,7 +479,7 @@ void db_load_skills(void)
         exit(1);
     }
 
-    Log("Finished loading skills[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading skills[] from SQL");
 }
 
 void db_load_structures(void)
@@ -485,7 +489,7 @@ void db_load_structures(void)
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading misc structures from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading misc structures from SQL");
 
     /* direction[] */
     strcpy(sqlbuf, "SELECT forward, reverse, trapBits, exit, listExit, "
@@ -495,14 +499,14 @@ void db_load_structures(void)
 
     res = mysql_store_result(sql);
     if( !res || !(directionCount = mysql_num_rows(res)) ) {
-        Log( "No directions defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No directions defined in the database!" );
         exit(1);
     }
 
     direction = (struct dir_data *)malloc(directionCount * 
                                           sizeof(struct dir_data));
     if( !direction ) {
-        Log( "Out of memory allocating direction[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating direction[]" );
         exit(1);
     }
 
@@ -526,13 +530,13 @@ void db_load_structures(void)
 
     res = mysql_store_result(sql);
     if( !res || !(clanCount = mysql_num_rows(res)) ) {
-        Log( "No clans defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No clans defined in the database!" );
         exit(1);
     }
 
     clan_list = (struct clan *)malloc(clanCount * sizeof(struct clan));
     if( !direction ) {
-        Log( "Out of memory allocating clan_list[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating clan_list[]" );
         exit(1);
     }
 
@@ -553,14 +557,14 @@ void db_load_structures(void)
 
     res = mysql_store_result(sql);
     if( !res || !(sectorCount = mysql_num_rows(res)) ) {
-        Log( "No sector types defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No sector types defined in the database!" );
         exit(1);
     }
 
     sectors = (struct sector_data *)malloc(sectorCount * 
                                            sizeof(struct sector_data));
     if( !sectors ) {
-        Log( "Out of memory allocating sectors[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating sectors[]" );
         exit(1);
     }
 
@@ -572,7 +576,7 @@ void db_load_structures(void)
     }
     mysql_free_result(res);
 
-    Log("Finished loading misc structures from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading misc structures from SQL");
 }
 
 
@@ -585,7 +589,7 @@ void db_load_messages(void)
     MYSQL_RES      *res, *resMsg;
     MYSQL_ROW       row;
 
-    Log("Loading fight messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading fight messages from SQL");
 
     strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
                     "WHERE msgId = 2 ORDER BY skillId" );
@@ -593,14 +597,14 @@ void db_load_messages(void)
 
     res = mysql_store_result(sql);
     if( !res || !(fightMessageCount = mysql_num_rows(res)) ) {
-        Log( "No fight messages defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No fight messages defined in the database!" );
         exit(1);
     }
 
     fightMessages = (struct message_list *)malloc(fightMessageCount * 
                                                   sizeof(struct message_list));
     if( !direction ) {
-        Log( "Out of memory allocating fightMessages[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating fightMessages[]" );
         exit(1);
     }
 
@@ -627,7 +631,7 @@ void db_load_messages(void)
     }
     mysql_free_result(res);
 
-    Log("Finished loading fight messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading fight messages from SQL");
 }
 
 void db_load_bannedUsers(void)
@@ -644,21 +648,22 @@ void db_load_bannedUsers(void)
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading banned usernames from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading banned usernames from SQL");
 
     strcpy( sqlbuf, "SELECT name FROM bannedName" );
     mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(bannedUserCount = mysql_num_rows(res)) ) {
-        Log( "No banned usernames defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No banned usernames defined in the "
+                                 "database!" );
         exit(1);
     }
 
     bannedUsers = (struct banned_user *)malloc(bannedUserCount * 
                                                sizeof(struct banned_user));
     if( !bannedUsers ) {
-        Log( "Out of memory allocating bannedUsers[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating bannedUsers[]" );
         exit(1);
     }
 
@@ -684,7 +689,7 @@ void db_load_bannedUsers(void)
     }
     mysql_free_result(res);
 
-    Log("Finished loading banned usernames from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading banned usernames from SQL");
 }
 
 void db_load_socials(void)
@@ -697,7 +702,7 @@ void db_load_socials(void)
     MYSQL_ROW       row;
 
 
-    Log("Loading social messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading social messages from SQL");
 
     strcpy( sqlbuf, "SELECT socialId, hide, minPosition FROM socials "
                     "ORDER BY socialId" );
@@ -705,14 +710,15 @@ void db_load_socials(void)
 
     res = mysql_store_result(sql);
     if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
-        Log( "No social messages defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No social messages defined in the "
+                                 "database!" );
         exit(1);
     }
 
     socialMessages = (struct social_messg *)malloc(socialMessageCount * 
                                                    sizeof(struct social_messg));
     if( !socialMessages ) {
-        Log( "Out of memory allocating socialMessages[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating socialMessages[]" );
         exit(1);
     }
 
@@ -742,7 +748,7 @@ void db_load_socials(void)
     }
     mysql_free_result(res);
 
-    Log("Finishing loading social messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finishing loading social messages from SQL");
 }
 
 void db_load_kick_messages(void)
@@ -754,7 +760,7 @@ void db_load_kick_messages(void)
     MYSQL_RES      *res, *resMsg;
     MYSQL_ROW       row;
 
-    Log("Loading kick messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading kick messages from SQL");
 
     strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
                     "WHERE msgId = 4 ORDER BY skillId" );
@@ -762,14 +768,14 @@ void db_load_kick_messages(void)
 
     res = mysql_store_result(sql);
     if( !res || !(kickMessageCount = mysql_num_rows(res)) ) {
-        Log( "No kick messages defined in the database!" );
+        LogPrintNoArg( LOG_CRIT, "No kick messages defined in the database!" );
         exit(1);
     }
 
     kickMessages = (struct kick_messg *)malloc(kickMessageCount * 
                                                sizeof(struct kick_messg));
     if( !kickMessages ) {
-        Log( "Out of memory allocating kickMessages[]" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating kickMessages[]" );
         exit(1);
     }
 
@@ -796,7 +802,7 @@ void db_load_kick_messages(void)
     }
     mysql_free_result(res);
 
-    Log("Finishing loading kick messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finishing loading kick messages from SQL");
 }
 
 void db_load_poses(void)
@@ -808,7 +814,7 @@ void db_load_poses(void)
     MYSQL_RES      *res, *resMsg;
     MYSQL_ROW       row;
 
-    Log("Loading pose messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading pose messages from SQL");
 
     strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
                     "WHERE msgId = 5 OR msgId = 6 ORDER BY skillId" );
@@ -816,14 +822,14 @@ void db_load_poses(void)
 
     res = mysql_store_result(sql);
     if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
-        Log( "No pose messages defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No pose messages defined in the database!" );
         exit(1);
     }
 
     poseMessages = (struct pose_type *)malloc(poseMessageCount * 
                                               sizeof(struct pose_type));
     if( !poseMessages ) {
-        Log( "Out of memory allocating poseMessages[]" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating poseMessages[]" );
         exit(1);
     }
 
@@ -837,7 +843,7 @@ void db_load_poses(void)
         poseMessages[i].poser_msg = (char **)malloc(classCount * sizeof(char*));
         poseMessages[i].room_msg  = (char **)malloc(classCount * sizeof(char*));
         if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
-            Log( "Out of memory allocating poses" );
+            LogPrintNoArg(LOG_CRIT, "Out of memory allocating poses" );
             exit(1);
         }
 
@@ -869,7 +875,7 @@ void db_load_poses(void)
     }
     mysql_free_result(res);
 
-    Log("Finishing loading pose messages from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finishing loading pose messages from SQL");
 }
 
 /*
@@ -886,7 +892,7 @@ void assign_mobiles( void )
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading mobile procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading mobile procs from SQL");
 
     sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
                      "WHERE `procType` = %d ORDER BY `vnum`", PROC_MOBILE );
@@ -894,7 +900,8 @@ void assign_mobiles( void )
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
-        Log( "No mobile procedures defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No mobile procedures defined in the "
+                                "database!" );
         return;
     }
 
@@ -902,15 +909,16 @@ void assign_mobiles( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_MOBILE )) ) {
-            Log( "assign_mobiles: proc for mobile %s (%s) not registered.",
-                 row[0], row[1] );
+            LogPrint(LOG_CRIT, "assign_mobiles: proc for mobile %s (%s) not "
+                               "registered.", row[0], row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rnum = real_mobile(vnum);
         if (rnum < 0) {
-            Log("assign_mobiles: Mobile %d not found in database.", vnum);
+            LogPrint(LOG_CRIT, "assign_mobiles: Mobile %d not found in "
+                               "database.", vnum);
             continue;
         }
 
@@ -918,7 +926,7 @@ void assign_mobiles( void )
     }
     mysql_free_result(res);
 
-    Log("Finished mobile procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished mobile procs from SQL");
 }
 
 /*
@@ -935,7 +943,7 @@ void assign_objects( void )
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading object procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading object procs from SQL");
 
     sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
                      "WHERE `procType` = %d ORDER BY `vnum`", PROC_OBJECT );
@@ -943,7 +951,8 @@ void assign_objects( void )
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
-        Log( "No object procedures defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No object procedures defined in the "
+                                "database!" );
         return;
     }
 
@@ -951,15 +960,16 @@ void assign_objects( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_OBJECT )) ) {
-            Log( "assign_objects: proc for object %s (%s) not registered.", 
-                 row[0], row[1] );
+            LogPrint(LOG_CRIT, "assign_objects: proc for object %s (%s) not "
+                               "registered.", row[0], row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rnum = real_object(vnum);
         if (rnum < 0) {
-            Log("assign_objects: Object %d not found in database.", vnum);
+            LogPrint(LOG_CRIT, "assign_objects: Object %d not found in "
+                               "database.", vnum);
             continue;
         }
 
@@ -967,7 +977,7 @@ void assign_objects( void )
     }
     mysql_free_result(res);
 
-    Log("Finished object procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished object procs from SQL");
 }
 
 /*
@@ -984,7 +994,7 @@ void assign_rooms( void )
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading room procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading room procs from SQL");
 
     sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
                      "WHERE `procType` = %d ORDER BY `vnum`", PROC_ROOM );
@@ -992,7 +1002,7 @@ void assign_rooms( void )
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
-        Log( "No room procedures defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No room procedures defined in the database!" );
         return;
     }
 
@@ -1000,15 +1010,16 @@ void assign_rooms( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_ROOM )) ) {
-            Log( "assign_rooms: proc for room %s (%s) not registered.", row[0],
-                 row[1] );
+            LogPrint(LOG_CRIT, "assign_rooms: proc for room %s (%s) not "
+                               "registered.", row[0], row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rp = real_roomp(vnum);
         if (!rp) {
-            Log( "assign_objects: Room %d not found in database.", vnum);
+            LogPrint(LOG_CRIT, "assign_objects: Room %d not found in database.",
+                     vnum);
             continue;
         }
 
@@ -1016,7 +1027,7 @@ void assign_rooms( void )
     }
     mysql_free_result(res);
 
-    Log("Finished room procs from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished room procs from SQL");
 }
 
 
@@ -1028,7 +1039,7 @@ void db_load_races(void)
     MYSQL_RES      *res, *resMax;
     MYSQL_ROW       row;
 
-    Log("Loading races[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading races[] from SQL");
 
     strcpy( sqlbuf, "SELECT raceId, raceName, description, raceSize, ageStart, "
                     "ageYoung, ageMature, ageMiddle, ageOld, ageAncient, "
@@ -1038,13 +1049,13 @@ void db_load_races(void)
 
     res = mysql_store_result(sql);
     if( !res || !(raceCount = mysql_num_rows(res)) ) {
-        Log( "No races defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No races defined in the database!" );
         return;
     }
 
     races = (struct race_type *)malloc(raceCount * sizeof(struct race_type));
     if( !races ) {
-        Log( "Out of memory allocating races[]" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating races[]" );
         exit(1);
     }
 
@@ -1074,7 +1085,8 @@ void db_load_races(void)
 
         races[i].racialMax = (int *)malloc(classCount * sizeof(int));
         if( !races[i].racialMax ) {
-            Log( "Out of memory allocating races[i].racialMax" );
+            LogPrintNoArg(LOG_CRIT, "Out of memory allocating "
+                                    "races[i].racialMax" );
             exit(1);
         }
 
@@ -1096,7 +1108,7 @@ void db_load_races(void)
     }
     mysql_free_result(res);
 
-    Log("Finished loading races[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading races[] from SQL");
 }
 
 
@@ -1107,7 +1119,7 @@ void db_load_languages(void)
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    Log("Loading languages[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Loading languages[] from SQL");
 
     strcpy( sqlbuf, "SELECT `langId`, `skillId`, `name` FROM languages "
                     "ORDER BY `langId`" );
@@ -1115,14 +1127,14 @@ void db_load_languages(void)
 
     res = mysql_store_result(sql);
     if( !res || !(languageCount = mysql_num_rows(res)) ) {
-        Log( "No languages defined in the database!" );
+        LogPrintNoArg(LOG_CRIT, "No languages defined in the database!" );
         return;
     }
 
     languages = (struct lang_def *)malloc(languageCount * 
                                           sizeof(struct lang_def));
     if( !languages ) {
-        Log( "Out of memory allocating languages[]" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating languages[]" );
         exit(1);
     }
 
@@ -1136,7 +1148,7 @@ void db_load_languages(void)
     }
     mysql_free_result(res);
 
-    Log("Finished loading languages[] from SQL");
+    LogPrintNoArg(LOG_CRIT, "Finished loading languages[] from SQL");
 }
 
 void db_load_textfiles(void)
@@ -1145,7 +1157,7 @@ void db_load_textfiles(void)
     MYSQL_ROW       row;
 
 
-    Log("Loading Essential Text Files.");
+    LogPrintNoArg(LOG_CRIT, "Loading Essential Text Files.");
 
     if( news ) {
         free( news );
@@ -1366,7 +1378,7 @@ struct board_def *db_lookup_board(int vnum)
     
     board = (struct board_def *)malloc(sizeof(struct board_def));
     if( !board ) {
-        Log( "Out of memory allocating a board structure!" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a board structure!" );
         mysql_free_result(res);
         return( NULL );
     }
@@ -1404,7 +1416,8 @@ struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
     msg = (struct bulletin_board_message *)
               malloc(sizeof(struct bulletin_board_message));
     if( !msg ) {
-        Log( "Out of memory allocating a message structure!" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
+                                "structure!" );
         mysql_free_result(res);
         return( NULL );
     }
@@ -1467,7 +1480,8 @@ int db_get_board_replies(struct board_def *board, int msgId,
     *msg = (struct bulletin_board_message *)
               malloc(sizeof(struct bulletin_board_message) * count);
     if( !*msg ) {
-        Log( "Out of memory allocating a message structure!" );
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
+                                "structure!" );
         mysql_free_result(res);
         return( 0 );
     }

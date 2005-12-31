@@ -289,7 +289,8 @@ int _check_ass_name(char *name)
             break;
 
         default:
-            Log("Grr! invalid value in bannedUsers, interpreter.c _parse_name");
+            LogPrintNoArg(LOG_NOTICE, "Grr! invalid value in bannedUsers, "
+                                      "interpreter.c _parse_name");
             return( 1 );
         }
     }
@@ -658,8 +659,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
 #ifdef TODO
             ProtectedDataLock(player->connection->hostName);
-            Log("%s [%s] new player.", GET_NAME(player->charData), 
-                (char *)player->connection->hostName->data);
+            LogPrint(LOG_INFO, "%s [%s] new player.", 
+                     GET_NAME(player->charData), 
+                     (char *)player->connection->hostName->data);
             ProtectedDataUnlock(player->connection->hostName);
 #endif
 
@@ -904,7 +906,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #ifdef TODO
         if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             SendOutput("Wrong password.\n\r", player);
-            Log("%s entered a wrong password", GET_NAME(player->charData));
+            LogPrint(LOG_INFO, "%s entered a wrong password", 
+                     GET_NAME(player->charData));
             connClose( player->connection );
             return;
         }
@@ -1007,9 +1010,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
 #ifdef TODO
                     ProtectedDataLock(player->connection->hostName);
-                    Log("%s[%s] has reconnected.", 
-                        GET_NAME(player->charData),
-                        (char *)player->connection->hostName->data);
+                    LogPrint(LOG_INFO, "%s[%s] has reconnected.", 
+                             GET_NAME(player->charData),
+                             (char *)player->connection->hostName->data);
                     ProtectedDataUnlock(player->connection->hostName);
 #endif
                 }
@@ -1035,8 +1038,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 player->charData->invis_level <= 58) {
 #ifdef TODO
                 ProtectedDataLock(player->connection->hostName);
-                Log("%s[%s] has connected.\n\r", GET_NAME(player->charData),
-                    (char *)player->connection->hostName->data);
+                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", 
+                         GET_NAME(player->charData),
+                         (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
 #endif
             }
@@ -1044,8 +1048,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                    player->charData->invis_level <= 58) {
 #ifdef TODO
             ProtectedDataLock(player->connection->hostName);
-            Log("%s[%s] has connected - Last connected from[%s]", 
-                GET_NAME(player->charData), 
+            LogPrint(LOG_INFO, "%s[%s] has connected - Last connected from[%s]",
+                     GET_NAME(player->charData), 
                 (char *)player->connection->hostName->data,
                 player->charData->specials.hostip);
             ProtectedDataUnlock(player->connection->hostName);
@@ -1339,7 +1343,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } else {
             SendOutput("Your race seems to be incorrect, please reselect\n\r", 
                        player);
-            Log("Couldn't find a race in creation, screwy!!");
+            LogPrintNoArg(LOG_NOTICE, "Couldn't find a race in creation, "
+                                      "screwy!!");
             EnterState(player, STATE_SHOW_CREATION_MENU);
         }
         break;
@@ -1379,7 +1384,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 log_sev(buf, 1);
                 log_sev("type 'Wizhelp Authorize' for other commands", 1);
             } else {
-                Log("Initial character.  Authorized Automatically");
+                LogPrintNoArg(LOG_NOTICE, "Initial character.  Authorized "
+                                          "Automatically");
                 player->charData->generic = NEWBIE_START + 5;
             }
 
@@ -1470,7 +1476,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(player->charData))) {
-            Log("%s just killed theirself!", GET_NAME(player->charData));
+            LogPrint(LOG_INFO, "%s just killed theirself!", 
+                     GET_NAME(player->charData));
             for (i = 0; i <= top_of_p_table; i++) {
                 if (!strcasecmp(player_table[i].name, 
                                 GET_NAME(player->charData))) {
@@ -1540,7 +1547,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             total_connections++;
             if (!IS_IMMORTAL(player->charData) ||
                 player->charData->invis_level <= 58) {
-                Log("Loading %s's equipment", player->charData->player.name);
+                LogPrint(LOG_INFO, "Loading %s's equipment", 
+                         player->charData->player.name);
             }
 
             count_players = 1;
@@ -1729,7 +1737,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     default:
-        Log("Nanny: illegal state of con'ness (%d)", player->state);
+        LogPrint(LOG_NOTICE, "Nanny: illegal state of con'ness (%d)", 
+                 player->state);
         SendOutput("The mud has lost its brain on your connection, please "
                    "reconnect.\n\r", player);
         connClose( player->connection );
@@ -1762,7 +1771,7 @@ void show_class_selection(PlayerStruct_t *player, int r)
     }
 
     if( !found ) {
-        Log("Screwup in show_class_selection()");
+        LogPrintNoArg(LOG_INFO, "Screwup in show_class_selection()");
     }
 }
 
