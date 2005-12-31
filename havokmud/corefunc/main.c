@@ -31,20 +31,8 @@
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
-#include <errno.h>
-#include <stdio.h>
 #include <ctype.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <string.h>
-#include <strings.h>
-#include <sys/time.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <sys/resource.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,7 +43,6 @@
 #include "utils.h"
 #include "version.h"
 
-void identd_test(struct sockaddr_in in_addr);
 void display_usage(char *progname);
 void handleCmdLineArgs(int argc, char **argv);
 void StartThreads( void );
