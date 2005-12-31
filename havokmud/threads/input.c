@@ -58,6 +58,8 @@ void *InputThread( void *arg )
     char               *buf, *bufend, *bufloc;
     int                 i;
 
+    LogPrintNoArg( LOG_NOTICE, "Starting InputThread" );
+
     PlayerList = LinkedListCreate();
 
     while( 1 ) {

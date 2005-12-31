@@ -45,6 +45,7 @@
 #include "linked_list.h"
 #include "buffer.h"
 #include "queue.h"
+#include "logging.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -83,6 +84,8 @@ void *ConnectionThread( void *arg )
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
 
+    LogPrint( LOG_NOTICE, "Starting Connection Thread, port %d", portNum );
+
     /*
      * Start listening
      */
@@ -116,6 +119,7 @@ void *ConnectionThread( void *arg )
     connAddFd(listenFd, &saveReadFds);
 
     ConnectionList = LinkedListCreate();
+    LogPrint( LOG_DEBUG, "ConnectionList = %p", ConnectionList );
 
     while( 1 ) {
         /*
@@ -145,6 +149,7 @@ void *ConnectionThread( void *arg )
                 /*
                  * No memory!
                  */
+                LogPrintNoArg( LOG_EMERG, "Out of memory!" );
                 close(newFd);
             } else {
                 memset(item, 0, sizeof(ConnectionItem_t));
@@ -174,6 +179,7 @@ void *ConnectionThread( void *arg )
                     /*
                      * No memory!
                      */
+                    LogPrintNoArg( LOG_EMERG, "Out of memory!" );
                     BufferDestroy(item->buffer);
                     close(newFd);
                     free(item);
