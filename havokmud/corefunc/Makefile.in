@@ -21,7 +21,7 @@ LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
 
-SRCS =	login-sm.c output.c
+SRCS =	main.c signals.c login-sm.c output.c mysql_database.c
 ARCHIVE =	libhavokcore.a
 
 OBJS = ${SRCS:.c=.o}

@@ -25,7 +25,7 @@
  *
  * Comments :
  *
- * Thread to handle network connections.
+ * Handles output to characters
  */
 
 #include "environment.h"

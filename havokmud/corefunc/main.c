@@ -1,0 +1,368 @@
+/*
+ *  This file is part of the havokmud package
+ *  Copyright (C) 2005 Gavin Hurlbut
+ *
+ *  havokmud is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*HEADER---------------------------------------------------
+ * $Id$
+ *
+ * Copyright 2005 Gavin Hurlbut
+ * All rights reserved
+ *
+ * Comments :
+ *
+ * Mainline code for the MUD
+ */
+
+#include "config.h"
+#include "environment.h"
+#include "platform.h"
+#include <errno.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <string.h>
+#include <strings.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/resource.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+
+#include "protos.h"
+#include "externs.h"
+#include "utils.h"
+#include "version.h"
+
+void identd_test(struct sockaddr_in in_addr);
+void display_usage(char *progname);
+void sigsetmaskset( int *set, int count );
+void handleCmdLineArgs(int argc, char **argv);
+void StartThreads( void );
+
+/* 
+ * max number of descriptors (connections) 
+ * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
+ */
+#define MAX_CONNECTS 256        
+
+
+#define DFLT_PORT 4000          /* default port */
+#define MAX_HOSTNAME   256
+
+#if 0
+/* 
+ * time delay corresponding to 4
+ * passes/sec 
+ */
+#define OPT_USEC 250000         
+#endif
+
+int             mud_port;
+
+
+#ifdef SITELOCK
+char            hostlist[MAX_BAN_HOSTS][256];    /* list of sites to ban */
+int             numberhosts;
+#endif
+
+
+/*
+ *********************************************************************
+ *  main game loop and related stuff                                    *
+ ********************************************************************* */
+
+int __main()
+{
+    return (1);
+}
+
+void display_usage(char *progname)
+{
+    fprintf(stderr, "Usage:\n"
+                    "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
+                    "[-P sqlPass]\n"
+                    "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
+                    "[port]\n\n",
+                    progname );
+    fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
+                    "\t-s\tDisable special procedures\n"
+                    "\t-D\tDefine the MySQL database (default %s)\n",
+                    DFLT_DIR, DEF_MYSQL_DB );
+    fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
+                    "\t-P\tDefine the MySQL password (default %s)\n"
+                    "\t-H\tDefine the MySQL host (default %s)\n"
+                    "\t-p\tDefine the MUD port (dsfault %d)\n",
+                    DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
+                    DFLT_PORT );
+    fprintf(stderr, "\t-A\tDisable ALL color\n"
+                    "\t-N\tDisable DNS lookups\n"
+                    "\t-R\tEnable newbie authorizing\n"
+                    "\t-L\tLog all users\n"
+                    "\t-h\tShow this help page\n"
+                    "\t-V\tShow version and exit\n\n" );
+    fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
+                    "PORT at the\n"
+                    "\tend of the command line\n\n" );
+}
+
+void handleCmdLineArgs(int argc, char **argv)
+{
+    int             opt;
+    extern char    *optarg;
+    extern int      optind;
+    char           *dir;
+
+    mud_port = -1;
+    dir = NULL;
+
+    while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
+        switch (opt) {
+        case 'd':
+            if( dir ) {
+                free( dir );
+            }
+            dir = strdup(optarg);
+            break;
+
+        case 's':
+            no_specials = 1;
+            Log("Suppressing assignment of special routines.");
+            break;
+
+        case 'D':
+            /* Database */
+            if( mysql_db ) {
+                free( mysql_db );
+            }
+            mysql_db = strdup(optarg);
+            break;
+
+        case 'U':
+            /* Database user */
+            if( mysql_user ) {
+                free( mysql_user );
+            }
+            mysql_user = strdup(optarg);
+            break;
+
+        case 'P':
+            /* Database password */
+            if( mysql_passwd ) {
+                free( mysql_passwd );
+            }
+            mysql_passwd = strdup(optarg);
+            break;
+
+        case 'H':
+            /* Database host */
+            if( mysql_host ) {
+                free( mysql_host );
+            }
+            mysql_host = strdup(optarg);
+            break;
+
+        case 'p':
+            /* MUD Port */
+            mud_port = atoi(optarg);
+            break;
+
+        case 'A':
+            SET_BIT(SystemFlags, SYS_NOANSI);
+            Log("Disabling ALL color");
+            break;
+
+        case 'N':
+            SET_BIT(SystemFlags, SYS_SKIPDNS);
+            Log("Disabling DNS");
+            break;
+
+        case 'R':
+            SET_BIT(SystemFlags, SYS_REQAPPROVE);
+            Log("Newbie authorizes enabled");
+            break;
+
+        case 'L':
+            SET_BIT(SystemFlags, SYS_LOGALL);
+            Log("Logging all users");
+            break;
+
+        case 'V':
+            Log("HavokMUD code version: %s", VERSION);
+            exit(0);
+            break;
+
+        case ':':
+        case '?':
+        case 'h':
+        default:
+            display_usage(argv[0]);
+            exit(1);
+            break;
+        }
+    }
+
+    if( argv[optind] ) {
+        if (!isdigit((int)*argv[optind])) {
+            display_usage(argv[0]);
+            exit(1);
+        } 
+
+        mud_port = atoi(argv[optind]);
+    }
+
+    if( mud_port == -1 ) {
+        mud_port = DFLT_PORT;
+    }
+
+    if (mud_port <= 1024) {
+        printf("Illegal port #\n");
+        exit(1);
+    }
+
+    if( !dir ) {
+        dir = strdup(DFLT_DIR);
+    }
+
+    Log("Using %s as data directory.", dir);
+
+    if (chdir(dir) < 0) {
+        perror("chdir");
+        exit(1);
+    }
+
+    free( dir );
+}
+
+int main(int argc, char **argv)
+{
+    extern int      spy_flag;
+    extern FILE    *log_f;
+    extern long     SystemFlags;
+    void            signal_setup(void);
+    int             load(void);
+
+#ifdef SITELOCK
+    int             a;
+#endif
+#if defined(__sun__) || defined(__NetBSD__)
+    struct rlimit   rl;
+    int             res;
+#endif
+
+    spy_flag = TRUE;
+
+#ifdef MALLOC_DEBUG
+    malloc_debug(1);            /* some systems might not have this lib */
+#endif
+
+    SystemFlags = 0;
+
+#ifdef LOG_ALL
+    SET_BIT(SystemFlags, SYS_LOGALL);
+#endif
+
+#if defined(__sun__) || defined(__NetBSD__)
+    /*
+     **  this block sets the max # of connections.
+     */
+#if defined(__sun__)
+    res = getrlimit(RLIMIT_NOFILE, &rl);
+    rl.rlim_cur = MAX_CONNECTS;
+    res = setrlimit(RLIMIT_NOFILE, &rl);
+#endif
+
+#if defined(__NetBSD__)
+    res = getrlimit(RLIMIT_OFILE, &rl);
+    rl.rlim_cur = MAX_CONNECTS;
+    res = setrlimit(RLIMIT_OFILE, &rl);
+#endif
+
+#endif
+
+    handleCmdLineArgs(argc, argv);
+
+    Uptime = time(0);
+    Log("HavokMUD code version: %s", VERSION);
+    Log("Running game on port %d.", mud_port);
+
+    srandom(time(0));
+    REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
+
+#ifdef SITELOCK
+    Log("Blanking denied hosts.");
+    for (a = 0; a < MAX_BAN_HOSTS; a++) {
+        strcpy(hostlist[a], " \0\0\0\0");
+    }
+    numberhosts = 0;
+#endif
+
+    /*
+     * close stdin 
+     */
+    close(0);
+
+    db_setup();
+    db_initial_load();
+
+    descriptor_list = NULL;
+
+    Log("Signal trapping.");
+    signal_setup();
+
+    boot_db();
+
+    Log("Entering game loop.");
+    spy_flag = FALSE;
+
+    StartThreads();
+
+    if (reboot_now) {
+        Log("Rebooting.");
+    }
+
+    Log("Normal termination of game.");
+
+    fclose(log_f);
+    return (0);
+}
+
+void sigsetmaskset( int *set, int count )
+{
+    static sigset_t sigset;
+    int i;
+
+    sigemptyset(&sigset);
+    if( set ) {
+        for( i = 0; i < count; i++ ) {
+            sigaddset(&sigset, set[i]);
+        }
+    }
+
+    sigprocmask( SIG_SETMASK, &sigset, NULL );
+}
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */

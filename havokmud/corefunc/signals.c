@@ -1,3 +1,33 @@
+/*
+ *  This file is part of the havokmud package
+ *  Copyright (C) 2005 Gavin Hurlbut
+ *
+ *  havokmud is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*HEADER---------------------------------------------------
+ * $Id$
+ *
+ * Copyright 2005 Gavin Hurlbut
+ * All rights reserved
+ *
+ * Comments :
+ *
+ * Handles UNIX signals
+ */
+
 
 #include "config.h"
 #include "environment.h"
@@ -9,7 +39,6 @@
 #include "protos.h"
 #include "externs.h"
 
-void            checkpointing(int signal);
 void            shutdown_request(int signal);
 void            logsig(int signal);
 void            hupsig(int signal);
@@ -30,47 +59,8 @@ void signal_setup(void)
     signal(SIGINT, hupsig);
     signal(SIGALRM, logsig);
     signal(SIGTERM, hupsig);
-
-    /*
-     * set up the deadlock-protection 
-     */
-
-    /*
-     * disabled for testing 
-     */
-#if 0
-    interval.tv_sec = 900; 
-    interval.tv_usec = 0; 
-    itime.it_interval = interval; 
-    itime.it_value = interval; 
-    setitimer(ITIMER_VIRTUAL, &itime, 0); 
-    signal(SIGVTALRM, checkpointing); 
-#endif    
 }
 
-void checkpointing(int signal)
-{
-    extern int      tics;
-
-#if 1
-    if (!tics) {
-        Log("CHECKPOINT shutdown: tics not updated");
-        /*
-         * abort(); temp removal for debug 
-         */
-    } else {
-        tics = 0;
-    }
-#else
-    if (!tics) {
-        Log("CHECKPOINT tics not updated, setting to 1, be very wary");
-        tics = 1;
-    } else {
-        tics = 0;
-    }
-#endif
-
-}
 
 void shutdown_request(int signal)
 {

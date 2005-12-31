@@ -67,6 +67,7 @@ int LogLevelNameCount = NELEMENTS(LogLevelNames);
 extern char *LogLevelNames[];
 extern int LogLevelNameCount;
 #endif
+extern LogLevel_t LogLevel;
 
 #ifdef __cplusplus
 extern "C" {
