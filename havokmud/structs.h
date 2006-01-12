@@ -1589,7 +1589,10 @@ struct char_data {
      * end monitor
      */
 
+#if TODO
     struct descriptor_data *desc;       /* NULL for mobiles */
+#endif
+    void *playerDesc;
     struct char_data *orig;     /* Special for polymorph */
 
     struct char_data *next_in_room;     /* For room->people - list */

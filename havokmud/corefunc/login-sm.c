@@ -53,6 +53,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void show_race_choice(PlayerStruct_t *player);
 void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
+void DoCreationMenu( PlayerStruct_t *player, char arg );
 
 static char     swords[] = ">>>>>>>>";
 #define STAT_SWORD(x) (((x)<18 && (x)>0) ? &(swords[5-(((x)-1)/3)]) : "ERR!")
@@ -560,6 +561,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     player->state = newstate;
 }
 
+
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
     struct descriptor_data *desc;
@@ -575,7 +577,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     struct char_data *tmp_ch;
     struct descriptor_data *k;
     int             count_players = 0;
-    int             bit = 0;
     int             i = 0;
     int             tmpi = 0;
     int             already_p = 0;
@@ -592,9 +593,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_SHOW_CREATION_MENU:
-#if 0
-        show_menu(d);
-#endif
         arg = skip_spaces(arg);
         if( !arg ) {
             show_menu(player);
@@ -602,102 +600,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-        switch (*arg) {
-        case '1':
-            EnterState(player, STATE_CHOOSE_SEX);
-            break;
-        case '2':
-            EnterState(player, STATE_CHOOSE_ANSI);
-            break;
-        case '3':
-            EnterState(player, STATE_CHOOSE_RACE);
-            break;
-        case '4':
-            EnterState(player, STATE_CHOOSE_CLASS);
-            break;
-        case '5':
-            if (player->charData->player.class != 0) {
-                EnterState(player, STATE_CHOOSE_MAIN_CLASS);
-            } else {
-                SendOutput("\nPlease select a class first.\n\r", player);
-            }
-            break;
-        case '6':
-            player->charData->reroll = 20;
-            if (player->charData->player.class != 0) {
-                EnterState(player, STATE_CHOOSE_STATS);
-            } else {
-                SendOutput("\nPlease select a class first.\n\r", player);
-            }
-            break;
-        case '7':
-            EnterState(player, STATE_CHOOSE_ALIGNMENT);
-            break;
-
-        case 'd':
-        case 'D':
-            count_players = 0;
-            for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
-                if (HasClass(player->charData, pc_num_class(bit))) {
-                    count_players++;
-                }
-            }
-            if (count_players <= 0) {
-                SendOutput("Please enter a valid class.", player);
-                return;
-            }
-            if (player->charData->specials.remortclass <= 0) {
-                SendOutput("Please enter a valid main class.", player);
-                return;
-            }
-
-            if (GET_SEX(player->charData) == 0) {
-                SendOutput("Please enter a proper sex.", player);
-                return;
-            }
-
-            if (!GET_ALIGNMENT(player->charData)) {
-                SendOutput("Please choose an alignment.", player);
-                return;
-            }
-            if (!GET_CON(player->charData) || GET_CON(player->charData) == 0) {
-                SendOutput("Please pick your stats.", player);
-                return;
-            }
-
-#ifdef TODO
-            ProtectedDataLock(player->connection->hostName);
-            LogPrint(LOG_INFO, "%s [%s] new player.", 
-                     GET_NAME(player->charData), 
-                     (char *)player->connection->hostName->data);
-            ProtectedDataUnlock(player->connection->hostName);
-#endif
-
-            /*
-             * now that classes are set, initialize
-             */
-            init_char(player->charData);
-
-            /*
-             * create an entry in the file
-             */
-#ifdef TODO
-            d->pos = create_entry(GET_NAME(player->charData));
-#endif
-            save_char(player->charData, AUTO_RENT);
-
-            for( i = 0; newbie_note[i]; i++ ) {
-                SendOutput(newbie_note[i], player);
-            }
-
-            EnterState(player, STATE_SHOW_MOTD);
-            break;
-        default:
-            show_menu(player);
-            SendOutput("Invalid Choice.. Try again..\n\r", player);
-            break;
-        }
+        DoCreationMenu(player, *arg);
         break;
+
     case STATE_CHOOSE_ALIGNMENT:
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -805,9 +710,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (!player->charData) {
             CREATE(player->charData, struct char_data, 1);
             clear_char(player->charData);
-#ifdef TODO
-            player->charData->desc = d;
-#endif
+            player->charData->playerDesc = player;
         }
 
         arg = skip_spaces(arg);
@@ -988,7 +891,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
             if ((!strcasecmp(GET_NAME(player->charData), GET_NAME(tmp_ch)) 
-                 && !tmp_ch->desc && !IS_NPC(tmp_ch)) ||
+                 && !tmp_ch->playerDesc && !IS_NPC(tmp_ch)) ||
                 (IS_NPC(tmp_ch) && tmp_ch->orig &&
                  !strcasecmp(GET_NAME(player->charData),
                              GET_NAME(tmp_ch->orig)))) {
@@ -997,9 +900,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 SendOutput("Reconnecting.\n\r", player);
 
                 free_char(player->charData);
-#ifdef TODO
-                tmp_ch->desc = d;
-#endif
+                tmp_ch->playerDesc = player;
                 player->charData = tmp_ch;
                 tmp_ch->specials.timer = 0;
 
@@ -1007,22 +908,22 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     tmp_ch->invis_level = 0;
                 }
 
+#ifdef TODO
                 if (tmp_ch->orig) {
                     tmp_ch->desc->original = tmp_ch->orig;
                     tmp_ch->orig = 0;
                 }
+#endif
 
                 player->charData->persist = 0;
 
                 if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
                     act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-#ifdef TODO
                     ProtectedDataLock(player->connection->hostName);
                     LogPrint(LOG_INFO, "%s[%s] has reconnected.", 
                              GET_NAME(player->charData),
                              (char *)player->connection->hostName->data);
                     ProtectedDataUnlock(player->connection->hostName);
-#endif
                 }
                 
                 if (player->charData->specials.hostip) {
@@ -1044,24 +945,20 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (player->charData->specials.hostip == NULL) {
             if (!IS_IMMORTAL(player->charData) ||
                 player->charData->invis_level <= 58) {
-#ifdef TODO
                 ProtectedDataLock(player->connection->hostName);
                 LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", 
                          GET_NAME(player->charData),
                          (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
-#endif
             }
         } else if (!IS_IMMORTAL(player->charData) ||
                    player->charData->invis_level <= 58) {
-#ifdef TODO
             ProtectedDataLock(player->connection->hostName);
             LogPrint(LOG_INFO, "%s[%s] has connected - Last connected from[%s]",
                      GET_NAME(player->charData), 
-                (char *)player->connection->hostName->data,
-                player->charData->specials.hostip);
+                     (char *)player->connection->hostName->data,
+                     player->charData->specials.hostip);
             ProtectedDataUnlock(player->connection->hostName);
-#endif
         }
 
         if (player->charData->specials.hostip) {
@@ -1375,12 +1272,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } 
         
         if (player->charData->generic >= NEWBIE_REQUEST) {
-#ifdef TODO
             ProtectedDataLock(player->connection->hostName);
             sprintf(buf, "%s [%s] new player.", GET_NAME(player->charData),
                     (char *)player->connection->hostName->data);
             ProtectedDataUnlock(player->connection->hostName);
-#endif
             log_sev(buf, 1);
             /*
              * I decided to give them another chance.  -Steppenwolf
@@ -1438,7 +1333,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
 
-#ifdef TODO
         ProtectedDataLock(player->connection->hostName);
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
              SiteLock((char *)player->connection->hostName->data)) &&
@@ -1452,14 +1346,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
-#endif
         break;
 
     case STATE_SHOW_WMOTD:
         /*
          * read CR after printing motd
          */
-#ifdef TODO
         ProtectedDataLock(player->connection->hostName);
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
              SiteLock((char *)player->connection->hostName->data)) &&
@@ -1473,7 +1365,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_LOGIN_MENU);
         }
-#endif
         break;
 
     case STATE_WIZLOCKED:
@@ -1750,6 +1641,110 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         SendOutput("The mud has lost its brain on your connection, please "
                    "reconnect.\n\r", player);
         connClose( player->connection );
+        break;
+    }
+}
+
+
+void DoCreationMenu( PlayerStruct_t *player, char arg )
+{
+    int             bit = 0;
+    int             count_players = 0;
+    int             i = 0;
+
+    switch (arg) 
+    {
+    case '1':
+        EnterState(player, STATE_CHOOSE_SEX);
+        break;
+    case '2':
+        EnterState(player, STATE_CHOOSE_ANSI);
+        break;
+    case '3':
+        EnterState(player, STATE_CHOOSE_RACE);
+        break;
+    case '4':
+        EnterState(player, STATE_CHOOSE_CLASS);
+        break;
+    case '5':
+        if (player->charData->player.class != 0) {
+            EnterState(player, STATE_CHOOSE_MAIN_CLASS);
+        } else {
+            SendOutput("\nPlease select a class first.\n\r", player);
+        }
+        break;
+    case '6':
+        player->charData->reroll = 20;
+        if (player->charData->player.class != 0) {
+            EnterState(player, STATE_CHOOSE_STATS);
+        } else {
+            SendOutput("\nPlease select a class first.\n\r", player);
+        }
+        break;
+    case '7':
+        EnterState(player, STATE_CHOOSE_ALIGNMENT);
+        break;
+
+    case 'd':
+    case 'D':
+        count_players = 0;
+        for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
+            if (HasClass(player->charData, pc_num_class(bit))) {
+                count_players++;
+            }
+        }
+        if (count_players <= 0) {
+            SendOutput("Please enter a valid class.", player);
+            return;
+        }
+        if (player->charData->specials.remortclass <= 0) {
+            SendOutput("Please enter a valid main class.", player);
+            return;
+        }
+
+        if (GET_SEX(player->charData) == 0) {
+            SendOutput("Please enter a proper sex.", player);
+            return;
+        }
+
+        if (!GET_ALIGNMENT(player->charData)) {
+            SendOutput("Please choose an alignment.", player);
+            return;
+        }
+        if (!GET_CON(player->charData) || GET_CON(player->charData) == 0) {
+            SendOutput("Please pick your stats.", player);
+            return;
+        }
+
+#ifdef TODO
+        ProtectedDataLock(player->connection->hostName);
+        LogPrint(LOG_INFO, "%s [%s] new player.", GET_NAME(player->charData), 
+                 (char *)player->connection->hostName->data);
+        ProtectedDataUnlock(player->connection->hostName);
+#endif
+
+        /*
+         * now that classes are set, initialize
+         */
+        init_char(player->charData);
+
+        /*
+         * create an entry in the file
+         */
+#ifdef TODO
+        d->pos = create_entry(GET_NAME(player->charData));
+#endif
+        save_char(player->charData, AUTO_RENT);
+
+        for( i = 0; newbie_note[i]; i++ ) {
+            SendOutput(newbie_note[i], player);
+        }
+
+        EnterState(player, STATE_SHOW_MOTD);
+        break;
+    default:
+        show_menu(player);
+        SendOutput("Invalid Choice.. Try again..\n\r", player);
         break;
     }
 }
