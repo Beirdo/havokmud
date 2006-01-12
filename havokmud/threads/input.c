@@ -45,7 +45,6 @@ static char ident[] _UNUSED_ =
 
 static LinkedList_t *PlayerList;
 
-void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
 
 void *InputThread( void *arg )
 {

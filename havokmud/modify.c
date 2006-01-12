@@ -92,6 +92,7 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
  *  modification of malloc'ed strings                                      *
  ************************************************************************ */
 
+#ifdef DONE
 /*
  * Add user input to the 'current' string (as defined by d->str) 
  */
@@ -253,6 +254,7 @@ void string_add(struct descriptor_data *d, char *str)
         strcat(*d->str, "\r\n");
     }
 }
+#endif
 
 
 /*

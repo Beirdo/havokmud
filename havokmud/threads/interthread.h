@@ -114,6 +114,10 @@ typedef struct _PlayerStruct_t
 
     struct char_data   *charData;
 
+    char              **editString;
+    int                 editStringLen;
+    QueueObject_t      *editOldHandlingQ;
+
     char                stat[MAX_STAT];
     int                 prompt_mode;
 } PlayerStruct_t;
@@ -169,6 +173,7 @@ typedef struct
 extern QueueObject_t *ConnectInputQ;
 extern QueueObject_t *ConnectDnsQ;
 extern QueueObject_t *InputLoginQ;
+extern QueueObject_t *InputEditorQ;
 extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
 extern QueueObject_t *LoggingQ;
@@ -179,6 +184,7 @@ extern QueueObject_t *LoggingQ;
 void *ConnectionThread( void *arg );
 void *InputThread( void *arg );
 void *LoginThread( void *arg );
+void *EditorThread( void *arg );
 void *DnsThread( void *arg );
 void *LoggingThread( void *arg );
 
@@ -196,6 +202,8 @@ void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player );
 int ch_printf(PlayerStruct_t *player, char *fmt, ...);
 void LoginSendBanner( PlayerStruct_t *player );
 void LoginStateMachine(PlayerStruct_t *player, char *arg);
+void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
+void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
 
 
 #endif

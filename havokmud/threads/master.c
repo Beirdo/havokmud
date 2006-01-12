@@ -42,6 +42,7 @@ static char ident[] _UNUSED_ =
 QueueObject_t *ConnectInputQ;
 QueueObject_t *ConnectDnsQ;
 QueueObject_t *InputLoginQ;
+QueueObject_t *InputEditorQ;
 QueueObject_t *InputPlayerQ;
 QueueObject_t *InputImmortQ;
 QueueObject_t *LoggingQ;
@@ -49,6 +50,7 @@ QueueObject_t *LoggingQ;
 static pthread_t connectionThreadId;
 static pthread_t inputThreadId;
 static pthread_t loginThreadId;
+static pthread_t editorThreadId;
 static pthread_t dnsThreadId;
 static pthread_t loggingThreadId;
 
@@ -60,6 +62,7 @@ void StartThreads( void )
     ConnectInputQ = QueueCreate( 256 );
     ConnectDnsQ   = QueueCreate( 64 );
     InputLoginQ   = QueueCreate( 256 );
+    InputEditorQ  = QueueCreate( 256 );
     InputPlayerQ  = QueueCreate( 256 );
     InputImmortQ  = QueueCreate( 256 );
 
@@ -74,7 +77,10 @@ void StartThreads( void )
 
     pthread_create( &inputThreadId, NULL, InputThread, NULL );
     pthread_create( &loginThreadId, NULL, LoginThread, NULL );
+    pthread_create( &editorThreadId, NULL, EditorThread, NULL );
 
+    pthread_join( editorThreadId, NULL );
+    pthread_join( loginThreadId, NULL );
     pthread_join( inputThreadId, NULL );
     pthread_join( connectionThreadId, NULL );
     pthread_join( dnsThreadId, NULL );

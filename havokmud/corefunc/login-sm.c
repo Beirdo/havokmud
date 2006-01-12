@@ -542,6 +542,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_EDIT_EXTRA_DESCR:
         SendOutput("<type /w to save.>\n\r", player);
+        EditorStart(player, &player->charData->player.description, 240);
         break;
     case STATE_PRESS_ENTER:
         SendOutput("\n\r<Press enter to continue>", player);
@@ -1559,10 +1560,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 }
                 player->charData->player.description = 0;
             }
-#ifdef TODO
-            d->str = &player->charData->player.description;
-            d->max_str = 240;
-#endif
             EnterState(player, STATE_EDIT_EXTRA_DESCR);
             break;
 

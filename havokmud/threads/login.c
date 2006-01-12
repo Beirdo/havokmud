@@ -25,7 +25,7 @@
  *
  * Comments :
  *
- * Thread to handle network connections.
+ * Thread to handle the login process for each user
  */
 
 #include "environment.h"
