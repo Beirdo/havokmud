@@ -113,6 +113,9 @@ typedef struct _PlayerStruct_t
     QueueObject_t      *outputQ;
 
     struct char_data   *charData;
+
+    char                stat[MAX_STAT];
+    int                 prompt_mode;
 } PlayerStruct_t;
 
 typedef enum

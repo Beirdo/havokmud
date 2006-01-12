@@ -1608,6 +1608,7 @@ struct char_data {
     int             old_exp;    /* For energe restore -MW */
     int             style;      /* Fighting Style!!! */
     struct weaponskills weaponskills;   /* the weaponry shiznit -Lennya */
+    char            pwd[12];    /* password */
 };
 
 /*

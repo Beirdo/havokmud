@@ -564,7 +564,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
+#ifdef TODO
     struct descriptor_data *desc;
+#endif
     char            buf[1024];
 
     int             player_i;
@@ -575,11 +577,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     char            tmp_name[20];
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
+#ifdef TODO
     struct descriptor_data *k;
     int             count_players = 0;
+#endif
     int             i = 0;
     int             tmpi = 0;
+#ifdef TODO
     int             already_p = 0;
+#endif
     int             pick = 0;
     struct char_file_u ch_st;
     FILE           *char_file;
@@ -739,8 +745,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * connecting an existing character ...
              */
             store_to_char(&tmp_store, player->charData);
+            strcpy(player->charData->pwd, tmp_store.pwd);
 #ifdef TODO
-            strcpy(d->pwd, tmp_store.pwd);
             d->pos = player_table[player_i].nr;
 #endif
             EnterState(player, STATE_GET_PASSWORD);
@@ -814,20 +820,18 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
-#ifdef TODO
-        if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+        if (strncmp((char *) crypt(arg, player->charData->pwd), 
+                    player->charData->pwd, 10)) {
             SendOutput("Wrong password.\n\r", player);
             LogPrint(LOG_INFO, "%s entered a wrong password", 
                      GET_NAME(player->charData));
             connClose( player->connection );
             return;
         }
-#endif
 
 #ifdef IMPL_SECURITY
         if (top_of_p_table > 0) {
             if (GetMaxLevel(player->charData) >= 58) {
-#ifdef TODO
                 ProtectedDataLock(player->connection->hostName);
                 switch (SecCheck(GET_NAME(player->charData), 
                                  (char *)player->connection->hostName->data)) {
@@ -846,10 +850,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     ProtectedDataUnlock(player->connection->hostname);
                     break;
                 }
-#endif
             }
         }
 #endif
+
+#ifdef TODO
         /*
          * Check if already playing
          */
@@ -885,6 +890,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 break;
             }
         }
+#endif
 
         /*
          * Check if disconnected ...
@@ -989,10 +995,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-#ifdef TODO
-        strncpy(d->pwd, (char *) crypt(arg, player->charData->player.name), 10);
-        d->pwd[10] = '\0';
-#endif
+        strncpy(player->charData->pwd, 
+                (char *)crypt(arg, player->charData->player.name), 10);
+        player->charData->pwd[10] = '\0';
+
         SendOutputRaw(echo_on, 6, player);
         EnterState(player, STATE_CONFIRM_PASSWORD);
         break;
@@ -1005,15 +1011,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-#ifdef TODO
-        if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+        if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
+                            player->charData->pwd, 10)) {
             SendOutputRaw(echo_on, 6, player);
 
             SendOutput("Passwords don't match.\n\r", player);
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         } 
-#endif
 
         SendOutputRaw(echo_on, 6, player);
         EnterState(player, STATE_CHOOSE_ANSI);
@@ -1064,28 +1069,27 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         index = 0;
-#ifdef TODO
         while (arg && *arg && index < MAX_STAT) {
             switch(tolower(*arg)) {
             case 's':
-                d->stat[index++] = 's';
+                player->stat[index++] = 's';
                 break;
             case 'i':
-                d->stat[index++] = 'i';
+                player->stat[index++] = 'i';
                 break;
             case 'w':
-                d->stat[index++] = 'w';
+                player->stat[index++] = 'w';
                 break;
             case 'd':
-                d->stat[index++] = 'd';
+                player->stat[index++] = 'd';
                 break;
             case 'c':
                 arg++;
                 if(tolower(*arg) == 'o') {
-                    d->stat[index++] = 'o';
+                    player->stat[index++] = 'o';
                     break;
                 } else if (tolower(*arg) == 'h') {
-                    d->stat[index++] = 'h';
+                    player->stat[index++] = 'h';
                     break;
                 } 
                 /* If neither Co or Ch, fall through to default */
@@ -1103,7 +1107,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 arg++;
             }
         }
-#endif
 
         if (index < MAX_STAT) {
             SendOutput("You did not enter enough legal stats\n\r", player);
@@ -1257,9 +1260,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_WAIT_FOR_AUTH:
         if (player->charData->generic >= NEWBIE_START) {
             /*
-             ** now that classes are set, initialize
+             * now that classes are set, initialize
              */
             init_char(player->charData);
+
             /*
              * create an entry in the file
              */
@@ -1450,6 +1454,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                          player->charData->player.name);
             }
 
+#ifdef TODO
             count_players = 1;
             for (desc = descriptor_list; desc; desc = desc->next) {
                 if (!desc->connected) {
@@ -1460,6 +1465,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if (total_max_players < count_players) {
                 total_max_players = count_players;
             }
+#endif
             load_char_objs(player->charData);
 
             save_char(player->charData, AUTO_RENT);
@@ -1539,9 +1545,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                              "auction.\n\r", player);
                 do_save(player->charData, "", 0);
             }
-#ifdef TODO
-            d->prompt_mode = 1;
-#endif
+            player->prompt_mode = 1;
             break;
 
         case '2':
@@ -1600,10 +1604,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-#ifdef TODO
-        strncpy(d->pwd, (char *) crypt(arg, player->charData->player.name), 10);
-        *(d->pwd + 10) = '\0';
-#endif
+        strncpy(player->charData->pwd, 
+                (char *) crypt(arg, player->charData->player.name), 10);
+        player->charData->pwd[10] = '\0';
         SendOutputRaw(echo_on, 6, player);
 
         EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
@@ -1618,14 +1621,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-#ifdef TODO
-        if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+        if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
+                            player->charData->pwd, 10)) {
             SendOutputRaw(echo_on, 6, player);
             SendOutput("Passwords don't match.\n\r", player);
             EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
-#endif
 
         SendOutputRaw(echo_on, 6, player);
 
@@ -1648,9 +1650,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
 void DoCreationMenu( PlayerStruct_t *player, char arg )
 {
-    int             bit = 0;
-    int             count_players = 0;
-    int             i = 0;
+    int             bit;
+    int             bitcount;
+    int             i;
 
     switch (arg) 
     {
@@ -1687,13 +1689,13 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
 
     case 'd':
     case 'D':
-        count_players = 0;
+        bitcount = 0;
         for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
             if (HasClass(player->charData, pc_num_class(bit))) {
-                count_players++;
+                bitcount++;
             }
         }
-        if (count_players <= 0) {
+        if (bitcount <= 0) {
             SendOutput("Please enter a valid class.", player);
             return;
         }
@@ -1716,12 +1718,10 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
             return;
         }
 
-#ifdef TODO
         ProtectedDataLock(player->connection->hostName);
         LogPrint(LOG_INFO, "%s [%s] new player.", GET_NAME(player->charData), 
                  (char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
-#endif
 
         /*
          * now that classes are set, initialize
