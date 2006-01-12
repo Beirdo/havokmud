@@ -587,6 +587,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     SendOutputRaw(echo_on, 6, player);
 
     switch (player->state) {
+    case STATE_INITIAL:
+        EnterState(player, STATE_GET_NAME);
+        break;
+
     case STATE_SHOW_CREATION_MENU:
 #if 0
         show_menu(d);
