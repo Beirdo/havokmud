@@ -25,7 +25,7 @@
  *
  * Comments :
  *
- * Thread to handle network connections.
+ * Thread to handle input and feed it to the consuming threads
  */
 
 #include "environment.h"
@@ -102,6 +102,7 @@ void *InputThread( void *arg )
             LinkedListAdd( PlayerList, (LinkedListItem_t *)player, UNLOCKED,
                            AT_TAIL );
             break;
+
         case CONN_INPUT_AVAIL:
             /*
              * If we've been asked to flush for this user, flush
@@ -273,6 +274,31 @@ void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
     QueueUnlock( queue );
 }
 
+
+PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
+{
+    LinkedListItem_t *item;
+    PlayerStruct_t *player;
+
+    LinkedListLock( PlayerList );
+
+    for( item = PlayerList->head; item; item = item->next ) {
+        player = (PlayerStruct_t *)item;
+        if( player == oldPlayer ) {
+            continue;
+        }
+        
+        if( (player->originalData && 
+             strcasecmp(GET_NAME(player->originalData), name) == 0) ||
+            strcasecmp(GET_NAME(player->charData), name) == 0 ) {
+            LinkedListUnlock( PlayerList );
+            return( player );
+        }
+    }
+
+    LinkedListUnlock( PlayerList );
+    return( NULL );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

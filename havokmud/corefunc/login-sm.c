@@ -579,18 +579,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
 #ifdef TODO
-    struct descriptor_data *k;
     int             count_players = 0;
 #endif
     int             i = 0;
     int             tmpi = 0;
-#ifdef TODO
-    int             already_p = 0;
-#endif
     int             pick = 0;
     struct char_file_u ch_st;
     FILE           *char_file;
     struct obj_data *obj;
+    PlayerStruct_t *oldPlayer;
 
     SendOutputRaw(echo_on, 6, player);
 
@@ -662,9 +659,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case 'y':
-            /*
-             * Set ansi
-             */
             SET_BIT(player->charData->player.user_flags, USE_ANSI);
 
             SendOutput("$c0012A$c0010n$c0011s$c0014i$c0007 colors "
@@ -673,6 +667,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         case 'n':
+            REMOVE_BIT(player->charData->player.user_flags, USE_ANSI);
             EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
@@ -855,43 +850,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 #endif
 
-#ifdef TODO
         /*
          * Check if already playing
          */
-        for (k = descriptor_list; k; k = k->next) {
-            if ((k->character != player->charData) && k->character) {
-                /*
-                 * check to see if 'character' was switched to by the
-                 * one trying to connect
-                 */
-                if (k->original) {
-                    if (GET_NAME(k->original) &&
-                        strcasecmp(GET_NAME(k->original),
-                                   GET_NAME(player->charData)) == 0) {
-                        already_p = 1;
-                    }
-                } else {
-                    /*
-                     * No switch has been made
-                     */
-                    if (GET_NAME(k->character) &&
-                        strcasecmp(GET_NAME(k->character),
-                                   GET_NAME(player->charData)) == 0) {
-                        already_p = 1;
-                    }
-                }
-            }
-
-            if (already_p) {
-#ifdef TODO
-                /* use k */
-                connClose( player->connection );
-#endif
-                break;
-            }
+        oldPlayer = FindCharacterNamed( GET_NAME(player->charData), player );
+        if( oldPlayer ) {
+            connClose( oldPlayer->connection );
+            break;
         }
-#endif
 
         /*
          * Check if disconnected ...
