@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle the login process for each user
+ */
+
+/**
+ * @file
+ * @brief Thread to handle the login process for each user
  */
 
 #include "environment.h"
@@ -40,6 +41,16 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
+
+/**
+ * @brief Thread to handle the login process for each user
+ * @param arg unused
+ * @return never returns until shutdown
+ *
+ * Receives lines of input from the Input thread and feeds them to the
+ * LoginStateMachine which will guide the user through login and character
+ * creation.
+ */
 void *LoginThread( void *arg )
 {
     InputStateItem_t   *item;
