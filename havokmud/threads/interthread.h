@@ -206,6 +206,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg);
 void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
 void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
 PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer );
+int GetPlayerCount( void );
 
 
 #endif

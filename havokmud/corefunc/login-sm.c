@@ -383,7 +383,6 @@ void show_menu(PlayerStruct_t *player)
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             chosen = 0;
     int             i;
 
@@ -481,13 +480,12 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutputRaw(echo_off, 4, player);
         break;
     case STATE_CONFIRM_NAME:
-        sprintf(buf, "Did I get that right, %s (Y/N)? ",
-                GET_NAME(player->charData));
-        SendOutput(buf, player);
+        ch_printf(player, "Did I get that right, %s (Y/N)? ",
+                  GET_NAME(player->charData));
         break;
     case STATE_GET_NEW_USER_PASSWORD:
-        sprintf(buf, "Give me a password for %s: ", GET_NAME(player->charData));
-        SendOutput(buf, player);
+        ch_printf(player, "Give me a password for %s: ", 
+                  GET_NAME(player->charData));
         SendOutputRaw(echo_off, 4, player);
         break;
     case STATE_GET_NAME:
@@ -506,21 +504,20 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_REROLL:
         SendOutput("Your current stats are:\n\r", player);
-        sprintf(buf, "STR: -]%s\n\r", STAT_SWORD(GET_STR(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "CON: -]%s\n\r", STAT_SWORD(GET_CON(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "INT: -]%s\n\r", STAT_SWORD(GET_INT(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any"
-                     " other key to keep.\n\r", player->charData->reroll);
-        SendOutput(buf, player);
+        ch_printf(player, "STR: -]%s\n\r", 
+                  STAT_SWORD(GET_STR(player->charData)));
+        ch_printf(player, "CON: -]%s\n\r", 
+                  STAT_SWORD(GET_CON(player->charData)));
+        ch_printf(player, "DEX: -]%s\n\r", 
+                  STAT_SWORD(GET_DEX(player->charData)));
+        ch_printf(player, "INT: -]%s\n\r", 
+                  STAT_SWORD(GET_INT(player->charData)));
+        ch_printf(player, "WIS: -]%s\n\r", 
+                  STAT_SWORD(GET_WIS(player->charData)));
+        ch_printf(player, "CHR: -]%s\n\r", 
+                  STAT_SWORD(GET_CHR(player->charData)));
+        ch_printf(player, "\n\rYou have %d rerolls left, press R to reroll, any"
+                          " other key to keep.\n\r", player->charData->reroll);
         break;
     case STATE_CHECK_MAGE_TYPE:
         for( i = 0; ru_sorcerer[i]; i++ ) {
@@ -565,11 +562,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
-#ifdef TODO
-    struct descriptor_data *desc;
-#endif
     char            buf[1024];
-
     int             player_i;
     int             class,
                     race,
@@ -578,9 +571,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     char            tmp_name[20];
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
-#ifdef TODO
-    int             count_players = 0;
-#endif
     int             i = 0;
     int             tmpi = 0;
     int             pick = 0;
@@ -588,6 +578,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     FILE           *char_file;
     struct obj_data *obj;
     PlayerStruct_t *oldPlayer;
+    int             count_players;
 
     SendOutputRaw(echo_on, 6, player);
 
@@ -757,7 +748,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             }
 
             if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
-                sprintf(buf, "Sorry, no new characters at this time\n\r");
+                SendOutput("Sorry, no new characters at this time\n\r", player);
                 EnterState(player, STATE_WIZLOCKED);
                 return;
             }
@@ -1117,18 +1108,18 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } 
         
         SendOutput("Your final stats are:\n\r", player);
-        sprintf(buf, "STR: -]%s\n\r", STAT_SWORD(GET_STR(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "CON: -]%s\n\r", STAT_SWORD(GET_CON(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "INT: -]%s\n\r", STAT_SWORD(GET_INT(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(player->charData)));
-        SendOutput(buf, player);
-        sprintf(buf, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(player->charData)));
-        SendOutput(buf, player);
+        ch_printf(player, "STR: -]%s\n\r", 
+                  STAT_SWORD(GET_STR(player->charData)));
+        ch_printf(player, "CON: -]%s\n\r", 
+                  STAT_SWORD(GET_CON(player->charData)));
+        ch_printf(player, "DEX: -]%s\n\r", 
+                  STAT_SWORD(GET_DEX(player->charData)));
+        ch_printf(player, "INT: -]%s\n\r", 
+                  STAT_SWORD(GET_INT(player->charData)));
+        ch_printf(player, "WIS: -]%s\n\r", 
+                  STAT_SWORD(GET_WIS(player->charData)));
+        ch_printf(player, "CHR: -]%s\n\r", 
+                  STAT_SWORD(GET_CHR(player->charData)));
         SendOutput("Stats chosen!", player);
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
@@ -1268,9 +1259,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              */
             /* NEWBIE_START == 3 == 3 chances */
             player->charData->generic--;
-            sprintf(buf, "Please wait. You have %d requests remaining.\n\r",
-                    player->charData->generic);
-            SendOutput(buf, player);
+            ch_printf(player, "Please wait. You have %d requests "
+                              "remaining.\n\r", player->charData->generic);
             if (player->charData->generic == 0) {
                 EnterState(player, STATE_WIZLOCKED);
             } else {
@@ -1309,9 +1299,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
             ProtectedDataUnlock(player->connection->hostName);
-            sprintf(buf, "Sorry, the game is locked up for repair or your "
-                         "site is banned.\n\r");
-            SendOutput(buf, player);
+            SendOutput("Sorry, the game is locked up for repair or your "
+                       "site is banned.\n\r", player);
             EnterState(player, STATE_WIZLOCKED);
         } else {
             ProtectedDataUnlock(player->connection->hostName);
@@ -1328,9 +1317,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
             ProtectedDataUnlock(player->connection->hostName);
-            sprintf(buf, "Sorry, the game is locked up for repair or your "
-                         "site is banned.\n\r");
-            SendOutput(buf, player);
+            SendOutput("Sorry, the game is locked up for repair or your "
+                       "site is banned.\n\r", player);
             EnterState(player, STATE_WIZLOCKED);
         } else {
             ProtectedDataUnlock(player->connection->hostName);
@@ -1421,18 +1409,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                          player->charData->player.name);
             }
 
-#ifdef TODO
-            count_players = 1;
-            for (desc = descriptor_list; desc; desc = desc->next) {
-                if (!desc->connected) {
-                    count_players++;
-                }
-            }
+            count_players = GetPlayerCount();
 
             if (total_max_players < count_players) {
                 total_max_players = count_players;
             }
-#endif
+
             load_char_objs(player->charData);
 
             save_char(player->charData, AUTO_RENT);

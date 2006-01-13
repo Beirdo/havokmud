@@ -277,8 +277,8 @@ void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
 
 PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
 {
-    LinkedListItem_t *item;
-    PlayerStruct_t *player;
+    LinkedListItem_t   *item;
+    PlayerStruct_t     *player;
 
     LinkedListLock( PlayerList );
 
@@ -298,6 +298,24 @@ PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
 
     LinkedListUnlock( PlayerList );
     return( NULL );
+}
+
+int GetPlayerCount( void )
+{
+    LinkedListItem_t   *item;
+    int                 i;
+
+    i = 0;
+
+    LinkedListLock( PlayerList );
+
+    for( item = PlayerList->head; item; item = item->next ) {
+        i++;
+    }
+
+    LinkedListUnlock( PlayerList );
+
+    return( i );
 }
 
 /*
