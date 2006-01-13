@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle network connections.
+ */
+
+/**
+ * @file
+ * @brief Thread to handle DNS lookups
  */
 
 #include "environment.h"
@@ -44,6 +45,17 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 
+/**
+ * @brief Handles asynchronous DNS lookups
+ * @param arg unused
+ * @return never returns until shutdown
+ *
+ * As DNS queries can take some time, looking up the hostname for incoming
+ * connections is done asynchronously by this thread.  The requests come in on
+ * the ConnectDnsQ, and the results are placed into the connection structure
+ * directly.  To keep away from data synchronization issues, the hostname is 
+ * protected by a mutex using ProtectedDataLock.
+ */
 void *DnsThread( void *arg )
 {
     ConnDnsItem_t      *item;

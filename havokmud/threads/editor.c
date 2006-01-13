@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle editing text for each user
+ */
+
+/**
+ * @file
+ * @brief Thread to handle editing text for each user
  */
 
 #include "environment.h"
@@ -43,6 +44,20 @@ static char ident[] _UNUSED_ =
 
 void AddEditorInput( PlayerStruct_t *player, char *line);
 
+/**
+ * @brief Handles players editing text
+ * @param arg unused
+ * @return never returns until shutdown
+ *
+ * To allow the users to edit their descriptions, send mail, post messages, etc
+ * it is necessary to have an in-game editor.  While we don't technically need
+ * a special thread for this, it makes the Input thread logic simpler to 
+ * implement it this way.
+ *
+ * This thread will receive lines of text from the input thread and append
+ * them to the string being edited.  A vi-like command-set is also provided,
+ * using "/w", "/q", and so on.
+ */
 void *EditorThread( void *arg )
 {
     InputStateItem_t   *item;
@@ -75,6 +90,19 @@ void *EditorThread( void *arg )
     return( NULL );
 }
 
+/**
+ * @brief Sets up a string to be edited by a player
+ * @param player the player doing the editing
+ * @param string a pointer to the location that stores the string pointer
+ * @param maxlen the maximum string length to allow
+ * 
+ * This sets up the handling queue for the player and stores the previous
+ * handling queue so we can go back when the editing's done.  Once the handling
+ * queue is switched, all input is flushed for the player on the old queue.
+ * A double-pointer is used for the string as the editor actually will 
+ * be allocating the string storage internally, so we need the location that
+ * stores the string pointer.
+ */
 void EditorStart( PlayerStruct_t *player, char **string, int maxlen )
 {
     if( !player || !string ) {
@@ -89,6 +117,20 @@ void EditorStart( PlayerStruct_t *player, char **string, int maxlen )
     FlushQueue( player->editOldHandlingQ, player );
 }
 
+/**
+ * @brief Adds a line of input to the edited string, handles editing commands
+ * @param player the player doing the editing
+ * @param line the line to add
+ * @todo Look into *NOT* reallocating so much as it is rather slow.
+ * @todo Finish the conversion of the mail and bulletin-board specific handling.
+ *
+ * This will deal with the editor commands.  If no command has been entered,
+ * the line is appended to the string if there is enough space.  This function
+ * will dynamically allocate and reallocate the string to fit the contents,
+ * up to the maximum length.  When the editing is finished, the handling queue
+ * is set back to the previous one, and the editing queue is flushed for this
+ * player.
+ */
 void AddEditorInput( PlayerStruct_t *player, char *line)
 {
     int             terminator = 0;
