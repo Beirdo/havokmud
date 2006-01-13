@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Handles output to characters
+ */
+
+/**
+ * @file
+ * @brief Handles output to characters
  */
 
 #include "environment.h"
@@ -41,6 +42,15 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
+/**
+ * @brief Outputs a string to a player with ANSI color expansion
+ * @param string the string to send
+ * @param player the player to send it to
+ * @todo The parameters should be reordered to put player first.  This will
+ *       allow the functionality of ch_printf to be rolled into this function
+ *       in a sane way.  This would approximate the parameters of a sprintf
+ *       call
+ */
 void SendOutput( char *string, PlayerStruct_t *player )
 {
     OutputBuffer_t *buf;
@@ -61,6 +71,19 @@ void SendOutput( char *string, PlayerStruct_t *player )
     QueueEnqueueItem( player->outputQ, buf );
 }
 
+/**
+ * @brief Outputs a string to a player verbatim
+ * @param string the string to send (can be binary)
+ * @param len the length of the string
+ * @param player the player to send it to
+ * @todo The parameters should be reordered to have the player first as this
+ *       will make it consistant with SendOutput which also needs to be
+ *       reordered
+ *
+ * Sends a preformatted raw character array to the player.  This is useful for
+ * sending telnet control characters (turn off/on echo around password entry)
+ * for example.
+ */
 void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player )
 {
     OutputBuffer_t *buf;
@@ -80,8 +103,16 @@ void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player )
     QueueEnqueueItem( player->outputQ, buf );
 }
 
-/*
- * source: EOD, by John Booth <???> 
+/**
+ * @brief Outputs a string to a player with printf functionality
+ * @param player player who will get the output
+ * @param fmt printf format
+ * @return length of the outputted string (max of MAX_STRING_LENT)
+ * @deprecated this functionality will be rolled into SendOutput
+ *
+ * Formats an output string using vsnprintf, then uses SendOutput to queue it.
+ * This functionality will be added to SendOutput soon.  Output strings are
+ * limited to MAX_STRING_LENGTH to protect against buffer overflows.
  */
 int ch_printf(PlayerStruct_t *player, char *fmt, ...)
 {
