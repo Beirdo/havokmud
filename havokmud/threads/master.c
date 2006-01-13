@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle network connections.
+ */
+
+/**
+ * @file
+ * @brief Starts up the threads
  */
 
 #include "environment.h"
@@ -39,13 +40,13 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-QueueObject_t *ConnectInputQ;
-QueueObject_t *ConnectDnsQ;
-QueueObject_t *InputLoginQ;
-QueueObject_t *InputEditorQ;
-QueueObject_t *InputPlayerQ;
-QueueObject_t *InputImmortQ;
-QueueObject_t *LoggingQ;
+QueueObject_t *ConnectInputQ;   /**< between Connection and Input threads */
+QueueObject_t *ConnectDnsQ;     /**< between Connection and DNS threads */
+QueueObject_t *InputLoginQ;     /**< between Input and Login threads */
+QueueObject_t *InputEditorQ;    /**< between Input and Editor threads */
+QueueObject_t *InputPlayerQ;    /**< between Input and Player threads */
+QueueObject_t *InputImmortQ;    /**< between Input and Immortal threads */
+QueueObject_t *LoggingQ;        /**< feeds the Logging thread */
 
 static pthread_t connectionThreadId;
 static pthread_t inputThreadId;
@@ -55,6 +56,14 @@ static pthread_t dnsThreadId;
 static pthread_t loggingThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
+
+/**
+ * @brief Starts all the MUD threads
+ * @return nothing.  Will not return until all threads shutdown.
+ *
+ * Creates all the inter-thread queues and starts the threads.  Once the
+ * threads are all started, waits for them all to close down.
+ */
 
 void StartThreads( void )
 {

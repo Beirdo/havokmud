@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle network connections.
+ */
+
+/**
+ * @file
+ * @brief Thread to handle network connections.
  */
 
 #include "environment.h"
@@ -50,21 +51,36 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-static int listenFd = -1;
-static int maxFd = -1;
+static int listenFd = -1;   /**< file descriptor to listen() on */
+static int maxFd = -1; /**< the maximum file descriptor in use, for select() */
 
 
 #define MAX_BUFSIZE 8192
 
 
-LinkedList_t *ConnectionList = NULL;
-static int recalcMaxFd = FALSE;
-static fd_set readFds, writeFds, exceptFds;
-static fd_set saveReadFds, saveWriteFds, saveExceptFds;
+LinkedList_t *ConnectionList = NULL;  /**< List of all current connections */
+static int recalcMaxFd = FALSE;  /**< Set when maxFd needs recalculating */
+static fd_set readFds,   /**< set of file descriptors that can be read */
+              writeFds,  /**< set of file descriptors that can be written */
+              exceptFds; /**< set of file descriptors that have exceptions */
+static fd_set saveReadFds,   /**< set of all file descriptors for read */
+              saveWriteFds,  /**< set of all file descriptors for write */
+              saveExceptFds; /**< set of all file descriptors for exceptions */
 
 static ConnectionItem_t *connRemove(ConnectionItem_t *item);
 static void connAddFd( int fd, fd_set *fds );
 
+/**
+ * @brief Handles all network connections
+ * @param arg a pointer to a structure containing port number and timeout
+ * @return never returns until shutdown
+ *
+ * Brings up a TCP listener on the MUD's assigned port and accepts connections.
+ * Also reads all data from connected clients and hands the data off to the 
+ * Input thread.  When there is output to be sent, this thread handles writing
+ * to the sockets after the first write has completed.  This thread also
+ * handles the disconnection of clients gracefully.
+ */
 void *ConnectionThread( void *arg )
 {
     connectThreadArgs_t *argStruct;
@@ -317,6 +333,14 @@ void *ConnectionThread( void *arg )
     return( NULL );
 }
 
+/**
+ * @brief Adds a new file descriptor to a set
+ * @param fd the file descriptor to add
+ * @param fds a pointer to the file descriptor set to be added to
+ * @return no value
+ *
+ * Adds a new file descriptor to a set and recalculates maxFd
+ */
 static void connAddFd( int fd, fd_set *fds )
 {
     FD_SET(fd, fds);
@@ -325,11 +349,31 @@ static void connAddFd( int fd, fd_set *fds )
     }
 }
 
+/**
+ * @brief Removes a file descriptor from a set
+ * @param fd the file descriptor to remove
+ * @param fds a pointer to the file descriptor set to be removed from
+ * @return no value
+ *
+ * Removes a file descriptor from a set.  maxFd is not recalculated until the
+ * descriptor is closed completely.
+ */
 static void connDelFd( int fd, fd_set *fds )
 {
     FD_CLR(fd, fds);
 }
 
+/**
+ * @brief Removes a connection from the connection list
+ * @param item the connection item to remove from the list
+ * @return the previous connection item in the list so the ->next will work in
+ *         a loop.  NULL if this was the first item on the list.
+ *
+ * Removes a connection from the connection linked list and re-indexes the
+ * list.  The Input thread is then notified to remove the player, and all
+ * input for that player is flushed.  The maxFd is marked for recalculation 
+ * after the next select is finished, and the socket is closed.
+ */
 static ConnectionItem_t *connRemove(ConnectionItem_t *item)
 {
     ConnectionItem_t *prev;
@@ -381,6 +425,14 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
     return( prev );
 }
 
+/**
+ * @brief closes a connection
+ * @param connItem oconnection item to close
+ * @return no value
+ *
+ * Allows another thread to close a connection.  This is useful when the game
+ * wishes to disconnect someone.
+ */
 void connClose( ConnectionItem_t *connItem )
 {
     LinkedListLock( ConnectionList );
@@ -388,6 +440,21 @@ void connClose( ConnectionItem_t *connItem )
     LinkedListUnlock( ConnectionList );
 }
 
+/**
+ * @brief starts transmitting data to a socket
+ * @param connItem connection to send data to
+ * @return no value
+ *
+ * When output is being sent to a socket, it must be dequeued from the player's
+ * output queue, then sent out the socket.  The actual write is done by the
+ * Connection thread, when the select wakes up for writing to that socket.
+ * Once the socket is ready to be written to, the Connection thread will write
+ * a buffer to it, then kick the output again to get the next buffer to write
+ * once the socket is again ready.  This allows the socket's built-in flow
+ * control to work without much overhead.  Once all the buffers are done being
+ * transmitted, the socket will be removed from the writing file descriptor set
+ * and the select will no longer wake up for it.
+ */
 void connKickOutput( ConnectionItem_t *connItem )
 {
     PlayerStruct_t *player;
