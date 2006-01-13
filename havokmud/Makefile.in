@@ -50,7 +50,7 @@ ${DEPS} : Makefile
 	@echo "Making $@ (dependencies for $<)"
 	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
 
-.PHONY: clean cleanall
+.PHONY: clean cleanall doxygen doxygen-rsync
 
 clean:
 	rm -f $(OBJS) $(EXE)
@@ -70,6 +70,11 @@ config.in.h: configure.in
 Makefile: Makefile.in ${ROOT}/configure
 	@echo Your Makefile is out of date, rerun ${ROOT}/configure
 	
+doxygen:
+	doxygen doxygen/Doxyfile
+
+doxygen-rsync:
+	rsync -e ssh -avz doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
 
 -include ${DEPS}
 
