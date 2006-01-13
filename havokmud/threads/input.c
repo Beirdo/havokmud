@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Thread to handle input and feed it to the consuming threads
+ */
+
+/**
+ * @file
+ * @brief Thread to handle input and feed it to the consuming threads
  */
 
 #include "environment.h"
@@ -43,9 +44,24 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-static LinkedList_t *PlayerList;
+static LinkedList_t *PlayerList;   /**< Linked list of all connected players */
 
 
+/**
+ * @brief Thread to handle the input from the sockets, feed to consumers
+ * @param arg unused
+ * @return never returns until shutdown
+ *
+ * This thread takes the raw input from the Connection thread, and creates a
+ * buffer.  It then feeds the input line by line to the consuming threads which
+ * include LoginThread, EditorThread, etc.  This allows for multiple lines or
+ * partial lines to be recieved by the network socket.
+ *
+ * The consuming threads all have a queue to feed it input.  The Input thread
+ * doesn't know which thread it's feeding, it just uses the handlingQ that has
+ * been registered in the player's structure.  On a new connection, the 
+ * handlingQ is set to feed the LoginThread.
+ */
 void *InputThread( void *arg )
 {
     ConnInputItem_t    *connItem;
@@ -244,6 +260,17 @@ void *InputThread( void *arg )
     return( NULL );
 }
 
+/**
+ * @brief Removes all items from an input queue that match a player
+ * @param queue which queue to flush
+ * @param player which player to remove from the queue
+ *
+ * This will lock the queue, and then traverse the queue, removing any item
+ * that matches the desired player.  Note that removing items from the queue
+ * is somewhat resource intensive as the items after it in the queue must be 
+ * moved to fill the hole.  Luckily, only pointers to said items are stored
+ * in the queue, so it could be a lot worse.
+ */
 void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
 {
     uint32 i;
@@ -275,6 +302,21 @@ void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
 }
 
 
+/**
+ * @brief Searches the player list for a given player
+ * @param name the player name to search for (case insensitive)
+ * @param oldPlayer if the player found matches this, skip it
+ * @return pointer to the matching player, or NULL if not found
+ *
+ * Searches the player list for a named player.  As the player could be 
+ * polymorphed, we check for the "original" name additionally to the real name.
+ * If it is found, and it is not the one passed in via oldPlayer, it will be
+ * returned.
+ *
+ * This is used to detect a re-connecting player who still has the old
+ * connection active.  If we find the old connection, it will be destroyed to
+ * allow this new connection to take over.
+ */
 PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
 {
     LinkedListItem_t   *item;
@@ -300,6 +342,13 @@ PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
     return( NULL );
 }
 
+/**
+ * @brief Returns the count of players connected
+ * @return count of connected players
+ * @todo Abstract an item count into the LinkedList type
+ *
+ * Iterates through the player list and creates a count.
+ */
 int GetPlayerCount( void )
 {
     LinkedListItem_t   *item;
