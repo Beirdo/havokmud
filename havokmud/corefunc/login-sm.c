@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Login & character creation state machine
+ */
+
+/**
+ * @file
+ * @brief Login & character creation state machine
  */
 
 #include "config.h"
@@ -55,7 +56,12 @@ void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
 
-static char     swords[] = ">>>>>>>>";
+static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
+                                             stats */
+
+/**
+ * Shows from 1 to 8 ">" to represent stats from 1 through 18
+ */
 #define STAT_SWORD(x) (((x)<18 && (x)>0) ? &(swords[5-(((x)-1)/3)]) : "ERR!")
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };

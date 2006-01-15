@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Mainline code for the MUD
+ */
+
+/**
+ * @file
+ * @brief Mainline code for the MUD
  */
 
 #include "config.h"
@@ -55,11 +56,10 @@ void StartThreads( void );
  * max number of descriptors (connections) 
  * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
  */
-#define MAX_CONNECTS 256        
+#define MAX_CONNECTS    256        
 
-
-#define DFLT_PORT 4000          /* default port */
-#define MAX_HOSTNAME   256
+#define DFLT_PORT       4000          /* default port */
+#define MAX_HOSTNAME    256
 
 #if 0
 /* 
@@ -69,12 +69,12 @@ void StartThreads( void );
 #define OPT_USEC 250000         
 #endif
 
-int             mud_port;
+int             mud_port;   /**< The TCP port the MUD will listen on */
 
 
 #ifdef SITELOCK
-char            hostlist[MAX_BAN_HOSTS][256];    /* list of sites to ban */
-int             numberhosts;
+char            hostlist[MAX_BAN_HOSTS][256];   /**< list of sites to ban */
+int             numberhosts;                    /**< count of banned hosts */
 #endif
 
 
@@ -88,6 +88,12 @@ int __main()
     return (1);
 }
 
+/**
+ * @brief Show command line arguments
+ * @param progname the name of the program being run
+ *
+ * Shows the command line arguments used by the program onto stderr
+ */
 void display_usage(char *progname)
 {
     fprintf(stderr, "Usage:\n"
@@ -117,6 +123,13 @@ void display_usage(char *progname)
                     "\tend of the command line\n\n" );
 }
 
+/**
+ * @brief Parses the command line arguments
+ * @param argc Count of arguments
+ * @param argv Vector of the command line arguments
+ *
+ * Parses the command line arguments and sets up the defaults for the system
+ */
 void handleCmdLineArgs(int argc, char **argv)
 {
     int             opt;
@@ -246,6 +259,14 @@ void handleCmdLineArgs(int argc, char **argv)
     free( dir );
 }
 
+/**
+ * @brief MUD mainline
+ * @param argc Count of arguments
+ * @param argv Vector of the command line arguments
+ *
+ * MUD's mainline.  Parses the command line, sets up the database, then 
+ * launches the threads that run the MUD.
+ */
 int main(int argc, char **argv)
 {
     extern int      spy_flag;

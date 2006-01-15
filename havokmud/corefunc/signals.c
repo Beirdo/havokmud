@@ -22,10 +22,11 @@
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
- *
- * Comments :
- *
- * Handles UNIX signals
+ */
+
+/**
+ * @file
+ * @brief Handles UNIX signals
  */
 
 
@@ -48,6 +49,11 @@ void            logsig(int signal);
 void            hupsig(int signal);
 
 
+/**
+ * @brief Sets up the UNIX signal handlers
+ *
+ * Sets up the handlers for the UNIX signals.
+ */
 void signal_setup(void)
 {
     /*
@@ -66,6 +72,12 @@ void signal_setup(void)
 }
 
 
+/**
+ * @brief Handler that will cause the mud to shut down
+ * @todo Handle "mudshutdown" as the abort in the threads or rename it.
+ *
+ * Handler that will cause the mud to shutdown
+ */
 void shutdown_request(int signal)
 {
     extern int      mudshutdown;
@@ -74,8 +86,12 @@ void shutdown_request(int signal)
     mudshutdown = 1;
 }
 
-/*
- * kick out players etc 
+/**
+ * @brief Handler that will force everyone to return and save, shutdown
+ * @todo Handle the "reboot_now" or remove it
+ *
+ * Handler that will force everyone to return and save, then shutdown the
+ * MUD.
  */
 void hupsig(int signal)
 {
@@ -94,11 +110,23 @@ void hupsig(int signal)
     mudshutdown = reboot_now = 1;
 }
 
+/**
+ * @brief Handler that just logs and ignores
+ *
+ * Handler that just logs and ignores.
+ */
 void logsig(int signal)
 {
     LogPrintNoArg(LOG_CRIT, "Signal received. Ignoring.");
 }
 
+/**
+ * @brief Masks a set of signals
+ * @param set the set of signals to mask
+ * @param count count of signals to mask
+ *
+ * Masks a set of signals
+ */
 void sigsetmaskset( int *set, int count )
 {
     static sigset_t sigset;
