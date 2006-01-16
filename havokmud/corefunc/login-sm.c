@@ -64,6 +64,9 @@ static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show
  */
 #define STAT_SWORD(x) (((x)<18 && (x)>0) ? &(swords[5-(((x)-1)/3)]) : "ERR!")
 
+/**
+ * Telnet sequence to turn on echo
+ */
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 int             plr_tick_count = 0;
