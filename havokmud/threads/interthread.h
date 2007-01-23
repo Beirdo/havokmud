@@ -198,9 +198,8 @@ void connClose( ConnectionItem_t *connItem );
 /*
  * Other prototypes to move later
  */
-void SendOutput( PlayerStruct_t *player, char *string );
+void SendOutput( PlayerStruct_t *player, char *fmt, ... );
 void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len );
-int ch_printf(PlayerStruct_t *player, char *fmt, ...);
 void LoginSendBanner( PlayerStruct_t *player );
 void LoginStateMachine(PlayerStruct_t *player, char *arg);
 void EditorStart( PlayerStruct_t *player, char **string, int maxlen );

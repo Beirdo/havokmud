@@ -426,8 +426,8 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(player->charData, pc_num_class(chosen))) {
-                ch_printf(player, "[%2d] %s\n\r", chosen + 1,
-                          classes[chosen].name);
+                SendOutput(player, "[%2d] %s\n\r", chosen + 1,
+                                   classes[chosen].name);
             }
         }
         SendOutput(player, "\n\rMain Class :");
@@ -457,21 +457,20 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "the spell heal makes you good\n\r");
 
         if (HasClass(player->charData, CLASS_PALADIN)) {
-            ch_printf(player, "Please select your alignment "
-                              "($c000WGood$c000w)");
+            SendOutput(player, "Please select your alignment "
+                               "($c000WGood$c000w)");
         } else if (HasClass(player->charData, CLASS_DRUID)) {
-            ch_printf(player, "Please select your alignment "
-                              "(Neutral)");
+            SendOutput(player, "Please select your alignment (Neutral)");
         } else if (HasClass(player->charData, CLASS_NECROMANCER)) {
-            ch_printf(player, "Please select your alignment "
-                              "($c000REvil$c000w)");
+            SendOutput(player, "Please select your alignment "
+                               "($c000REvil$c000w)");
         } else if (HasClass(player->charData, CLASS_RANGER)) {
-            ch_printf(player, "Please select your alignment "
-                              "($c000WGood$c000w/Neutral$c000w)");
+            SendOutput(player, "Please select your alignment "
+                               "($c000WGood$c000w/Neutral$c000w)");
         } else {
-            ch_printf(player, "Please select your alignment "
-                              "($c000WGood$c000w/Neutral$c000w/"
-                              "$c000REvil$c000w)");
+            SendOutput(player, "Please select your alignment "
+                               "($c000WGood$c000w/Neutral$c000w/"
+                               "$c000REvil$c000w)");
         }
         break;
 
@@ -489,12 +488,12 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_CONFIRM_NAME:
-        ch_printf(player, "Did I get that right, %s (Y/N)? ",
-                  GET_NAME(player->charData));
+        SendOutput(player, "Did I get that right, %s (Y/N)? ",
+                   GET_NAME(player->charData));
         break;
     case STATE_GET_NEW_USER_PASSWORD:
-        ch_printf(player, "Give me a password for %s: ", 
-                  GET_NAME(player->charData));
+        SendOutput(player, "Give me a password for %s: ", 
+                   GET_NAME(player->charData));
         SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_GET_NAME:
@@ -513,20 +512,21 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_REROLL:
         SendOutput(player, "Your current stats are:\n\r");
-        ch_printf(player, "STR: -]%s\n\r", 
-                  STAT_SWORD(GET_STR(player->charData)));
-        ch_printf(player, "CON: -]%s\n\r", 
-                  STAT_SWORD(GET_CON(player->charData)));
-        ch_printf(player, "DEX: -]%s\n\r", 
-                  STAT_SWORD(GET_DEX(player->charData)));
-        ch_printf(player, "INT: -]%s\n\r", 
-                  STAT_SWORD(GET_INT(player->charData)));
-        ch_printf(player, "WIS: -]%s\n\r", 
-                  STAT_SWORD(GET_WIS(player->charData)));
-        ch_printf(player, "CHR: -]%s\n\r", 
-                  STAT_SWORD(GET_CHR(player->charData)));
-        ch_printf(player, "\n\rYou have %d rerolls left, press R to reroll, any"
-                          " other key to keep.\n\r", player->charData->reroll);
+        SendOutput(player, "STR: -]%s\n\r", 
+                   STAT_SWORD(GET_STR(player->charData)));
+        SendOutput(player, "CON: -]%s\n\r", 
+                   STAT_SWORD(GET_CON(player->charData)));
+        SendOutput(player, "DEX: -]%s\n\r", 
+                   STAT_SWORD(GET_DEX(player->charData)));
+        SendOutput(player, "INT: -]%s\n\r", 
+                   STAT_SWORD(GET_INT(player->charData)));
+        SendOutput(player, "WIS: -]%s\n\r", 
+                   STAT_SWORD(GET_WIS(player->charData)));
+        SendOutput(player, "CHR: -]%s\n\r", 
+                   STAT_SWORD(GET_CHR(player->charData)));
+        SendOutput(player, "\n\rYou have %d rerolls left, press R to reroll, "
+                           "any other key to keep.\n\r", 
+                           player->charData->reroll);
         break;
     case STATE_CHECK_MAGE_TYPE:
         for( i = 0; ru_sorcerer[i]; i++ ) {
@@ -1116,18 +1116,18 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } 
         
         SendOutput(player, "Your final stats are:\n\r");
-        ch_printf(player, "STR: -]%s\n\r", 
-                  STAT_SWORD(GET_STR(player->charData)));
-        ch_printf(player, "CON: -]%s\n\r", 
-                  STAT_SWORD(GET_CON(player->charData)));
-        ch_printf(player, "DEX: -]%s\n\r", 
-                  STAT_SWORD(GET_DEX(player->charData)));
-        ch_printf(player, "INT: -]%s\n\r", 
-                  STAT_SWORD(GET_INT(player->charData)));
-        ch_printf(player, "WIS: -]%s\n\r", 
-                  STAT_SWORD(GET_WIS(player->charData)));
-        ch_printf(player, "CHR: -]%s\n\r", 
-                  STAT_SWORD(GET_CHR(player->charData)));
+        SendOutput(player, "STR: -]%s\n\r", 
+                   STAT_SWORD(GET_STR(player->charData)));
+        SendOutput(player, "CON: -]%s\n\r", 
+                   STAT_SWORD(GET_CON(player->charData)));
+        SendOutput(player, "DEX: -]%s\n\r", 
+                   STAT_SWORD(GET_DEX(player->charData)));
+        SendOutput(player, "INT: -]%s\n\r", 
+                   STAT_SWORD(GET_INT(player->charData)));
+        SendOutput(player, "WIS: -]%s\n\r", 
+                   STAT_SWORD(GET_WIS(player->charData)));
+        SendOutput(player, "CHR: -]%s\n\r", 
+                   STAT_SWORD(GET_CHR(player->charData)));
         SendOutput(player, "Stats chosen!");
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
@@ -1267,8 +1267,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              */
             /* NEWBIE_START == 3 == 3 chances */
             player->charData->generic--;
-            ch_printf(player, "Please wait. You have %d requests "
-                              "remaining.\n\r", player->charData->generic);
+            SendOutput(player, "Please wait. You have %d requests "
+                               "remaining.\n\r", player->charData->generic);
             if (player->charData->generic == 0) {
                 EnterState(player, STATE_WIZLOCKED);
             } else {

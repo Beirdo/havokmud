@@ -45,33 +45,55 @@ static char ident[] _UNUSED_ =
 /**
  * @brief Outputs a string to a player with ANSI color expansion
  * @param player the player to send it to
- * @param string the string to send
+ * @param fmt the printf format for the buffer to send
+ * @param args the optional arguments for the printf
+ *
+ * Formats an output string using vsnprintf, ANSI expands it (if necessary),
+ * then queues it.  Output strings are limited to MAX_STRING_LENGTH to protect 
+ * against buffer overflows.
  */
-void SendOutput( PlayerStruct_t *player, char *string )
+void SendOutput( PlayerStruct_t *player, char *fmt, ... )
 {
-    OutputBuffer_t *buf;
+    OutputBuffer_t *outbuf;
+    static char     buf[MAX_STRING_LENGTH];     /* better safe than sorry */
+    int             len;
+    va_list         args;
 
-    buf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
-    if( !buf || !string ) {
+    if( !fmt ) {
         return;
     }
-    buf->buf = strdup( 
+
+    outbuf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
+    if( !outbuf ) {
+        return;
+    }
+
+    va_start(args, fmt);
+    len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
+    va_end(args);
+
+    outbuf->buf = strdup( 
             ParseAnsiColors(IS_SET(player->charData->player.user_flags, 
-                                   USE_ANSI), string) );
-    if( !buf->buf ) {
-        free( buf );
+                                   USE_ANSI), buf) );
+    if( !outbuf->buf ) {
+        free( outbuf );
         return;
     }
-    buf->len = strlen( string );
 
-    QueueEnqueueItem( player->outputQ, buf );
+    /**
+     * @todo make sure that the buffer length here includes any ANSI expansion
+     *       that may have been done
+     */
+    outbuf->len = len;
+
+    QueueEnqueueItem( player->outputQ, outbuf );
 }
 
 /**
  * @brief Outputs a string to a player verbatim
+ * @param player the player to send it to
  * @param string the string to send (can be binary)
  * @param len the length of the string
- * @param player the player to send it to
  *
  * Sends a preformatted raw character array to the player.  This is useful for
  * sending telnet control characters (turn off/on echo around password entry)
@@ -96,31 +118,6 @@ void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len )
     QueueEnqueueItem( player->outputQ, buf );
 }
 
-/**
- * @brief Outputs a string to a player with printf functionality
- * @param player player who will get the output
- * @param fmt printf format
- * @return length of the outputted string (max of MAX_STRING_LENT)
- * @deprecated this functionality will be rolled into SendOutput
- *
- * Formats an output string using vsnprintf, then uses SendOutput to queue it.
- * This functionality will be added to SendOutput soon.  Output strings are
- * limited to MAX_STRING_LENGTH to protect against buffer overflows.
- */
-int ch_printf(PlayerStruct_t *player, char *fmt, ...)
-{
-    char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
-    int             len;
-    va_list         args;
-
-    va_start(args, fmt);
-    len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
-    va_end(args);
-
-    SendOutput(player, buf);
-
-    return(len);
-}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

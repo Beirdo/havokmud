@@ -3567,6 +3567,7 @@ void ArenaPulseStuff(int pulse)
     }
 }
 
+#if 0
 void AuctionPulseStuff(int pulse)
 {
     struct obj_data *auctionobj;
@@ -3677,6 +3678,7 @@ void AuctionPulseStuff(int pulse)
         break;
     }
 }
+#endif
 
 void TrollRegenPulseStuff(int pulse)
 {
