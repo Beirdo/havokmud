@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: logging.h 41 2004-12-12 01:15:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2005 Gavin Hurlbut
 * All rights reserved
@@ -32,7 +32,7 @@
 
 /* CVS generated ID string (optional for h files) */
 static char logging_h_ident[] _UNUSED_ = 
-    "$Id: logging.h 41 2004-12-12 01:15:22Z gjhurlbu $";
+    "$Id$";
 
 /* Define the log levels (lower number is higher priority) */
 
@@ -81,8 +81,8 @@ extern "C" {
     LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, string)
 
 /* Define the external prototype */
-void LogPrintLine( LogLevel_t level, char *file, int line, char *function, 
-                   char *format, ... );
+void LogPrintLine( LogLevel_t level, char *file, int line, 
+                   const char *function, char *format, ... );
 bool LogFileAdd( char * filename );
 bool LogStdoutAdd( void );
 bool LogSyslogAdd( int facility );

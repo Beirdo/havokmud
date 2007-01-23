@@ -74,7 +74,7 @@ LogLevel_t LogLevel = LOG_UNKNOWN;  /**< The log level mask to apply, messages
  * go onto the LoggingQ which is then read by the Logging thread.  When this
  * function returns, all strings passed in can be reused or freed.
  */
-void LogPrintLine( LogLevel_t level, char *file, int line, char *function,
+void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
                    char *format, ... )
 {
     LoggingItem_t *item;
@@ -90,7 +90,7 @@ void LogPrintLine( LogLevel_t level, char *file, int line, char *function,
     item->threadId  = pthread_self();
     item->file      = file;
     item->line      = line;
-    item->function  = function;
+    item->function  = (char *)function;
     gettimeofday( &tv, NULL );
     item->time_sec  = tv.tv_sec;
     item->time_usec = tv.tv_usec;
