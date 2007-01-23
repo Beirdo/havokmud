@@ -69,7 +69,6 @@ static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show
  */
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
-int             plr_tick_count = 0;
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
 char *newbie_note[] = {
@@ -585,9 +584,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     int             pick = 0;
     struct char_file_u ch_st;
     FILE           *char_file;
-    struct obj_data *obj;
     PlayerStruct_t *oldPlayer;
-    int             count_players;
+    InputStateItem_t   *stateItem;
 
     SendOutputRaw(player, echo_on, 6);
 
@@ -909,6 +907,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
                 write_char_extra(player->charData);
                 EnterState(player, STATE_PLAYING);
+                if( IS_IMMORTAL(player->charData) ) {
+                    player->handlingQ = InputImmortQ;
+                } else {
+                    player->handlingQ = InputPlayerQ;
+                }
                 return;
             }
         }
@@ -1409,100 +1412,26 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         case '1':
-            reset_char(player->charData);
-            total_connections++;
-            if (!IS_IMMORTAL(player->charData) ||
-                player->charData->invis_level <= 58) {
-                LogPrint(LOG_INFO, "Loading %s's equipment", 
-                         player->charData->player.name);
-            }
-
-            count_players = GetPlayerCount();
-
-            if (total_max_players < count_players) {
-                total_max_players = count_players;
-            }
-
-            load_char_objs(player->charData);
-
-            save_char(player->charData, AUTO_RENT);
-            SendOutput(player, WELC_MESSG);
-            player->charData->next = character_list;
-            character_list = player->charData;
-            if (player->charData->in_room == NOWHERE ||
-                player->charData->in_room == AUTO_RENT) {
-                if (!IS_IMMORTAL(player->charData)) {
-                    if (player->charData->specials.start_room <= 0) {
-                        if (GET_RACE(player->charData) == RACE_HALFLING) {
-                            char_to_room(player->charData, 1103);
-                            player->charData->player.hometown = 1103;
-                        } else {
-                            char_to_room(player->charData, 3001);
-                            player->charData->player.hometown = 3001;
-                        }
-                    } else {
-                        char_to_room(player->charData,
-                                     player->charData->specials.start_room);
-                        player->charData->player.hometown =
-                            player->charData->specials.start_room;
-                    }
-                } else {
-                    if (player->charData->specials.start_room <= NOWHERE) {
-                        char_to_room(player->charData, 1000);
-                        player->charData->player.hometown = 1000;
-                    } else {
-                        if (real_roomp(player->charData->specials.start_room)) {
-                            char_to_room(player->charData,
-                                         player->charData->specials.start_room);
-                            player->charData->player.hometown =
-                                player->charData->specials.start_room;
-                        } else {
-                            char_to_room(player->charData, 1000);
-                            player->charData->player.hometown = 1000;
-                        }
-                    }
-                }
-            } else if (real_roomp(player->charData->in_room)) {
-                char_to_room(player->charData, player->charData->in_room);
-                player->charData->player.hometown = player->charData->in_room;
-            } else {
-                char_to_room(player->charData, 3001);
-                player->charData->player.hometown = 3001;
-            }
-
-            player->charData->specials.tick = plr_tick_count++;
-            if (plr_tick_count == PLR_TICK_WRAP) {
-                plr_tick_count = 0;
-            }
-            act("$n has entered the game.", TRUE, player->charData, 0, 0, 
-                TO_ROOM);
             EnterState(player, STATE_PLAYING);
+            if( IS_IMMORTAL(player->charData) ) {
+                player->handlingQ = InputImmortQ;
+            } else {
+                player->handlingQ = InputPlayerQ;
+            }
 
-            if (!GetMaxLevel(player->charData)) {
-                do_start(player->charData);
+            stateItem = (InputStateItem_t *)malloc(sizeof(InputStateItem_t));
+            if( !stateItem ) {
+                /*
+                 * out of memory, doh!
+                 */
+                connClose(player->connection);
+                return;
             }
-            do_look(player->charData, NULL, 15);
-            /*
-             * do an auction check, grant reimbs as needed
-             */
-            if (player->charData->specials.auction) {
-                obj = player->charData->specials.auction;
-                player->charData->specials.auction = 0;
-                obj->equipped_by = 0;
-                obj->eq_pos = -1;
 
-                obj_to_char(obj, player->charData);
-                SendOutput(player, "Your item is returned to you.\n\r");
-                do_save(player->charData, "", 0);
-            }
-            if (player->charData->specials.minbid) {
-                GET_GOLD(player->charData) += player->charData->specials.minbid;
-                player->charData->specials.minbid = 0;
-                SendOutput(player, "You are returned your deposit for this "
-                                   "auction.\n\r");
-                do_save(player->charData, "", 0);
-            }
-            player->prompt_mode = 1;
+            stateItem->player = player;
+            stateItem->type   = INPUT_INITIAL;
+            stateItem->line   = NULL;
+            QueueEnqueueItem( player->handlingQ, stateItem );
             break;
 
         case '2':

@@ -168,6 +168,12 @@ typedef struct
     char               *message;
 } LoggingItem_t;
 
+typedef struct
+{
+    char               *name;
+    QueueObject_t      *inputQ;
+} PlayingThreadArgs_t;
+
 /*
  * Externals used for interthread communication
  */
@@ -188,6 +194,7 @@ void *LoginThread( void *arg );
 void *EditorThread( void *arg );
 void *DnsThread( void *arg );
 void *LoggingThread( void *arg );
+void *PlayingThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks
@@ -206,6 +213,8 @@ void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
 void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
 PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer );
 int GetPlayerCount( void );
+void JustLoggedIn( PlayerStruct_t *player );
+void CommandParser( PlayerStruct_t *player, char *line );
 
 
 #endif

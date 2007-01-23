@@ -54,8 +54,13 @@ static pthread_t loginThreadId;
 static pthread_t editorThreadId;
 static pthread_t dnsThreadId;
 static pthread_t loggingThreadId;
+static pthread_t mortalPlayingThreadId;
+static pthread_t immortPlayingThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
+static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
+static PlayingThreadArgs_t immortPlayingArgs = { "ImmortalPlayingThread", NULL};
+
 
 /**
  * @brief Starts all the MUD threads
@@ -88,6 +93,16 @@ void StartThreads( void )
     pthread_create( &loginThreadId, NULL, LoginThread, NULL );
     pthread_create( &editorThreadId, NULL, EditorThread, NULL );
 
+    mortalPlayingArgs.inputQ = InputPlayerQ;
+    pthread_create( &mortalPlayingThreadId, NULL, PlayingThread, 
+                    &mortalPlayingArgs );
+    
+    immortPlayingArgs.inputQ = InputImmortQ;
+    pthread_create( &immortPlayingThreadId, NULL, PlayingThread, 
+                    &immortPlayingArgs );
+
+    pthread_join( immortPlayingThreadId, NULL );
+    pthread_join( mortalPlayingThreadId, NULL );
     pthread_join( editorThreadId, NULL );
     pthread_join( loginThreadId, NULL );
     pthread_join( inputThreadId, NULL );
