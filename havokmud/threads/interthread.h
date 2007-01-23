@@ -37,6 +37,7 @@
 #include "queue.h"
 #include "protected_data.h"
 #include "logging.h"
+#include "balanced_btree.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -197,6 +198,12 @@ extern QueueObject_t *InputEditorQ;
 extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
 extern QueueObject_t *LoggingQ;
+
+extern BalancedBTree_t    *commandName;
+extern BalancedBTree_t    *commandNum;
+
+extern CommandDef_t coreCommands[];
+extern int coreCommandCount;
 
 /*
  * Prototypes of the thread entry points

@@ -49,10 +49,6 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 
-BalancedBTree_t    *commandName;
-BalancedBTree_t    *commandNum;
-
-
 CommandDef_t coreCommands[] = {
     { "north", do_move, 1, POSITION_STANDING, 0 },
     { "east", do_move, 2, POSITION_STANDING, 0 },
@@ -778,44 +774,6 @@ CommandDef_t coreCommands[] = {
     { "steer", do_sea_commands, 625, POSITION_STANDING, 1 }
 };
 int coreCommandCount = NELEMENTS(coreCommands);
-
-void InitializeCommands( void )
-{
-    commandName = BalancedBTreeCreate( BTREE_KEY_STRING );
-    commandNum  = BalancedBTreeCreate( BTREE_KEY_INT );
-
-    SetupCommands( coreCommands, coreCommandCount );
-}
-
-void SetupCommands( CommandDef_t *commands, int count )
-{
-    int             i;
-    CommandDef_t   *cmd;
-
-    for( i = 0; i < count; i++ ) {
-        cmd = &commands[i];
-        AddCommand( cmd );
-    }
-}
-
-
-/**
- * Adds a command to the Command BTrees
- */
-void AddCommand( CommandDef_t *cmd )
-{
-    BalancedBTreeItem_t    *item;
-
-    item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
-    item->key = &cmd->name;
-    item->item = cmd;
-    BalancedBTreeAdd( commandName, item, UNLOCKED, TRUE );
-
-    item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
-    item->key = &cmd->number;
-    item->item = cmd;
-    BalancedBTreeAdd( commandNum, item, UNLOCKED, TRUE );
-}
 
 
 /*

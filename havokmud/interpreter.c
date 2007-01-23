@@ -749,6 +749,7 @@ int             pc_num_class(int clss);
 void show_class_selection(struct descriptor_data *d, int r);
 
 
+#ifdef MOVED
 char           *fill[] = { "in",
     "from",
     "with",
@@ -758,6 +759,7 @@ char           *fill[] = { "in",
     "to",
     "\n"
 };
+#endif
 
 /*
  * this is to determine the relative length of strings with color codes in
