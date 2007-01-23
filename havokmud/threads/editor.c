@@ -153,20 +153,21 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
             if (*(player->editString)) {
                 free(*(player->editString));
                 *(player->editString) = NULL;
-                SendOutput("Buffer cleared.\r\n", player);
+                SendOutput(player, "Buffer cleared.\r\n");
             } else
-                SendOutput("Buffer already empty.\r\n", player);
+                SendOutput(player, "Buffer already empty.\r\n");
             *line = '\0';
             break;
         case 'p':               /* print the message */
             if (*player->editString && **player->editString)
-                SendOutput(*player->editString, player);
+                SendOutput(player, *player->editString);
             else
-                SendOutput("The buffer is currently empty.\r\n", player);
+                SendOutput(player, "The buffer is currently empty.\r\n");
             *line = '\0';
             break;
         case '?':               /* character wants help! */
-            SendOutput("           HavokMUD 2 Editor Help Screen\r\n"
+            SendOutput(player,
+                       "           HavokMUD 2 Editor Help Screen\r\n"
                        "----------------------------------------------------"
                        "-----------------\r\n\r\n"
                        "All commands issued within the editor must be issued at"
@@ -175,8 +176,9 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
                        "the character /\r\n\r\n"
                        "Commands:\r\n"
                        "------------------------------------------------------"
-                       "----------------\r\n", player);
-            SendOutput(" /w -- This will save your message and exit the "
+                       "----------------\r\n");
+            SendOutput(player,
+                       " /w -- This will save your message and exit the "
                        "editor.\r\n"
                        " /q -- This aborts your message without saving and "
                        "exits the editor.\r\n"
@@ -184,7 +186,7 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
                        "exiting the editor.\r\n"
                        " /p -- This will print the current message to your "
                        "screen.\r\n"
-                       " /? -- Take a guess =)\r\n", player);
+                       " /? -- Take a guess =)\r\n");
             *line = '\0';
             break;
 
@@ -196,7 +198,7 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
 
     if (!(*player->editString)) {
         if (strlen(line) > player->editStringLen) {
-            SendOutput("String too long - Truncated.\r\n", player);
+            SendOutput(player, "String too long - Truncated.\r\n");
             line[player->editStringLen] = '\0';
         }
 
@@ -205,7 +207,7 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
     } else {
         if (strlen(line) + strlen(*player->editString) > 
             player->editStringLen) {
-            SendOutput("String too long. Last line ignored.\n\r", player );
+            SendOutput(player, "String too long. Last line ignored.\n\r");
         } else {
             if (!(*player->editString = (char *) realloc(*player->editString,
                          strlen(*player->editString) + strlen(line) + 3))) {

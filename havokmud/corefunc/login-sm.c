@@ -387,7 +387,7 @@ void show_menu(PlayerStruct_t *player)
     strcat(bufx, "$c0015D) $c0012Done!\n\r\n\r");
     strcat(bufx, "$c0011Please pick an option: \n\r");
 
-    SendOutput(bufx, player);
+    SendOutput(player, bufx);
 }
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
@@ -401,28 +401,28 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
     switch( newstate ) {
     case STATE_CHOOSE_SEX:
-        SendOutput("What is your sex (M/F) ? ", player);
+        SendOutput(player, "What is your sex (M/F) ? ");
         break;
     case STATE_CHOOSE_ANSI:
-        SendOutput("Would you like ansi colors? (Yes or No)", player);
+        SendOutput(player, "Would you like ansi colors? (Yes or No)");
         break;
     case STATE_CHOOSE_RACE:
         show_race_choice(player);
-        SendOutput("For help type '?'- will list level limits. \n\r RACE:  ", 
-                   player);
+        SendOutput(player, "For help type '?'- will list level limits. \n\r"
+                           " RACE:  ");
         player->charData->player.class = 0;
         player->charData->specials.remortclass = 0;
         break;
     case STATE_CHOOSE_CLASS:
         GET_ALIGNMENT(player->charData) = 0;
         GET_CON(player->charData) = 0;
-        SendOutput("\n\rSelect your class now.\n\r", player);
+        SendOutput(player, "\n\rSelect your class now.\n\r");
         show_class_selection(player, GET_RACE(player->charData));
-        SendOutput("Enter ? for help.\n\r\n\rClass :", player);
+        SendOutput(player, "Enter ? for help.\n\r\n\rClass :");
         break;
     case STATE_CHOOSE_MAIN_CLASS:
-        SendOutput("\n\rSelect your main class from the options below.\n\r",
-                   player);
+        SendOutput(player, "\n\rSelect your main class from the options "
+                           "below.\n\r");
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(player->charData, pc_num_class(chosen))) {
@@ -430,31 +430,31 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                           classes[chosen].name);
             }
         }
-        SendOutput("\n\rMain Class :", player);
+        SendOutput(player, "\n\rMain Class :");
         break;
     case STATE_CHOOSE_STATS:
-        SendOutput("\n\rSelect your stat priority, by listing them from"
-                   " highest to lowest\n\r", player);
-        SendOutput("Seperated by spaces.. don't duplicate\n\r", player);
-        SendOutput("for example: 'S I W D Co Ch' would put the highest"
-                   " roll in Strength, \n\r", player);
-        SendOutput("next in intelligence, Wisdom, Dex, Con, and lastly"
-                   " charisma\n\r", player);
-        SendOutput("Your choices? ", player);
+        SendOutput(player, "\n\rSelect your stat priority, by listing them from"
+                           " highest to lowest\n\r");
+        SendOutput(player, "Separated by spaces.. don't duplicate\n\r");
+        SendOutput(player, "for example: 'S I W D Co Ch' would put the highest"
+                           " roll in Strength, \n\r");
+        SendOutput(player, "next in intelligence, Wisdom, Dex, Con, and lastly"
+                           " charisma\n\r");
+        SendOutput(player, "Your choices? ");
         break;
     case STATE_CHOOSE_ALIGNMENT:
-        ch_printf(player,
-                  "Your alignment is an indication of how well or badly you"
-                  " have morally\n\r"
-                  "conducted yourself in the game. It ranges numerically, "
-                  "from -1000\n\r"
-                  "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good"
-                  "$c000w), 0 being neutral. Generally, if you kill\n\r"
-                  "'Good' mobs, you will gravitate towards Evil, and "
-                  "vice-versa. Some spells\n\r"
-                  "and skills also affect your alignment. ie Backstab makes"
-                  " you evil, and\n\r"
-                  "the spell heal makes you good\n\r");
+        SendOutput(player, "Your alignment is an indication of how well or "
+                           "badly you have morally\n\r"
+                           "conducted yourself in the game. It ranges "
+                           "numerically, from -1000\n\r"
+                           "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful "
+                           "Good$c000w), 0 being neutral. Generally, if you "
+                           "kill\n\r"
+                           "'Good' mobs, you will gravitate towards Evil, and "
+                           "vice-versa. Some spells\n\r"
+                           "and skills also affect your alignment. ie Backstab "
+                           "makes you evil, and\n\r"
+                           "the spell heal makes you good\n\r");
 
         if (HasClass(player->charData, CLASS_PALADIN)) {
             ch_printf(player, "Please select your alignment "
@@ -476,8 +476,8 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
 
     case STATE_SHOW_MOTD:
-        SendOutput(motd, player);
-        SendOutput("\n\r\n*** PRESS RETURN: ", player);
+        SendOutput(player, motd);
+        SendOutput(player, "\n\r\n*** PRESS RETURN: ");
         break;
 
     case STATE_SHOW_CREATION_MENU:
@@ -485,8 +485,8 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
 
     case STATE_GET_PASSWORD:
-        SendOutput("Password: ", player);
-        SendOutputRaw(echo_off, 4, player);
+        SendOutput(player, "Password: ");
+        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_CONFIRM_NAME:
         ch_printf(player, "Did I get that right, %s (Y/N)? ",
@@ -495,24 +495,24 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     case STATE_GET_NEW_USER_PASSWORD:
         ch_printf(player, "Give me a password for %s: ", 
                   GET_NAME(player->charData));
-        SendOutputRaw(echo_off, 4, player);
+        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_GET_NAME:
         if (GET_NAME(player->charData)) {
             free(GET_NAME(player->charData));
             GET_NAME(player->charData) = NULL;
         }
-        SendOutput("What is thy name? ", player);
+        SendOutput(player, "What is thy name? ");
         break;
     case STATE_PLAYING:
         break;
     case STATE_CONFIRM_PASSWORD:
     case STATE_CONFIRM_NEW_PASSWORD:
-        SendOutput("Please retype password: ", player);
-        SendOutputRaw(echo_off, 4, player);
+        SendOutput(player, "Please retype password: ");
+        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_REROLL:
-        SendOutput("Your current stats are:\n\r", player);
+        SendOutput(player, "Your current stats are:\n\r");
         ch_printf(player, "STR: -]%s\n\r", 
                   STAT_SWORD(GET_STR(player->charData)));
         ch_printf(player, "CON: -]%s\n\r", 
@@ -530,36 +530,36 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_CHECK_MAGE_TYPE:
         for( i = 0; ru_sorcerer[i]; i++ ) {
-            SendOutput(ru_sorcerer[i], player);
+            SendOutput(player, ru_sorcerer[i]);
         }
         break;
     case STATE_WAIT_FOR_AUTH:
-        SendOutput("Please Wait for authorization.\n\r", player);
+        SendOutput(player, "Please Wait for authorization.\n\r");
         break;
     case STATE_WIZLOCKED:
-        SendOutput("Goodbye.\n\r", player);
+        SendOutput(player, "Goodbye.\n\r");
         break;
     case STATE_SHOW_WMOTD:
-        SendOutput(wmotd, player);
-        SendOutput("\n\r\n[PRESS RETURN]", player);
+        SendOutput(player, wmotd);
+        SendOutput(player, "\n\r\n[PRESS RETURN]");
         break;
     case STATE_SHOW_LOGIN_MENU:
-        SendOutput(MENU, player);
+        SendOutput(player, MENU);
         break;
     case STATE_EDIT_EXTRA_DESCR:
-        SendOutput("<type /w to save.>\n\r", player);
+        SendOutput(player, "<type /w to save.>\n\r");
         EditorStart(player, &player->charData->player.description, 240);
         break;
     case STATE_PRESS_ENTER:
-        SendOutput("\n\r<Press enter to continue>", player);
+        SendOutput(player, "\n\r<Press enter to continue>");
         break;
     case STATE_GET_NEW_PASSWORD:
-        SendOutput("Enter a new password: ", player);
-        SendOutputRaw(echo_off, 4, player);
+        SendOutput(player, "Enter a new password: ");
+        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_DELETE_USER:
-        SendOutput("Are you sure you want to delete yourself? (yes/no) ", 
-                   player);
+        SendOutput(player, "Are you sure you want to delete yourself? "
+                           "(yes/no) ");
         break;
     case STATE_INITIAL:
         break;
@@ -589,7 +589,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     PlayerStruct_t *oldPlayer;
     int             count_players;
 
-    SendOutputRaw(echo_on, 6, player);
+    SendOutputRaw(player, echo_on, 6);
 
     switch (player->state) {
     case STATE_INITIAL:
@@ -600,7 +600,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if( !arg ) {
             show_menu(player);
-            SendOutput("Invalid Choice.. Try again..\n\r", player);
+            SendOutput(player, "Invalid Choice.. Try again..\n\r");
             return;
         }
 
@@ -610,7 +610,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CHOOSE_ALIGNMENT:
         arg = skip_spaces(arg);
         if( !arg ) {
-            SendOutput("Please select a alignment.\n\r", player);
+            SendOutput(player, "Please select a alignment.\n\r");
             return;
         }
 
@@ -619,8 +619,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if (!HasClass(player->charData, CLASS_PALADIN) &&
                 !HasClass(player->charData, CLASS_NECROMANCER)) {
                 GET_ALIGNMENT(player->charData) = 1;
-                SendOutput("You have chosen to be Neutral in "
-                           "alignment.\n\r\n\r", player);
+                SendOutput(player, "You have chosen to be Neutral in "
+                                   "alignment.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
@@ -628,8 +628,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if (!HasClass(player->charData, CLASS_DRUID) &&
                 !HasClass(player->charData, CLASS_NECROMANCER)) {
                 GET_ALIGNMENT(player->charData) = 1000;
-                SendOutput("You have chosen to be a follower of "
-                           "light.\n\r\n\r", player);
+                SendOutput(player, "You have chosen to be a follower of "
+                                   "light.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
@@ -638,13 +638,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 !HasClass(player->charData, CLASS_PALADIN) &&
                 !HasClass(player->charData, CLASS_RANGER)) {
                 GET_ALIGNMENT(player->charData) = -1000;
-                SendOutput("You have chosen the dark side.\n\r\n\r", player);
+                SendOutput(player, "You have chosen the dark side.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
 
         default:
-            SendOutput("Please select a alignment.\n\r", player);
+            SendOutput(player, "Please select a alignment.\n\r");
             break;
         }
         break;
@@ -652,8 +652,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CHOOSE_ANSI:
         arg = skip_spaces(arg);
         if( !arg ) {
-            SendOutput("Please type Yes or No.\n\r"
-                       "Would you like ansi colors? :", player);
+            SendOutput(player, "Please type Yes or No.\n\r"
+                               "Would you like ansi colors? :");
             return;
         }
 
@@ -661,8 +661,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         case 'y':
             SET_BIT(player->charData->player.user_flags, USE_ANSI);
 
-            SendOutput("$c0012A$c0010n$c0011s$c0014i$c0007 colors "
-                       "enabled.\n\r\n\r", player);
+            SendOutput(player, "$c0012A$c0010n$c0011s$c0014i$c0007 colors "
+                               "enabled.\n\r\n\r");
             EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
@@ -672,8 +672,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         default:
-            SendOutput("Please type Yes or No.\n\r"
-                       "Would you like ansi colors? :", player);
+            SendOutput(player, "Please type Yes or No.\n\r"
+                               "Would you like ansi colors? :");
             return;
             break;
         }
@@ -689,7 +689,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         
        if (*arg == '?') {
             for( i = 0; racehelp[i]; i++ ) {
-                SendOutput(racehelp[i], player);
+                SendOutput(player, racehelp[i]);
             }
             EnterState(player, STATE_CHOOSE_RACE);
             return;
@@ -700,7 +700,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             GET_RACE(player->charData) = race_choice[tmpi - 1].raceNum;
             EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
-            SendOutput("\n\rThat's not a race.\n\rRACE?:", player);
+            SendOutput(player, "\n\rThat's not a race.\n\rRACE?:");
             EnterState(player, STATE_CHOOSE_RACE);
         }
         break;
@@ -722,15 +722,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } 
         
         if (_parse_name(arg, tmp_name)) {
-            SendOutput("Illegal name, please try another.\r\n", player);
-            SendOutput("Name: ", player);
+            SendOutput(player, "Illegal name, please try another.\r\n");
+            SendOutput(player, "Name: ");
             return;
         }
 
         ProtectedDataLock(player->connection->hostName);
         if (SiteLock((char *)player->connection->hostName->data)) {
             ProtectedDataUnlock(player->connection->hostName);
-            SendOutput("Sorry, this site is temporarily banned.\n\r", player);
+            SendOutput(player, "Sorry, this site is temporarily banned.\n\r");
             EnterState(player, STATE_WIZLOCKED);
             return;
         }
@@ -751,13 +751,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * player unknown gotta make a new
              */
             if (_check_ass_name(tmp_name)) {
-                SendOutput("\n\rIllegal name, please try another.", player);
-                SendOutput("Name: ", player);
+                SendOutput(player, "\n\rIllegal name, please try another.");
+                SendOutput(player, "Name: ");
                 return;
             }
 
             if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
-                SendOutput("Sorry, no new characters at this time\n\r", player);
+                SendOutput(player, "Sorry, no new characters at this time\n\r");
                 EnterState(player, STATE_WIZLOCKED);
                 return;
             }
@@ -783,22 +783,22 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             /*
              * Please do Y or N
              */
-            SendOutput("Please type Yes or No? ", player);
+            SendOutput(player, "Please type Yes or No? ");
             return;
         }
 
         switch(tolower(*arg)) {
         case 'y':
-            SendOutputRaw(echo_on, 4, player);
-            SendOutput("New character.\n\r", player);
+            SendOutputRaw(player, echo_on, 4);
+            SendOutput(player, "New character.\n\r");
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             break;
         case 'n':
-            SendOutput("Ok, what IS it, then? ", player);
+            SendOutput(player, "Ok, what IS it, then? ");
             EnterState(player, STATE_GET_NAME);
             break;
         default:
-            SendOutput("Please type Yes or No? ", player);
+            SendOutput(player, "Please type Yes or No? ");
             break;
         }
         break;
@@ -818,7 +818,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         if (strncmp((char *) crypt(arg, player->charData->pwd), 
                     player->charData->pwd, 10)) {
-            SendOutput("Wrong password.\n\r", player);
+            SendOutput(player, "Wrong password.\n\r");
             LogPrint(LOG_INFO, "%s entered a wrong password", 
                      GET_NAME(player->charData));
             connClose( player->connection );
@@ -833,12 +833,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                                  (char *)player->connection->hostName->data)) {
                 case -1:
                 case 0:
-                    SendOutput("Security check reveals invalid site\n\r"
+                    SendOutput(player, "Security check reveals invalid site\n\r"
                                "Speak to an implementor to fix problem\n\r"
                                "If you are an implementor, add yourself to"
                                " the\n\r"
-                               "Security directory (lib/security)\n\r",
-                               player);
+                               "Security directory (lib/security)\n\r");
                     ProtectedDataUnlock(player->connection->hostname);
                     connClose( player->connection );
                     break;
@@ -869,8 +868,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                  !strcasecmp(GET_NAME(player->charData),
                              GET_NAME(tmp_ch->orig)))) {
 
-                SendOutputRaw(echo_on, 6, player);
-                SendOutput("Reconnecting.\n\r", player);
+                SendOutputRaw(player, echo_on, 6);
+                SendOutput(player, "Reconnecting.\n\r");
 
                 free_char(player->charData);
                 tmp_ch->playerDesc = player;
@@ -956,8 +955,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
-            SendOutputRaw(echo_on, 6, player);
-            SendOutput("Illegal password.\n\r", player);
+            SendOutputRaw(player, echo_on, 6);
+            SendOutput(player, "Illegal password.\n\r");
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         }
@@ -966,7 +965,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 (char *)crypt(arg, player->charData->player.name), 10);
         player->charData->pwd[10] = '\0';
 
-        SendOutputRaw(echo_on, 6, player);
+        SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_PASSWORD);
         break;
 
@@ -980,14 +979,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
                             player->charData->pwd, 10)) {
-            SendOutputRaw(echo_on, 6, player);
+            SendOutputRaw(player, echo_on, 6);
 
-            SendOutput("Passwords don't match.\n\r", player);
+            SendOutput(player, "Passwords don't match.\n\r");
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             return;
         } 
 
-        SendOutputRaw(echo_on, 6, player);
+        SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CHOOSE_ANSI);
         break;
 
@@ -1000,7 +999,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         if( !arg ) {
-            SendOutput("That's not a sex..\n\r", player);
+            SendOutput(player, "That's not a sex..\n\r");
             EnterState(player, STATE_CHOOSE_SEX);
             return;
         }
@@ -1021,7 +1020,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         default:
-            SendOutput("That's not a sex..\n\r", player);
+            SendOutput(player, "That's not a sex..\n\r");
             EnterState(player, STATE_CHOOSE_SEX);
             return;
             break;
@@ -1061,7 +1060,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 } 
                 /* If neither Co or Ch, fall through to default */
             default:
-                SendOutput("That was an invalid choice.\n\r", player);
+                SendOutput(player, "That was an invalid choice.\n\r");
                 EnterState(player, STATE_CHOOSE_STATS);
                 return;
                 break;
@@ -1076,8 +1075,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         if (index < MAX_STAT) {
-            SendOutput("You did not enter enough legal stats\n\r", player);
-            SendOutput("That was an invalid choice.\n\r", player);
+            SendOutput(player, "You did not enter enough legal stats\n\r");
+            SendOutput(player, "That was an invalid choice.\n\r");
             EnterState(player, STATE_CHOOSE_STATS);
             return;
         } 
@@ -1100,7 +1099,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         player->charData->reroll--;
 
         if (!arg || tolower(*arg) != 'r') {
-            SendOutput("Stats chosen!\n\r", player);
+            SendOutput(player, "Stats chosen!\n\r");
 
             if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
                 EnterState(player, STATE_WAIT_FOR_AUTH);
@@ -1116,7 +1115,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        SendOutput("Your final stats are:\n\r", player);
+        SendOutput(player, "Your final stats are:\n\r");
         ch_printf(player, "STR: -]%s\n\r", 
                   STAT_SWORD(GET_STR(player->charData)));
         ch_printf(player, "CON: -]%s\n\r", 
@@ -1129,7 +1128,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                   STAT_SWORD(GET_WIS(player->charData)));
         ch_printf(player, "CHR: -]%s\n\r", 
                   STAT_SWORD(GET_CHR(player->charData)));
-        SendOutput("Stats chosen!", player);
+        SendOutput(player, "Stats chosen!");
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             EnterState(player, STATE_WAIT_FOR_AUTH);
@@ -1149,7 +1148,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        SendOutput("\n\rInvalid class picked.\n\r", player);
+        SendOutput(player, "\n\rInvalid class picked.\n\r");
         EnterState(player, STATE_CHOOSE_MAIN_CLASS);
         break;
 
@@ -1161,14 +1160,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         arg = skip_spaces(arg);
         if( !arg ) {
-            SendOutput("Invalid selection!\n\r", player);
+            SendOutput(player, "Invalid selection!\n\r");
             EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
         if( *arg == '?' ) {
             for( i = 0; class_help[i]; i++ ) {
-                SendOutput(class_help[i], player);
+                SendOutput(player, class_help[i]);
             }
             EnterState(player, STATE_CHOOSE_CLASS);
             return;
@@ -1179,7 +1178,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         race = 0;
 
         if( class <= 0 ) {
-            SendOutput("Invalid selection!\n\r", player);
+            SendOutput(player, "Invalid selection!\n\r");
             EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
@@ -1190,7 +1189,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                  * Found it.  Time to check the class
                  */
                 if( class > race_choice[i].classCount ) {
-                    SendOutput("Invalid selection!\n\r", player);
+                    SendOutput(player, "Invalid selection!\n\r");
                     EnterState(player, STATE_CHOOSE_CLASS);
                     return;
                 }
@@ -1203,7 +1202,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
                     
         if (player->charData->player.class == 0) {
-            SendOutput("Invalid selection!\n\r", player);
+            SendOutput(player, "Invalid selection!\n\r");
             EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
@@ -1216,8 +1215,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
             EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
-            SendOutput("Your race seems to be incorrect, please reselect\n\r", 
-                       player);
+            SendOutput(player, "Your race seems to be incorrect, please "
+                               "reselect\n\r");
             LogPrintNoArg(LOG_NOTICE, "Couldn't find a race in creation, "
                                       "screwy!!");
             EnterState(player, STATE_SHOW_CREATION_MENU);
@@ -1308,8 +1307,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
             ProtectedDataUnlock(player->connection->hostName);
-            SendOutput("Sorry, the game is locked up for repair or your "
-                       "site is banned.\n\r", player);
+            SendOutput(player, "Sorry, the game is locked up for repair or "
+                               "your site is banned.\n\r");
             EnterState(player, STATE_WIZLOCKED);
         } else {
             ProtectedDataUnlock(player->connection->hostName);
@@ -1326,8 +1325,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              SiteLock((char *)player->connection->hostName->data)) &&
             !IS_IMMORTAL(player->charData)) {
             ProtectedDataUnlock(player->connection->hostName);
-            SendOutput("Sorry, the game is locked up for repair or your "
-                       "site is banned.\n\r", player);
+            SendOutput(player, "Sorry, the game is locked up for repair or "
+                               "your site is banned.\n\r");
             EnterState(player, STATE_WIZLOCKED);
         } else {
             ProtectedDataUnlock(player->connection->hostName);
@@ -1399,7 +1398,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         if(!arg) {
-            SendOutput("Wrong option.\n\r", player);
+            SendOutput(player, "Wrong option.\n\r");
             EnterState(player, STATE_SHOW_LOGIN_MENU);
             break;
         }
@@ -1427,7 +1426,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             load_char_objs(player->charData);
 
             save_char(player->charData, AUTO_RENT);
-            SendOutput(WELC_MESSG, player);
+            SendOutput(player, WELC_MESSG);
             player->charData->next = character_list;
             character_list = player->charData;
             if (player->charData->in_room == NOWHERE ||
@@ -1493,25 +1492,25 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 obj->eq_pos = -1;
 
                 obj_to_char(obj, player->charData);
-                SendOutput("Your item is returned to you.\n\r", player);
+                SendOutput(player, "Your item is returned to you.\n\r");
                 do_save(player->charData, "", 0);
             }
             if (player->charData->specials.minbid) {
                 GET_GOLD(player->charData) += player->charData->specials.minbid;
                 player->charData->specials.minbid = 0;
-                SendOutput("You are returned your deposit for this "
-                             "auction.\n\r", player);
+                SendOutput(player, "You are returned your deposit for this "
+                                   "auction.\n\r");
                 do_save(player->charData, "", 0);
             }
             player->prompt_mode = 1;
             break;
 
         case '2':
-            SendOutput("Enter a text you'd like others to see when they look "
-                       "at you.\n\r", player);
+            SendOutput(player, "Enter a text you'd like others to see when "
+                               "they look at you.\n\r");
             if (player->charData->player.description) {
-                SendOutput("Old description :\n\r", player);
-                SendOutput(player->charData->player.description, player);
+                SendOutput(player, "Old description :\n\r");
+                SendOutput(player, player->charData->player.description);
                 if (player->charData->player.description) {
                     free(player->charData->player.description);
                 }
@@ -1521,12 +1520,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         case '3':
-            SendOutput(STORY, player);
+            SendOutput(player, STORY);
             EnterState(player, STATE_PRESS_ENTER);
             break;
 
         case '4':
-            SendOutput(credits, player);
+            SendOutput(player, credits);
             EnterState(player, STATE_PRESS_ENTER);
             break;
 
@@ -1539,7 +1538,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         default:
-            SendOutput("Wrong option.\n\r", player);
+            SendOutput(player, "Wrong option.\n\r");
             EnterState(player, STATE_SHOW_LOGIN_MENU);
             break;
         }
@@ -1551,9 +1550,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          */
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
-            SendOutputRaw(echo_on, 6, player);
+            SendOutputRaw(player, echo_on, 6);
 
-            SendOutput("Illegal password.\n\r", player);
+            SendOutput(player, "Illegal password.\n\r");
             EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
@@ -1561,7 +1560,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         strncpy(player->charData->pwd, 
                 (char *) crypt(arg, player->charData->player.name), 10);
         player->charData->pwd[10] = '\0';
-        SendOutputRaw(echo_on, 6, player);
+        SendOutputRaw(player, echo_on, 6);
 
         EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
         break;
@@ -1577,16 +1576,16 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
                             player->charData->pwd, 10)) {
-            SendOutputRaw(echo_on, 6, player);
-            SendOutput("Passwords don't match.\n\r", player);
+            SendOutputRaw(player, echo_on, 6);
+            SendOutput(player, "Passwords don't match.\n\r");
             EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
 
-        SendOutputRaw(echo_on, 6, player);
+        SendOutputRaw(player, echo_on, 6);
 
-        SendOutput("\n\rDone. You must enter the game to make the change "
-                   "final\n\r", player);
+        SendOutput(player, "\n\rDone. You must enter the game to make the "
+                           "change final\n\r");
 
         EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
@@ -1594,8 +1593,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     default:
         LogPrint(LOG_NOTICE, "Nanny: illegal state of con'ness (%d)", 
                  player->state);
-        SendOutput("The mud has lost its brain on your connection, please "
-                   "reconnect.\n\r", player);
+        SendOutput(player, "The mud has lost its brain on your connection, "
+                           "please reconnect.\n\r");
         connClose( player->connection );
         break;
     }
@@ -1626,7 +1625,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         if (player->charData->player.class != 0) {
             EnterState(player, STATE_CHOOSE_MAIN_CLASS);
         } else {
-            SendOutput("\nPlease select a class first.\n\r", player);
+            SendOutput(player, "\nPlease select a class first.\n\r");
         }
         break;
     case '6':
@@ -1634,7 +1633,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         if (player->charData->player.class != 0) {
             EnterState(player, STATE_CHOOSE_STATS);
         } else {
-            SendOutput("\nPlease select a class first.\n\r", player);
+            SendOutput(player, "\nPlease select a class first.\n\r");
         }
         break;
     case '7':
@@ -1650,25 +1649,25 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
             }
         }
         if (bitcount <= 0) {
-            SendOutput("Please enter a valid class.", player);
+            SendOutput(player, "Please enter a valid class.");
             return;
         }
         if (player->charData->specials.remortclass <= 0) {
-            SendOutput("Please enter a valid main class.", player);
+            SendOutput(player, "Please enter a valid main class.");
             return;
         }
 
         if (GET_SEX(player->charData) == 0) {
-            SendOutput("Please enter a proper sex.", player);
+            SendOutput(player, "Please enter a proper sex.");
             return;
         }
 
         if (!GET_ALIGNMENT(player->charData)) {
-            SendOutput("Please choose an alignment.", player);
+            SendOutput(player, "Please choose an alignment.");
             return;
         }
         if (!GET_CON(player->charData) || GET_CON(player->charData) == 0) {
-            SendOutput("Please pick your stats.", player);
+            SendOutput(player, "Please pick your stats.");
             return;
         }
 
@@ -1691,14 +1690,14 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         save_char(player->charData, AUTO_RENT);
 
         for( i = 0; newbie_note[i]; i++ ) {
-            SendOutput(newbie_note[i], player);
+            SendOutput(player, newbie_note[i]);
         }
 
         EnterState(player, STATE_SHOW_MOTD);
         break;
     default:
         show_menu(player);
-        SendOutput("Invalid Choice.. Try again..\n\r", player);
+        SendOutput(player, "Invalid Choice.. Try again..\n\r");
         break;
     }
 }
@@ -1720,7 +1719,7 @@ void show_class_selection(PlayerStruct_t *player, int r)
                               buf2);
                 strcat(buf, buf2);
                 strcat(buf, "\n\r");
-                SendOutput(buf, player);
+                SendOutput(player, buf);
             }
 
             found = TRUE;
@@ -1740,12 +1739,12 @@ void show_race_choice(PlayerStruct_t *player)
     char            buf[255],
                     buf2[254];
 
-    SendOutput("                                  Level Limits\n\r", player);
+    SendOutput(player, "                                  Level Limits\n\r");
     sprintf(buf, "%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s "
                  "%-3s %-3s %-3s\n\r",
             "#", "Race", "ma", "cl", "wa", "th", "dr", "mk", "ba", "so",
             "pa", "ra", "ps", "ne");
-    SendOutput(buf, player);
+    SendOutput(player, buf);
 
     for (i = 0; i < race_choice_count; i++) {
         sprintf(buf, "%s$c000W%-3d)$c0007 %-15s", 
@@ -1762,22 +1761,22 @@ void show_race_choice(PlayerStruct_t *player)
         }
 
         strcat(buf, "\n\r");
-        SendOutput(buf, player);
+        SendOutput(player, buf);
     }
 
-    SendOutput("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"
-               "dr=druid,mk=monk\n\r", player);
-    SendOutput("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,"
-               "ne=necromancer\n\r\n\r", player);
+    SendOutput(player, "$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"
+                       "dr=druid,mk=monk\n\r"
+                       "$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,"
+                       "ps=psi,ne=necromancer\n\r\n\r");
 }
 
 void LoginSendBanner( PlayerStruct_t *player )
 {
-    SendOutput(login, player);
-    SendOutput("If you're using Tintin or Lyntin, your client may not display "
-               "the password\n\r", player);
-    SendOutput("sequence unless you change your settings. Please do not be "
-               "discouraged.\n\r\n\r", player);
+    SendOutput(player, login);
+    SendOutput(player, "If you're using Tintin or Lyntin, your client may not "
+                       "display the password\n\r");
+    SendOutput(player, "sequence unless you change your settings. Please do not"
+                       " be discouraged.\n\r\n\r");
     EnterState(player, STATE_GET_NAME);
 }
 

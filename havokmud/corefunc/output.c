@@ -44,14 +44,10 @@ static char ident[] _UNUSED_ =
 
 /**
  * @brief Outputs a string to a player with ANSI color expansion
- * @param string the string to send
  * @param player the player to send it to
- * @todo The parameters should be reordered to put player first.  This will
- *       allow the functionality of ch_printf to be rolled into this function
- *       in a sane way.  This would approximate the parameters of a sprintf
- *       call
+ * @param string the string to send
  */
-void SendOutput( char *string, PlayerStruct_t *player )
+void SendOutput( PlayerStruct_t *player, char *string )
 {
     OutputBuffer_t *buf;
 
@@ -76,15 +72,12 @@ void SendOutput( char *string, PlayerStruct_t *player )
  * @param string the string to send (can be binary)
  * @param len the length of the string
  * @param player the player to send it to
- * @todo The parameters should be reordered to have the player first as this
- *       will make it consistant with SendOutput which also needs to be
- *       reordered
  *
  * Sends a preformatted raw character array to the player.  This is useful for
  * sending telnet control characters (turn off/on echo around password entry)
  * for example.
  */
-void SendOutputRaw( unsigned char *string, int len, PlayerStruct_t *player )
+void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len )
 {
     OutputBuffer_t *buf;
 
@@ -124,7 +117,7 @@ int ch_printf(PlayerStruct_t *player, char *fmt, ...)
     len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
     va_end(args);
 
-    SendOutput(buf, player);
+    SendOutput(player, buf);
 
     return(len);
 }
