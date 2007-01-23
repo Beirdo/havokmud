@@ -3646,12 +3646,12 @@ void AuctionPulseStuff(int pulse)
          * return money to auctioneer
          */
         GET_GOLD(auctioneer) += intbid;
-        SendOutput(auctioneer, "You receive %ld coins for the item you "
+        oldSendOutput(auctioneer, "You receive %ld coins for the item you "
                               "auctioned.\n\r", intbid);
         /*
          * return item to bidder
          */
-        SendOutput(bidder, "You receive %s.\n\r", auctionobj->short_description);
+        oldSendOutput(bidder, "You receive %s.\n\r", auctionobj->short_description);
         auctioneer->specials.auction = 0;
         auctionobj->in_obj = 0;
         auctionobj->in_room = -1;

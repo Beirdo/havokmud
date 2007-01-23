@@ -1991,7 +1991,7 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
 /*
  * source: EOD, by John Booth <???> 
  */
-int SendOutput(struct char_data *ch, char *fmt, ...)
+int oldSendOutput(struct char_data *ch, char *fmt, ...)
 {
     char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
     int             len;
@@ -2610,7 +2610,7 @@ void raw_force_all(char *to_force)
 
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected) {
-            SendOutput(i->character, "The game has forced you to '%s'.\n\r", 
+            oldSendOutput(i->character, "The game has forced you to '%s'.\n\r", 
                                     to_force);
             command_interpreter(i->character, to_force);
         }
@@ -3119,21 +3119,21 @@ void InitScreen(struct char_data *ch)
     int             size;
 
     size = ch->size;
-    SendOutput(ch, VT_HOMECLR);
-    SendOutput(ch, VT_MARGSET, 0, size - 5);
-    SendOutput(ch, VT_CURSPOS, size - 4, 1);
-    SendOutput(ch, "-========================================================="
+    oldSendOutput(ch, VT_HOMECLR);
+    oldSendOutput(ch, VT_MARGSET, 0, size - 5);
+    oldSendOutput(ch, VT_CURSPOS, size - 4, 1);
+    oldSendOutput(ch, "-========================================================="
                   "==================-");
-    SendOutput(ch, VT_CURSPOS, size - 3, 1);
-    SendOutput(ch, "Hit Points: ");
-    SendOutput(ch, VT_CURSPOS, size - 3, 40);
-    SendOutput(ch, "Movement Points: ");
-    SendOutput(ch, VT_CURSPOS, size - 2, 1);
-    SendOutput(ch, "Mana: ");
-    SendOutput(ch, VT_CURSPOS, size - 2, 40);
-    SendOutput(ch, "Gold: ");
-    SendOutput(ch, VT_CURSPOS, size - 1, 1);
-    SendOutput(ch, "Experience Points: ");
+    oldSendOutput(ch, VT_CURSPOS, size - 3, 1);
+    oldSendOutput(ch, "Hit Points: ");
+    oldSendOutput(ch, VT_CURSPOS, size - 3, 40);
+    oldSendOutput(ch, "Movement Points: ");
+    oldSendOutput(ch, VT_CURSPOS, size - 2, 1);
+    oldSendOutput(ch, "Mana: ");
+    oldSendOutput(ch, VT_CURSPOS, size - 2, 40);
+    oldSendOutput(ch, "Gold: ");
+    oldSendOutput(ch, VT_CURSPOS, size - 1, 1);
+    oldSendOutput(ch, "Experience Points: ");
 
     ch->last.mana = GET_MANA(ch);
     ch->last.mmana = GET_MAX_MANA(ch);
@@ -3147,18 +3147,18 @@ void InitScreen(struct char_data *ch)
     /*
      * Update all of the info parts 
      */
-    SendOutput(ch, VT_CURSPOS, size - 3, 13);
-    SendOutput(ch, "%d(%d)", GET_HIT(ch), GET_MAX_HIT(ch));
-    SendOutput(ch, VT_CURSPOS, size - 3, 58);
-    SendOutput(ch, "%d(%d)", GET_MOVE(ch), GET_MAX_MOVE(ch));
-    SendOutput(ch, VT_CURSPOS, size - 2, 7);
-    SendOutput(ch, "%d(%d)", GET_MANA(ch), GET_MAX_MANA(ch));
-    SendOutput(ch, VT_CURSPOS, size - 2, 47);
-    SendOutput(ch, "%d", GET_GOLD(ch));
-    SendOutput(ch, VT_CURSPOS, size - 1, 20);
-    SendOutput(ch, "%d", GET_EXP(ch));
+    oldSendOutput(ch, VT_CURSPOS, size - 3, 13);
+    oldSendOutput(ch, "%d(%d)", GET_HIT(ch), GET_MAX_HIT(ch));
+    oldSendOutput(ch, VT_CURSPOS, size - 3, 58);
+    oldSendOutput(ch, "%d(%d)", GET_MOVE(ch), GET_MAX_MOVE(ch));
+    oldSendOutput(ch, VT_CURSPOS, size - 2, 7);
+    oldSendOutput(ch, "%d(%d)", GET_MANA(ch), GET_MAX_MANA(ch));
+    oldSendOutput(ch, VT_CURSPOS, size - 2, 47);
+    oldSendOutput(ch, "%d", GET_GOLD(ch));
+    oldSendOutput(ch, VT_CURSPOS, size - 1, 20);
+    oldSendOutput(ch, "%d", GET_EXP(ch));
 
-    SendOutput(ch, VT_CURSPOS, 0, 0);
+    oldSendOutput(ch, VT_CURSPOS, 0, 0);
 }
 
 void identd_test(struct sockaddr_in in_addr)

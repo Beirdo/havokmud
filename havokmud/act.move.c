@@ -105,7 +105,7 @@ int ValidMove(struct char_data *ch, int cmd)
         if (exitp->keyword) {
             if (!IS_SET(exitp->exit_info, EX_SECRET) && 
                 strcmp(fname(exitp->keyword), "secret")) {
-                SendOutput(ch, "The %s seems to be closed.\n\r",
+                oldSendOutput(ch, "The %s seems to be closed.\n\r",
                               fname(exitp->keyword));
                 return (FALSE);
             } else {
@@ -681,7 +681,7 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
             if (total > 1) {
                 sprintf(tmp + strlen(tmp), " [%d]", total);
             }
-            SendOutput(tmp_ch, "%s\n\r", CAP(tmp));
+            oldSendOutput(tmp_ch, "%s\n\r", CAP(tmp));
         }
     }
     return (TRUE);
@@ -746,7 +746,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
                 send_to_char("Thats a direction, not a portal.\n\r", ch);
                 return (-1);
             }
-            SendOutput(ch, "I see no %s there.\n\r", type);
+            oldSendOutput(ch, "I see no %s there.\n\r", type);
             return (-1);
         } 
 
@@ -754,7 +754,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
             send_to_char("Thats a direction, not a portal.\n\r", ch);
             return (-1);
         }
-        SendOutput(ch, "I see no %s there.\n\r", type);
+        oldSendOutput(ch, "I see no %s there.\n\r", type);
         return (-1);
     } 
 
@@ -775,7 +775,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
         }
     }
 
-    SendOutput(ch, "I see no %s here.\n\r", type);
+    oldSendOutput(ch, "I see no %s here.\n\r", type);
     return (-1);
 }
 
@@ -882,7 +882,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &dir);
 
     if (!type) {
-        SendOutput(ch, "%s what?!\r\n", cmdname);
+        oldSendOutput(ch, "%s what?!\r\n", cmdname);
         return;
     }
         
@@ -907,7 +907,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                             cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
-                SendOutput(ch, "You %s the %s and close the passage %s\r\n",
+                oldSendOutput(ch, "You %s the %s and close the passage %s\r\n",
                               cmdname, fname(exitp->keyword),
                               direction[door].desc);
 
@@ -934,7 +934,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                             cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
-                SendOutput(ch, "You %s the %s and open a passage %s\r\n",
+                oldSendOutput(ch, "You %s the %s and open a passage %s\r\n",
                               cmdname, fname(exitp->keyword),
                               direction[door].desc);
             }
@@ -1424,7 +1424,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                 return;
             }
         }
-        SendOutput(ch, "There is no %s here.\n\r", buf);
+        oldSendOutput(ch, "There is no %s here.\n\r", buf);
     } else if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You are already indoors.\n\r", ch);
     } else {

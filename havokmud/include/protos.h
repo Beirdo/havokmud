@@ -4160,7 +4160,7 @@ struct index_data *db_generate_object_index(int *top, int *sort_top,
 /**
  * @todo Crap to be removed
  */
-int             SendOutput(struct char_data *ch, char *fmt, ...);
+void            oldSendOutput(struct char_data *ch, char *fmt, ...);
 
 
 /*************************************************************************

@@ -54,7 +54,7 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
      */
 
     if (cmd == CMD_practice || cmd == CMD_study || cmd == CMD_gain) {
-		/* SendOutput(ch,"Gain:%d  Study:%d Practice:%d",
+		/* oldSendOutput(ch,"Gain:%d  Study:%d Practice:%d",
 		 *  CMD_gain, CMD_study, CMD_practice);
          */
 
@@ -1004,15 +1004,15 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
         /*
          * list if no argument
          */
-        SendOutput(ch, "$c000B%-15s     %-3s\n\r------------------------\n\r",
+        oldSendOutput(ch, "$c000B%-15s     %-3s\n\r------------------------\n\r",
                   "Stat", "Cost");
         while (traininglist[x].level != -1) {
-            SendOutput(ch, "$c000W %-15s     %-3d\n\r",
+            oldSendOutput(ch, "$c000W %-15s     %-3d\n\r",
                       traininglist[x].name,
                       traininglist[x].level < 3 ? 3 : traininglist[x].level);
             x++;
         }
-        SendOutput(ch, "$c000B------------------------\n\r");
+        oldSendOutput(ch, "$c000B------------------------\n\r");
         return (TRUE);
     }
 
@@ -1028,7 +1028,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 }
                 stat = x + 1;
                 if (GET_PRAC(ch) - cost < 0) {
-                    SendOutput(ch, "$c000P%s tells you 'You don't have enough "
+                    oldSendOutput(ch, "$c000P%s tells you 'You don't have enough "
                                   "practice sessions to learn %s.'\n\r",
                               mob->player.short_descr, traininglist[x].name);
                     return (TRUE);
@@ -1041,14 +1041,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
         switch (stat) {
         case 1:
             if (GET_RCON(ch) >= 17) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               " further.'\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RCON(ch) >= MaxConForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You allready have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You allready have the "
                               "maximum con for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1058,7 +1058,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_CON(ch) = GET_CON(ch) + 1;
 
                 GET_PRAC(ch) -= cost;
-                SendOutput(ch, "$c000P%s tells you 'Lets train your "
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your "
                               "constitution!!!'\n\r$c000wYou heed his advice "
                               "and go for a jog around the room.(+1 Con)\n\r",
                           mob->player.short_descr);
@@ -1066,7 +1066,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         case 2:
             if (affected_by_spell(ch, SPELL_STRENGTH)) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s "
                               "while it is magically enhanced.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1074,7 +1074,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (affected_by_spell(ch, SPELL_HOLY_STRENGTH)) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s "
                               "while it is magically enhanced.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1082,14 +1082,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
 
             if (GET_RSTR(ch) >= 18) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               "further.'\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RSTR(ch) >= MaxStrForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You allready have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You allready have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1099,7 +1099,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_RSTR(ch) = GET_RSTR(ch) + 1;
                 GET_STR(ch) = GET_STR(ch) + 1;
 
-                SendOutput(ch, "$c000P%s tells you 'Lets train your "
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your "
                               "strength!!!'\n\r$c000wYou start lifting some "
                               "weights.  You feel stronger!!!(+1 Str)'\n\r",
                           mob->player.short_descr);
@@ -1107,14 +1107,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         case 3:
             if (GET_RDEX(ch) >= 17) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               "further.'\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RDEX(ch) >= MaxDexForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You already have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You already have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1123,7 +1123,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_PRAC(ch) -= cost;
                 GET_RDEX(ch) = GET_RDEX(ch) + 1;;
                 GET_DEX(ch) = GET_DEX(ch) + 1;
-                SendOutput(ch, "$c000P%s tells you 'Lets train your dex!!!\n\r"
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your dex!!!\n\r"
                               "$c000w%s shows you some stretches.  You mimic "
                               "them!!! (+1 Dex)\n\r",
                           mob->player.short_descr, mob->player.short_descr);
@@ -1131,14 +1131,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         case 4:
             if (GET_RCHR(ch) >= 17) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               "further.'\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RCHR(ch) >= MaxChrForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You allready have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You allready have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1147,7 +1147,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_PRAC(ch) -= cost;
                 GET_RCHR(ch) = GET_RCHR(ch) + 1;
                 GET_CHR(ch) = GET_CHR(ch) + 1;
-                SendOutput(ch, "$c000P%s tells you 'Lets train your charisma!!!'"
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your charisma!!!'"
                               "\n\r$c000w%s gives you some lessons in "
                               "manners!!(+1 Chr)\n\r",
                           mob->player.short_descr, mob->player.short_descr);
@@ -1155,14 +1155,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         case 5:
             if (GET_RINT(ch) >= 17) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               "further.\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RINT(ch) >= MaxIntForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You allready have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You allready have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1171,7 +1171,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_PRAC(ch) -= cost;
                 GET_RINT(ch) = GET_RINT(ch) + 1;
                 GET_INT(ch) = GET_INT(ch) + 1;
-                SendOutput(ch, "$c000P%s tells you 'Lets train your "
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your "
                               "intelligence!!!\n\r$c000w%s gives you a strange"
                               " old book to read. You read it!!(+1 Int)\n\r",
                           mob->player.short_descr, mob->player.short_descr);
@@ -1179,14 +1179,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         case 6:
             if (GET_RWIS(ch) >= 17) {
-                SendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
+                oldSendOutput(ch, "$c000P%s tells you 'I cannot train your %s any "
                               "further.'\n\r", mob->player.short_descr,
                           traininglist[stat - 1].name, name);
                 break;
             }
 
             if (GET_RWIS(ch) >= MaxWisForRace(ch)) {
-                SendOutput(ch, "$c000P%s tells you 'You allready have the "
+                oldSendOutput(ch, "$c000P%s tells you 'You allready have the "
                               "maximum %s for your race.'\n\r",
                           mob->player.short_descr,
                           traininglist[stat - 1].name, name);
@@ -1195,7 +1195,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                 GET_PRAC(ch) -= cost;
                 GET_RWIS(ch) = GET_RWIS(ch) + 1;
                 GET_WIS(ch) = GET_WIS(ch) + 1;
-                SendOutput(ch, "$c000P%s tells you 'Lets train your "
+                oldSendOutput(ch, "$c000P%s tells you 'Lets train your "
                               "wisdom!!!\n\r$c000w%s sits down and brings out "
                               "the old chess board!!\n\rYou and him have a "
                               "chat and play a few games.(+1 Wis)'\n\r",
@@ -1203,7 +1203,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             }
             break;
         default:
-            SendOutput(ch, "$c000P%s tells you 'I'm not quite sure how to train"
+            oldSendOutput(ch, "$c000P%s tells you 'I'm not quite sure how to train"
                           " that.'\n\r", mob->player.short_descr);
             break;
         }
@@ -1374,7 +1374,7 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
         if (is_abbrev(classname, classes[x].name)) {
             choose = x;
 #if 0
-            SendOutput(ch,"You choose class# x%d as a new class.pc%d.\n\r"
+            oldSendOutput(ch,"You choose class# x%d as a new class.pc%d.\n\r"
                       ,x,pc_num_class(x));
 #endif
         }
@@ -1420,7 +1420,7 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
     while (classcombos[x] != -1) {
         if (IS_SET(classcombos[x], hasclass)) {
             do_mobTell2(ch, mob, "You may now know the art of this class!");
-            SendOutput(ch, "You just obtained a new class!!! %d",
+            oldSendOutput(ch, "You just obtained a new class!!! %d",
                       pc_num_class(choose));
             ch->player.class = hasclass;
             do_restore(ch, GET_NAME(ch), 0);
@@ -1721,20 +1721,20 @@ int LearnSkill(struct char_data *ch, const struct skillset *skills,
     for(i = 0; i < skillcount; i++) {
         if (is_abbrev(arg, skills[i].name)) {
             if (skills[i].level > level) {
-                SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You're not "
+                oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You're not "
                               "experienced enough to learn this skill.'",
                           teacher);
                 return (TRUE);
             }
 
             if (ch->specials.spells_to_learn <= 0) {
-                SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You don't "
+                oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You don't "
                               "have enough practice points.'\n\r", teacher);
                 return (TRUE);
             }
 
             if (charge && GET_GOLD(ch) < charge) {
-                SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'Ah, but you "
+                oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'Ah, but you "
                               "do not have enough money to pay.'\n\r", teacher);
                 return (TRUE);
             }
@@ -1742,11 +1742,11 @@ int LearnSkill(struct char_data *ch, const struct skillset *skills,
             if (!charge &&
                 ch->skills[skills[i].skillnum].learned > skills[i].maxlearn ) {
                 if( skills[i].maxlearn < 94 ) {
-                    SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You must "
+                    oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You must "
                                   "learn from experience and practice to get"
                                   " any better at that skill.'\n\r", teacher);
                 } else {
-                    SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You are a"
+                    oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You are a"
                                   " master of this art, I can teach you no "
                                   "more.'\n\r", teacher);
                 }
@@ -1754,13 +1754,13 @@ int LearnSkill(struct char_data *ch, const struct skillset *skills,
             }
 
             if (ch->skills[skills[i].skillnum].learned >= 95) {
-                SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I have "
+                oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I have "
                               "taught you all I can about that skill.'\n\r",
                           teacher);
                 return (TRUE);
             }
 
-            SendOutput(ch, "You practice %s for a while.\n\r", skills[i].name);
+            oldSendOutput(ch, "You practice %s for a while.\n\r", skills[i].name);
             ch->specials.spells_to_learn--;
             GET_GOLD(ch) -= charge;
 

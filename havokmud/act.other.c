@@ -219,7 +219,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
                     }
                     ch->specials.prompt = strdup(prompts[i].pr);
                     if (cmd != 0) {
-                        SendOutput(ch, "Your new prompt is : <%s>\n\r",
+                        oldSendOutput(ch, "Your new prompt is : <%s>\n\r",
                                       ch->specials.prompt);
                     }
                     return;
@@ -232,12 +232,12 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
             }
             ch->specials.prompt = strdup(argument);
             if (cmd != 0) {
-                SendOutput(ch, "Your new prompt is : <%s>\n\r",
+                oldSendOutput(ch, "Your new prompt is : <%s>\n\r",
                               ch->specials.prompt);
             }
         }
     } else {
-        SendOutput(ch, "Your current prompt is : %s\n\r", ch->specials.prompt);
+        oldSendOutput(ch, "Your current prompt is : %s\n\r", ch->specials.prompt);
     }
 }
 
@@ -286,7 +286,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
                     }
                     ch->specials.bprompt = strdup(prompts[i].pr);
                     if (cmd != 0) {
-                        SendOutput(ch, "Your new battle prompt is : <%s>\n\r",
+                        oldSendOutput(ch, "Your new battle prompt is : <%s>\n\r",
                                       ch->specials.bprompt);
                     }
                     return;
@@ -299,13 +299,13 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
             }
             ch->specials.bprompt = strdup(argument);
             if (cmd != 0) {
-                SendOutput(ch, "Your new battle prompt is : <%s>\n\r",
+                oldSendOutput(ch, "Your new battle prompt is : <%s>\n\r",
                               ch->specials.bprompt);
             }
 
         }
     } else {
-        SendOutput(ch, "Your current battle prompt is : %s\n\r",
+        oldSendOutput(ch, "Your current battle prompt is : %s\n\r",
                       ch->specials.bprompt);
     }
 }
@@ -351,7 +351,7 @@ void do_title(struct char_data *ch, char *argument, int cmd)
         }
         free( temp );
 
-        SendOutput(ch, "Your title has been set to : <%s>\n\r", buf2);
+        oldSendOutput(ch, "Your title has been set to : <%s>\n\r", buf2);
         if (ch->player.title) {
             free(ch->player.title);
         }
@@ -880,7 +880,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             if (gold > 0) {
                 GET_GOLD(ch) += gold;
                 GET_GOLD(victim) -= gold;
-                SendOutput(ch, "Bingo! You got %d gold coins.\n\r", gold);
+                oldSendOutput(ch, "Bingo! You got %d gold coins.\n\r", gold);
                 if (IS_PC(ch) && IS_PC(victim)) {
                     GET_ALIGNMENT(ch) -= 20;
                 }
@@ -1344,7 +1344,7 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
      */
     arg = skip_spaces(arg);
     if( arg ) {
-        SendOutput(ch, "Setting your group name to: %s\n\r", arg);
+        oldSendOutput(ch, "Setting your group name to: %s\n\r", arg);
         ch->specials.group_name = strdup(arg);
     } else {
         send_to_char("Clearing your group name\n\r", ch);
@@ -2003,7 +2003,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
             if (ch->specials.A_list) {
                 for (i = 0; i < 10; i++) {
                     if (ch->specials.A_list->com[i]) {
-                        SendOutput(ch, "[%d] %s\n\r", i,
+                        oldSendOutput(ch, "[%d] %s\n\r", i,
                                       ch->specials.A_list->com[i]);
                     }
                 }
@@ -2238,10 +2238,10 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r",
                      ch);
 
-        SendOutput(ch, "You can memorize one spell %d times, with a total of "
+        oldSendOutput(ch, "You can memorize one spell %d times, with a total of "
                       "%d spells memorized.\n\r",
                       MaxCanMemorize(ch, 0), TotalMaxCanMem(ch));
-        SendOutput(ch, "You currently have %d spells memorized.\n\r",
+        oldSendOutput(ch, "You currently have %d spells memorized.\n\r",
                       TotalMemorized(ch));
         send_to_char("Your spellbook holds these spells:\n\r", ch);
 
@@ -3076,7 +3076,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          */
         send_to_char("        $c0008-=* $c000BAdventurer information $c0008"
                      "*=-\n\r", ch);
-        SendOutput(ch, "$c000BName                  : $c0007%s\n\r",
+        oldSendOutput(ch, "$c000BName                  : $c0007%s\n\r",
                       finger->player.title);
         i = get_char(name);
 
@@ -3085,16 +3085,16 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          */
         if ((IS_IMMORTAL(finger) && !IS_IMMORTAL(ch)) ||
             GetMaxLevel(finger) > GetMaxLevel(ch)) {
-            SendOutput(ch, "$c000BLast time sited       : $c0007Unknown\n\r");
+            oldSendOutput(ch, "$c000BLast time sited       : $c0007Unknown\n\r");
         } else if (i && i->desc) {
             /*
              * if there is a name, and a file descriptor
              */
-            SendOutput(ch, "$c000BLast time sited       : $c0007Currently "
+            oldSendOutput(ch, "$c000BLast time sited       : $c0007Currently "
                           "Playing\n\r");
         } else {
             /* NOTE: asctime includes a \n\r at the end of the string */
-            SendOutput(ch, "$c000BLast time sited       : $c0007%s",
+            oldSendOutput(ch, "$c000BLast time sited       : $c0007%s",
                           asctime(localtime(&tmp_store.last_logon)));
         }
 
@@ -3102,35 +3102,35 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          * Display char email addy
          */
         if (finger->specials.email == NULL) {
-            SendOutput(ch, "$c000BKnown message drop    : $c0007None\n\r");
+            oldSendOutput(ch, "$c000BKnown message drop    : $c0007None\n\r");
         } else {
-            SendOutput(ch, "$c000BKnown message drop    : $c0007%s\n\r",
+            oldSendOutput(ch, "$c000BKnown message drop    : $c0007%s\n\r",
                           finger->specials.email);
         }
 
         /*
          * Display clan info
          */
-        SendOutput(ch, "$c000BClan info             : $c0007%s\n\r",
+        oldSendOutput(ch, "$c000BClan info             : $c0007%s\n\r",
                       clan_list[GET_CLAN(finger)].name);
 
         if (IS_IMMORTAL(ch)) {
             if (finger->specials.hostip == NULL) {
-                SendOutput(ch, "$c000BHostIP                : $c0007None\n\r");
+                oldSendOutput(ch, "$c000BHostIP                : $c0007None\n\r");
             } else {
-                SendOutput(ch, "$c000BHostIP                : $c0007%s\n\r",
+                oldSendOutput(ch, "$c000BHostIP                : $c0007%s\n\r",
                               finger->specials.hostip);
             }
         }
 
         if (finger->specials.rumor == NULL) {
-            SendOutput(ch, "$c000BRumored info          : $c0007None\n\r");
+            oldSendOutput(ch, "$c000BRumored info          : $c0007None\n\r");
         } else {
-            SendOutput(ch, "$c000BRumored info           : $c0007%s\n\r",
+            oldSendOutput(ch, "$c000BRumored info           : $c0007%s\n\r",
                           finger->specials.rumor);
         }
 
-        SendOutput(ch, "$c000BArena stats           : $c0007%d kills$c000B/"
+        oldSendOutput(ch, "$c000BArena stats           : $c0007%d kills$c000B/"
                       "$c0007%d deaths\n\r",
                   finger->specials.a_kills, finger->specials.a_deaths);
 
@@ -3139,7 +3139,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          */
         akills = finger->specials.a_kills;
         adeaths = finger->specials.a_deaths;
-        SendOutput(ch, "$c000BArena ratio           : $c0007%3.0f%%\n\r",
+        oldSendOutput(ch, "$c000BArena ratio           : $c0007%3.0f%%\n\r",
                   ((akills + adeaths) == 0) ? 0 :
                   (((float) akills /
                     ((int) (akills + adeaths))) * 100.0 + 0.5));
@@ -3489,7 +3489,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
         }
         j->description = strdup(buf);
 
-        SendOutput(ch, "You behead %s.\n\r", j->short_description);
+        oldSendOutput(ch, "You behead %s.\n\r", j->short_description);
 
         sprintf(buf, "%s beheads %s.", GET_NAME(ch), j->short_description);
         act(buf, TRUE, ch, 0, 0, TO_ROOM);
@@ -3538,7 +3538,7 @@ void do_top10(struct char_data *ch, char *arg, int cmd)
         }
     }
 
-    SendOutput(ch, "Deadly: %s   %d.\n\rRichest: %s   %d\n\r", deadlyname,
+    oldSendOutput(ch, "Deadly: %s   %d.\n\rRichest: %s   %d\n\r", deadlyname,
               deadly, richestname, richest);
 }
 

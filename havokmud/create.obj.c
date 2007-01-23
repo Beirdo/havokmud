@@ -1186,12 +1186,12 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 
     switch (ch->specials.oedit) {
     case CHANGE_OBJ_EGO:
-        SendOutput(ch, "Please select the level of the item. Param(1-50) "
+        oldSendOutput(ch, "Please select the level of the item. Param(1-50) "
                       "Current (%d)", ch->specials.objedit->level);
         break;
     case CHANGE_OBJ_SPEED:
         if (IS_WEAPON(ch->specials.objedit)) {
-            SendOutput(ch, "Please enter weapon speed: Param(0-100)   "
+            oldSendOutput(ch, "Please enter weapon speed: Param(0-100)   "
                           "Current(%d)", ch->specials.objedit->speed);
         } else {
             send_to_char("Can only do this to weapons.\n\r", ch);
@@ -1200,16 +1200,16 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
         }
         break;
     case CHANGE_OBJ_MAX:
-        SendOutput(ch, "Please enter loadrate of item: Param(0-100)    "
+        oldSendOutput(ch, "Please enter loadrate of item: Param(0-100)    "
                       "Current(%d)", ch->specials.objedit->max);
         break;
     case CHANGE_OBJ_TWEAK:
-        SendOutput(ch, "Please enter the Tweak rating. Param(0-100)    "
+        oldSendOutput(ch, "Please enter the Tweak rating. Param(0-100)    "
                       "Current(%d)", ch->specials.objedit->tweak);
         break;
     case CHANGE_OBJ_WTYPE:
         if (IS_WEAPON(ch->specials.objedit)) {
-            SendOutput(ch, "Please enter the Weapon Type. Param(0-59)    "
+            oldSendOutput(ch, "Please enter the Weapon Type. Param(0-59)    "
                           "Current(%d)", ch->specials.objedit->weapontype);
         } else {
             send_to_char("Can only do this to weapons.\n\r", ch);

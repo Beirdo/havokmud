@@ -4214,7 +4214,7 @@ void spell_know_monster(int level, struct char_data *ch,
             act(buf, FALSE, ch, 0, victim, TO_CHAR);
         }
 
-        SendOutput(ch, "$c000pDescription:$c000W \n\r%s", 
+        oldSendOutput(ch, "$c000pDescription:$c000W \n\r%s", 
                       races[victim->race].desc);
     } else {
         send_to_char("Thats not a REAL monster\n\r", ch);

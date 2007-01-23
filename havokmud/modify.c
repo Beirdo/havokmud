@@ -604,7 +604,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
 
     if (!(field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
-        SendOutput(ch, "I don't understand the field \"%s\"\n\r", buf);
+        oldSendOutput(ch, "I don't understand the field \"%s\"\n\r", buf);
         return;
     }
     
@@ -645,7 +645,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
-            SendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+            oldSendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
             send_to_char("If room is unnamed, the default sector name will be "
                          "assigned.\n\r", ch);
 
@@ -667,7 +667,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
-            SendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+            oldSendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
             send_to_char("If room is unnamed, the default sector name will be "
                          "assigned.\n\r", ch);
 
@@ -706,7 +706,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                     temproom = real_roomp(i);
                     temproom->room_flags = r_flags;
                     temproom->sector_type = s_type;
-                    SendOutput(ch, "Room and sector flags set for room %d\n\r",
+                    oldSendOutput(ch, "Room and sector flags set for room %d\n\r",
                               i);
                     if (temproom->name) {
                         sprintf(name, "%s", temproom->name);
@@ -722,11 +722,11 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                         temproom->river_dir = 0;
                     }
                 } else {
-                    SendOutput(ch, "Room %d is not a valid room. Use create to "
+                    oldSendOutput(ch, "Room %d is not a valid room. Use create to "
                                   "create rooms.\n\r", i);
                 }
             }
-            SendOutput(ch, "\n\rFinished setting flags for rooms %d to %d.\n\r",
+            oldSendOutput(ch, "\n\rFinished setting flags for rooms %d to %d.\n\r",
                       r_start, r_end);
             if (temproom->sector_type == SECT_WATER_NOSWIM) {
                 send_to_char("\n\rP.S. You need to do speed and flow direction"

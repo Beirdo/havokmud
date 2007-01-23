@@ -128,7 +128,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
             sprintf(buf, "$n drinks %s from $p",
                     drinks[temp->obj_flags.value[2]]);
             act(buf, TRUE, ch, temp, 0, TO_ROOM);
-            SendOutput(ch, "You drink the %s.\n\r",
+            oldSendOutput(ch, "You drink the %s.\n\r",
                           drinks[temp->obj_flags.value[2]]);
 
             if (drink_aff[temp->obj_flags.value[2]][DRUNK] > 0) {
@@ -369,7 +369,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    SendOutput(ch, "You pour the %s into the %s.",
+    oldSendOutput(ch, "You pour the %s into the %s.",
                   drinks[from_obj->obj_flags.value[2]], arg2);
 
     /*
@@ -443,7 +443,7 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
     }
 
     act("$n sips from the $p", TRUE, ch, temp, 0, TO_ROOM);
-    SendOutput(ch, "It tastes like %s.\n\r", drinks[temp->obj_flags.value[2]]);
+    oldSendOutput(ch, "It tastes like %s.\n\r", drinks[temp->obj_flags.value[2]]);
 
     gain_condition(ch, DRUNK, 
                    (int)(drink_aff[temp->obj_flags.value[2]][DRUNK] / 4));
@@ -725,7 +725,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             if (obj_object->obj_flags.value[2]) {
                 real_roomp(ch->in_room)->light++;
             }
-            SendOutput(ch, "You light %s and hold it.\n\r",
+            oldSendOutput(ch, "You light %s and hold it.\n\r",
                           obj_object->short_description);
             perform_wear(ch, obj_object, keyword);
             obj_from_char(obj_object);
@@ -762,7 +762,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You can't wear any more around your "
                              "neck.\n\r", ch);
             } else {
-                SendOutput(ch, "You wear %s around your neck.\n\r",
+                oldSendOutput(ch, "You wear %s around your neck.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 if (ch->equipment[WEAR_NECK_1]) {
@@ -784,7 +784,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your body.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your body.\n\r",
+                oldSendOutput(ch, "You wear %s on your body.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -801,7 +801,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your head.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your head.\n\r",
+                oldSendOutput(ch, "You wear %s on your head.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -818,7 +818,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your legs.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your legs.\n\r",
+                oldSendOutput(ch, "You wear %s on your legs.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -835,7 +835,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your feet.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your feet.\n\r",
+                oldSendOutput(ch, "You wear %s on your feet.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -852,7 +852,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your hands.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your hands.\n\r",
+                oldSendOutput(ch, "You wear %s on your hands.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -869,7 +869,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your arms.\n\r",
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your arms.\n\r",
+                oldSendOutput(ch, "You wear %s on your arms.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -886,7 +886,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something about your "
                              "body.\n\r", ch);
             } else {
-                SendOutput(ch, "You wear %s about your body.\n\r",
+                oldSendOutput(ch, "You wear %s about your body.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -903,7 +903,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something about your "
                              "waist.\n\r", ch);
             } else {
-                SendOutput(ch, "You wear %s around your waist.\n\r",
+                oldSendOutput(ch, "You wear %s around your waist.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -967,7 +967,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                                      "also.\n\r", ch);
                     }
                 } else {
-                    SendOutput(ch, "You wield %s\n\r",
+                    oldSendOutput(ch, "You wield %s\n\r",
                                   obj_object->short_description);
                     perform_wear(ch, obj_object, keyword);
                     obj_from_char(obj_object);
@@ -1012,7 +1012,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                         return;
                     }
                 }
-                SendOutput(ch, "You grab %s and hold it.\n\r",
+                oldSendOutput(ch, "You grab %s and hold it.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -1039,7 +1039,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 return;
             } else {
                 perform_wear(ch, obj_object, keyword);
-                SendOutput(ch, "You start using %s.\n\r",
+                oldSendOutput(ch, "You start using %s.\n\r",
                               obj_object->short_description);
                 obj_from_char(obj_object);
                 equip_char(ch, obj_object, WEAR_SHIELD);
@@ -1056,7 +1056,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already wear something on your back.\n\r", 
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your back.\n\r",
+                oldSendOutput(ch, "You wear %s on your back.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -1094,7 +1094,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 send_to_char("You already have something on your eyes.\n\r", 
                              ch);
             } else {
-                SendOutput(ch, "You wear %s on your eyes.\n\r",
+                oldSendOutput(ch, "You wear %s on your eyes.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
@@ -1106,11 +1106,11 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         break;
 
     case -1:
-        SendOutput(ch, "Wear %s where?.\n\r", obj_object->short_description);
+        oldSendOutput(ch, "Wear %s where?.\n\r", obj_object->short_description);
         break;
 
     case -2:
-        SendOutput(ch, "You can't wear %s.\n\r", obj_object->short_description);
+        oldSendOutput(ch, "You can't wear %s.\n\r", obj_object->short_description);
         break;
 
     default:
@@ -1211,7 +1211,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                     keyword = 16;
                 }
                 if (keyword != -2) {
-                    SendOutput(ch, "%s :", obj_object->short_description);
+                    oldSendOutput(ch, "%s :", obj_object->short_description);
                     wear(ch, obj_object, keyword);
                 }
             }
@@ -1224,10 +1224,10 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                      */
                     keyword = search_block(arg2, keywords, FALSE);
                     if (keyword == -1) {
-                        SendOutput(ch, "%s is an unknown body location.\n\r",
+                        oldSendOutput(ch, "%s is an unknown body location.\n\r",
                                       arg2);
                     } else {
-                        SendOutput(ch, "%s :", obj_object->short_description);
+                        oldSendOutput(ch, "%s :", obj_object->short_description);
                         wear(ch, obj_object, keyword + 1);
                     }
                 } else {
@@ -1282,11 +1282,11 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                         keyword = 16;
                     }
 
-                    SendOutput(ch, "%s :", obj_object->short_description);
+                    oldSendOutput(ch, "%s :", obj_object->short_description);
                     wear(ch, obj_object, keyword);
                 }
             } else {
-                SendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
+                oldSendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
             }
         }
     } else {
@@ -1311,7 +1311,7 @@ void do_wield(struct char_data *ch, char *argument, int cmd)
         if (obj_object) {
             wear(ch, obj_object, keyword);
         } else {
-            SendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
+            oldSendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
         }
     } else {
         send_to_char("Wield what?\n\r", ch);
@@ -1351,7 +1351,7 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
             }
             wear(ch, obj_object, keyword);
         } else {
-            SendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
+            oldSendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
         }
     } else {
         send_to_char("Wield what?\n\r", ch);
@@ -1378,7 +1378,7 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
                 wear(ch, obj_object, 13);
             }
         } else {
-            SendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
+            oldSendOutput(ch, "You do not seem to have the '%s'.\n\r", arg1);
         }
     } else {
         send_to_char("Hold what?\n\r", ch);
@@ -1475,7 +1475,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                         j = MAX_WEAR;
                     }
                 } else {
-                    SendOutput(ch, "You dont seem to have the %s\n\r", T);
+                    oldSendOutput(ch, "You dont seem to have the %s\n\r", T);
                 }
 
                 if (T != P) {
@@ -1538,12 +1538,12 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!bidder) {
-            SendOutput(ch, "%s is currently auctioning %s, minimum bid set "
+            oldSendOutput(ch, "%s is currently auctioning %s, minimum bid set "
                           "at %ld. Wait your turn.\n\r",
                           GET_NAME(auctioneer), auctionobj->short_description,
                           minbid);
         } else {
-            SendOutput(ch, "%s is currently auctioning %s, current bid of "
+            oldSendOutput(ch, "%s is currently auctioning %s, current bid of "
                           "%ld by %s. Wait your turn.\n\r",
                           GET_NAME(auctioneer), auctionobj->short_description,
                           intbid, GET_NAME(bidder));
@@ -1716,13 +1716,13 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         }
 
         if (bid < newminbid) {
-            SendOutput(ch, "Sorry, your bid has to be at least 5%% higher "
+            oldSendOutput(ch, "Sorry, your bid has to be at least 5%% higher "
                           "(min. %ld).\n\r", newminbid);
             return;
         }
 
         if (bid < minbid) {
-            SendOutput(ch, "Sorry, your bid has to be at least the minimum bid "
+            oldSendOutput(ch, "Sorry, your bid has to be at least the minimum bid "
                           "(%ld).\n\r", minbid);
             return;
         }

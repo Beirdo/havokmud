@@ -403,7 +403,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
                 && (GET_TRAP_CHARGES(cond_ptr[k]) > 0)) {
                 if (CAN_SEE_OBJ(ch, cond_ptr[k])) {
                     if (cond_tot[k] > 1) {
-                        SendOutput(ch, "[%2d] ", Inventory_Num++);
+                        oldSendOutput(ch, "[%2d] ", Inventory_Num++);
                         show_mult_obj_to_char(cond_ptr[k], ch, 0,
                                               cond_tot[k]);
                     } else {
@@ -412,7 +412,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
                 }
             } else {
                 if (cond_tot[k] > 1) {
-                    SendOutput(ch, "[%2d] ", Inventory_Num++);
+                    oldSendOutput(ch, "[%2d] ", Inventory_Num++);
                     show_mult_obj_to_char(cond_ptr[k], ch, 0, cond_tot[k]);
                 } else {
                     show_obj_to_char(cond_ptr[k], ch, 0);
@@ -468,7 +468,7 @@ void list_obj_in_heap(struct obj_data *list, struct char_data *ch)
 
     if (cond_top) {
         for (k = 0; k < cond_top; k++) {
-            SendOutput(ch, "[%2d] ", Num_Inventory++);
+            oldSendOutput(ch, "[%2d] ", Num_Inventory++);
             if (cond_tot[k] > 1) {
                 Num_Inventory += cond_tot[k] - 1;
                 show_mult_obj_to_char(cond_ptr[k], ch, 2, cond_tot[k]);
@@ -489,7 +489,7 @@ void list_obj_to_char(struct obj_data *list, struct char_data *ch,
     found = FALSE;
     for (i = list; i; i = i->next_content) {
         if (CAN_SEE_OBJ(ch, i)) {
-            SendOutput(ch, "[%2d] ", Num_In_Bag++);
+            oldSendOutput(ch, "[%2d] ", Num_In_Bag++);
             show_obj_to_char(i, ch, mode);
             found = TRUE;
         }
@@ -726,30 +726,30 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
         if (IS_AFFECTED(i, AFF_SANCTUARY) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s glows with a bright light!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000W%s", CAP(buffer));
+            oldSendOutput(ch, "$c000W%s", CAP(buffer));
         }
         
         if (IS_AFFECTED(i, AFF_GROWTH)) {
             sprintf(buffer, "%s is extremely large!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c0003%s", CAP(buffer));
+            oldSendOutput(ch, "$c0003%s", CAP(buffer));
         }
         
         if (IS_AFFECTED(i, AFF_FIRESHIELD) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by burning flames!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c00001%s", CAP(buffer));
+            oldSendOutput(ch, "$c00001%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_CHILLSHIELD) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by cold flames!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000C%s", CAP(buffer));
+            oldSendOutput(ch, "$c000C%s", CAP(buffer));
         }
 
         if (affected_by_spell(i, SPELL_MANA_SHIELD) && 
             !IS_AFFECTED(i, AFF_DARKNESS)) {
-            SendOutput(ch, "$c0000yA $c000Ygolden $c000yball floats close "
+            oldSendOutput(ch, "$c0000yA $c000Ygolden $c000yball floats close "
                            "to %s's ear.\n\r",
                       IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
         }
@@ -757,13 +757,13 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
         if (IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by darkness!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c0008%s", CAP(buffer));
+            oldSendOutput(ch, "$c0008%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_BLADE_BARRIER)) {
             sprintf(buffer, "%s is surrounded by whirling blades!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000B%s", CAP(buffer));
+            oldSendOutput(ch, "$c000B%s", CAP(buffer));
         }
 
         for (k = 1; k <= TQP_AMOUNT; k++) {
@@ -1235,30 +1235,30 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
         if (IS_AFFECTED(i, AFF_SANCTUARY) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s glows with a bright light!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000W%s", CAP(buffer));
+            oldSendOutput(ch, "$c000W%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_GROWTH)) {
             sprintf(buffer, "%s is extremely large!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c0003%s", CAP(buffer));
+            oldSendOutput(ch, "$c0003%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_FIRESHIELD) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by burning flames!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c0001%s", CAP(buffer));
+            oldSendOutput(ch, "$c0001%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_CHILLSHIELD) && !IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by cold flames!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000C%s", CAP(buffer));
+            oldSendOutput(ch, "$c000C%s", CAP(buffer));
         }
 
         if (affected_by_spell(i, SPELL_MANA_SHIELD) &&
             !IS_AFFECTED(i, AFF_DARKNESS)) {
-            SendOutput(ch, "$c000yA $c000Ygolden $c000yball floats close "
+            oldSendOutput(ch, "$c000yA $c000Ygolden $c000yball floats close "
                            "to %s's ear.\n\r",
                       IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
         }
@@ -1266,13 +1266,13 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
         if (IS_AFFECTED(i, AFF_DARKNESS)) {
             sprintf(buffer, "%s is surrounded by darkness!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c0008%s", CAP(buffer));
+            oldSendOutput(ch, "$c0008%s", CAP(buffer));
         }
 
         if (IS_AFFECTED(i, AFF_BLADE_BARRIER)) {
             sprintf(buffer, "%s is surrounded by whirling blades!\n\r",
                     IS_NPC(i) ? i->player.short_descr : GET_NAME(i));
-            SendOutput(ch, "$c000B%s", CAP(buffer));
+            oldSendOutput(ch, "$c000B%s", CAP(buffer));
         }
 
         for (k = 1; k <= TQP_AMOUNT; k++) {
@@ -1641,7 +1641,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                  !IS_SET(exitp->exit_info, EX_CLOSED))) {
 
                 if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch)) {
-                    SendOutput(ch, "You look %swards.\n\r", 
+                    oldSendOutput(ch, "You look %swards.\n\r", 
                               direction[keyword_no].dir);
 
                     sprintf(buffer, "$n looks %swards.",
@@ -1657,7 +1657,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                          */
                         if (IS_SET(real_roomp(exitp->to_room)->room_flags,
                                    NO_SPY)) {
-                            SendOutput(ch, "A strange magic blurs your vision "
+                            oldSendOutput(ch, "A strange magic blurs your vision "
                                           "as you attempt to look into %s.\n\r",
                                       rp->name);
                             /*
@@ -1878,7 +1878,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
              * look ''
              */
         case 8:
-            SendOutput(ch, "$c000W%s\n\r", real_roomp(ch->in_room)->name);
+            oldSendOutput(ch, "$c000W%s\n\r", real_roomp(ch->in_room)->name);
 
             if (!IS_SET(ch->specials.act, PLR_BRIEF)) {
                 send_to_char(real_roomp(ch->in_room)->description, ch);
@@ -2211,13 +2211,13 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     age2(ch, &my_age);
 
     if (GET_TITLE(ch)) {
-        SendOutput(ch, "%sYou are %s%s\n\r", color, color2, GET_TITLE(ch));
+        oldSendOutput(ch, "%sYou are %s%s\n\r", color, color2, GET_TITLE(ch));
     }
 
     playing_time = real_time_passed((time(0) - ch->player.time.logon) +
                    ch->player.time.played, 0);
 
-    SendOutput(ch, "%sYou are %s%d%s years old and %s%s%s. (Play time: %s%d%s "
+    oldSendOutput(ch, "%sYou are %s%d%s years old and %s%s%s. (Play time: %s%d%s "
                   "days and %s%d%s hours)\n\r%s",
               color, color2, my_age.year, color, color2,
               DescAge(my_age.year, GET_RACE(ch)), color, color2,
@@ -2229,57 +2229,57 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         ch->player.speaks = SPEAK_COMMON;
 	}
 
-    SendOutput(ch, "%sYou belong to the %s%s%s race, and speak the %s%s%s "
+    oldSendOutput(ch, "%sYou belong to the %s%s%s race, and speak the %s%s%s "
                   "language.\n\r",
               color, color2, races[GET_RACE(ch)].racename, color, color2,
               languages[ch->player.speaks-1].name, color);
 
-    SendOutput(ch, "%sYou have %s%d%s($c0011%d%s) hit, %s%d%s($c0011%d%s) mana,"
+    oldSendOutput(ch, "%sYou have %s%d%s($c0011%d%s) hit, %s%d%s($c0011%d%s) mana,"
                   " %s%d%s($c0011%d%s) mv points.\n\r",
               color, color2, GET_HIT(ch), color, GET_MAX_HIT(ch), color,
               color2, GET_MANA(ch), color, GET_MAX_MANA(ch), color, color2,
               GET_MOVE(ch), color, GET_MAX_MOVE(ch), color);
 
-    SendOutput(ch, "%sYou won %s%d%s Quests and own %s%d%s quest points.\n\r",
+    oldSendOutput(ch, "%sYou won %s%d%s Quests and own %s%d%s quest points.\n\r",
               color, color2, ch->specials.questwon, color, color2,
               ch->player.q_points, color);
 
-    SendOutput(ch, "%sYou carry %s%s%s coins, and have an additional %s%d%s in "
+    oldSendOutput(ch, "%sYou carry %s%s%s coins, and have an additional %s%d%s in "
                   "the bank.\n\r",
               color, color2, formatNum(GET_GOLD(ch)), color, color2,
               (ch->points.bankgold), color);
 
-    SendOutput(ch, "%sYour alignment is: %s%s\n\r", color, color2,
+    oldSendOutput(ch, "%sYour alignment is: %s%s\n\r", color, color2,
               AlignDesc(GET_ALIGNMENT(ch)), color);
 
     if (!IS_IMMORTAL(ch) && IS_PC(ch)) {
-        SendOutput(ch, "%sCombat experience:%s %s %s    ", color, color2,
+        oldSendOutput(ch, "%sCombat experience:%s %s %s    ", color, color2,
                       formatNum(GET_EXP(ch)), color);
-        SendOutput(ch, "Leadership experience: %s%s%s\n\r",
+        oldSendOutput(ch, "Leadership experience: %s%s%s\n\r",
                   color2, formatNum(GET_LEADERSHIP_EXP(ch)), color);
 
         for (x = 0; x < MAX_CLASS; x++) {
             if (HasClass(ch, pc_num_class(x))) {
                 level = GET_LEVEL(ch, x);
-                SendOutput(ch, "%s%s     Level: %s%2d  %-15s%s", buf, color,
+                oldSendOutput(ch, "%s%s     Level: %s%2d  %-15s%s", buf, color,
                                color2, level, classes[x].name, color);
 
                 exp = classes[x].levels[level+1].exp - GET_EXP(ch);
-                SendOutput(ch, "%sExp needed: %s%s\n\r", buf, color2,
+                oldSendOutput(ch, "%sExp needed: %s%s\n\r", buf, color2,
                                formatNum(exp));
             }
         }
     }
 
     if (IS_IMMORTAL(ch)) {
-        SendOutput(ch, "%sYou are a level %s%d %simmortal.\n\r", color,
+        oldSendOutput(ch, "%sYou are a level %s%d %simmortal.\n\r", color,
                   color2, GetMaxLevel(ch), color);
     }
 
-    SendOutput(ch, "%sYour main character class is a %s%s%s.\n\r", color,
+    oldSendOutput(ch, "%sYour main character class is a %s%s%s.\n\r", color,
               color2, classes[ch->specials.remortclass - 1].name, color);
 
-    SendOutput(ch, "%sYou have killed %s%d%s monsters, and have died %s%d%s "
+    oldSendOutput(ch, "%sYou have killed %s%d%s monsters, and have died %s%d%s "
                   "times. Arena: %s%d%s/%s%d%s\n\r",
               color, color2, ch->specials.m_kills, color, color2,
               ch->specials.m_deaths, color, color2, ch->specials.a_kills,
@@ -2290,7 +2290,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
      */
     if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && 
         !IS_AFFECTED(ch, AFF_DARKNESS) && !IS_UNDERGROUND(ch)) {
-        SendOutput(ch, "$c0015The light is the area causes you great pain!\n\r");
+        oldSendOutput(ch, "$c0015The light is the area causes you great pain!\n\r");
     }
 
     if IS_AFFECTED2(ch, AFF2_WINGSBURNED) {
@@ -2299,27 +2299,27 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_SET(ch->specials.act, PLR_NOFLY)) {
-        SendOutput(ch, "%sYou are on the ground in spite of your fly item.\n\r",
+        oldSendOutput(ch, "%sYou are on the ground in spite of your fly item.\n\r",
                   color2);
     }
 
     if (IS_PC(ch)) {
         ch->skills[STYLE_STANDARD].learned = 95;
-        SendOutput(ch, "%sYou are currently fighting %s%s%s.\n\r", color,
+        oldSendOutput(ch, "%sYou are currently fighting %s%s%s.\n\r", color,
                   color2, fight_styles[ch->style], color);
     }
 
     if (GET_CLAN(ch) == 0) {
-        SendOutput(ch, "%sYou do not belong to a clan.\n\r", color);
+        oldSendOutput(ch, "%sYou do not belong to a clan.\n\r", color);
     } else if (GET_CLAN(ch) == 1) {
-        SendOutput(ch, "%sYou have recently been %sexiled%s from a clan.\n\r",
+        oldSendOutput(ch, "%sYou have recently been %sexiled%s from a clan.\n\r",
                   color, color2, color);
     } else {
-        SendOutput(ch, "%sYou belong to %s%s%s.\n\r", color, color2,
+        oldSendOutput(ch, "%sYou belong to %s%s%s.\n\r", color, color2,
                   clan_list[GET_CLAN(ch)].name, color);
     }
 
-    SendOutput(ch, "%sYou have %s%d%s practice sessions remaining.\n\r",
+    oldSendOutput(ch, "%sYou have %s%d%s practice sessions remaining.\n\r",
               color, color2, ch->specials.spells_to_learn, color);
 
     switch (GET_POS(ch)) {
@@ -2359,7 +2359,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         break;
     case POSITION_MOUNTED:
         if (MOUNTED(ch)) {
-            SendOutput(ch, "$c000BYou are riding on $c000w%s.\n\r",
+            oldSendOutput(ch, "$c000BYou are riding on $c000w%s.\n\r",
                       MOUNTED(ch)->player.short_descr);
         } else {
             send_to_char("$c000BYou are $c000wstanding.\n\r", ch);
@@ -2394,7 +2394,7 @@ void do_time(struct char_data *ch, char *argument, int cmd)
     /* 35 days in a month */
     weekday = ((35 * time_info.month) + time_info.day + 1) % 7;
 
-    SendOutput(ch, "It is %d o'clock %s, on %s\n\r",
+    oldSendOutput(ch, "It is %d o'clock %s, on %s\n\r",
               (time_info.hours % 12 == 0 ? 12 : time_info.hours % 12),
               (time_info.hours >= 12 ? "pm" : "am"), weekdays[weekday]);
 
@@ -2418,7 +2418,7 @@ void do_time(struct char_data *ch, char *argument, int cmd)
     } else {
         suf = "th";
 	}
-    SendOutput(ch, "The %d%s Day of the %s, Year %d.\n\r",
+    oldSendOutput(ch, "The %d%s Day of the %s, Year %d.\n\r",
               day, suf, month_name[(int) time_info.month], time_info.year);
 }
 
@@ -2434,7 +2434,7 @@ void do_weather(struct char_data *ch, char *argument, int cmd)
     dlog("in do_weather");
 
     if (OUTSIDE(ch)) {
-        SendOutput(ch, "The sky is %s and %s.\n\r", sky_look[weather_info.sky],
+        oldSendOutput(ch, "The sky is %s and %s.\n\r", sky_look[weather_info.sky],
                   (weather_info.change >= 0 ? 
                    "you feel a warm wind from south" :
                    "your foot tells you bad weather is due"));
@@ -2865,7 +2865,7 @@ void show_who_immortal(struct char_data *ch, struct char_data *person,
     left = (34 - strlen(immbuf)) / 2;
     right = 34 - left - strlen(immbuf);
 
-    SendOutput(ch, "%s%*s%s%*s %s:$c000w %s%s\n\r", 
+    oldSendOutput(ch, "%s%*s%s%*s %s:$c000w %s%s\n\r", 
                   "$c000Y", left, "", immbuf, right, "", color, 
                   PrintTitle(person, type), SPECIAL_FLAGS(ch, person));
 }
@@ -2882,7 +2882,7 @@ void show_who_mortal(struct char_data *ch, struct char_data *person, char type)
     left = (GET_EXP(person) > 200000000 ||
             IS_SET(person->specials.act, PLR_LEGEND) ?  49 : 25 );
 
-    SendOutput(ch, "%*s $c0012", left, GetLevelTitle(person));
+    oldSendOutput(ch, "%*s $c0012", left, GetLevelTitle(person));
 
     right = 8;
 
@@ -2897,7 +2897,7 @@ void show_who_mortal(struct char_data *ch, struct char_data *person, char type)
         }
     }
 
-    SendOutput(ch, "%*s %s:$c000w %s%s\n\r", right, "", color,
+    oldSendOutput(ch, "%*s %s:$c000w %s%s\n\r", right, "", color,
                   PrintTitle(person, type), SPECIAL_FLAGS(ch, person));
 }
 
@@ -2920,14 +2920,14 @@ void do_who(struct char_data *ch, char *argument, int cmd)
      * Header for who
      */
     if (IS_IMMORTAL(ch)) {
-        SendOutput(ch, "%s         Havok Players [God Version | 'who -?' for "
+        oldSendOutput(ch, "%s         Havok Players [God Version | 'who -?' for "
                       "help]\n\r"
                       "         ---------------------------------------------"
                       "--\n\r", color);
     } else if (cmd == 234) {
-        SendOutput(ch, "%sPlayers\n\r------------\n\r", color);
+        oldSendOutput(ch, "%sPlayers\n\r------------\n\r", color);
     } else {
-        SendOutput(ch, "%s                       Havok Players\n\r"
+        oldSendOutput(ch, "%s                       Havok Players\n\r"
                       "                       -------------\n\r", color);
     }
 
@@ -2937,9 +2937,9 @@ void do_who(struct char_data *ch, char *argument, int cmd)
     if (cmd == 234) {
         rm = real_roomp(ch->in_room);
         zd = zone_table + rm->zone;
-        SendOutput(ch, "%sZone: $c0015%s", color, zd->name);
+        oldSendOutput(ch, "%sZone: $c0015%s", color, zd->name);
         if (IS_IMMORTAL(ch)) {
-            SendOutput(ch, "%s($c0015%ld%s)", color, rm->zone, color);
+            oldSendOutput(ch, "%s($c0015%ld%s)", color, rm->zone, color);
         }
         send_to_char("\n\r\n\r", ch);
     }
@@ -2961,9 +2961,9 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                          "            -p    for powerlevel\n\r", ch);
             send_to_char("            -v    for visibility level\n\r"
                          "            -a    for alignment\n\r\n\r", ch);
-            SendOutput(ch, "%sConnects since last reboot: $c0015%ld\n\r",
+            oldSendOutput(ch, "%sConnects since last reboot: $c0015%ld\n\r",
                       color, total_connections);
-            SendOutput(ch, "%sMax players online since last reboot: "
+            oldSendOutput(ch, "%sMax players online since last reboot: "
                           "$c0015%ld\n\r", color, total_max_players);
             return;
         }
@@ -2971,7 +2971,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
 
     if (tbuf && tbuf[0] != '-') {
         partialName = 1;
-        SendOutput(ch, "$c000WPartial name search for $c000Y%s.\n\r", tbuf);
+        oldSendOutput(ch, "$c000WPartial name search for $c000Y%s.\n\r", tbuf);
     }
 
 
@@ -2987,10 +2987,10 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                 real_roomp(person->in_room)->zone == zone && 
                 (!IS_AFFECTED(person, AFF_HIDE) || IS_IMMORTAL(ch))) {
 
-                SendOutput(ch, "$c000w%-25s - %s", GET_NAME(person),
+                oldSendOutput(ch, "$c000w%-25s - %s", GET_NAME(person),
                               real_roomp(person->in_room)->name);
                 if (IS_IMMORTAL(ch)) {
-                    SendOutput(ch, " [%ld]", person->in_room);
+                    oldSendOutput(ch, " [%ld]", person->in_room);
                 }
                 send_to_char("\n\r", ch);
                     count++;
@@ -3006,12 +3006,12 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                 isname2(tbuf, GET_NAME(person)) &&
                 (!IS_AFFECTED(person, AFF_HIDE) || IS_IMMORTAL(ch))) {
 
-                SendOutput(ch, "$c000w%-25s %s", " ",
+                oldSendOutput(ch, "$c000w%-25s %s", " ",
                           (person->player.title ?  person->player.title :
                            GET_NAME(person)));
 
                 if (IS_IMMORTAL(ch)) {
-                    SendOutput(ch, " [%ld]", person->in_room);
+                    oldSendOutput(ch, " [%ld]", person->in_room);
                 }
 
                 send_to_char("\n\r", ch);
@@ -3031,7 +3031,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
 
                 if(!found) {
                     found = 1;
-                    SendOutput(ch, "%-25s%sImmortals\n\r$c000w", "", color);
+                    oldSendOutput(ch, "%-25s%sImmortals\n\r$c000w", "", color);
                 }
 
                 show_who_immortal(ch, person, type);
@@ -3049,7 +3049,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
 
                 if(!found) {
                     found = 1;
-                    SendOutput(ch, "\n\r%-27s%sQuest\n\r$c000w", "", color);
+                    oldSendOutput(ch, "\n\r%-27s%sQuest\n\r$c000w", "", color);
                 }
 
                 if( IS_IMMORTAL(person) ) {
@@ -3071,7 +3071,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
 
                 if(!found) {
                     found = 1;
-                    SendOutput(ch, "\n\r%-26s%sMortals\n\r$c000w", "", color);
+                    oldSendOutput(ch, "\n\r%-26s%sMortals\n\r$c000w", "", color);
                 }
 
                 show_who_mortal(ch, person, type);
@@ -3081,15 +3081,15 @@ void do_who(struct char_data *ch, char *argument, int cmd)
     }
 
     if (count == 0) {
-        SendOutput(ch, "\n\r $c000W No visible characters found!!\n\r");
+        oldSendOutput(ch, "\n\r $c000W No visible characters found!!\n\r");
     } else {
-        SendOutput(ch, "\n\r%sTotal visible players: $c0015%d\n\r", color,
+        oldSendOutput(ch, "\n\r%sTotal visible players: $c0015%d\n\r", color,
                       count);
     }
 
-    SendOutput(ch, "%sConnects since last reboot: $c0015%ld\n\r", color,
+    oldSendOutput(ch, "%sConnects since last reboot: $c0015%ld\n\r", color,
                   total_connections);
-    SendOutput(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",
+    oldSendOutput(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",
                   color, total_max_players);
 }
 
@@ -3110,14 +3110,14 @@ void do_users(struct char_data *ch, char *argument, int cmd)
                 (IS_IMMORTAL(ch) &&
                  d->character->invis_level <= GetMaxLevel(ch))) {
                 if (d && d->character && d->character->player.name) {
-                    SendOutput(ch, "$c000W%-16s$c000w: ", 
+                    oldSendOutput(ch, "$c000W%-16s$c000w: ", 
                                   (d->original ? d->original->player.name :
                                    d->character->player.name));
                 } else {
-                    SendOutput(ch, "$c000RUNDEFINED$c000w       : ");
+                    oldSendOutput(ch, "$c000RUNDEFINED$c000w       : ");
 				}
 
-                SendOutput(ch, "$c000Y%-22s $c000B[$c000W%s$c000B]$c000w\n\r",
+                oldSendOutput(ch, "$c000Y%-22s $c000B[$c000W%s$c000B]$c000w\n\r",
                               connected_types[d->connected], 
                               ( d->host && *d->host ? d->host :
                                 "$c000R????$c000w") );
@@ -3145,7 +3145,7 @@ void do_equipment(struct char_data *ch, char *argument, int cmd)
     send_to_char("You are using:\n\r", ch);
     found = FALSE;
     for (Worn_Index = j = 0; j < (MAX_WEAR - 1); j++) {
-        SendOutput(ch, "%s\n\r", where[j]);
+        oldSendOutput(ch, "%s\n\r", where[j]);
         if (ch->equipment[j]) {
             if (CAN_SEE_OBJ(ch, ch->equipment[j])) {
                 show_obj_to_char(ch->equipment[j], ch, 1);
@@ -3501,7 +3501,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
         break;
 
     default:
-        SendOutput(ch, "I don't recognize %s\n\r", argument);
+        oldSendOutput(ch, "I don't recognize %s\n\r", argument);
         return;
         break;
     }
@@ -3721,23 +3721,23 @@ void do_resistances(struct char_data *ch, char *argument, int cmd)
     char           *color1 = "$c000B",
                    *color2 = "$c000w";
 
-    SendOutput(ch, "%sCurrent resistances:\n\r--------------\n\r", color1);
+    oldSendOutput(ch, "%sCurrent resistances:\n\r--------------\n\r", color1);
 
     for (x = 1; x <= BV12; x = x * 2) {
         if (IS_IMMUNE(ch, x)) {
-            SendOutput(ch, "%sYou are %sImmune      %sto %s%s%s.\n\r",
+            oldSendOutput(ch, "%sYou are %sImmune      %sto %s%s%s.\n\r",
                       color1, color2, color1, color2,
                       immunity_names[bitvector_num(x)], color1);
         } else if (IsResist(ch, x) && !IsSusc(ch, x)) {
-            SendOutput(ch, "%sYou are %sResistant   %sto %s%s%s.\n\r",
+            oldSendOutput(ch, "%sYou are %sResistant   %sto %s%s%s.\n\r",
                       color1, color2, color1, color2,
                       immunity_names[bitvector_num(x)], color1);
         } else if (IsSusc(ch, x) && !IsResist(ch, x)) {
-            SendOutput(ch, "%sYou are %sSusceptible %sto %s%s%s.\n\r",
+            oldSendOutput(ch, "%sYou are %sSusceptible %sto %s%s%s.\n\r",
                       color1, color2, color1, color2,
                       immunity_names[bitvector_num(x)], color1);
         } else {
-            SendOutput(ch, "%sYou are %sDefenseless %sto %s%s%s.\n\r",
+            oldSendOutput(ch, "%sYou are %sDefenseless %sto %s%s%s.\n\r",
                       color1, color2, color1, color2,
                       immunity_names[bitvector_num(x)], color1);
 		}
@@ -3765,20 +3765,20 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
 
     age2(ch, &my_age);
 
-    SendOutput(ch, "%sYou are %s%d%s years and %s%d%s months, %s%d%s cms, "
+    oldSendOutput(ch, "%sYou are %s%d%s years and %s%d%s months, %s%d%s cms, "
                   "and you weigh %s%d%s lbs.\n\r",
                   color1, color2, my_age.year, color1, color2, my_age.month,
                   color1, color2, ch->player.height, color1, color2,
                   ch->player.weight, color1);
 
-    SendOutput(ch, "%sYou are carrying %s%d%s lbs of equipment.\n\r", color1,
+    oldSendOutput(ch, "%sYou are carrying %s%d%s lbs of equipment.\n\r", color1,
                   color2, IS_CARRYING_W(ch), color1);
 
-    SendOutput(ch, "%sYou are %s%s%s.\n\r", color1, color2,
+    oldSendOutput(ch, "%sYou are %s%s%s.\n\r", color1, color2,
                   ArmorDesc(ch->points.armor), color1);
 
     if (GetMaxLevel(ch) > 5) {
-        SendOutput(ch, "%sYou have %s%d%s/%s%d %sSTR, %s%d %sINT, %s%d %sWIS, "
+        oldSendOutput(ch, "%sYou have %s%d%s/%s%d %sSTR, %s%d %sINT, %s%d %sWIS, "
                       "%s%d %sDEX, %s%d %sCON, %s%d %sCHR\n\r",
                       color1, color2, GET_STR(ch), color1, color2, GET_ADD(ch),
                       color1, color2, GET_INT(ch), color1, color2, GET_WIS(ch),
@@ -3786,15 +3786,15 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
                       color1, color2, GET_CHR(ch), color1);
     }
 
-    SendOutput(ch, "%sYour hit bonus and damage bonus are %s%s%s and %s%s%s "
+    oldSendOutput(ch, "%sYour hit bonus and damage bonus are %s%s%s and %s%s%s "
                   "respectively.\n\r",
                   color1, color2, HitRollDesc(GET_HITROLL(ch)), color1, color2,
                   DamRollDesc(GET_DAMROLL(ch)), color1);
 
-    SendOutput(ch, "\n\r%sType 'Resist' to see a list of your resistances:\n\r",
+    oldSendOutput(ch, "\n\r%sType 'Resist' to see a list of your resistances:\n\r",
                   color1);
 
-    SendOutput(ch, "\n\r%sCurrent affects:\n\r--------------\n\r", color1);
+    oldSendOutput(ch, "\n\r%sCurrent affects:\n\r--------------\n\r", color1);
 
     if (ch->affected) {
         for (aff = ch->affected; aff; aff = aff->next) {
@@ -3813,7 +3813,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
                 case SKILL_MEDITATE:
                     break;
                 case SKILL_MEMORIZE:
-                    SendOutput(ch, "%sMemorizing : '%s%s%s' will complete in "
+                    oldSendOutput(ch, "%sMemorizing : '%s%s%s' will complete in "
                                   "%s%d%s minutes.\n\r",
                                   color1, color2, spells[aff->modifier - 1],
                                   color1, color2, (aff->duration * 4), color1);
@@ -3821,7 +3821,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
 
                 default:
                     if (aff->type != last_type) {
-                        SendOutput(ch, "%sSpell      : '%s%s%s' will expire in "
+                        oldSendOutput(ch, "%sSpell      : '%s%s%s' will expire in "
                                       "%s%d%s hours.\n\r",
                                       color1, color2, spells[aff->type - 1],
                                       color1, color2, aff->duration, color1);
@@ -3843,7 +3843,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
                     if (strcmp(buf2, "NOBITS") == 0) {
                         break;
 					}
-                    SendOutput(ch, "%sSpell      : '%s%s%s' granted though an "
+                    oldSendOutput(ch, "%sSpell      : '%s%s%s' granted though an "
                                   "item.\n\r", color1, color2, buf2, color1);
                     break;
                 case APPLY_SPELL2:
@@ -3852,7 +3852,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
                     if (strcmp(buf2, "NOBITS") == 0) {
                         break;
 					}
-                    SendOutput(ch, "%sSpell      : '%s%s%s' granted though an "
+                    oldSendOutput(ch, "%sSpell      : '%s%s%s' granted though an "
                                   "item.\n\r", color1, color2, buf2, color1);
                     break;
                 default:
@@ -3918,7 +3918,7 @@ void do_value(struct char_data *ch, char *argument, int cmd)
     }
 
     sprinttype(GET_ITEM_TYPE(obj), item_types, buf);
-    SendOutput(ch, "Object: %s.  Item type: %s\n\r", obj->short_description,
+    oldSendOutput(ch, "Object: %s.  Item type: %s\n\r", obj->short_description,
                   buf);
 
     if (!ch->skills) {
@@ -3931,28 +3931,28 @@ void do_value(struct char_data *ch, char *argument, int cmd)
         if (obj->obj_flags.bitvector) {
             sprintbit((unsigned long) obj->obj_flags.bitvector, affected_bits,
                       buf);
-            SendOutput(ch, "Item will give you following abilities:  %s\n\r",
+            oldSendOutput(ch, "Item will give you following abilities:  %s\n\r",
                           buf);
         }
     }
 
     if (number(1, 101) < learned / 2) {
         sprintbit((unsigned long) obj->obj_flags.extra_flags, extra_bits, buf);
-        SendOutput(ch, "Item is: %s\n\r", buf);
+        oldSendOutput(ch, "Item is: %s\n\r", buf);
     }
 
-    SendOutput(ch, "Weight: %d, Value: %d, Rent cost: %d  %s\n\r",
+    oldSendOutput(ch, "Weight: %d, Value: %d, Rent cost: %d  %s\n\r",
                   obj->obj_flags.weight,
                   GetApprox(obj->obj_flags.cost, learned - 10),
                   GetApprox(obj->obj_flags.cost_per_day, learned - 10),
                   IS_RARE(obj) ? "[RARE]" : " ");
 
     if (ITEM_TYPE(obj) == ITEM_WEAPON) {
-        SendOutput(ch, "Damage Dice is '%dD%d'\n\r",
+        oldSendOutput(ch, "Damage Dice is '%dD%d'\n\r",
                       GetApprox(obj->obj_flags.value[1], learned - 10),
                       GetApprox(obj->obj_flags.value[2], learned - 10));
     } else if (ITEM_TYPE(obj) == ITEM_ARMOR) {
-        SendOutput(ch, "AC-apply is %d\n\r",
+        oldSendOutput(ch, "AC-apply is %d\n\r",
                       GetApprox(obj->obj_flags.value[0], learned - 10));
     }
 }
@@ -4191,7 +4191,7 @@ void do_display(struct char_data *ch, char *arg, int cmd)
 
 void ScreenOff(struct char_data *ch)
 {
-    SendOutput(ch, VT_MARGSET, 0, ch->size - 1);
+    oldSendOutput(ch, VT_MARGSET, 0, ch->size - 1);
     send_to_char(VT_HOMECLR, ch);
 }
 
@@ -4279,7 +4279,7 @@ void show_class_skills(struct char_data *ch, char *buffer, int classnum,
     }
 
     if (!HasClass(ch, 1 << classnum)) {
-        SendOutput( ch, "I bet you think you're a %s.\n\r", 
+        oldSendOutput( ch, "I bet you think you're a %s.\n\r", 
                        classes[classnum].name );
         return;
     }
@@ -4656,13 +4656,13 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
         smax = 5;
         swt = 3;
         sprintf(buf, "$n peers intently all around.");
-        SendOutput(ch, "You peer intently all around, and see :\n\r");
+        oldSendOutput(ch, "You peer intently all around, and see :\n\r");
     } else {
         smin = sd;
         smax = sd;
         swt = 1;
         sprintf(buf, "$n peers intently %s.", direction[sd].desc);
-        SendOutput(ch, "You peer intently %s, and see :\n\r",
+        oldSendOutput(ch, "You peer intently %s, and see :\n\r",
                       direction[sd].desc);
     }
 
@@ -4675,10 +4675,10 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
          spud = spud->next_in_room) {
         if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
-                SendOutput(ch, "%30s : right here\n\r",
+                oldSendOutput(ch, "%30s : right here\n\r",
                               spud->player.short_descr);
             } else {
-                SendOutput(ch, "%30s : right here\n\r", GET_NAME(spud));
+                oldSendOutput(ch, "%30s : right here\n\r", GET_NAME(spud));
             }
             nfnd++;
         }
@@ -4695,11 +4695,11 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
                      spud = spud->next_in_room) {
                     if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE)) {
                         if (IS_NPC(spud)) {
-                            SendOutput(ch, "%30s : %s %s\n\r",
+                            oldSendOutput(ch, "%30s : %s %s\n\r",
                                           spud->player.short_descr,
                                           rng_desc[range], direction[i].desc);
                         } else {
-                            SendOutput(ch, "%30s : %s %s\n\r",
+                            oldSendOutput(ch, "%30s : %s %s\n\r",
                                           GET_NAME(spud), rng_desc[range],
                                           direction[i].desc);
                         }
@@ -4782,7 +4782,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         smax = sd;
         swt = 1;
         sprintf(buf, "$n peers intently %s.", direction[sd].desc);
-        SendOutput(ch, "You peer intently %s, and see :\n\r", 
+        oldSendOutput(ch, "You peer intently %s, and see :\n\r", 
                       direction[sd].desc);
     } else if (arg1 && (spud = get_char_room_vis(ch, arg1))) {
         sprintf(buf, "$n peers intently at $N.");
@@ -4796,7 +4796,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         smax = 5;
         swt = 3;
         sprintf(buf, "$n peers intently all around.");
-        SendOutput(ch, "You peer intently all around, and see :\n\r");
+        oldSendOutput(ch, "You peer intently all around, and see :\n\r");
     }
 
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
@@ -4809,11 +4809,11 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
          spud = spud->next_in_room) {
         if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
-                SendOutput(ch, "You sense a %s aura here coming from %s.\n\r",
+                oldSendOutput(ch, "You sense a %s aura here coming from %s.\n\r",
                               PowerLevelDesc(CalcPowerLevel(spud)),
                               spud->player.short_descr);
             } else {
-                SendOutput(ch, "You sense a %s aura here coming from %s.\n\r",
+                oldSendOutput(ch, "You sense a %s aura here coming from %s.\n\r",
                               PowerLevelDesc(CalcPowerLevel(spud)),
                               GET_NAME(spud));
             }
@@ -4831,11 +4831,11 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                      spud = spud->next_in_room) {
                     if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE)) {
                         if (IS_NPC(spud)) {
-                            SendOutput(ch, "You sense a %s aura %s %s.\n\r",
+                            oldSendOutput(ch, "You sense a %s aura %s %s.\n\r",
                                           PowerLevelDesc(CalcPowerLevel(spud)),
                                           rng_desc[range], direction[i].desc);
                         } else {
-                            SendOutput(ch, "You sense a %s aura %s %s.\n\r",
+                            oldSendOutput(ch, "You sense a %s aura %s %s.\n\r",
                                           PowerLevelDesc(CalcPowerLevel(spud)),
                                           rng_desc[range], direction[i].desc);
                         }
@@ -5369,7 +5369,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
             for (j = 1; j <= clength; j++) {
                 strcat(name, " ");
             }
-            SendOutput(ch, "$c000c[$c000w%2d%s] $c000w%s   $c000c"
+            oldSendOutput(ch, "$c000c[$c000w%2d%s] $c000w%s   $c000c"
                           "[$c000w%s%s]\n\r",
                           x, "$c000c", name, clan_list[x].shortname, "$c000c");
         }
@@ -5392,7 +5392,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
     /*
      * valid clan number
      */
-    SendOutput(ch, "    $c000c-=* $c000w%s $c000wClan info $c000c*=-\n\r",
+    oldSendOutput(ch, "    $c000c-=* $c000w%s $c000wClan info $c000c*=-\n\r",
               clan_list[clan].name);
     saints[0] = '\0';
     leaders[0] = '\0';
@@ -5466,49 +5466,49 @@ void do_weapons(struct char_data *ch, char *argument, int cmd)
                  "weaponry:\n\r\n\r", ch);
 
     if (ch->weaponskills.slot1) {
-        SendOutput(ch, "[1]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[1]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot1 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade1));
     }
 
     if (ch->weaponskills.slot2) {
-        SendOutput(ch, "[2]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[2]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot2 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade2));
     }
 
     if (ch->weaponskills.slot3) {
-        SendOutput(ch, "[3]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[3]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot3 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade3));
     }
 
     if (ch->weaponskills.slot4) {
-        SendOutput(ch, "[4]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[4]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot4 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade4));
     }
 
     if (ch->weaponskills.slot5) {
-        SendOutput(ch, "[5]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[5]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot5 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade5));
     }
 
     if (ch->weaponskills.slot6) {
-        SendOutput(ch, "[6]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[6]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot6 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade6));
     }
 
     if (ch->weaponskills.slot7) {
-        SendOutput(ch, "[7]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[7]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot7 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade7));
     }
 
     if (ch->weaponskills.slot8) {
-        SendOutput(ch, "[8]  %-20s %10s\n\r",
+        oldSendOutput(ch, "[8]  %-20s %10s\n\r",
                       weaponskills[ch->weaponskills.slot8 - WEAPON_FIRST].name,
                       how_good(ch->weaponskills.grade8));
     }
