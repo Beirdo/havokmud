@@ -31,6 +31,7 @@
 #define linked_list_h_
 
 #include "environment.h"
+#include "common_data.h"
 
 /* CVS generated ID string (optional for h files) */
 static char linked_list_h_ident[] _UNUSED_ = 
@@ -58,11 +59,7 @@ typedef struct _LinkedList_t
     int              items;
 } LinkedList_t;
 
-typedef enum
-{
-    UNLOCKED,
-    LOCKED
-} LinkedListLocked_t;
+typedef Locked_t LinkedListLocked_t;
 
 typedef enum
 {

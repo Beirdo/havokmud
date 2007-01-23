@@ -174,6 +174,19 @@ typedef struct
     QueueObject_t      *inputQ;
 } PlayingThreadArgs_t;
 
+typedef struct
+{
+    char               *name;
+    void              (*func)(struct char_data *, char *, int);
+#ifdef TODO
+    void              (*func)(PlayerStruct_t *, char *, int);
+#endif
+    int                 number;
+    int                 min_pos;
+    int                 min_level;
+} CommandDef_t;
+
+
 /*
  * Externals used for interthread communication
  */
@@ -215,6 +228,9 @@ PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer );
 int GetPlayerCount( void );
 void JustLoggedIn( PlayerStruct_t *player );
 void CommandParser( PlayerStruct_t *player, char *line );
+void InitializeCommands( void );
+void SetupCommands( CommandDef_t *commands, int count );
+void AddCommand( CommandDef_t *cmd );
 
 
 #endif

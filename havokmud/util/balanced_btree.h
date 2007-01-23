@@ -29,16 +29,11 @@
 #define balanced_btree_h_
 
 #include "environment.h"
+#include "common_data.h"
 
 /* CVS generated ID string (optional for h files) */
 static char balanced_btree_h_ident[] _UNUSED_ = 
     "$Id$";
-
-typedef enum
-{
-    UNLOCKED,
-    LOCKED
-} Locked_t;
 
 typedef int (*BalancedBTreeCompare_t)(void *left, void *right);
 

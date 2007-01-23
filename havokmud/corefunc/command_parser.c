@@ -49,6 +49,9 @@ static char ident[] _UNUSED_ =
 
 int             plr_tick_count = 0;
 
+
+
+
 void JustLoggedIn( PlayerStruct_t *player )
 {
     struct obj_data *obj;
