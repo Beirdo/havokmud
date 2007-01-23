@@ -162,6 +162,9 @@ void JustLoggedIn( PlayerStruct_t *player )
     player->prompt_mode = 1;
 }
 
+/**
+ * @todo Rework this monstrosity a bit more, it's too unwieldly
+ */
 void CommandParser( PlayerStruct_t *player, char *line )
 {
     struct char_data *ch;
@@ -440,12 +443,18 @@ char           *fill[] = {
     "\n"
 };
 
+/**
+ * @todo Rework this monstrosity to use btrees?
+ */
 int fill_word(char *argument)
 {
     return (search_block(argument, fill, TRUE) >= 0);
 }
 
 
+/**
+ * @todo Rework this monstrosity
+ */
 int special(struct char_data *ch, int cmd, char *arg)
 {
     register struct obj_data *i;
@@ -567,6 +576,10 @@ void AddCommand( CommandDef_t *cmd )
     BalancedBTreeAdd( commandNum, item, UNLOCKED, TRUE );
 }
 
+/**
+ * Finds a command in the Command BTree (by name).  Partial matches should work
+ * and return the first encountered match
+ */
 CommandDef_t *FindCommand( char *string )
 {
     BalancedBTreeItem_t    *item;
