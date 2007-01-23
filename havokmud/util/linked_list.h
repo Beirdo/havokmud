@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: linked_list.h 41 2004-12-12 01:15:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2005 Gavin Hurlbut
 * All rights reserved
@@ -34,7 +34,7 @@
 
 /* CVS generated ID string (optional for h files) */
 static char linked_list_h_ident[] _UNUSED_ = 
-    "$Id: linked_list.h 41 2004-12-12 01:15:22Z gjhurlbu $";
+    "$Id$";
 
 
 struct _LinkedList_t;
@@ -55,6 +55,7 @@ typedef struct _LinkedList_t
     LinkedListItem_t *head;
     LinkedListItem_t *tail;
     pthread_mutex_t  mutex;
+    int              items;
 } LinkedList_t;
 
 typedef enum
@@ -83,6 +84,7 @@ void LinkedListAdd( LinkedList_t *list, LinkedListItem_t *item,
                     LinkedListLocked_t locked, LinkedListLoc_t location );
 void LinkedListRemove( LinkedList_t *list, LinkedListItem_t *item, 
                        LinkedListLocked_t locked );
+int LinkedListCount( LinkedList_t *list, LinkedListLocked_t locked );
 
 #ifdef __cplusplus
 }

@@ -345,26 +345,12 @@ PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer )
 /**
  * @brief Returns the count of players connected
  * @return count of connected players
- * @todo Abstract an item count into the LinkedList type
  *
- * Iterates through the player list and creates a count.
+ * Returns the count of players connected and in the PlayerList
  */
 int GetPlayerCount( void )
 {
-    LinkedListItem_t   *item;
-    int                 i;
-
-    i = 0;
-
-    LinkedListLock( PlayerList );
-
-    for( item = PlayerList->head; item; item = item->next ) {
-        i++;
-    }
-
-    LinkedListUnlock( PlayerList );
-
-    return( i );
+    return( LinkedListCount( PlayerList, UNLOCKED ) );
 }
 
 /*

@@ -82,6 +82,7 @@ LinkedList_t *LinkedListCreate( void )
     list->head = NULL;
     list->tail = NULL;
     pthread_mutex_init( &list->mutex, NULL );
+    list->items = 0;
 
     return( list );
 }
@@ -147,6 +148,8 @@ void LinkedListAdd( LinkedList_t *list, LinkedListItem_t *item,
         list->tail = item;
     }
 
+    list->items++;
+
     if( locked == UNLOCKED )
     {
         LinkedListUnlock( list );
@@ -196,10 +199,36 @@ void LinkedListRemove( LinkedList_t *list, LinkedListItem_t *item,
 
     item->list = NULL;
 
+    list->items--;
+
     if( locked == UNLOCKED )
     {
         LinkedListUnlock( list );
     }
+}
+
+int LinkedListCount( LinkedList_t *list, LinkedListLocked_t locked )
+{
+    int         count;
+
+    if( list == NULL )
+    {
+        return( 0 );
+    }
+
+    if( locked == UNLOCKED )
+    {
+        LinkedListLock( list );
+    }
+
+    count = list->items;
+
+    if( locked == UNLOCKED )
+    {
+        LinkedListUnlock( list );
+    }
+
+    return( count );
 }
 
 /*
