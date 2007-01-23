@@ -1822,7 +1822,7 @@ void do_run(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-void do_land(struct char_data *ch)
+void do_land(struct char_data *ch, char *argument, int cmd)
 {
     int             dur_remaining = 0;
     struct affected_type *af;
@@ -1911,7 +1911,7 @@ int HasFlyItem(struct char_data *ch)
     return (FALSE);
 }
 
-void do_launch(struct char_data *ch)
+void do_launch(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type *af;
     struct affected_type af2;

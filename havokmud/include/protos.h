@@ -126,7 +126,7 @@ void            do_talk(struct char_data *ch, char *argument, int cmd);
 void            do_sea_commands(struct char_data *ch, char *argument,
                                 int cmd);
 
-void            list_groups(struct char_data *ch);
+void            list_groups(struct char_data *ch, char *argument, int cmd);
 void            do_command_list(struct char_data *ch, char *arg, int cmd);
 void            do_show_skill(struct char_data *ch, char *arg, int cmd);
 void            do_resize(struct char_data *ch, char *arg, int cmd);
@@ -3174,8 +3174,8 @@ void            raw_kill_arena(struct char_data *ch);
 /*
  * from act.move.c (I don't know why the others aren't here)
  */
-void            do_land(struct char_data *ch);
-void            do_launch(struct char_data *ch);
+void            do_land(struct char_data *ch, char *argument, int cmd);
+void            do_launch(struct char_data *ch, char *argument, int cmd);
 int             HasFlyItem(struct char_data *ch);
 
 
@@ -3688,8 +3688,10 @@ int countPeople(int zonenr);
 int count_People_in_room(int room);
 void FORGET(struct char_data *ch, int spl);
 void SpaceForSkills(struct char_data *ch);
+#ifdef MOVED
 void            AddCommand(char *name, void (*func)(), int number,
                            int min_pos, int min_lev);
+#endif
 
 void            do_wclean(struct char_data *ch, char *argument, int cmd);
 void            do_setobjmax(struct char_data *ch, char *argument,

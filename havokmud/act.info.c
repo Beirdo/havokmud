@@ -4909,7 +4909,7 @@ char           *PowerLevelDesc(long a)
     }
 }
 
-void list_groups(struct char_data *ch)
+void list_groups(struct char_data *ch, char *argument, int cmd)
 {
     struct descriptor_data *i;
     struct char_data *person;
