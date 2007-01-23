@@ -494,7 +494,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
                     }
                     extract_char(tmp_char);
                 } else {
-                    ch_printf(ch, "%s isn't under your control.\n\r",
+                    SendOutput(ch, "%s isn't under your control.\n\r",
                                   tmp_char->player.short_descr);
                 }
             } else {
@@ -1386,7 +1386,7 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     "underneath $M.", FALSE, ch, 0, victim, TO_NOTVICT);
                 act("$c000C$n does a quick spin and knocks your legs out from "
                     "underneath you.", FALSE, ch, 0, victim, TO_VICT);
-                ch_printf(ch, "$c000BYou receive $c000W100 $c000Bexperience "
+                SendOutput(ch, "$c000BYou receive $c000W100 $c000Bexperience "
                               "for using your combat abilities.$c0007\n\r");
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -1395,7 +1395,7 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     FALSE, ch, 0, victim, TO_CHAR);
                 act("$c000C$n's legsweep lands a killing blow to $M.",
                     FALSE, ch, 0, victim, TO_ROOM);
-                ch_printf(ch, "$c000BYou receive $c000W100 $c000Bexperience "
+                SendOutput(ch, "$c000BYou receive $c000W100 $c000Bexperience "
                               "for using your combat abilities.$c0007\n\r");
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -1467,7 +1467,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s tries to mend %s, but only makes things "
                              "worse.", GET_NAME(ch), obj->short_description);
                 act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                ch_printf(ch, "You try to mend %s, but make matters worse.\n\r",
+                SendOutput(ch, "You try to mend %s, but make matters worse.\n\r",
                               obj->short_description);
                 LearnFromMistake(ch, SKILL_MEND, 0, 95);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -1478,7 +1478,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                     obj->short_description);
             act(buf, FALSE, ch, 0, 0, TO_ROOM);
-            ch_printf(ch, "You expertly mend %s.\n\r", obj->short_description);
+            SendOutput(ch, "You expertly mend %s.\n\r", obj->short_description);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -1517,7 +1517,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                                  "worse.",
                             GET_NAME(ch), obj->short_description);
                     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                    ch_printf(ch, "You try to mend %s, but only make things "
+                    SendOutput(ch, "You try to mend %s, but only make things "
                                   "worse.\n\r", obj->short_description);
                     /*
                      * did this scrap the weapon?
@@ -1527,7 +1527,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                                      "to junk!",
                                 GET_NAME(ch), obj->short_description);
                         act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                        ch_printf(ch, "You screwed up so bad that %s is reduced"
+                        SendOutput(ch, "You screwed up so bad that %s is reduced"
                                       " to junk!\n\r", obj->short_description);
                         MakeScrap(ch, NULL, obj);
                     }
@@ -1539,7 +1539,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                     sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                             obj->short_description);
                     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                    ch_printf(ch, "You expertly mend %s.\n\r",
+                    SendOutput(ch, "You expertly mend %s.\n\r",
                                   obj->short_description);
                     send_to_char("$c000BYou receive $c000W100 $c000B"
                                  "experience for using your abilities."
@@ -1668,7 +1668,7 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     char            buf[256];
 
     if (argument && strcmp(argument, "-skill") == 0) {
-        ch_printf(ch, "Disengage Skill----->%s.\n\r",
+        SendOutput(ch, "Disengage Skill----->%s.\n\r",
                       how_good(ch->skills[SKILL_DISENGAGE].learned));
         return;
     }
@@ -3058,14 +3058,14 @@ void do_style(struct char_data *ch, char *argument, int cmd)
         page_string(ch->desc, buffer, 1);
         send_to_char("To choose a fighting style, type '$c000Wstyle <style "
                      "name>$c000w'\n\r", ch);
-        ch_printf(ch, "You are currently fighting $c000W%s$c000w.\n\r",
+        SendOutput(ch, "You are currently fighting $c000W%s$c000w.\n\r",
                   fight_styles[ch->style]);
     } else {
         x = 0;
         while (styleskillset[x].level != -1) {
             if (is_abbrev(style, styleskillset[x].name) &&
                 ch->skills[x + 298].learned > 0) {
-                ch_printf(ch, "You change your stance and adopt %s %s style "
+                SendOutput(ch, "You change your stance and adopt %s %s style "
                               "of fighting.\n\r",
                           style[0] == 'A' || style[0] == 'E' ? "an" : "a",
                           fight_styles[x]);
@@ -3121,9 +3121,9 @@ void do_induct(struct char_data *ch, char *argument, int cmd)
     }
 
     GET_CLAN(victim) = GET_CLAN(ch);
-    ch_printf(victim, "You have just been inducted into the clan, %s.\n\r",
+    SendOutput(victim, "You have just been inducted into the clan, %s.\n\r",
               clan_list[GET_CLAN(victim)].name);
-    ch_printf(ch, "You just initated %s into the clan, %s.\n\r",
+    SendOutput(ch, "You just initated %s into the clan, %s.\n\r",
               GET_NAME(victim), clan_list[GET_CLAN(victim)].name);
 }
 
@@ -3166,9 +3166,9 @@ void do_expel(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    ch_printf(victim, "You have just been exiled from %s.\n\r",
+    SendOutput(victim, "You have just been exiled from %s.\n\r",
               clan_list[GET_CLAN(victim)].name);
-    ch_printf(ch, "You just exiled %s from %s.\n\r", GET_NAME(victim),
+    SendOutput(ch, "You just exiled %s from %s.\n\r", GET_NAME(victim),
               clan_list[GET_CLAN(victim)].name);
 
     GET_CLAN(victim) = 1;

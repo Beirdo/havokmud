@@ -103,7 +103,7 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
         } else {
             SEND_TO_Q(argument, d);
             SEND_TO_Q("\n\r", d);
-            ch_printf(ch, "You send '%s'\n\r", argument);
+            SendOutput(ch, "You send '%s'\n\r", argument);
         }
     } else {
         send_to_char("Auth[orize] {Yes | No | Message} \n\r", ch);
@@ -185,7 +185,7 @@ void do_setsev(struct char_data *ch, char *arg, int cmd)
             return;
         }
         ch->specials.sev = sev;
-        ch_printf(ch, "Your severety level have been set to %d.\n\r",
+        SendOutput(ch, "Your severety level have been set to %d.\n\r",
                       ch->specials.sev);
     } else {
         send_to_char("Please give a number between 0 and 5\n\r", ch);
@@ -1328,48 +1328,48 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
          * stats on room
          */
         rm = real_roomp(ch->in_room);
-        ch_printf(ch, "Room name: %s, Of zone : %ld. V-Number : %ld, "
+        SendOutput(ch, "Room name: %s, Of zone : %ld. V-Number : %ld, "
                       "R-number : %ld (%d)\n\r",
                       rm->name, rm->zone, rm->number, ch->in_room, rm->special);
 
-        ch_printf(ch, "Sector type : %s\n\r", sectors[rm->sector_type].type);
+        SendOutput(ch, "Sector type : %s\n\r", sectors[rm->sector_type].type);
 
-        ch_printf(ch, "Special procedure : %s\n\r",
+        SendOutput(ch, "Special procedure : %s\n\r",
                       ((proc = procGetNameByFunc( rm->funct, PROC_ROOM )) ?
                        proc : "None") );
         sprintbit((unsigned long) rm->room_flags, room_bits, buf);
-        ch_printf(ch, "Room flags: %s\n\r", buf);
+        SendOutput(ch, "Room flags: %s\n\r", buf);
 
         send_to_char("Description:\n\r", ch);
         send_to_char(rm->description, ch);
 
-        ch_printf(ch, "Extra description keywords(s): ");
+        SendOutput(ch, "Extra description keywords(s): ");
         if (rm->ex_description) {
             for (desc = rm->ex_description; desc; desc = desc->next) {
-                ch_printf(ch, "\n\r%s", desc->keyword);
+                SendOutput(ch, "\n\r%s", desc->keyword);
             }
-            ch_printf(ch, "\n\r");
+            SendOutput(ch, "\n\r");
         } else {
-            ch_printf(ch, "None");
+            SendOutput(ch, "None");
         }
 
-        ch_printf(ch, "\n\r------- Chars present -------\n\r");
+        SendOutput(ch, "\n\r------- Chars present -------\n\r");
         for (k = rm->people; k; k = k->next_in_room) {
             if (CAN_SEE(ch, k)) {
-                ch_printf(ch, "%s %s\n\r", GET_NAME(k),
+                SendOutput(ch, "%s %s\n\r", GET_NAME(k),
                               (!IS_NPC(k) ? "(PC)" :
                                (!IS_MOB(k) ? "(NPC)" : "(MOB)")));
             }
         }
 
-        ch_printf(ch, "\n\r--------- Contents ---------\n\r");
+        SendOutput(ch, "\n\r--------- Contents ---------\n\r");
         for (j = rm->contents; j; j = j->next_content) {
-            ch_printf(ch, "%s\n\r", j->name);
+            SendOutput(ch, "%s\n\r", j->name);
         }
 
         if (rm->tele_time > 0) {
             send_to_char("\n\r--------- Teleport ---------\n\r", ch);
-            ch_printf(ch, " Teleport to room %d after %d seconds.(%d)\n\r",
+            SendOutput(ch, " Teleport to room %d after %d seconds.(%d)\n\r",
                       rm->tele_targ, rm->tele_time / 10, rm->tele_cnt);
         }
 
@@ -1377,25 +1377,25 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         for (i = 0; i <= 5; i++) {
             if (rm->dir_option[i]) {
                 if (rm->dir_option[i]->keyword) {
-                    ch_printf(ch, "Direction %s . Keyword : %s\n\r",
+                    SendOutput(ch, "Direction %s . Keyword : %s\n\r",
                                   direction[i].dir, rm->dir_option[i]->keyword);
                 } else {
-                    ch_printf(ch, "Direction %s \n\r", direction[i].dir);
+                    SendOutput(ch, "Direction %s \n\r", direction[i].dir);
                 }
 
-                ch_printf(ch, "Description:\n\r  %s\n\r",
+                SendOutput(ch, "Description:\n\r  %s\n\r",
                               (rm->dir_option[i]->general_description ?
                                rm->dir_option[i]->general_description :
                                "UNDEFINED"));
 
                 sprintbit((unsigned) rm->dir_option[i]->exit_info,
                           exit_bits, buf2);
-                ch_printf(ch, "Exit flag: %s \n\rKey no: %ld\n\rTo room "
+                SendOutput(ch, "Exit flag: %s \n\rKey no: %ld\n\rTo room "
                               "(R-Number): %ld\n\r",
                               buf2, rm->dir_option[i]->key,
                               rm->dir_option[i]->to_room);
                 if (rm->dir_option[i]->open_cmd != -1) {
-                    ch_printf(ch, " OpenCommand: %ld\n\r",
+                    SendOutput(ch, " OpenCommand: %ld\n\r",
                                   rm->dir_option[i]->open_cmd);
                 }
                 send_to_char("\n\r", ch);
@@ -1477,7 +1477,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
         if( IS_PC(k) ) {
-            ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
+            SendOutput(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
                       classes[k->specials.remortclass - 1].name, color1);
         }
 
@@ -1814,8 +1814,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
         strcat(buf, "\n\r");
         send_to_char(buf, ch);
-        ch_printf(ch, "Tweak rate: %d%s\n\r", j->tweak, "%");
-        ch_printf(ch, "Short description: %s\n\rLong description:\n\r%s\n\r",
+        SendOutput(ch, "Tweak rate: %d%s\n\r", j->tweak, "%");
+        SendOutput(ch, "Short description: %s\n\rLong description:\n\r%s\n\r",
                   ((j->short_description) ? j->short_description : "None"),
                   ((j->description) ? j->description : "None"));
 
@@ -1828,35 +1828,35 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             strcat(buf, "----------\n\r");
             send_to_char(buf, ch);
         } else {
-            ch_printf(ch, "Extra description keyword(s): None\n\r");
+            SendOutput(ch, "Extra description keyword(s): None\n\r");
         }
 
         sprintbit((unsigned) j->obj_flags.wear_flags, wear_bits, buf);
-        ch_printf(ch, "Can be worn on : %s\n\r", buf);
+        SendOutput(ch, "Can be worn on : %s\n\r", buf);
 
         sprintbit((unsigned) j->obj_flags.bitvector, affected_bits, buf);
-        ch_printf(ch, "Set char bits  : %s\n\r", buf);
+        SendOutput(ch, "Set char bits  : %s\n\r", buf);
 
         sprintbit((unsigned) j->obj_flags.extra_flags, extra_bits, buf);
-        ch_printf(ch, "Extra flags: %s\n\r", buf);
+        SendOutput(ch, "Extra flags: %s\n\r", buf);
 
-        ch_printf(ch, "Weight: %d, Value: %d, Cost/day: %d, Timer: %d\n\r",
+        SendOutput(ch, "Weight: %d, Value: %d, Cost/day: %d, Timer: %d\n\r",
                       j->obj_flags.weight, j->obj_flags.cost,
                       j->obj_flags.cost_per_day, j->obj_flags.timer);
 
         if (j->level == 0) {
-            ch_printf(ch, "Ego: None, ");
+            SendOutput(ch, "Ego: None, ");
         } else {
-            ch_printf(ch, "Ego: Level %d, ", j->level);
+            SendOutput(ch, "Ego: Level %d, ", j->level);
         }
 
         if (j->max == 0) {
-            ch_printf(ch, "Loadrate: None, ");
+            SendOutput(ch, "Loadrate: None, ");
         } else {
-            ch_printf(ch, "Loadrate: Level %d, ", j->max);
+            SendOutput(ch, "Loadrate: Level %d, ", j->max);
         }
 
-        ch_printf(ch, "Last modified by %s on %s",
+        SendOutput(ch, "Last modified by %s on %s",
                       j->modBy, asctime(localtime(&j->modified)));
 
         strcpy(buf, "In room: ");
@@ -2007,7 +2007,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char("Can affect char :\n\r", ch);
         for (i = 0; i < MAX_OBJ_AFFECT; i++) {
             sprinttype(j->affected[i].location, apply_types, buf2);
-            ch_printf(ch, "    Affects : %s By ", buf2);
+            SendOutput(ch, "    Affects : %s By ", buf2);
 
             switch (j->affected[i].location) {
             case APPLY_M_IMMUNE:
@@ -2433,7 +2433,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     if (!strcmp(field, "wizreport")) {
         if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
             send_to_char("I don't think so.\n\r", ch);
-            ch_printf(mob, "%s tried to set your wizreport flag!\n\r",
+            SendOutput(mob, "%s tried to set your wizreport flag!\n\r",
                            GET_NAME(ch));
         } else if (IS_SET(mob->specials.act, PLR_WIZREPORT) && IS_PC(mob)) {
             REMOVE_BIT(mob->specials.act, PLR_WIZREPORT);
@@ -2505,7 +2505,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     } else if (!strcmp(field, "murder")) {
         if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
             send_to_char("I don't think so.\n\r", ch);
-            ch_printf(mob, "%s tried to set your murder flag!\n\r",
+            SendOutput(mob, "%s tried to set your murder flag!\n\r",
                            GET_NAME(ch));
         } else if (IS_SET(mob->player.user_flags, MURDER_1) && IS_PC(mob)) {
             REMOVE_BIT(mob->player.user_flags, MURDER_1);
@@ -2550,7 +2550,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     } else if (!strcmp(field, "stole")) {
         if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
             send_to_char("I don't think so.\n\r", ch);
-            ch_printf(mob, "%s tried to set your stole flag!\n\r",
+            SendOutput(mob, "%s tried to set your stole flag!\n\r",
                            GET_NAME(ch));
         } else if (IS_SET(mob->player.user_flags, STOLE_1) && IS_PC(mob)) {
             REMOVE_BIT(mob->player.user_flags, STOLE_1);
@@ -2594,10 +2594,10 @@ void do_set(struct char_data *ch, char *argument, int cmd)
         send_to_char("Changed flags.\n\r", ch);
     } else if (!strcmp(field, "zone")) {
         GET_ZONE(mob) = atoi(parmstr);
-        ch_printf(ch, "Setting zone access to %d.\n\r", parm);
+        SendOutput(ch, "Setting zone access to %d.\n\r", parm);
     } else if (!strcmp(field, "racewar")) {
         REMOVE_BIT(mob->player.user_flags, RACE_WAR);
-        ch_printf(ch, "Removed RACE WAR from %s\n\r", GET_NAME(mob));
+        SendOutput(ch, "Removed RACE WAR from %s\n\r", GET_NAME(mob));
     } else if (!strcmp(field, "aff1")) {
         mob->specials.act = atoi(parmstr);
     } else if (!strcmp(field, "numatks")) {
@@ -2659,7 +2659,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     } else if (!strcmp(field, "known")) {
         parm = atoi(parmstr);
         SET_BIT(mob->skills[parm].flags, SKILL_KNOWN);
-        ch_printf(ch, "You set skill %d to known.\n\r", parm);
+        SendOutput(ch, "You set skill %d to known.\n\r", parm);
     } else if (!strcmp(field, "int")) {
         parm = atoi(parmstr);
         mob->abilities.intel = parm;
@@ -2705,7 +2705,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
 
         if (!IS_NPC(mob)) {
             if ((GetMaxLevel(mob) >= GetMaxLevel(ch)) && (ch != mob)) {
-                ch_printf(mob, "%s just tried to change your level.\n\r",
+                SendOutput(mob, "%s just tried to change your level.\n\r",
                                GET_NAME(ch));
                 return;
             } else if (!IS_IMMORTAL(mob) &&
@@ -2750,7 +2750,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
 
         if (mob->skills) {
             mob->skills[parm].learned = parm2;
-            ch_printf(ch, "You just set skill %d to value %d\n\r", parm, parm2);
+            SendOutput(ch, "You just set skill %d to value %d\n\r", parm, parm2);
         }
     } else {
         send_to_char("What the did you wanna set?\n\r", ch);
@@ -4786,7 +4786,7 @@ void do_debug(struct char_data *ch, char *argument, int cmd)
          * malloc_debug(i);
          */
 
-        ch_printf(ch, "Malloc debug level set to %d\n\r", i);
+        SendOutput(ch, "Malloc debug level set to %d\n\r", i);
     }
 }
 
@@ -5009,10 +5009,10 @@ void do_beep(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_SET(victim->specials.act, PLR_NOBEEP)) {
-        ch_printf(ch, "%s can not be beeped right now.\n\r", GET_NAME(victim));
+        SendOutput(ch, "%s can not be beeped right now.\n\r", GET_NAME(victim));
     } else {
-        ch_printf(victim, "%c%s is beeping you.\n\r", 7, GET_NAME(ch));
-        ch_printf(ch, "%s has been beeped.\n\r", GET_NAME(victim));
+        SendOutput(victim, "%c%s is beeping you.\n\r", 7, GET_NAME(ch));
+        SendOutput(ch, "%s has been beeped.\n\r", GET_NAME(victim));
     }
 }
 
@@ -5057,7 +5057,7 @@ void do_cset(struct char_data *ch, char *arg, int cmd)
             send_to_char("Sorry, command not found.\n\r", ch);
             return;
         }
-        ch_printf(ch, "Name: %s\n\rMinimum Position: %d\n\rMinimum Level: "
+        SendOutput(ch, "Name: %s\n\rMinimum Position: %d\n\rMinimum Level: "
                       "%d\n\rNumber: %d\n\rLog Bit: %s\n\r",
                       n->name, n->min_pos, n->min_level, n->number,
                       (n->log ? "On" : "Off"));
@@ -5263,7 +5263,7 @@ void do_drainlevel(struct char_data *ch, char *argument, int cmd)
 
     if (GetMaxLevel(victim) >= GetMaxLevel(ch)) {
         send_to_char("You can't drain them!!\n\r", ch);
-        ch_printf(victim, "%s tried to drain levels from you!\n\r",
+        SendOutput(victim, "%s tried to drain levels from you!\n\r",
                           GET_NAME(ch));
         return;
     }
@@ -5275,7 +5275,7 @@ void do_drainlevel(struct char_data *ch, char *argument, int cmd)
         "The feeling fades and you shiver at a cold gust of wind.\n\r",
         victim);
 
-    ch_printf(ch, "You drained %d level(s). How evil!\n\r", numtolose);
+    SendOutput(ch, "You drained %d level(s). How evil!\n\r", numtolose);
 
     for (i = 0; i <= numtolose - 1; i++) {
         if (GetMaxLevel(victim) <= 1) {
@@ -5551,7 +5551,7 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
 
     if (GetMaxLevel(victim) >= GetMaxLevel(ch)) {
         send_to_char("You can't nuke them!!\n\r", ch);
-        ch_printf(victim, "%s tried to nuke you!\n\r", GET_NAME(ch));
+        SendOutput(victim, "%s tried to nuke you!\n\r", GET_NAME(ch));
         return;
     } 
     
@@ -5892,7 +5892,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
         }
         if (IS_PC(mob)) {
             send_to_char("Cloning PC, hahahaha\t\n", ch);
-            ch_printf(mob, "%s just tried to clone you...", GET_NAME(ch));
+            SendOutput(mob, "%s just tried to clone you...", GET_NAME(ch));
             return;
         }
         if (mob->nr < 0) {
@@ -6247,7 +6247,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     }
     Log("Mobile %s saved as vnum %ld", mob->player.name, vnum);
 
-    ch_printf(ch, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
+    SendOutput(ch, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
 }
 
 void do_osave(struct char_data *ch, char *argument, int cmd)
@@ -6331,7 +6331,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     db_save_object(obj, -1, -1);
 
     Log("Object %s saved as vnum %ld", obj->name, vnum);
-    ch_printf(ch, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
+    SendOutput(ch, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
 }
 
 void do_home(struct char_data *ch, char *argument, int cmd)
@@ -6745,7 +6745,7 @@ void do_reward(struct char_data *ch, char *argument, int cmd)
         }
 
         if( !word || amount <= 0 ) {
-            ch_printf(ch, "Invalid amount for reward\n\r");
+            SendOutput(ch, "Invalid amount for reward\n\r");
             return;
         }
     }
@@ -6753,19 +6753,19 @@ void do_reward(struct char_data *ch, char *argument, int cmd)
     temp = (int)d->character->player.q_points;
     temp += amount;
     if (temp >= 1 << 16) {
-        ch_printf(ch, "Amount of reward too big, Quest points greater than "
+        SendOutput(ch, "Amount of reward too big, Quest points greater than "
                       "65535\n\r");
         return;
     }
 
     d->character->player.q_points += (unsigned short int)amount;
-    ch_printf(ch, "You just awarded %d Quest points to %s\n\r", amount,
+    SendOutput(ch, "You just awarded %d Quest points to %s\n\r", amount,
                   GET_NAME(d->character));
 
     sprintf(buf, "awarded %d quest points to %s", amount, GET_NAME(ch));
     qlog(d->character, buf);
 
-    ch_printf(d->character, "You were just awarded %d Quest points. You now "
+    SendOutput(d->character, "You were just awarded %d Quest points. You now "
                             "have %d Quest points\n\r", amount, 
                             d->character->player.q_points);
     save_char(d->character, AUTO_RENT);
@@ -6832,7 +6832,7 @@ void do_punish(struct char_data *ch, char *argument, int cmd)
         }
 
         if ( !word || amount <= 0 ) {
-            ch_printf(ch, "Invalid amount for punish\n\r");
+            SendOutput(ch, "Invalid amount for punish\n\r");
             return;
         }
     }
@@ -6841,19 +6841,19 @@ void do_punish(struct char_data *ch, char *argument, int cmd)
     temp -= amount;
 
     if (temp < 0) {
-        ch_printf(ch, "Amount of punish too big, Quest points would be less "
+        SendOutput(ch, "Amount of punish too big, Quest points would be less "
                       "than 0\n\r");
         return;
     }
 
     d->character->player.q_points -= (unsigned short int)amount;
-    ch_printf(ch, "You just punished %s of  %u Quest points\n\r",
+    SendOutput(ch, "You just punished %s of  %u Quest points\n\r",
                   GET_NAME(d->character), amount);
 
     sprintf(buf, "punished %d quest points by %s", amount, GET_NAME(ch));
     qlog(d->character, buf);
 
-    ch_printf(d->character, "You were just punished %u Quest points. You now "
+    SendOutput(d->character, "You were just punished %u Quest points. You now "
                             "have %u Quest points\n\r", amount, 
                             d->character->player.q_points);
     save_char(d->character, AUTO_RENT);
@@ -6920,7 +6920,7 @@ void do_spend(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!word || amount <= 0) {
-            ch_printf(ch, "Invalid amount for spend\n\r");
+            SendOutput(ch, "Invalid amount for spend\n\r");
             return;
         }
     }
@@ -6928,19 +6928,19 @@ void do_spend(struct char_data *ch, char *argument, int cmd)
     temp = (int)d->character->player.q_points;
     temp -= amount;
     if (temp < 0) {
-        ch_printf(ch, "Amount of spending too big, Quest points would be "
+        SendOutput(ch, "Amount of spending too big, Quest points would be "
                       "less than 0\n\r");
         return;
     }
 
     d->character->player.q_points -= (unsigned short int)amount;
-    ch_printf(ch, "%s just spent %u Quest points\n\r",
+    SendOutput(ch, "%s just spent %u Quest points\n\r",
                   GET_NAME(d->character), amount);
 
     printf(buf, "spent %d quest points (by %s)", amount, GET_NAME(ch));
     qlog(d->character, buf);
 
-    ch_printf(d->character, "You just spent %u Quest points. You now have %u "
+    SendOutput(d->character, "You just spent %u Quest points. You now have %u "
                             "Quest points\n\r", amount, 
                             d->character->player.q_points);
     save_char(d->character, AUTO_RENT);
@@ -6991,7 +6991,7 @@ void do_see_points(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    ch_printf(ch, "%s has %u Quest points\n\r", GET_NAME(d->character),
+    SendOutput(ch, "%s has %u Quest points\n\r", GET_NAME(d->character),
                   d->character->player.q_points);
 }
 
@@ -7029,7 +7029,7 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
     }
 
     obj->max = number;
-    ch_printf(ch, "Set object loadrate to %d.\n\r", number);
+    SendOutput(ch, "Set object loadrate to %d.\n\r", number);
 }
 
 void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
@@ -7063,7 +7063,7 @@ void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
     }
     if (number >= 0 && number <= 100) {
         obj->speed = number;
-        ch_printf(ch, "Set object speed to %.2f\n\r", (float) number / 100);
+        SendOutput(ch, "Set object speed to %.2f\n\r", (float) number / 100);
     } else {
         send_to_char("Speed values between 0 and 100 please. (0 is slow, "
                      "100 is fast)", ch);
@@ -7110,7 +7110,7 @@ void do_setwtype(struct char_data *ch, char *argument, int cmd)
 
     if (number >= 0 && number <= 59) {
         obj->weapontype = number;
-        ch_printf(ch, "Set weapontype to %s\n\r",
+        SendOutput(ch, "Set weapontype to %s\n\r",
                       weaponskills[obj->weapontype].name);
     } else {
         send_to_char("Invalid weapontype. Get wnum from allweapons list.", ch);
@@ -7143,14 +7143,14 @@ void do_setsound(struct char_data *ch, char *argument, int cmd)
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
         if (ITEM_TYPE(obj) == ITEM_AUDIO) {
             if (!sound) {
-                ch_printf(ch, "Setting sound for %s to none.\n\r",
+                SendOutput(ch, "Setting sound for %s to none.\n\r",
                               obj->short_description);
                 if (obj->action_description) {
                     free(obj->action_description);
                 }
                 send_to_char("Okay.\n\r", ch);
             } else {
-                ch_printf(ch, "Setting sound '%s' to %s.\n\r", sound,
+                SendOutput(ch, "Setting sound '%s' to %s.\n\r", sound,
                               obj->short_description);
                 strcat(sound, "\n\r");
                 obj->action_description = strdup(sound);
@@ -7405,7 +7405,7 @@ void do_tweak(struct char_data *ch, char *arg, int cmd)
                 send_to_char("You cannot tweak artifacts.\n\r", ch);
                 return;
             }
-            ch_printf(ch, "You tweak %s.\n\r", obj->short_description);
+            SendOutput(ch, "You tweak %s.\n\r", obj->short_description);
             act("$n tweaks $p!", FALSE, ch, obj, 0, TO_ROOM);
             tweak(obj);
         }
@@ -7512,7 +7512,7 @@ void do_eval(struct char_data *ch, char *arg, int cmd)
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
         if (obj) {
             total = eval(obj);
-            ch_printf(ch, "You evaluate %s: %d.\n\r", obj->short_description,
+            SendOutput(ch, "You evaluate %s: %d.\n\r", obj->short_description,
                       total);
         }
     } else {
@@ -8097,9 +8097,9 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
         Log("%s just granted %s a reimbursement", GET_NAME(ch),
             GET_NAME(victim));
 
-        ch_printf(ch, "You reimbursed %s, resetting his gold and equipment to "
+        SendOutput(ch, "You reimbursed %s, resetting his gold and equipment to "
                       "the point when they last rented.\n\r", GET_NAME(victim));
-        ch_printf(victim, "You have been fully reimbursed by %s.\n\r",
+        SendOutput(victim, "You have been fully reimbursed by %s.\n\r",
                           GET_NAME(ch));
     }
 }

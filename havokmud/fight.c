@@ -1177,11 +1177,11 @@ void group_gain(struct char_data *ch, struct char_data *victim)
         }
         if (!k->master && k->followers) {
             GET_LEADERSHIP_EXP(k) += total;
-            ch_printf(k, "Your leadership skills have served you well, %d "
+            SendOutput(k, "Your leadership skills have served you well, %d "
                          "leadership exp.\n\r", total);
         } else if (!k->master && !k->followers) {
             GET_LEADERSHIP_EXP(k) += total * 3 / 5;
-            ch_printf(k, "Your leadership skills have served you well, %d "
+            SendOutput(k, "Your leadership skills have served you well, %d "
                          "leadership exp.\n\r", total * 3 / 5);
         }
 
@@ -1214,12 +1214,12 @@ void group_gain(struct char_data *ch, struct char_data *victim)
 
                 if (!f->follower->master && f->follower->followers) {
                     GET_LEADERSHIP_EXP(f->follower) += total;
-                    ch_printf(f->follower, "Your leadership skills have served "
+                    SendOutput(f->follower, "Your leadership skills have served "
                                            "you well, %d leadership exp.\n\r",
                               total);
                 } else if (!f->follower->master && !f->follower->followers) {
                     GET_LEADERSHIP_EXP(f->follower) += total * 3 / 5;
-                    ch_printf(f->follower, "Your leadership skills have served "
+                    SendOutput(f->follower, "Your leadership skills have served "
                                            "you well, %d leadership exp.\n\r",
                               total * 3 / 5);
                 }
@@ -1258,12 +1258,12 @@ void group_gain(struct char_data *ch, struct char_data *victim)
                     }
                     if (!f->follower->master && f->follower->followers) {
                         GET_LEADERSHIP_EXP(f->follower) += total;
-                        ch_printf(f->follower, "Your leadership skills have "
+                        SendOutput(f->follower, "Your leadership skills have "
                                                "served you well, %d leadership "
                                                "exp.\n\r", total);
                     } else if (!f->follower->master && !f->follower->followers) {
                         GET_LEADERSHIP_EXP(f->follower) += total * 3 / 5;
-                        ch_printf(f->follower, "Your leadership skills have "
+                        SendOutput(f->follower, "Your leadership skills have "
                                                "served you well, %d leadership "
                                                "exp.\n\r", total * 3 / 5);
                     }
@@ -2302,7 +2302,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                         exp = NewExpCap(ch, exp);
                     }
                     GET_LEADERSHIP_EXP(ch) += exp * 3 / 5;
-                    ch_printf(ch, "Your leadership skills have served you "
+                    SendOutput(ch, "Your leadership skills have served you "
                                   "well.\n\r", exp * 3 / 5);
 
                     gain_exp(ch, exp);
@@ -3082,11 +3082,11 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type,
                 temp = PreProcDam(victim, w_type, dam);
 
                 if (temp == -1) {
-                    ch_printf(ch, "Your attack against %s is futile.\n\r",
+                    SendOutput(ch, "Your attack against %s is futile.\n\r",
                               IS_NPC(victim) ? victim->player.short_descr :
                               GET_NAME(victim));
                 } else if (temp < dam) {
-                    ch_printf(ch, "%s seems to resist your attack!\n\r",
+                    SendOutput(ch, "%s seems to resist your attack!\n\r",
                               IS_NPC(victim) ? victim->player.short_descr :
                               GET_NAME(victim));
                 } else if (temp > dam) {
@@ -3330,7 +3330,7 @@ void perform_violence(int pulse)
                                 act("$n screams and runs into battle, weapons "
                                     "a swinging.", FALSE, f->follower, 0, 0,
                                     TO_ROOM);
-                                ch_printf(f->follower,
+                                SendOutput(f->follower,
                                           "You raise your weapon and run in to"
                                           " assist %s.\n\r",
                                           GET_NAME(f->follower->master));
@@ -3354,7 +3354,7 @@ void perform_violence(int pulse)
 
                             act("$n screams and runs into battle, weapons a "
                                 "swinging.", FALSE, ch->master, 0, 0, TO_ROOM);
-                            ch_printf(ch->master,
+                            SendOutput(ch->master,
                                       "You raise your weapon and run in to "
                                       "assist %s.\n\r", GET_NAME(ch));
 #if 0

@@ -458,11 +458,11 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
 
     if (countPeople(RUMBLE_ZONE) > 1) {
 #if 0
-        ch_printf(ch,"You can't open the chest yet, there is still "
+        SendOutput(ch,"You can't open the chest yet, there is still "
                      "people in the battle arena!%d", 
                   countPeople(RUMBLE_ZONE));
 #endif
-        ch_printf(ch, "The chest seems to resist your touch...", ch);
+        SendOutput(ch, "The chest seems to resist your touch...", ch);
         return (TRUE);
     } else {
         return (FALSE);
@@ -498,7 +498,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
 
     curr_time = time(NULL);
 #if 0
-    ch_printf(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
+    SendOutput(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
 #endif
     count = count_People_in_room(ch->in_room);
     zone = countPeople(RUMBLE_ZONE);
@@ -512,7 +512,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
             raw_lock_door(ch, EXIT(ch, 2), 2);
         }
 
-        ch_printf(ch, "You knock on the big wooden door and then slowly, it "
+        SendOutput(ch, "You knock on the big wooden door and then slowly, it "
                       "opens.\n\r");
 
 #if 0
@@ -539,10 +539,10 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
         }
     } else {
 #if 0
-        ch_printf(ch,"Number of people in zone:%d Number of people in "
+        SendOutput(ch,"Number of people in zone:%d Number of people in "
                      "room:%d",zone, count);
 #endif
-        ch_printf(ch, "You ring the gong but nothing happens.\n\r");
+        SendOutput(ch, "You ring the gong but nothing happens.\n\r");
         command_interpreter(ch, "zload 188");
     }
 
@@ -1714,7 +1714,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &arg1);
         if (arg1 && (tmp_ch = get_char_room_vis(ch, arg1)) && 
             tmp_ch == gnome ) {
-            ch_printf(ch, "%s looks at you in a meaningful way, but stays "
+            SendOutput(ch, "%s looks at you in a meaningful way, but stays "
                           "silent.\n\r", gnome->player.short_descr);
             return (TRUE);
         }
@@ -1759,7 +1759,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
             /*
              * nope 
              */
-            ch_printf(ch, "%s doesn't seem to be interested in that sort of "
+            SendOutput(ch, "%s doesn't seem to be interested in that sort of "
                           "junk.\n\r", gnome->player.short_descr);
             return (TRUE);
         }
@@ -4904,7 +4904,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
      */
     switch (cmd) {
     case 59:
-        ch_printf(ch, "This is what %s currently has on store:\n\r\n\r",
+        SendOutput(ch, "This is what %s currently has on store:\n\r\n\r",
                   shopkeep->player.short_descr);
         send_to_char("  Count  Item                                       "
                      "Price\n\r", ch);
@@ -4946,7 +4946,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                         cost = 0;
                     }
                     cost += 1000;   /* Trader's fee = 1000 */
-                    ch_printf(ch, "$c0008|$c0007    1   %-41s %6d "
+                    SendOutput(ch, "$c0008|$c0007    1   %-41s %6d "
                                   "$c0008|\n\r", obj->short_description,
                               cost);
                 }
@@ -4960,7 +4960,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                     cost = 0;
                 }
                 cost += 1000;   /* Trader's fee = 1000 */
-                ch_printf(ch, "$c0008|$c0007 %4d   %-41s %6d $c0008|\n\r",
+                SendOutput(ch, "$c0008|$c0007 %4d   %-41s %6d $c0008|\n\r",
                           (cond_tot[k] > 1 ?  cond_tot[k] : 1),
                           cond_ptr[k]->short_description, cost);
             }
@@ -5001,13 +5001,13 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                     send_to_char("Alas, you cannot afford that.\n\r", ch);
                     stop = 1;
                 } else if ((IS_CARRYING_N(ch) + 1) > (CAN_CARRY_N(ch))) {
-                    ch_printf(ch, "%s : You can't carry that many items.\n\r",
+                    SendOutput(ch, "%s : You can't carry that many items.\n\r",
                               obj->short_description);
                     stop = 1;
                 } else
                     if ((IS_CARRYING_W(ch) + (obj->obj_flags.weight)) >
                         CAN_CARRY_W(ch)) {
-                    ch_printf(ch, "%s : You can't carry that much weight.\n\r",
+                    SendOutput(ch, "%s : You can't carry that much weight.\n\r",
                               obj->short_description);
                     stop = 1;
                 } else if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
@@ -5027,12 +5027,12 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                     rnum++;
                 }
             } else if (rnum > 0) {
-                ch_printf(ch, "Alas, %s only seems to have %d %ss on "
+                SendOutput(ch, "Alas, %s only seems to have %d %ss on "
                               "store.\n\r",
                           shopkeep->player.short_descr, rnum, itemname);
                 stop = 1;
             } else {
-                ch_printf(ch, "Alas, %s doesn't seem to stock any %ss..\n\r",
+                SendOutput(ch, "Alas, %s doesn't seem to stock any %ss..\n\r",
                           shopkeep->player.short_descr, itemname);
                 stop = 1;
 
@@ -5040,11 +5040,11 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         }
 
         if (rnum == 1) {
-            ch_printf(ch, "You just bought %s for %d coins.\n\r",
+            SendOutput(ch, "You just bought %s for %d coins.\n\r",
                       store_obj->short_description, cost);
             act("$n buys $p from $N.", FALSE, ch, obj, shopkeep, TO_ROOM);
         } else if (rnum > 1) {
-            ch_printf(ch, "You just bought %d items for %d coins.\n\r",
+            SendOutput(ch, "You just bought %d items for %d coins.\n\r",
                       rnum, tot_cost);
             act("$n buys some stuff from $N.", FALSE, ch, obj, shopkeep,
                 TO_ROOM);
@@ -5066,26 +5066,26 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
              * lets not have shops buying non-rentables
              */
             if (obj->obj_flags.cost_per_day == -1) {
-                ch_printf(ch, "%s doesn't buy items that cannot be rented.\n\r",
+                SendOutput(ch, "%s doesn't buy items that cannot be rented.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
 
             if (cost < 400) {
-                ch_printf(ch, "%s doesn't buy worthless junk like that.\n\r",
+                SendOutput(ch, "%s doesn't buy worthless junk like that.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
             
             if (GET_GOLD(shopkeep) < cost) {
-                ch_printf(ch, "Alas, %s cannot afford that right now.\n\r",
+                SendOutput(ch, "Alas, %s cannot afford that right now.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
             
             obj_from_char(obj);
             obj_to_char(obj, shopkeep);
-            ch_printf(ch, "You just sold %s for %d coins.\n\r",
+            SendOutput(ch, "You just sold %s for %d coins.\n\r",
                       obj->short_description, cost);
             act("$n sells $p to $N.", FALSE, ch, obj, shopkeep, TO_ROOM);
             GET_GOLD(ch) += cost;
@@ -5093,7 +5093,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        ch_printf(ch, "Alas, you don't seem to have the %s to sell.\n\r",
+        SendOutput(ch, "Alas, you don't seem to have the %s to sell.\n\r",
                   itemname);
         break;
     case 93:
@@ -5102,7 +5102,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
      */
         arg = get_argument(arg, &itemname);
         if (!itemname) {
-            ch_printf(ch, "What would you like to offer to %s?\n\r",
+            SendOutput(ch, "What would you like to offer to %s?\n\r",
                       shopkeep->player.short_descr);
             return (TRUE);
         }
@@ -5110,18 +5110,18 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
             cost = (int) obj->obj_flags.cost / (3 * modifier);
             if (cost < 400) {
-                ch_printf(ch, "%s doesn't buy worthless junk like that.\n\r",
+                SendOutput(ch, "%s doesn't buy worthless junk like that.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
             
-            ch_printf(ch, "%s is willing to pay you %d coins for %s.\n\r",
+            SendOutput(ch, "%s is willing to pay you %d coins for %s.\n\r",
                       shopkeep->player.short_descr, cost,
                       obj->short_description);
             return (TRUE);
         }
         
-        ch_printf(ch, "You don't seem to have any %ss.\n\r", itemname);
+        SendOutput(ch, "You don't seem to have any %ss.\n\r", itemname);
         break;
     default:
         return (FALSE);
@@ -5146,14 +5146,14 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
 
     curr_time = time(NULL);
 #if 0
-    ch_printf(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
+    SendOutput(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
 #endif
     if (t_info->tm_hour != THE_HOUR && 
         IS_SET(rp->dir_option[0]->exit_info, EX_LOCKED)) {
         command_interpreter(ch, "zload 188");
         raw_unlock_door(ch, EXIT(ch, 0), 0);
         open_door(ch, 0);
-        ch_printf(ch, "You knock on the big wooden door and then slowly, it "
+        SendOutput(ch, "You knock on the big wooden door and then slowly, it "
                       "opens.\n\r");
 
         act("$n knocks on the big door and then suddenly, the big door opens "
@@ -5161,7 +5161,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
-    ch_printf(ch, "You knock on the big wooden door but nothing seems to "
+    SendOutput(ch, "You knock on the big wooden door but nothing seems to "
                   "happen.\n\r");
     return (TRUE);
 }
@@ -5263,7 +5263,7 @@ int steer_ship(struct char_data *ch, int cmd, char *argument,
         return (TRUE);
     }
 
-    ch_printf(ch, "You sail %sward.\n\r", keywords[keyword_no]);
+    SendOutput(ch, "You sail %sward.\n\r", keywords[keyword_no]);
 
     switch (keyword_no) {
     case 0:
@@ -5346,7 +5346,7 @@ int ships_helm(struct char_data *ch, int cmd, char *argument,
         return (TRUE);
     }
 
-    ch_printf(ch, "You sail %sward.\n\r", keywords[keyword_no]);
+    SendOutput(ch, "You sail %sward.\n\r", keywords[keyword_no]);
 
     switch (keyword_no) {
     case 0:         
@@ -5448,7 +5448,7 @@ void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
     printf("Displaying map at coord X%d-Y%d with display size of "
            "%d by %d.\n\r\n\r",x,y,sizex, sizey);
 #endif
-    ch_printf(ch, "Coords: %d-%d.\n\r", x, y);
+    SendOutput(ch, "Coords: %d-%d.\n\r", x, y);
     sprintf(buf, "\n\r$c000B]$c000W");
 
     for (loop = 0; loop < sizey * 2 + 1; loop++) {

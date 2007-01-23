@@ -30,7 +30,7 @@ void do_say(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "$c0015$n says '%s'", argument);
         act(buf, FALSE, ch, 0, 0, TO_ROOM);
         if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-            ch_printf(ch, "$c0015You say '%s'\n\r", argument);
+            SendOutput(ch, "$c0015You say '%s'\n\r", argument);
         }
     }
 }
@@ -234,7 +234,7 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-        ch_printf(ch, "$c0012You think '%s'", argument);
+        SendOutput(ch, "$c0012You think '%s'", argument);
     }
     sprintf(buf, "$c0012::$c0015$n$c0012:: '%s'", argument);
 
@@ -336,7 +336,7 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
     }
 #endif
 
-    ch_printf(vict, "$c0013[$c0015%s$c0013] tells you '%s'",
+    SendOutput(vict, "$c0013[$c0015%s$c0013] tells you '%s'",
               (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)), message);
 
     /*
@@ -345,7 +345,7 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
     vict->last_tell = GET_NAME(ch);
 
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-        ch_printf(ch, "$c0013You tell %s %s'%s'",
+        SendOutput(ch, "$c0013You tell %s %s'%s'",
                   (IS_NPC(vict) ? vict->player.short_descr : GET_NAME(vict)),
                   (IS_AFFECTED2(vict, AFF2_AFK) ? "(who is AFK) " : ""),
                   message);
@@ -475,12 +475,12 @@ void do_write(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(paper = get_obj_in_list_vis(ch, papername, ch->carrying))) {
-        ch_printf(ch, "You have no %s.\n\r", papername);
+        SendOutput(ch, "You have no %s.\n\r", papername);
         return;
     }
 
     if (!(pen = get_obj_in_list_vis(ch, penname, ch->carrying))) {
-        ch_printf(ch, "You have no %s.\n\r", penname);
+        SendOutput(ch, "You have no %s.\n\r", penname);
         return;
     }
 
@@ -641,7 +641,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-        ch_printf(ch, "You sign '%s'\n\r", argument);
+        SendOutput(ch, "You sign '%s'\n\r", argument);
     }
 }
 
@@ -684,7 +684,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
      * set language that we're gonna speak
      */
     ch->player.speaks = lang;
-    ch_printf(ch, "You concentrate on speaking %s.\n\r", 
+    SendOutput(ch, "You concentrate on speaking %s.\n\r", 
                   languages[lang - 1].name);
 }
 
@@ -1001,7 +1001,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
     ch->points.gold -= amount;
     ch->points.gold += share + extra;
 
-    ch_printf(ch, "You split %d gold coins.  Your share is %d gold coins.\n\r",
+    SendOutput(ch, "You split %d gold coins.  Your share is %d gold coins.\n\r",
                   amount, share + extra);
 
     sprintf(buf, "$n splits %d gold coins.  Your share is %d gold coins.",
@@ -1047,7 +1047,7 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
 
     if (ii > number(1, 101)) {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            ch_printf(ch, "You pray '%s'\n\r", argument);
+            SendOutput(ch, "You pray '%s'\n\r", argument);
         }
 
         sprintf(buf1, "$c0014:*:$c0012$n$c0014:*: prays '$c0012%s$c0014'",
@@ -1214,7 +1214,7 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-        ch_printf(ch, "$c0012You $c0015OOC$c0012 '$c0015%s$c0012'", argument);
+        SendOutput(ch, "$c0012You $c0015OOC$c0012 '$c0015%s$c0012'", argument);
     }
 
     sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'", argument);
@@ -1346,7 +1346,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
     }
 #endif
 
-    ch_printf(vict, "$c0013[$c0015%s$c0013] replies to you '%s'",
+    SendOutput(vict, "$c0013[$c0015%s$c0013] replies to you '%s'",
               (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)), argument);
 	vict->last_tell = GET_NAME(ch);
 
@@ -1354,7 +1354,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
 	* Used for reply
 	*/
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-        ch_printf(ch, "$c0013You reply to %s %s'%s'",
+        SendOutput(ch, "$c0013You reply to %s %s'%s'",
                   (IS_NPC(vict) ? vict->player.short_descr : GET_NAME(vict)),
                   (IS_AFFECTED2(vict, AFF2_AFK) ? "(who is AFK) " : ""),
                   argument);

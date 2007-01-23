@@ -4739,9 +4739,9 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
         /* 
          * list
          */
-        ch_printf(ch, "Quest Point Items:\n\r$c0011%-25s  %-20s\n\r",
+        SendOutput(ch, "Quest Point Items:\n\r$c0011%-25s  %-20s\n\r",
                   "Name", "QPs");
-        ch_printf(ch, "%-25s  %-20s\n\r", "----", "---");
+        SendOutput(ch, "%-25s  %-20s\n\r", "----", "---");
 
         while (questitems[x][0] != -1) {
             /* 
@@ -4750,12 +4750,12 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
              */
             obj = read_object(questitems[x][0], VIRTUAL);
             if (obj) {
-                ch_printf(ch, "$c0012%-25s  $c0015%-20d$c0007\n\r",
+                SendOutput(ch, "$c0012%-25s  $c0015%-20d$c0007\n\r",
                           obj->short_description, questitems[x][2]);
             }
             x++;
         }
-        ch_printf(ch, "\n\r Available commands 'List', 'ID <ITEM>', 'Buy "
+        SendOutput(ch, "\n\r Available commands 'List', 'ID <ITEM>', 'Buy "
                       "<ITEM>'\n\r");
         return (TRUE);
     } else if (cmd == 26) {
@@ -4797,15 +4797,15 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
                 temp = questitems[x][2];
                 if (temp <= ch->player.q_points) {
                     ch->player.q_points = ch->player.q_points - temp;
-                    ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I hope "
+                    SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I hope "
                                   "you enjoy.'\n\r", mobname);
-                    ch_printf(ch, "%s gives you %s\n\r", mobname,
+                    SendOutput(ch, "%s gives you %s\n\r", mobname,
                               obj->short_description);
                     obj_to_char(obj, ch);
                     sprintf(buf, "bought %s", obj->short_description);
                     qlog(ch, buf);
                 } else {
-                    ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'You don't"
+                    SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'You don't"
                                   " have enought QPoints for that item'\n\r",
                               mobname);
                 }
@@ -4813,7 +4813,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
             }
             x++;
         }
-        ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I don't have that "
+        SendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I don't have that "
                       "item.'\n\r", mobname);
         return (TRUE);
     }

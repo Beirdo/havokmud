@@ -3526,9 +3526,6 @@ int             remort_guild(struct char_data *ch, int cmd, char *arg,
 
 void            do_OOCaction(struct char_data *ch, char *argument,
                              int cmd);
-#ifdef TODO
-int             ch_printf(struct char_data *ch, char *fmt, ...);
-#endif
 
 int             ships_helm(struct char_data *ch, int cmd, char *argument,
                            struct obj_data *obj, int type);
@@ -4159,6 +4156,11 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 int db_find_object_named(char *string, int owner, int ownerItem);
 struct index_data *db_generate_object_index(int *top, int *sort_top,
                                             int *alloc_top);
+
+/**
+ * @todo Crap to be removed
+ */
+int             SendOutput(struct char_data *ch, char *fmt, ...);
 
 
 /*************************************************************************

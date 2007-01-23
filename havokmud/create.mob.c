@@ -128,16 +128,16 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
         }   
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile Action Flags:\n\r\n\r");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile Action Flags:\n\r\n\r");
 
     row = 0;
 
     for (i = 0; i < totalActionFlags; i++) {
-        len = ch_printf(ch, "%5s%-2d [%s] %s", "", i + 1,
+        len = SendOutput(ch, "%5s%-2d [%s] %s", "", i + 1,
                         ((ch->specials.mobedit->specials.act & (1 << i)) ? "X" :
                         " "), action_bits[i]);
-        ch_printf(ch, "%*s", ((i & 1) ? 2 : 38 - len), ((i & 1) ? "\n\r" : ""));
+        SendOutput(ch, "%*s", ((i & 1) ? 2 : 38 - len), ((i & 1) ? "\n\r" : ""));
     }
 
     send_to_char("\n\r", ch);
@@ -173,23 +173,23 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile Affect Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile Affect Flags:");
 
     row = 0;
     for (i = 0; i < 32; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
         check = 1 << i;
 
-        ch_printf(ch, "%-2ld [%s] %s", i + 1,
+        SendOutput(ch, "%-2ld [%s] %s", i + 1,
                   ((ch->specials.mobedit->specials.affected_by & (check)) ? 
                    "X" : " "), affected_bits[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 21, 1);
+    SendOutput(ch, VT_CURSPOS, 21, 1);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -254,9 +254,9 @@ void UpdateMobMenu(struct char_data *ch)
     mob = ch->specials.mobedit;
 
     send_to_char(VT_HOMECLR, ch);
-    ch_printf(ch, VT_CURSPOS, 1, 1);
-    ch_printf(ch, "Mobile Name: %s", GET_NAME(mob));
-    ch_printf(ch, VT_CURSPOS, 3, 1);
+    SendOutput(ch, VT_CURSPOS, 1, 1);
+    SendOutput(ch, "Mobile Name: %s", GET_NAME(mob));
+    SendOutput(ch, VT_CURSPOS, 3, 1);
     send_to_char("Menu:\n\r", ch);
     send_to_char(mob_edit_menu1, ch);
     send_to_char(mob_edit_menu2, ch);
@@ -519,9 +519,9 @@ void ChangeMobName(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Name: %s", GET_NAME(mob));
+    SendOutput(ch, "Current Mobile Name: %s", GET_NAME(mob));
     send_to_char("\n\r\n\rNew Mobile Name: ", ch);
 }
 
@@ -546,9 +546,9 @@ void ChangeMobShort(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Short Description: %s",
+    SendOutput(ch, "Current Mobile Short Description: %s",
               mob->player.short_descr);
     send_to_char("\n\r\n\rNew Mobile Short Description: ", ch);
 }
@@ -574,9 +574,9 @@ void ChangeMobLong(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Long Description: %s",
+    SendOutput(ch, "Current Mobile Long Description: %s",
                   mob->player.long_descr);
     send_to_char("\n\r\n\rNew Mobile Long Description: ", ch);
 }
@@ -591,10 +591,10 @@ void ChangeMobDesc(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
-    ch_printf(ch, "Current Mobile Description:\n\r");
+    SendOutput(ch, "Current Mobile Description:\n\r");
     send_to_char(mob->player.description, ch);
     send_to_char("\n\r\n\rNew Mobile Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to"
@@ -630,9 +630,9 @@ void ChangeMobAlign(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Alignment: %d", GET_ALIGNMENT(mob));
+    SendOutput(ch, "Current Mob Alignment: %d", GET_ALIGNMENT(mob));
     send_to_char("\n\r\n\rNew Alignment [between -1000[evil] and 1000[good]: ",
                  ch);
 }
@@ -663,9 +663,9 @@ void ChangeMobArmor(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Armor Class: %d", mob->points.armor);
+    SendOutput(ch, "Current Mob Armor Class: %d", mob->points.armor);
     send_to_char("\n\r\n\rNew Mob Armor Class[between -100[armored] and "
                  "100[naked]: ", ch);
 }
@@ -693,9 +693,9 @@ void ChangeMobDamplus(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Damroll Plus: %d", mob->points.damroll);
+    SendOutput(ch, "Current Mob Damroll Plus: %d", mob->points.damroll);
     send_to_char("\n\r\n\rNew Damroll Plus: ", ch);
 }
 
@@ -722,9 +722,9 @@ void ChangeMobDamsize(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Damage Dice Number of Sides: %d",
+    SendOutput(ch, "Current Mob Damage Dice Number of Sides: %d",
                   mob->specials.damsizedice);
     send_to_char("\n\r\n\rNew Damage Dice Number of Sides: ", ch);
 }
@@ -755,9 +755,9 @@ void ChangeMobDamnumb(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Number of Times Damage Dice is rolled: %d",
+    SendOutput(ch, "Current Number of Times Damage Dice is rolled: %d",
                   mob->specials.damnodice);
     send_to_char("\n\r\n\rNew Number of Times Damage Dice is rolled: ", ch);
 }
@@ -794,7 +794,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     if (mob->specials.mobtype == 'S') {
         send_to_char("This is a simple mobile, and does not have a number of"
@@ -804,7 +804,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, "Current Mob Number of Attacks: %.1f", mob->mult_att);
+    SendOutput(ch, "Current Mob Number of Attacks: %.1f", mob->mult_att);
     send_to_char("\n\r\n\rNew Number of Attacks: ", ch);
 }
 
@@ -849,7 +849,7 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
             mob->specials.exp_flag = change;
             expamount = (DetermineExp(mob, mob->specials.exp_flag) + 
                          mob->points.gold);
-            ch_printf(ch, "This mobile will have around %ld exp the next time "
+            SendOutput(ch, "This mobile will have around %ld exp the next time "
                           "it is loaded.\n\r", expamount);
             GET_EXP(mob) = expamount;
             ch->specials.medit = MOB_HIT_RETURN;
@@ -862,12 +862,12 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     if (mob->specials.mobtype == 'S') {
-        ch_printf(ch, "Current Mob Exp: %d", GET_EXP(mob));
+        SendOutput(ch, "Current Mob Exp: %d", GET_EXP(mob));
     } else {
-        ch_printf(ch, "Current Mob Expflag: %ld", mob->specials.exp_flag);
+        SendOutput(ch, "Current Mob Expflag: %ld", mob->specials.exp_flag);
     }
     if (mob->specials.mobtype == 'S') {
         send_to_char("\n\r\n\rNew Exp Amount: ", ch);
@@ -899,7 +899,7 @@ void ChangeMobDpos(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     send_to_char("Positions:\n\r"
                  " 0 - dead            1 - mortally wounded\n\r"
@@ -907,7 +907,7 @@ void ChangeMobDpos(struct char_data *ch, char *arg, int type)
                  " 4 - sleeping        5 - resting\n\r"
                  " 6 - sitting         7 - fighting\n\r"
                  " 8 - standing        9 - mounted\n\r\n\r\n\r", ch);
-    ch_printf(ch, "Current Mob Default Position: %d",
+    SendOutput(ch, "Current Mob Default Position: %d",
                   mob->specials.default_pos);
     send_to_char("\n\r\n\rNew Default Position: ", ch);
 }
@@ -938,11 +938,11 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile race: %s", 
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile race: %s", 
                   races[GET_RACE(ch->specials.mobedit)].racename);
 
-    ch_printf(ch, VT_CURSPOS, 21, 1);
+    SendOutput(ch, VT_CURSPOS, 21, 1);
     send_to_char("Select the race number to set to from the help allrace list,"
                  " <C/R> to return to main menu.\n\r--> ", ch);
 }
@@ -975,23 +975,23 @@ void ChangeMobResist(struct char_data *ch, char *arg, int type)
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile Resistances Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile Resistances Flags:");
 
     row = 0;
     for (i = 0; i < 18; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
         check = 1 << i;
 
-        ch_printf(ch, "%-2d [%s] %s", i + 1,
+        SendOutput(ch, "%-2d [%s] %s", i + 1,
                   ((ch->specials.mobedit->immune & (check)) ? "X" : " "),
                   immunity_names[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 20, 1);
+    SendOutput(ch, VT_CURSPOS, 20, 1);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -1024,23 +1024,23 @@ void ChangeMobImmune(struct char_data *ch, char *arg, int type)
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile Immunities Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile Immunities Flags:");
 
     row = 0;
     for (i = 0; i < 18; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
         check = 1 << i;
 
-        ch_printf(ch, "%-2d [%s] %s", i + 1,
+        SendOutput(ch, "%-2d [%s] %s", i + 1,
                   ((ch->specials.mobedit->M_immune & (check)) ? "X" : " "),
                   immunity_names[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 20, 1);
+    SendOutput(ch, VT_CURSPOS, 20, 1);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -1073,23 +1073,23 @@ void ChangeMobSuscep(struct char_data *ch, char *arg, int type)
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Mobile Susceptibilities Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Mobile Susceptibilities Flags:");
 
     row = 0;
     for (i = 0; i < 18; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
         check = 1 << i;
 
-        ch_printf(ch, "%-2d [%s] %s", i + 1,
+        SendOutput(ch, "%-2d [%s] %s", i + 1,
                   ((ch->specials.mobedit->susc & (check)) ? "X" : " "),
                   immunity_names[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 20, 1);
+    SendOutput(ch, VT_CURSPOS, 20, 1);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -1104,7 +1104,7 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
     
@@ -1119,7 +1119,7 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type)
 #endif
     
     if (mob->player.sounds != 0) {
-        ch_printf(ch, "Current Mobile Sound:\n\r");
+        SendOutput(ch, "Current Mobile Sound:\n\r");
         send_to_char(mob->player.sounds, ch);
     }
     send_to_char("\n\r\n\rNew Mobile Sound:\n\r", ch);
@@ -1143,7 +1143,7 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
     
@@ -1158,7 +1158,7 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
 #endif
           
     if (mob->player.distant_snds != 0) {
-        ch_printf(ch, "Current Mobile Distant Sound:\n\r");
+        SendOutput(ch, "Current Mobile Distant Sound:\n\r");
         send_to_char(mob->player.distant_snds, ch);
     }
 
@@ -1196,9 +1196,9 @@ void ChangeMobLevel(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Level: %d", GET_LEVEL(mob, WARRIOR_LEVEL_IND));
+    SendOutput(ch, "Current Mob Level: %d", GET_LEVEL(mob, WARRIOR_LEVEL_IND));
     send_to_char("\n\r\n\rNew level [between 1 and 60]: ", ch);
 }
 
@@ -1239,9 +1239,9 @@ void ChangeMobSex(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile sex is : %s", Sex[(int)GET_SEX(mob)]);
+    SendOutput(ch, "Current Mobile sex is : %s", Sex[(int)GET_SEX(mob)]);
     send_to_char("\n\rEnter Mobile Sex as N=neutral F=female or M=male ", ch);
     send_to_char("\n\r\n\rNew Mobile Sex: ", ch);
 }
@@ -1269,9 +1269,9 @@ void ChangeMobHitplus(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mob Hitroll Plus: %d", mob->points.hitroll);
+    SendOutput(ch, "Current Mob Hitroll Plus: %d", mob->points.hitroll);
     send_to_char("\n\r\n\rNew Hitroll Plus: ", ch);
 }
 
@@ -1298,9 +1298,9 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Common Procedure: %s\n\r\n\r",
+    SendOutput(ch, "Current Mobile Common Procedure: %s\n\r\n\r",
                   procedure_bits[mob->specials.proc]);
     send_to_char("  0) None                             1) Shopkeeper\n\r"
                  "  2) Guildmaster                      3) Swallower\n\r"
@@ -1346,10 +1346,10 @@ void ChangeMobTalks(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
-    ch_printf(ch, "Current mobile talk response:\n\r");
+    SendOutput(ch, "Current mobile talk response:\n\r");
     send_to_char(mob->specials.talks, ch);
     send_to_char("\n\r\n\rNew mobile talk response:\n\r", ch);
     send_to_char("\n\rTo delete, use /w only.\n\r", ch);
@@ -1373,12 +1373,12 @@ void ChangeMobQuestYes(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
     send_to_char("This function only works if the common Quest procedure is "
                  "set.\n\r", ch);
-    ch_printf(ch, "Current mobile gave-correct-quest-item response:\n\r");
+    SendOutput(ch, "Current mobile gave-correct-quest-item response:\n\r");
     send_to_char(mob->specials.quest_yes, ch);
     send_to_char("\n\r\n\rNew mobile gave-correct-quest-item response:\n\r",
                  ch);
@@ -1402,12 +1402,12 @@ void ChangeMobQuestNo(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
     mob = ch->specials.mobedit;
     send_to_char ("This function only works if the common Quest procedure is "
                   "set.\n\r", ch);
-    ch_printf(ch, "Current mobile gave-wrong-quest-item response:\n\r");
+    SendOutput(ch, "Current mobile gave-wrong-quest-item response:\n\r");
     send_to_char(mob->specials.quest_no, ch);
     send_to_char("\n\r\n\rNew mobile gave-wrong-quest-item response:\n\r", ch);
     send_to_char("(Terminate with a /w on a new line. Press <C/R> again to "
@@ -1444,9 +1444,9 @@ void ChangeMobHps(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Hps: %d\n\r\n\r", mob->points.max_hit);
+    SendOutput(ch, "Current Mobile Hps: %d\n\r\n\r", mob->points.max_hit);
     send_to_char("Pick number between 0 and 15000.\n\r\n\r", ch);
     send_to_char("New Mobile Hps:\n\r", ch);
 }
@@ -1474,9 +1474,9 @@ void ChangeMobCoinage(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Mobile Money: %d\n\r\n\r", mob->points.gold);
+    SendOutput(ch, "Current Mobile Money: %d\n\r\n\r", mob->points.gold);
     send_to_char("Pick number ranging from 0 to 20000.\n\r", ch);
     send_to_char("Mob will load with 0.9 to 1.1 times the entered "
                  "amount.\n\r\n\r", ch);

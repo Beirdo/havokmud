@@ -246,7 +246,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         return;
     } else if (loc == APPLY_SPELL2 || loc == APPLY_BV2) {
 #if 0        
-        ch_printf(ch,"bitv?%d mod?%d\n\r",bitv,mod);
+        SendOutput(ch,"bitv?%d mod?%d\n\r",bitv,mod);
 #endif        
         if (add) {
             /*

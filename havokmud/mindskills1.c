@@ -742,7 +742,7 @@ void mind_mind_tap(int level, struct char_data *ch,
     mana = dice(0, GET_INT(ch) / 2);
     hit = dice(0, GET_INT(ch) / 2);
 
-    ch_printf(ch, "You seem to tap his mind of vital energy!!");
+    SendOutput(ch, "You seem to tap his mind of vital energy!!");
 
     if (IS_PC(ch)) {
         GET_ALIGNMENT(ch) -= 4;

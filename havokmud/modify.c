@@ -604,7 +604,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
 
     if (!(field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
-        ch_printf(ch, "I don't understand the field \"%s\"\n\r", buf);
+        SendOutput(ch, "I don't understand the field \"%s\"\n\r", buf);
         return;
     }
     
@@ -645,7 +645,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
-            ch_printf(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+            SendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
             send_to_char("If room is unnamed, the default sector name will be "
                          "assigned.\n\r", ch);
 
@@ -667,7 +667,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
-            ch_printf(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+            SendOutput(ch, "Bitvector for map rooms = %ld\n\r", maproom);
             send_to_char("If room is unnamed, the default sector name will be "
                          "assigned.\n\r", ch);
 
@@ -706,7 +706,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                     temproom = real_roomp(i);
                     temproom->room_flags = r_flags;
                     temproom->sector_type = s_type;
-                    ch_printf(ch, "Room and sector flags set for room %d\n\r",
+                    SendOutput(ch, "Room and sector flags set for room %d\n\r",
                               i);
                     if (temproom->name) {
                         sprintf(name, "%s", temproom->name);
@@ -722,11 +722,11 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                         temproom->river_dir = 0;
                     }
                 } else {
-                    ch_printf(ch, "Room %d is not a valid room. Use create to "
+                    SendOutput(ch, "Room %d is not a valid room. Use create to "
                                   "create rooms.\n\r", i);
                 }
             }
-            ch_printf(ch, "\n\rFinished setting flags for rooms %d to %d.\n\r",
+            SendOutput(ch, "\n\rFinished setting flags for rooms %d to %d.\n\r",
                       r_start, r_end);
             if (temproom->sector_type == SECT_WATER_NOSWIM) {
                 send_to_char("\n\rP.S. You need to do speed and flow direction"

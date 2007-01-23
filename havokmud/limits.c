@@ -1015,7 +1015,7 @@ void gain_exp(struct char_data *ch, int gain)
             GET_EXP(ch) = 0;
         }
 
-        ch_printf(ch, "$c000RYou have lost $c000w%d $c000Rexperience!", -gain);
+        SendOutput(ch, "$c000RYou have lost $c000w%d $c000Rexperience!", -gain);
     }
 }
 

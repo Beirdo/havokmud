@@ -79,20 +79,20 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg,
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Room Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Room Flags:");
 
     row = 0;
     for (i = 0; i < 29; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
-        ch_printf(ch, "%-2d [%s] %s", i + 1,
+        SendOutput(ch, "%-2d [%s] %s", i + 1,
                   ((rp->room_flags & (1 << i)) ? "X" : " "), room_bits[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 23, 1);
+    SendOutput(ch, VT_CURSPOS, 23, 1);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -138,13 +138,13 @@ void UpdateRoomMenu(struct char_data *ch)
     rp = real_roomp(ch->in_room);
 
     send_to_char(VT_HOMECLR, ch);
-    ch_printf(ch, VT_CURSPOS, 1, 1);
-    ch_printf(ch, "Room Name: %s", rp->name);
-    ch_printf(ch, VT_CURSPOS, 1, 40);
-    ch_printf(ch, "Number: %ld", rp->number);
-    ch_printf(ch, VT_CURSPOS, 1, 60);
-    ch_printf(ch, "Sector Type: %s", sectors[rp->sector_type].type);
-    ch_printf(ch, VT_CURSPOS, 3, 1);
+    SendOutput(ch, VT_CURSPOS, 1, 1);
+    SendOutput(ch, "Room Name: %s", rp->name);
+    SendOutput(ch, VT_CURSPOS, 1, 40);
+    SendOutput(ch, "Number: %ld", rp->number);
+    SendOutput(ch, VT_CURSPOS, 1, 60);
+    SendOutput(ch, "Sector Type: %s", sectors[rp->sector_type].type);
+    SendOutput(ch, VT_CURSPOS, 3, 1);
     send_to_char("Menu:\n\r", ch);
     send_to_char(edit_menu, ch);
     send_to_char("--> ", ch);
@@ -257,9 +257,9 @@ void ChangeRoomName(struct room_data *rp, struct char_data *ch, char *arg,
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Room Name: %s", rp->name);
+    SendOutput(ch, "Current Room Name: %s", rp->name);
     send_to_char("\n\r\n\rNew Room Name: ", ch);
 
     return;
@@ -274,9 +274,9 @@ void ChangeRoomDesc(struct room_data *rp, struct char_data *ch, char *arg,
         return;
     }
 
-    ch_printf(ch, VT_HOMECLR);
+    SendOutput(ch, VT_HOMECLR);
 
-    ch_printf(ch, "Current Room Description:\n\r");
+    SendOutput(ch, "Current Room Description:\n\r");
     send_to_char(rp->description, ch);
     send_to_char("\n\r\n\rNew Room Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to "
@@ -342,19 +342,19 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg,
         }
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Sector Type: %s", sectors[rp->sector_type].type);
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Sector Type: %s", sectors[rp->sector_type].type);
 
     row = 0;
     for (i = 0; i < 23; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
-        ch_printf(ch, "%-2d %s", i + 1, sectors[i].type);
+        SendOutput(ch, "%-2d %s", i + 1, sectors[i].type);
     }
 
-    ch_printf(ch, VT_CURSPOS, 22, 1);
+    SendOutput(ch, VT_CURSPOS, 22, 1);
     send_to_char("Select the number to set to, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
@@ -422,10 +422,10 @@ void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg,
     }
 
     send_to_char(VT_HOMECLR, ch);
-    ch_printf(ch, "Room Name: %s", rp->name);
-    ch_printf(ch, VT_CURSPOS, 1, 40);
-    ch_printf(ch, "Room Number: %ld", rp->number);
-    ch_printf(ch, VT_CURSPOS, 4, 1);
+    SendOutput(ch, "Room Name: %s", rp->name);
+    SendOutput(ch, VT_CURSPOS, 1, 40);
+    SendOutput(ch, "Room Number: %ld", rp->number);
+    SendOutput(ch, VT_CURSPOS, 4, 1);
     send_to_char(exit_menu, ch);
     send_to_char("--> ", ch);
 }
@@ -503,21 +503,21 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
         rp->dir_option[dir]->exit_info = 0;
     }
 
-    ch_printf(ch, VT_HOMECLR);
-    ch_printf(ch, "Exit Flags:");
+    SendOutput(ch, VT_HOMECLR);
+    SendOutput(ch, "Exit Flags:");
 
     row = 0;
     for (i = 0; i < 7; i++) {
-        ch_printf(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+        SendOutput(ch, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
         }
-        ch_printf(ch, "%-2d [%s] %s", i + 1,
+        SendOutput(ch, "%-2d [%s] %s", i + 1,
                   ((rp->dir_option[dir]->exit_info & (1 << i)) ? "X" : " "),
                   exit_bits[i]);
     }
 
-    ch_printf(ch, VT_CURSPOS, 20, 1);
+    SendOutput(ch, VT_CURSPOS, 20, 1);
     send_to_char("Select the number to toggle, <C/R> to return to "
                  "continue.\n\r--> ", ch);
 }
@@ -555,7 +555,7 @@ void ChangeExitNumber(struct room_data *rp, struct char_data *ch,
     update = atoi(arg);
 
     if (update < 0 || update > WORLD_SIZE) {
-        ch_printf(ch, "\n\rRoom number must be between 0 and %d.\n\r",
+        SendOutput(ch, "\n\rRoom number must be between 0 and %d.\n\r",
                       WORLD_SIZE);
         send_to_char("\n\rExit to Room: ", ch);
         return;
