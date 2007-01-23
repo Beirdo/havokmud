@@ -16,6 +16,7 @@ char *get_argument_common(char *line_in, char **arg_out, int do_fill,
                           char delim);
 
 
+#if 0
 struct command_def commandList[] = {
     { "north", do_move, 1, POSITION_STANDING, 0 },
     { "east", do_move, 2, POSITION_STANDING, 0 },
@@ -741,14 +742,7 @@ struct command_def commandList[] = {
     { "steer", do_sea_commands, 625, POSITION_STANDING, 1 }
 };
 int commandCount = NELEMENTS(commandList);
-
-
-unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
-unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
-int             Silence = 0;
-int             plr_tick_count = 0;
-int             MAX_NAME_LENGTH = 11;
-char           *Sex[] = { "Neutral", "Male", "Female" };
+#endif
 
 
 int             pc_num_class(int clss);
