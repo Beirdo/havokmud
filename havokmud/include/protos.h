@@ -4116,7 +4116,7 @@ int             IS_UNDERGROUND(struct char_data *ch);
 int isname2(const char *str, const char *namelist);
 char           *DescAge(int age, int race);
 int bitvector_num(int temp);
-int color_strlen(struct char_data *ch, char *arg, int cmd);
+int color_strlen(struct char_data *ch, char *arg);
 
 void db_setup(void);
 void db_initial_load(void);

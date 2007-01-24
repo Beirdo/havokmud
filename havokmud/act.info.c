@@ -5365,7 +5365,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
             sprintf(name, "%s", CAP(name));
             /* this should be enough length for any clan name */
             length = 35;
-            clength = length - color_strlen(ch, name, 596);
+            clength = length - color_strlen(ch, name);
             for (j = 1; j <= clength; j++) {
                 strcat(name, " ");
             }
