@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: queue.h 41 2004-12-12 01:15:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2005 Gavin Hurlbut
 * All rights reserved

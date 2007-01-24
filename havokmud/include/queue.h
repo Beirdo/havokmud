@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: queue.h 41 2004-12-12 01:15:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2005 Gavin Hurlbut
 * All rights reserved
@@ -35,7 +35,7 @@
 
 /* CVS generated ID string (optional for h files) */
 static char queue_h_ident[] _UNUSED_ = 
-    "$Id: queue.h 41 2004-12-12 01:15:22Z gjhurlbu $";
+    "$Id$";
 
 
 typedef void * QueueItem_t;
