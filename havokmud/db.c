@@ -227,7 +227,9 @@ void boot_db(void)
     }
 
     Log("   Commands.");
+#ifdef MOVED
     assign_command_pointers();
+#endif
     Log("   Spells.");
     assign_spell_pointers();
 

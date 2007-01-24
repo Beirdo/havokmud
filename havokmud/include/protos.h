@@ -3119,11 +3119,7 @@ void            DeleteExit(struct room_data *rp, struct char_data *ch,
  * From parser.c 
  */
 
-void            GenerateHash(void);
-void            AddNodeTail(NODE * n, int length, int radix);
 NODE           *SearchForNodeByName(NODE * head, char *name, int length);
-void            InitRadix(void);
-NODE           *FindValidCommand(char *name);
 int             FindCommandNumber(char *cmd);
 char           *FindCommandName(int num);
 
