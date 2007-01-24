@@ -1713,6 +1713,55 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     extract_obj(scroll);
 }
 
+void do_swim(struct char_data *ch, char *arg, int cmd)
+{
+
+    struct affected_type af;
+    byte            percent;
+
+    send_to_char("Ok, you'll try to swim for a while.\n\r", ch);
+
+    if (IS_AFFECTED(ch, AFF_WATERBREATH)) {
+        /*
+         * kinda pointless if they don't need to...
+         */
+        return;
+    }
+
+    if (affected_by_spell(ch, SKILL_SWIM)) {
+        send_to_char("You're too exhausted to swim right now\n", ch);
+        return;
+    }
+
+    /* 
+     * 101% is a complete failure 
+     */
+    percent = number(1, 101);
+
+    if (!ch->skills) {
+        return;
+    }
+    if (percent > ch->skills[SKILL_SWIM].learned) {
+        send_to_char("You're too afraid to enter the water\n\r", ch);
+        LearnFromMistake(ch, SKILL_SWIM, 0, 95);
+        return;
+    }
+
+    af.type = SPELL_WATER_BREATH;
+    af.duration = (ch->skills[SKILL_SWIM].learned / 10) + 1;
+    af.modifier = 0;
+    af.location = APPLY_NONE;
+    af.bitvector = AFF_WATERBREATH;
+    affect_to_char(ch, &af);
+
+    af.type = SKILL_SWIM;
+    af.duration = 13;
+    af.modifier = -10;
+    af.location = APPLY_MOVE;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+}
+
 void do_use(struct char_data *ch, char *argument, int cmd)
 {
     char           *buf,
