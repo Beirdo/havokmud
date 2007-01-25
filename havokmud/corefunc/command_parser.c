@@ -200,7 +200,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     if (!isalpha((int)*line)) {
         arg = (char *)malloc(strlen(line) + 2);
         if( !arg ) {
-            Log( "Nasty error in command_interpreter!!!" );
+            LogPrintNoArg( LOG_CRIT, "Nasty error in command_interpreter!!!" );
             return;
         }
 
@@ -208,7 +208,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     } else {
         arg = strdup( line );
         if( !arg ) {
-            Log( "Nasty error in command_interpreter!!!" );
+            LogPrintNoArg( LOG_CRIT, "Nasty error in command_interpreter!!!" );
             return;
         }
     }
