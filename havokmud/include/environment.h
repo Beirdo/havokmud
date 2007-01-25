@@ -99,6 +99,8 @@ typedef unsigned long long int uint64;
                                        (char *)((StructType *)NULL))
 #define ELEMSIZE(elem,StructType)   (sizeof(((StructType *)NULL)->elem))
 #define FORCE_UINT32(x)             (*(uint32 *)&(x))
+#define MIN(x,y)                    ( (x) < (y) ? (x) : (y) )
+#define MAX(x,y)                    ( (x) > (y) ? (x) : (y) )
 
 #endif
 

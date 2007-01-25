@@ -55,6 +55,7 @@ void show_race_choice(PlayerStruct_t *player);
 void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
+void roll_abilities(PlayerStruct_t *player);
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
@@ -1084,7 +1085,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        roll_abilities(player->charData);
+        roll_abilities(player);
+
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             /*
              * set the AUTH flags
@@ -1112,7 +1114,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        roll_abilities(player->charData);
+        roll_abilities(player);
+
         if (player->charData->reroll != 0) {
             EnterState(player, STATE_REROLL);
             return;
@@ -1246,19 +1249,20 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         
         if (player->charData->generic >= NEWBIE_REQUEST) {
             ProtectedDataLock(player->connection->hostName);
-            sprintf(buf, "%s [%s] new player.", GET_NAME(player->charData),
-                    (char *)player->connection->hostName->data);
+            SysLogPrint(LOG_INFO, "%s [%s] new player.", 
+                                  GET_NAME(player->charData),
+                                  (char *)player->connection->hostName->data);
             ProtectedDataUnlock(player->connection->hostName);
-            log_sev(buf, 1);
+
             /*
              * I decided to give them another chance.  -Steppenwolf
              * They blew it. -DM
              */
             if (top_of_p_table > 0) {
-                sprintf(buf, "Type Authorize %s [Yes | No | Message]",
-                        GET_NAME(player->charData));
-                log_sev(buf, 1);
-                log_sev("type 'Wizhelp Authorize' for other commands", 1);
+                SysLogPrint(LOG_INFO, "Type Authorize %s [Yes | No | Message]",
+                                      GET_NAME(player->charData));
+                SysLogPrintNoArg(LOG_INFO, "type 'Wizhelp Authorize' for other "
+                                           "commands");
             } else {
                 LogPrintNoArg(LOG_NOTICE, "Initial character.  Authorized "
                                           "Automatically");
@@ -1708,6 +1712,233 @@ void LoginSendBanner( PlayerStruct_t *player )
                        " be discouraged.\n\r\n\r");
     EnterState(player, STATE_GET_NAME);
 }
+
+/**
+ * @todo clean this up
+ *
+ * Give pointers to the five abilities
+ */
+void roll_abilities(PlayerStruct_t *player)
+{
+    struct char_data *ch;
+    int             i,
+                    j,
+                    k,
+                    temp;
+    float           avg;
+    ubyte           table[MAX_STAT];
+    ubyte           rools[4];
+
+    ch = player->charData;
+
+    for (i = 0; i < MAX_STAT; i++) {
+        table[i] = 8;
+    }
+
+    do {
+        for (i = 0; i < MAX_STAT; i++) {
+            for (j = 0; j < 4; j++) {
+                rools[j] = number(1, 6);
+            }
+            temp = (unsigned int) rools[0] + (unsigned int) rools[1] +
+                   (unsigned int) rools[2] + (unsigned int) rools[3] -
+                   MIN((int) rools[0],
+                       MIN((int) rools[1],
+                           MIN((int) rools[2], (int) rools[3])));
+
+            for (k = 0; k < MAX_STAT; k++) {
+                if (table[k] < temp) {
+                    SWITCH(temp, table[k]);
+                }
+            }
+        }
+        for (j = 0, avg = 0; j < MAX_STAT; j++) {
+            avg += table[j];
+        }
+        avg /= j;
+    }
+    while (avg < 9.0);
+
+    for (i = 0; i < MAX_STAT; i++) {
+        switch (player->stat[i]) {
+        case 's':
+            ch->abilities.str = table[i];
+            break;
+        case 'i':
+            ch->abilities.intel = table[i];
+            break;
+        case 'd':
+            ch->abilities.dex = table[i];
+            break;
+        case 'w':
+            ch->abilities.wis = table[i];
+            break;
+        case 'o':
+            ch->abilities.con = table[i];
+            break;
+        case 'h':
+            ch->abilities.chr = table[i];
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (ch->abilities.str == 0) {
+        ch->abilities.str = 8;
+    }
+    if (ch->abilities.intel == 0) {
+        ch->abilities.intel = 8;
+    }
+    if (ch->abilities.dex == 0) {
+        ch->abilities.dex = 8;
+    }
+    if (ch->abilities.wis == 0) {
+        ch->abilities.wis = 8;
+    }
+    if (ch->abilities.con == 0) {
+        ch->abilities.con = 8;
+    }
+    if (ch->abilities.chr == 0) {
+        ch->abilities.chr = 8;
+    }
+    ch->abilities.str_add = 0;
+
+    switch (GET_RACE(ch)) {
+        case RACE_MOON_ELF:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_AVARIEL:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_SEA_ELF:
+            ch->abilities.dex += 2;
+            ch->abilities.con -= 2;
+        case RACE_WILD_ELF:
+            ch->abilities.str++;
+            ch->abilities.intel--;
+            ch->abilities.dex++;
+            ch->abilities.wis--;
+            break;
+        case RACE_GOLD_ELF:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_DWARF:
+        case RACE_DARK_DWARF:
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            break;
+        case RACE_ROCK_GNOME:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+        case RACE_DEEP_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.chr -= 2;
+            break;
+        case RACE_FOREST_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_HALFLING:
+        case RACE_GOBLIN:
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_DROW:
+            ch->abilities.dex += 2;
+            ch->abilities.con--;
+            ch->abilities.chr--;
+            break;
+        case RACE_HALF_OGRE:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.intel--;
+            break;
+        case RACE_ORC:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.chr -= 2;
+            ch->abilities.intel -= 2;
+            break;
+        case RACE_HALF_ORC:
+            ch->abilities.con++;
+            ch->abilities.chr--;
+        case RACE_HALF_GIANT:
+        case RACE_TROLL:
+            ch->abilities.str += 2;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.wis--;
+            ch->abilities.intel--;
+            break;
+        default:
+            break;
+    }
+    ch->points.max_hit = HowManyClasses(ch) * 10;
+
+    /*
+     * race specific hps stuff
+     */
+    if (GET_RACE(ch) == RACE_HALF_GIANT || GET_RACE(ch) == RACE_TROLL) {
+        ch->points.max_hit += 15;
+    }
+
+
+    /*
+     * class specific hps stuff
+     */
+    if (HasClass(ch, CLASS_MAGIC_USER) ||
+        HasClass(ch, CLASS_SORCERER) ||
+        HasClass(ch, CLASS_NECROMANCER)) {
+        ch->points.max_hit += number(1, 4);
+    }
+    if (HasClass(ch, CLASS_THIEF) ||
+        HasClass(ch, CLASS_PSI) ||
+        HasClass(ch, CLASS_MONK)) {
+        ch->points.max_hit += number(1, 6);
+    }
+    if (HasClass(ch, CLASS_CLERIC) ||
+        HasClass(ch, CLASS_DRUID)) {
+        ch->points.max_hit += number(1, 8);
+    }
+    if (HasClass(ch, CLASS_WARRIOR) ||
+        HasClass(ch, CLASS_BARBARIAN) ||
+        HasClass(ch, CLASS_PALADIN) ||
+        HasClass(ch, CLASS_RANGER)) {
+        ch->points.max_hit += number(1, 10);
+
+        if (ch->abilities.str == 18) {
+            ch->abilities.str_add = number(0, 100);
+        }
+        if (ch->abilities.str > 18 &&
+            (GET_RACE(ch) != RACE_HALF_GIANT || GET_RACE(ch) == RACE_TROLL)) {
+            ch->abilities.str_add =
+                number(((ch->abilities.str - 18) * 10), 100);
+        }
+        else if (ch->abilities.str > 18) {
+            /*
+             * was a half-giant so
+             * just make 100
+             */
+            ch->abilities.str_add = 100;
+        }
+    }
+
+    ch->points.max_hit /= HowManyClasses(ch);
+    ch->tmpabilities = ch->abilities;
+}
+
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

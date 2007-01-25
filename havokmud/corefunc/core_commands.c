@@ -55,7 +55,9 @@ CommandDef_t coreCommands[] = {
     { "south", do_move, 3, POSITION_STANDING, 0 },
     { "west", do_move, 4, POSITION_STANDING, 0 },
     { "up", do_move, 5, POSITION_STANDING, 0 },
-    { "down", do_move, 6, POSITION_STANDING, 0 },
+    { "down", do_move, 6, POSITION_STANDING, 0 }
+#if 0
+    ,
     { "enter", do_enter, 7, POSITION_STANDING, 0 },
     { "exits", do_exits, 8, POSITION_RESTING, 0 },
     { "kiss", do_action, 9, POSITION_RESTING, 1 },
@@ -772,6 +774,7 @@ CommandDef_t coreCommands[] = {
     { "plank", do_sea_commands, 623, POSITION_STANDING, 1 },
     { "sail", do_sea_commands, 624, POSITION_STANDING, 1 },
     { "steer", do_sea_commands, 625, POSITION_STANDING, 1 }
+#endif
 };
 int coreCommandCount = NELEMENTS(coreCommands);
 

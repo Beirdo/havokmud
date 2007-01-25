@@ -20,7 +20,7 @@ LDFLAGS = @LDFLAGS@
 
 
 SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
-	act.other.c act.social.c act.wizard.c ansi_parser.c board.c \
+	act.other.c act.social.c act.wizard.c board.c \
 	classes.c comm.c constants.c create.c create.mob.c \
 	create.obj.c db.c fight.c handler.c hash.c heap.c interpreter.c \
 	limits.c magicutils.c mail.c mobact.c modify.c mod.text.c multiclass.c \
@@ -44,7 +44,7 @@ all : ${EXE}
 ${EXE} : ${OBJS}
 	${LD} -g -o $@ $+ ${LDFLAGS} ${LIBS}
 
-${NEWEXE} make.out : ${NEWLIBFILES}
+${NEWEXE} make.out : ${NEWLIBFILES} force
 	-${LD} -g -o ${NEWEXE} ${LDFLAGS} ${NEWLIBS} ${LIBS} 2> make.out
 
 depend : ${DEPS}
@@ -64,7 +64,9 @@ threads/libhavokthread.a:
 corefunc/libhavokcore.a:
 	make -C corefunc
 
-.PHONY: clean cleanall doxygen doxygen-rsync cleannew
+.PHONY: clean cleanall doxygen doxygen-rsync cleannew force
+
+force:
 
 clean:
 	rm -f ${OBJS} ${EXE}
@@ -94,9 +96,24 @@ doxygen-rsync:
 	rsync -e ssh -avz doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
 
 undefs:	make.out
+	echo "Summary" > $@
+	grep "undefined reference " $+ | wc -l >> $@
+	echo "" >> $@
+	echo "Undefined symbols" >> $@
+	echo "=================" >> $@
 	grep "undefined reference " $+ | \
 		sed -e 's/^.*undefined reference to `//' -e "s/'$$//" | \
-		sort | uniq > $@
+		sort | uniq >> $@
+	echo "" >> $@
+	echo "Files with undefined symbols" >> $@
+	echo "============================" >> $@
+	grep "undefined reference " $+ | \
+		sed -e "s@"`pwd`"/@@" -e "s/\:.*//" | sort | uniq -c >> $@
+	echo "" >> $@
+	echo "All undefined symbols by file" >> $@
+	echo "=============================" >> $@
+	grep "undefined reference " $+ | \
+		sed -e "s@"`pwd`"/@@" | sort  >> $@
 
 -include ${DEPS}
 

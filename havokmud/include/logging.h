@@ -80,6 +80,14 @@ extern "C" {
 #define LogPrintNoArg(level, string) \
     LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, string)
 
+#define SysLogPrint(level, format, ...) \
+    LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, format, \
+                 ## __VA_ARGS__)
+
+#define SysLogPrintNoArg(level, string) \
+    LogPrintLine(level, __FILE__, __LINE__, __FUNCTION__, string)
+
+
 /* Define the external prototype */
 void LogPrintLine( LogLevel_t level, char *file, int line, 
                    const char *function, char *format, ... );

@@ -77,6 +77,8 @@ char            hostlist[MAX_BAN_HOSTS][256];   /**< list of sites to ban */
 int             numberhosts;                    /**< count of banned hosts */
 #endif
 
+bool            GlobalAbort = FALSE;
+long            SystemFlags;
 
 /*
  *********************************************************************
@@ -270,7 +272,6 @@ void handleCmdLineArgs(int argc, char **argv)
 int main(int argc, char **argv)
 {
     extern int      spy_flag;
-    extern FILE    *log_f;
     extern long     SystemFlags;
     void            signal_setup(void);
     int             load(void);
@@ -356,7 +357,6 @@ int main(int argc, char **argv)
 
     LogPrintNoArg(LOG_CRIT, "Normal termination of game.");
 
-    fclose(log_f);
     return (0);
 }
 

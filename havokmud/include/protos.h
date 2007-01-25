@@ -410,7 +410,9 @@ void            do_mend(struct char_data *ch, char *argument, int cmd);
 void            do_load(struct char_data *ch, char *argument, int cmd);
 void            purge_one_room(int rnum, struct room_data *rp, int *range);
 void            do_purge(struct char_data *ch, char *argument, int cmd);
+#ifdef MOVED
 void            roll_abilities(struct char_data *ch);
+#endif
 void            do_start(struct char_data *ch);
 void            do_advance(struct char_data *ch, char *argument, int cmd);
 void            do_reroll(struct char_data *ch, char *argument, int cmd);
@@ -2244,7 +2246,9 @@ void            say_spell(struct char_data *ch, int si);
 bool            saves_spell(struct char_data *ch, sh_int save_type);
 bool            ImpSaveSpell(struct char_data *ch, sh_int save_type,
                              int mod);
+#ifdef MOVED
 char           *skip_spaces(char *string);
+#endif
 char           *skip_word(char *string);
 void            do_cast(struct char_data *ch, char *argument, int cmd);
 void            assign_spell_pointers(void);
@@ -2948,12 +2952,6 @@ int             CheckGiveBarbarianOK(struct char_data *ch,
                                      struct char_data *vict,
                                      struct obj_data *obj);
 int             EgoBladeSave(struct char_data *ch);
-#ifndef MIN
-int             MIN(int a, int b);
-#endif
-#ifndef MAX
-int             MAX(int a, int b);
-#endif
 int             GetItemClassRestrictions(struct obj_data *obj);
 int             OnlyClassItemValid(struct char_data *ch,
                                    struct obj_data *obj);
@@ -3542,7 +3540,9 @@ void list_end(struct descriptor_data *d);
 int fwrite_string(FILE * fl, char *buf);
 char           *strip_cr(char *newbuf, const char *orig, size_t maxlen);
 void            str2ansi(char *p2, char *p1, int start, int stop);
+#ifdef MOVED
 char           *ParseAnsiColors(int UsingAnsi, char *txt);
+#endif
 void             construct_prompt(char *buf, struct char_data *ch);
 void remove_cr(char *output, char *input);
 void ReadTextZone(FILE * fl);

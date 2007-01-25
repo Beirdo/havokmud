@@ -61,16 +61,6 @@ int EgoBladeSave(struct char_data *ch)
 #endif
 }
 
-int MIN(int a, int b)
-{
-    return a < b ? a : b;
-}
-
-int MAX(int a, int b)
-{
-    return a > b ? a : b;
-}
-
 int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
 {
     if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER)) &&
@@ -6409,25 +6399,6 @@ int count_People_in_room(int room)
         }
     }
     return count;
-}
-
-char           *skip_spaces(char *string)
-{
-    if( !string ) {
-        return( NULL );
-    }
-
-    for (; *string && isspace((int)*string); string++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    if( !*string ) {
-        return( NULL );
-    }
-
-    return (string);
 }
 
 char           *skip_word(char *string)

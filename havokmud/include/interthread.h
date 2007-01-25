@@ -205,6 +205,9 @@ extern BalancedBTree_t    *commandNum;
 extern CommandDef_t coreCommands[];
 extern int coreCommandCount;
 
+extern bool GlobalAbort;
+extern long SystemFlags;
+
 /*
  * Prototypes of the thread entry points
  */
@@ -238,6 +241,7 @@ void CommandParser( PlayerStruct_t *player, char *line );
 void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
+char *ParseAnsiColors(int UsingAnsi, char *txt);
 
 
 #endif

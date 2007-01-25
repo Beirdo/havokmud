@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -117,6 +118,7 @@ void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len )
 
     QueueEnqueueItem( player->outputQ, buf );
 }
+
 
 
 /*

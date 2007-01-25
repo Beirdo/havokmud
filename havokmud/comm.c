@@ -1938,55 +1938,6 @@ void coma(int s)
  *       Public routines for system-to-player-communication
  **************************************************************** 
  */
-
-char           *ParseAnsiColors(int UsingAnsi, char *txt)
-{
-    static char     buf[MAX_STRING_LENGTH];
-    char            tmp[MAX_INPUT_LENGTH + 40];
-
-    register int    i,
-                    l,
-                    f = 0;
-
-    buf[0] = '\0';
-    for (i = 0, l = 0; *txt;) {
-        if (*txt == '$' && 
-            (toupper(*(txt + 1)) == 'C' || 
-             (*(txt + 1) == '$' && toupper(*(txt + 2)) == 'C'))) {
-            if (*(txt + 1) == '$') {
-                txt += 3;
-            } else {
-                txt += 2;
-            }
-            str2ansi(tmp, txt, 0, 3);
-
-            /*
-             * if using ANSI 
-             */
-            if (UsingAnsi) {
-                strcat(buf, ansi_parse(tmp));
-            } else {
-                /*
-                 * if not using ANSI 
-                 */
-                strcat(buf, "");
-            }
-
-            txt += 4;
-            l = strlen(buf);
-            f++;
-        } else {
-            buf[l++] = *txt++;
-        }
-        buf[l] = 0;
-    }
-    if (f && UsingAnsi) {
-        strcat(buf, ansi_parse("0007"));
-    }
-
-    return buf;
-}
-
 #ifdef TODO
 /*
  * source: EOD, by John Booth <???> 
@@ -2212,50 +2163,6 @@ void            send_to_room_except_two(char *messg, int room,
                                     messg), i->desc);
             }
         }
-    }
-}
-
-void str2ansi(char *p2, char *p1, int start, int stop)
-{
-    int             i,
-                    j;
-
-    if ((start > stop) || (start < 0)) {
-        /* 
-         * null terminate string 
-         */
-        p2[0] = '\0';
-    } else {
-        if (start == stop) {
-            /* 
-             * will copy only 1 char at pos=start 
-             */
-            p2[0] = p1[start];
-            p2[1] = '\0';
-        } else {
-            j = 0;
-
-            /*
-             * start or (start-1) depends on start index 
-             * if starting index for arrays is 0 then use start 
-             * if starting index for arrays is 1 then use start-1 
-             */
-
-            for (i = start; i <= stop; i++) {
-                p2[j++] = p1[i];
-            }
-            /* 
-             * null terminate the string 
-             */
-            p2[j] = '\0';
-        }
-    }
-
-    if (strlen(p2) + 1 > 5) {
-        Log("DOH!");            
-        /* 
-         * remove this after test period 
-         */
     }
 }
 
