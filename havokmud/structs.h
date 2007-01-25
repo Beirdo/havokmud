@@ -1278,6 +1278,7 @@ struct char_player_data {
 
     byte            level[ABS_MAX_CLASS];       /* PC / NPC s level */
 #ifndef TODO
+    /** @todo implement the new max_level handling in gaining and loading */
     int             max_level;                  /* Maximum level (no need to 
                                                  * recalc all the time */
 #endif
