@@ -644,38 +644,6 @@ unsigned IsSusc(struct char_data *ch, int bit)
     return (IS_SET(bit, ch->susc) && !IS_SET(bit, ch->immune));
 }
 
-/*
- * creates a random number in interval [from;to]
- */
-int number(int from, int to)
-{
-    if (to - from + 1) {
-        return ((random() % (to - from + 1)) + from);
-    } else {
-        return (from);
-    }
-}
-
-/*
- * simulates dice roll
- */
-int dice(int number, int size)
-{
-    int             r;
-    int             sum = 0;
-
-    /*
-     * instead of crashing the mud we set it to 1
-     */
-    if (size <= 0) {
-        size = 1;
-    }
-    for (r = 1; r <= number; r++) {
-        sum += ((random() % size) + 1);
-    }
-    return (sum);
-}
-
 int scan_number(char *text, int *rval)
 {
     int             length;

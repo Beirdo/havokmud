@@ -1214,6 +1214,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                                   (char *)player->connection->hostName->data);
             ProtectedDataUnlock(player->connection->hostName);
 
+#ifdef TODO
             if (top_of_p_table > 0) {
                 SysLogPrint(LOG_INFO, "Type Authorize %s [Yes | No | Message]",
                                       GET_NAME(ch));
@@ -1224,6 +1225,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                                           "Automatically");
                 ch->generic = NEWBIE_START + 5;
             }
+#endif
 
             /*
              * enough for gods.  now player is told to shut up.

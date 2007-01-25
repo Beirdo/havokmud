@@ -134,6 +134,51 @@ char *AlignDesc(int value)
 }
 
 
+/**
+ * @brief Creates a random number in interval [from;to]
+ * @param from minimum result
+ * @param to maximum result
+ * @return a random number between from and to (inclusive)
+ *
+ * Creates random numbers in arbitrary ranges
+ */
+int number(int from, int to)
+{
+    if (to - from + 1) {
+        return ((random() % (to - from + 1)) + from);
+    } else {
+        return (from);
+    }
+}
+
+/**
+ * @brief Simulates dice roll
+ * @param number number of dice to roll
+ * @param size number of sides on each die
+ * @return total of the dice rolled
+ *
+ * Rolls a user-defined number of dice with user-defined numbers of sides (all
+ * the same size)
+ */
+int dice(int number, int size)
+{
+    int             r;
+    int             sum = 0;
+
+    /*
+     * instead of crashing the mud we set it to 1
+     */
+    if (size <= 0) {
+        size = 1;
+    }
+    for (r = 1; r <= number; r++) {
+        sum += ((random() % size) + 1);
+    }
+    return (sum);
+}
+
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

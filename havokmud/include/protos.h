@@ -2970,8 +2970,10 @@ int             WeaponImmune(struct char_data *ch);
 unsigned        IsImmune(struct char_data *ch, int bit);
 unsigned        IsResist(struct char_data *ch, int bit);
 unsigned        IsSusc(struct char_data *ch, int bit);
+#ifdef MOVED
 int             number(int from, int to);
 int             dice(int number, int size);
+#endif
 int             scan_number(char *text, int *rval);
 void            log_sev(char *str, int sev);
 void            slog(char *str);

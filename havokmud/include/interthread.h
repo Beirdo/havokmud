@@ -253,6 +253,8 @@ int GetMaxLevel( struct char_data *ch );
 int HasClass(struct char_data *ch, int class);
 int HowManyClasses( struct char_data *ch );
 char *AlignDesc(int value);
+int number(int from, int to);
+int dice(int number, int size);
 
 
 #endif

@@ -157,6 +157,8 @@ void JustLoggedIn( PlayerStruct_t *player )
 
 /**
  * @todo Rework this monstrosity a bit more, it's too unwieldly
+ * @todo redo the "TempDis" portion
+ * @todo redo the "Dismount" portion
  */
 void CommandParser( PlayerStruct_t *player, char *line )
 {
@@ -178,17 +180,21 @@ void CommandParser( PlayerStruct_t *player, char *line )
     
     ch = player->charData;
 
+#ifdef TODO
     if (HasClass(ch, TempDis) && GetMaxLevel(ch) < 58 && IS_PC(ch)) {
         SendOutput( player, "Sorry, we are tracking down a bug and this class "
                             "or one of your classes is disabled.\n\r");
         return;
     }
+#endif
 
     REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
 
+#ifdef TODO
     if (MOUNTED(ch) && ch->in_room != MOUNTED(ch)->in_room) {
         Dismount(ch, MOUNTED(ch), POSITION_STANDING);
     }
+#endif
 
     if (!isalpha((int)*line)) {
         arg = (char *)malloc(strlen(line) + 2);
@@ -447,6 +453,7 @@ int fill_word(char *argument)
 
 /**
  * @todo Rework this monstrosity
+ * @todo redo the AntiSunItem part
  */
 int special(struct char_data *ch, int cmd, char *arg)
 {
@@ -474,10 +481,12 @@ int special(struct char_data *ch, int cmd, char *arg)
      */
     for (j = 0; j <= (MAX_WEAR - 1); j++) {
         if (ch->equipment[j] && ch->equipment[j]->item_number >= 0) {
+#ifdef TODO
             if (IS_SET(ch->equipment[j]->obj_flags.extra_flags,
                 ITEM_ANTI_SUN)) {
                 AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
             }
+#endif
             if (ch->equipment[j] &&
                 obj_index[ch->equipment[j]->item_number].func &&
                 (*obj_index[ch->equipment[j]->item_number].func)
