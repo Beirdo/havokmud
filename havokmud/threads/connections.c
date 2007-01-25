@@ -75,6 +75,9 @@ static void connAddFd( int fd, fd_set *fds );
  * @param arg a pointer to a structure containing port number and timeout
  * @return never returns until shutdown
  *
+ * @todo be sure this handles linkdead without removing all player structures
+ *       so the player can log back in and be where they were
+ *
  * Brings up a TCP listener on the MUD's assigned port and accepts connections.
  * Also reads all data from connected clients and hands the data off to the 
  * Input thread.  When there is output to be sent, this thread handles writing

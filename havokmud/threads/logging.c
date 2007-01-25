@@ -28,6 +28,8 @@
 /**
  * @file
  * @brief Logs messages to the console and/or logfiles
+ * @todo add a system logging that will log not only to the logfile(s) but also
+ *       in game to any immorts logged in
  */
 
 /* INCLUDE FILES */
