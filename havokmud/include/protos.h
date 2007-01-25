@@ -1420,8 +1420,10 @@ int             GetClassLevel(struct char_data *ch, int class);
 int             CountBits(int class);
 int             OnlyClass(struct char_data *ch, int class);
 int             MainClass(struct char_data *ch, int indicator);
+#ifdef MOVED
 int             HasClass(struct char_data *ch, int class);
 int             HowManyClasses(struct char_data *ch);
+#endif
 int             BestFightingClass(struct char_data *ch);
 int             HasFightingClass(struct char_data *ch);
 int             BestThiefClass(struct char_data *ch);

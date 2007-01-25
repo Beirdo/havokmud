@@ -38,11 +38,45 @@ static char ident[] _UNUSED_ =
 
 /**
  * @todo replace this with a macro
+ * @todo implement the setting of max_level on gain and on char load
  */
 int GetMaxLevel( struct char_data *ch )
 {
     return( ch->player.max_level );
 }
+
+/**
+ * @todo replace this with a macro
+ * @todo see what that NPC block is all about, seems pointless
+ */
+int HasClass(struct char_data *ch, int class)
+{
+#if 0
+    if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF) && 
+        (!IS_SET(class, CLASS_MONK) || !IS_SET(class, CLASS_DRUID) ||
+         !IS_SET(class, CLASS_BARBARIAN) || !IS_SET(class, CLASS_SORCERER) ||
+         !IS_SET(class, CLASS_PALADIN) || !IS_SET(class, CLASS_RANGER) || 
+         !IS_SET(class, CLASS_PSI) || !IS_SET(class, CLASS_NECROMANCER))) {
+        /*
+         * I have yet to figure out why we do this 
+         * but is seems to be needed 
+         */
+        return (TRUE);
+    }
+#endif
+
+    return(IS_SET(ch->player.class, class));
+}
+
+/**
+ * @todo replace this with a macro
+ * @todo implement the setting of max_level on char creation, char load
+ */
+int HowManyClasses( struct char_data *ch )
+{
+    return( ch->player.class_count );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

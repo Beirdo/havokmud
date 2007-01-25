@@ -1249,6 +1249,10 @@ struct time_data {
                                  * played in secs */
 };
 
+/** 
+ * @todo implement the new max_level handling in gaining and loading 
+ * @todo implement the new class_count handling in creation and loading
+ */
 struct char_player_data {
 
     byte            sex;        /* PC / NPC s sex */
@@ -1278,9 +1282,9 @@ struct char_player_data {
 
     byte            level[ABS_MAX_CLASS];       /* PC / NPC s level */
 #ifndef TODO
-    /** @todo implement the new max_level handling in gaining and loading */
     int             max_level;                  /* Maximum level (no need to 
                                                  * recalc all the time */
+    int             class_count;                /* Number of classes had */
 #endif
     unsigned short int q_points;        /* Quest points of player */
     bool            has_mail;   /* Has the player mail waiting? */
