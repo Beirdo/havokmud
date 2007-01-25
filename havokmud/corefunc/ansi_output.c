@@ -45,54 +45,54 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 void str2ansi(char *p2, char *p1, int start, int stop);
-char *ansi_parse(char *code);
+int ansi_parse(char *code, char *buf);
 
 /**
- * @todo rework this routine
+ * @todo Make this to be thread-safe
  */
 char           *ParseAnsiColors(int UsingAnsi, char *txt)
 {
     static char     buf[MAX_STRING_LENGTH];
-    char            tmp[MAX_INPUT_LENGTH + 40];
+    char            ansibuf[255];
 
     register int    i,
-                    l,
-                    f = 0;
+                    j,
+                    found = 0;
 
     buf[0] = '\0';
-    for (i = 0, l = 0; *txt;) {
-        if (*txt == '$' && 
-            (toupper(*(txt + 1)) == 'C' || 
-             (*(txt + 1) == '$' && toupper(*(txt + 2)) == 'C'))) {
-            if (*(txt + 1) == '$') {
-                txt += 3;
+    for (i = 0, j = 0; txt[i] && j < MAX_STRING_LENGTH; i++) {
+        /*
+         * Catch $c0001 and $$c0001 - ANSI colors
+         */
+        if( txt[i] == '$' && 
+            (toupper(txt[i+1]) == 'C' ||
+             (txt[i+1] == '$' && toupper(txt[i+2]) == 'C')) ) {
+            if( txt[i+1] == '$' ) {
+                i += 3;
             } else {
-                txt += 2;
+                i += 2;
             }
-            str2ansi(tmp, txt, 0, 3);
-
-            /*
-             * if using ANSI 
-             */
-            if (UsingAnsi) {
-                strcat(buf, ansi_parse(tmp));
-            } else {
-                /*
-                 * if not using ANSI 
-                 */
-                strcat(buf, "");
+            
+            if( UsingAnsi ) {
+                j += ansi_parse( &txt[i], ansibuf );
+                strcat( buf, ansibuf );
             }
 
-            txt += 4;
-            l = strlen(buf);
-            f++;
+            i += 4;
+            j = strlen(buf);
+            found++;
         } else {
-            buf[l++] = *txt++;
+            buf[j++] = txt[i];
         }
-        buf[l] = 0;
+        buf[j] = '\0';
     }
-    if (f && UsingAnsi) {
-        strcat(buf, ansi_parse("0007"));
+
+    if (found && UsingAnsi) {
+        /*
+         * Change back to normal light gray if there was a color change
+         */
+        ansi_parse( "0007", ansibuf );
+        strcat(buf, ansibuf);
     }
 
     return buf;
@@ -100,252 +100,170 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
 
 
 /**
- * @todo not sure of the reason for this function
+ * @todo this function should not be necessary
+ *
+ * Seems to be a simple strcpy at an start offset with an end offset.
  */
 void str2ansi(char *p2, char *p1, int start, int stop)
 {
-    int             i,
-                    j;
+    int         len;
 
-    if ((start > stop) || (start < 0)) {
-        /* 
-         * null terminate string 
-         */
+    len = stop - start + 1;
+
+    if( start < 0 || len < 1 ) {
         p2[0] = '\0';
-    } else {
-        if (start == stop) {
-            /* 
-             * will copy only 1 char at pos=start 
-             */
-            p2[0] = p1[start];
-            p2[1] = '\0';
-        } else {
-            j = 0;
-
-            /*
-             * start or (start-1) depends on start index 
-             * if starting index for arrays is 0 then use start 
-             * if starting index for arrays is 1 then use start-1 
-             */
-
-            for (i = start; i <= stop; i++) {
-                p2[j++] = p1[i];
-            }
-            /* 
-             * null terminate the string 
-             */
-            p2[j] = '\0';
-        }
+        return;
     }
 
-    if (strlen(p2) + 1 > 5) {
-        LogPrintNoArg( LOG_CRIT, "DOH!" );            
-        /* 
-         * remove this after test period 
-         */
-    }
+    strncpy(p2, &p1[start], stop - start + 1);
+    p2[len] = '\0';
 }
 
 /**
- * @todo This is a mess.  Rework
- *
- * $CMBFG, where M is modier, B is back group color and FG is fore $C0001
- * would be normal, black back, red fore. $C1411 would be bold, blue back, 
- * light yellow fore 
+ * Table of ANSI color modifiers
  */
+static char *ansi_mod[] = {
+    MOD_NORMAL, MOD_BOLD, MOD_FAINT, MOD_NORMAL, MOD_UNDERLINE, MOD_BLINK,
+    MOD_REVERSE
+};
 
-char *ansi_parse(char *code)
+/**
+ * Table of ANSI background colors
+ */
+static char *ansi_bg[] = {
+    BK_BLACK, BK_RED, BK_GREEN, BK_BROWN, BK_BLUE, BK_MAGENTA, BK_CYAN,
+    BK_LT_GRAY
+};
+
+/**
+ * Table of ANSI foreground colors without highlight
+ */
+static char *ansi_fg_nohighlight[] = {
+    FG_BLACK, FG_RED, FG_GREEN, FG_BROWN, FG_BLUE, FG_MAGENTA, FG_CYAN,
+    FG_LT_GRAY, FG_DK_GRAY, FG_LT_RED
+};
+
+/**
+ * Table of ANSI foreground colors with highlight
+ */
+static char *ansi_fg_highlight[] = {
+    FG_LT_GREEN, FG_YELLOW, FG_LT_BLUE, FG_LT_MAGENTA, FG_LT_CYAN, FG_WHITE
+};
+
+/**
+ * Mapping string for highlighted foreground colors
+ */
+static char *ansi_highlight = "GYBPCW";
+
+/**
+ * Mapping string for non-highlighted foreground colors
+ */
+static char *ansi_nohighlight = "XrgybpcwxR";
+
+/**
+ * @brief Expands a MUD color code to the ANSI code
+ * @param code MUD color code in form "$CMBFG", with the leading "$" stripped 
+ *             off
+ * @param buf Buffer to write the ANSI code into.  Buffer is assumed to be
+ *            large enough to not be overrun.
+ * @return length of the generated ANSI code
+ *
+ * The MUD color codes are in the form "$CMBFG", where "M" is a modifier,
+ * "B" is the background color and "FG" is the foreground color, either by
+ * numerical index or by using a letter for the color in the 4th position.
+ * 
+ * This function will expand these MUD color codes into ANSI codes to send to
+ * the player.  It is thread-safe.  To prevent buffer overruns, it is suggested
+ * that "buf" always be allocated at least 64 characters as this should hold
+ * the longest possible generated ANSI string.
+ */
+int ansi_parse(char *code, char *buf)
 {
-    static char     m[MAX_STRING_LENGTH];       
-    /* increased from 255 to
-     * MAX 2-18 msw 
-     */
-    char            b[128],
-                    f[128];
+    char           *loc;
+    int             index;
 
-    if (!code) {
-        return ("");            
-        /* 
-         * changed this from NULL to "" 2-18 msw 
-         */
+    if( !buf ) {
+        return( 0 );
     }
+
+    *buf = '\0';
+
+    if ( !code ) {
+        return (0);            
+    }
+
     /*
      * do modifier 
      */
-    switch (code[0]) {
-    case '0':
-        sprintf(m, "%s", MOD_NORMAL);
-        break;
-    case '1':
-        sprintf(m, "%s", MOD_BOLD);
-        break;
-    case '2':
-        sprintf(m, "%s", MOD_FAINT);
-        break;
+    index = (int)(code[0]) - '0';
+    if( index < 0 || index > 6 ) {
+        index = 0;
+    }
+    strcat( buf, ansi_mod[index] );
+
+    /*
+     * do background color 
+     */
+    index = (int)(code[1]) - '0';
+    if( index < 0 || index > 7 ) {
+        index = 0;
+    }
+    strcat( buf, ansi_bg[index] );
+
+    /*
+     * do foreground color
+     */
+    loc = strchr( ansi_highlight, (int)code[3] );
+    if( loc ) {
         /*
-         * not used in ansi that I know of 
+         * This color needs highlight
          */
-    case '3':
-        sprintf(m, "%s", MOD_NORMAL);
-        break;
-    case '4':
-        sprintf(m, "%s", MOD_UNDERLINE);
-        break;
-    case '5':
-        sprintf(m, "%s", MOD_BLINK);
-        break;
-
-    case '6':
-        sprintf(m, "%s", MOD_REVERSE);
-        break;
-
-    default:
-        sprintf(m, "%s", MOD_NORMAL);
-        break;
-    }
-
-    /*
-     * do back ground color 
-     */
-    switch (code[1]) {
-    case '0':
-        sprintf(b, "%s", BK_BLACK);
-        break;
-    case '1':
-        sprintf(b, "%s", BK_RED);
-        break;
-    case '2':
-        sprintf(b, "%s", BK_GREEN);
-        break;
-    case '3':
-        sprintf(b, "%s", BK_BROWN);
-        break;
-    case '4':
-        sprintf(b, "%s", BK_BLUE);
-        break;
-    case '5':
-        sprintf(b, "%s", BK_MAGENTA);
-        break;
-    case '6':
-        sprintf(b, "%s", BK_CYAN);
-        break;
-    case '7':
-        sprintf(b, "%s", BK_LT_GRAY);
-        break;
-    default:
-        sprintf(b, "%s", BK_BLACK);
-        break;
-    }
-
-    /*
-     * do foreground color $c0000 
-     */
-
-    switch (code[3]) {          /* 10-15 */
-    case 'G':
-    case 'Y':
-    case 'B':
-    case 'P':
-    case 'C':
-    case 'W':
         code[2] = '1';
-    default:
-        break;
     }
 
     switch (code[2]) {
     case '0':
-        switch (code[3]) {      /* 00-09 */
-        case 'X':
-        case '0':
-            sprintf(f, "%s", FG_BLACK);
-            break;
-        case 'r':
-        case '1':
-            sprintf(f, "%s", FG_RED);
-            break;
-        case 'g':
-        case '2':
-            sprintf(f, "%s", FG_GREEN);
-            break;
-        case 'y':
-        case '3':
-            sprintf(f, "%s", FG_BROWN);
-            break;
-        case 'b':
-        case '4':
-            sprintf(f, "%s", FG_BLUE);
-            break;
-        case 'p':
-        case '5':
-            sprintf(f, "%s", FG_MAGENTA);
-            break;
-        case 'c':
-        case '6':
-            sprintf(f, "%s", FG_CYAN);
-            break;
-        case 'w':
-        case '7':
-            sprintf(f, "%s", FG_LT_GRAY);
-            break;
-        case 'x':
-        case '8':
-            sprintf(f, "%s", FG_DK_GRAY);
-            break;
-        case 'R':
-        case '9':
-            sprintf(f, "%s", FG_LT_RED);
-            break;
-        default:
-            sprintf(f, "%s", FG_DK_GRAY);
-            break;
+        loc = strchr( ansi_nohighlight, (int)code[3] );
+        if( loc ) {
+            index = (int)(loc - ansi_nohighlight);
+        } else {
+            index = (int)(code[3]) - '0';
+            if( index < 0 || index > 9 ) {
+                /*
+                 * map invalid colors to dark grey
+                 */
+                index = 8;
+            }
         }
+        strcat( buf, ansi_fg_nohighlight[index] );
         break;
 
     case '1':
-        switch (code[3]) {      /* 10-15 */
-        case 'G':
-        case '0':
-            sprintf(f, "%s", FG_LT_GREEN);
-            break;
-        case 'Y':
-        case '1':
-            sprintf(f, "%s", FG_YELLOW);
-            break;
-        case 'B':
-        case '2':
-            sprintf(f, "%s", FG_LT_BLUE);
-            break;
-        case 'P':
-        case '3':
-            sprintf(f, "%s", FG_LT_MAGENTA);
-            break;
-        case 'C':
-        case '4':
-            sprintf(f, "%s", FG_LT_CYAN);
-            break;
-        case 'W':
-        case '5':
-            sprintf(f, "%s", FG_WHITE);
-            break;
-        default:
-            sprintf(f, "%s", FG_LT_GREEN);
-            break;
+        loc = strchr( ansi_highlight, (int)code[3] );
+        if( loc ) {
+            index = (int)(loc - ansi_highlight);
+        } else {
+            index = (int)(code[3]) - '0';
+            if( index < 0 || index > 5 ) {
+                /*
+                 * map invalid colors to light green
+                 */
+                index = 0;
+            }
         }
+        strcat( buf, ansi_fg_highlight[index] );
         break;
 
     default:
-        sprintf(f, "%s", FG_LT_RED);
+        /*
+         * Map totally invalid codes to light red
+         */
+        strcat( buf, FG_LT_RED );
         break;
     }
 
-    strcat(m, b);               /* add back ground */
-    strcat(m, f);               /* add foreground */
-
-    return (m);
+    return( strlen(buf) );
 }
-
-
 
 
 /*

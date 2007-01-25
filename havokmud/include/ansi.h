@@ -1,31 +1,41 @@
 #ifndef _ansi_h
 #define _ansi_h
 /**
- * @todo clean up this file
- **     Ansi color Codes
- **     DaleMUD 2.0, msw addtions
- **     03/07/94
- **
+ * @file 
+ * @brief ANSI color codes
  */
 
-#define CLEAR_CURSOR_TO_END    "\033[0K"        /* Clear from cursor to
-                                                 * end of line */
-#define CLEAR_BEGIN_TO_CURSOR  "\033[1K"        /* Clear from begin of
-                                                 * line to cursor */
-#define CLEAR_LINE             "\033[2K"        /* Clear line containing
-                                                 * cursor */
-#define CLEAR_FROM_CURSOR      "\033[0J"        /* Clear screen from
-                                                 * cursor */
-#define CLEAR_TO_CURSOR        "\033[1J"        /* Clear screen to cursor */
-#define CLEAR_SCREEN           "\033[2J"        /* Clear entire screen */
 
-/*
- * #define CURSOR_UP(number) printf("\033[%dA", number) 
- * #define CURSOR_DOWN(number) printf("\033[%dB", number) 
- * #define CURSOR_FORWARD(number) printf("\033[%dC", number)
- * #define CURSOR_BACKWARD(number) printf("\033[%dD", number)
- * #define CURSOR_POSITION(row, column) printf("\033[%d;%dH", row, column) 
+/**
+ * Clear from cursor to end of line 
  */
+#define CLEAR_CURSOR_TO_END    "\033[0K"
+
+/**
+ * Clear from begin of line to cursor 
+ */
+#define CLEAR_BEGIN_TO_CURSOR  "\033[1K"
+
+/** 
+ * Clear line containing cursor 
+ */
+#define CLEAR_LINE             "\033[2K"
+
+/** 
+ * Clear screen from cursor 
+ */ 
+#define CLEAR_FROM_CURSOR      "\033[0J"
+
+/** 
+ * Clear screen to cursor 
+ */
+#define CLEAR_TO_CURSOR        "\033[1J"
+
+/** 
+ * Clear entire screen 
+ */
+#define CLEAR_SCREEN           "\033[2J"
+
 
 #define MOD_NORMAL    "\033[0m"
 #define MOD_BOLD      "\033[1m"
@@ -66,10 +76,6 @@
 #define BK_CYAN       "\033[0;46m"
 #define BK_LT_GRAY    "\033[0;47m"
 
-/*
- * #define WINDOW(top, bottom) printf("\033[%d;%dr%s", top, bottom,
- * CLEAR_SCREEN) 
- */
 #endif
 
 /*

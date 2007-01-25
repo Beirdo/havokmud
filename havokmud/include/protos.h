@@ -3124,7 +3124,9 @@ char           *FindCommandName(int num);
 /*
  * ansi_parser.c 
  */
+#ifdef MOVED
 char           *ansi_parse(char *code);
+#endif
 
 /*
  * mail.c 

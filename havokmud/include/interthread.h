@@ -242,6 +242,7 @@ void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 char *ParseAnsiColors(int UsingAnsi, char *txt);
+char *skip_spaces(char *string);
 
 
 #endif
