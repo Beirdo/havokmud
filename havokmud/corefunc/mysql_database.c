@@ -38,6 +38,7 @@
 #include "protos.h"
 #include "externs.h"
 #include "logging.h"
+#include "interthread.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

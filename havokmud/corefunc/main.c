@@ -70,6 +70,7 @@ void StartThreads( void );
 #endif
 
 int             mud_port;   /**< The TCP port the MUD will listen on */
+int             no_specials;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK

@@ -60,6 +60,14 @@ void roll_abilities(PlayerStruct_t *player);
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
 
+char           *login;
+char           *credits;
+char           *motd;
+char           *wmotd;
+char           *news;
+char           *info;
+
+
 /**
  * Shows from 1 to 8 ">" to represent stats from 1 through 18
  */

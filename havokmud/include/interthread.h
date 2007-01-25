@@ -209,6 +209,14 @@ extern bool GlobalAbort;
 extern long SystemFlags;
 extern long total_connections;
 extern long total_max_players;
+extern int no_specials;
+
+extern char *login;
+extern char *credits;
+extern char *motd;
+extern char *wmotd;
+extern char *news;
+extern char *info;
 
 /*
  * Prototypes of the thread entry points

@@ -100,13 +100,13 @@ doxygen-rsync:
 
 undefs:	make.out
 	echo "Summary" > $@
-	grep "undefined reference " $+ | wc -l >> $@
+	grep "undefined reference " $+ | sort | uniq | wc -l >> $@
 	echo "" >> $@
 	echo "Undefined symbols" >> $@
 	echo "=================" >> $@
 	grep "undefined reference " $+ | \
 		sed -e 's/^.*undefined reference to `//' -e "s/'$$//" | \
-		sort | uniq >> $@
+		sort | uniq -c >> $@
 	echo "" >> $@
 	echo "Files with undefined symbols" >> $@
 	echo "============================" >> $@
@@ -116,7 +116,7 @@ undefs:	make.out
 	echo "All undefined symbols by file" >> $@
 	echo "=============================" >> $@
 	grep "undefined reference " $+ | \
-		sed -e "s@"`pwd`"/@@" | sort  >> $@
+		sed -e "s@"`pwd`"/@@" | sort | uniq >> $@
 
 -include ${DEPS}
 

@@ -51,9 +51,6 @@ extern int      top_of_zone_table;
 extern int      top_of_mobt;
 extern int      top_of_objt;
 
-extern char    *news;
-extern char    *info;
-
 extern char     wizlist[];
 extern char     iwizlist[];
 extern char    *where[];
@@ -77,8 +74,6 @@ extern int      MaxArenaLevel,
                 MinArenaLevel;
 extern int spell_info_count;
 
-extern char     *login;
-
 extern struct message_list *fightMessages;
 extern int fightMessageCount;
 
@@ -92,11 +87,8 @@ extern int      ItemSaveThrows[22][5];
 extern struct dex_app_type dex_app[];
 extern char    *room_bits[];
 
-extern char     *motd;
-extern char     *wmotd;
 extern struct player_index_element *player_table;
 extern int      top_of_p_table;
-extern char    *credits;
 extern long     SystemFlags;
 extern long     TempDis;
 extern const struct pc_race_choice race_choice[];
@@ -161,8 +153,6 @@ extern int               skillCount;
 
 extern struct dir_data *direction;
 extern int      directionCount;
-
-extern int      no_specials;
 
 extern int      drink_aff[][3];
 
