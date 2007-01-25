@@ -195,27 +195,16 @@ char *ru_sorcerer[] = {
     NULL
 };
 
-/*
- *************************************************************************
- *  Stuff for controlling the non-playing sockets (get name, pwd etc)       *
- ************************************************************************* */
 
-/*
- * locate entry in p_table with entry->name == name. -1 mrks failed search
+/**
+ * @brief Trims the leading spaces and copies the name
+ * @param arg input string
+ * @param name output name
+ * @return 1 if the name is invalid, 0 if valid
+ *
+ * An invalid name is indicated if the name is too long, or has non-alpha 
+ * characters in it, or is empty
  */
-int find_name(char *name)
-{
-    int             i;
-
-    for (i = 0; i <= top_of_p_table; i++) {
-        if (!strcasecmp((player_table + i)->name, name)) {
-            return (i);
-        }
-    }
-
-    return (-1);
-}
-
 int _parse_name(char *arg, char *name)
 {
     int             i;
@@ -225,14 +214,13 @@ int _parse_name(char *arg, char *name)
      */
     arg = skip_spaces(arg);
     if( !arg ) {
-        return( 0 );
+        return( 1 );
     }
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
         if ((*arg < 0) || !isalpha((int)*arg) || i > MAX_NAME_LENGTH) {
             return (1);
         }
-
     }
 
     if (!i) {
@@ -241,6 +229,17 @@ int _parse_name(char *arg, char *name)
     return (0);
 }
 
+/**
+ * @brief Checks the username against the banned user list
+ * @param name the provided username
+ * @return 1 if the name is banned or is too long, 0 if it's OK
+ * @todo perhaps change to use strstr instead of many strcasecmp
+ *
+ * The banned user list contains profanities and other things that are not
+ * desirable in a player name on a MUD.  If a full match or a partial match is
+ * found (as dictated by the banned user list per banned user name), the name 
+ * will be rejected
+ */
 int _check_ass_name(char *name)
 {
     /*
@@ -304,7 +303,7 @@ int _check_ass_name(char *name)
 
         default:
             LogPrintNoArg(LOG_NOTICE, "Grr! invalid value in bannedUsers, "
-                                      "interpreter.c _parse_name");
+                                      "interpreter.c _check_ass_name");
             return( 1 );
         }
     }
@@ -315,89 +314,79 @@ int _check_ass_name(char *name)
 
 void show_menu(PlayerStruct_t *player)
 {
+    struct char_data   *ch;
+    int                 bit;
+    char                cls[50];
 
-    int             bit;
-    char            buf[100];
-    char            bufx[1000];
-    char            cls[50];
-    char            mainclass[50];
+    ch = player->charData;
+
+
+    SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu [%s]"
+                       "$c0009=-\n\r\n\r", GET_NAME(ch));
+    SendOutput(player, "$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",
+                       Sex[((int) GET_SEX(ch))]);
+    SendOutput(player, "$c00152) $c0012ANSI Colors.\n\r");
+
+    if (GET_RACE(ch) == 0) {
+        /*
+         * make default race to Human rather than half-breed
+         */
+        GET_RACE(ch) = 1;
+    }
+
+    SendOutput(player, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
+                           races[GET_RACE(ch)].racename);
 
     cls[0] = '\0';
-
     for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
-        if (HasClass(player->charData, pc_num_class(bit))) {
+        if (HasClass(ch, pc_num_class(bit))) {
             strcat(cls, classes[bit].abbrev);
         }
     }
     if (!(strcmp(cls, ""))) {
         sprintf(cls, "None Selected");
     }
-    mainclass[0] = '\0';
-    if (player->charData->specials.remortclass) {
+    SendOutput(player, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", cls);
+
+    cls[0] = '\0';
+    if (ch->specials.remortclass) {
        /*
         * remort == 0 means none picked
         */
-        strcat(mainclass, 
-               classes[(player->charData->specials.remortclass - 1)].abbrev);
+        strcat(cls, classes[(ch->specials.remortclass - 1)].abbrev);
     }
-    if (!(strcmp(mainclass, ""))) {
-        sprintf(mainclass, "None Selected");
+    if (!(strcmp(cls, ""))) {
+        sprintf(cls, "None Selected");
     }
-    sprintf(bufx, "$c0009-=$c0015Havok Character Creation Menu [%s]"
-                  "$c0009=-\n\r\n\r", GET_NAME(player->charData));
+    SendOutput(player, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", cls );
 
-    sprintf(buf, "$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",
-            Sex[((int) GET_SEX(player->charData))]);
-    strcat(bufx, buf);
-
-    sprintf(buf, "$c00152) $c0012Ansi Colors.\n\r");
-    strcat(bufx, buf);
-
-    if (GET_RACE(player->charData) != 0) {
-        sprintf(buf, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
-                races[GET_RACE(player->charData)].racename);
-        strcat(bufx, buf);
+    if (GET_CON(ch) == 0) {
+        SendOutput(player, "$c00156) $c0012Character Stats.[$c0015None "
+                           "Picked$c0012]\n\r");
     } else {
-        /*
-         * make default race to Human rather than half-breed
-         */
-        GET_RACE(player->charData) = 1;
-        sprintf(buf, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
-                races[GET_RACE(player->charData)].racename);
-        strcat(bufx, buf);
+        SendOutput(player, "$c00156) $c0012Character Stats.[$c0015Done$c0012]"
+                           "\n\r");
     }
 
-    sprintf(buf, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", cls);
-    strcat(bufx, buf);
+    SendOutput(player, "$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r",
+                       (GET_ALIGNMENT(ch) ?
+                       AlignDesc(GET_ALIGNMENT(ch)) : "None"));
 
-    sprintf(buf, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", mainclass);
-    strcat(bufx, buf);
-
-    if (!GET_CON(player->charData) || GET_CON(player->charData) == 0) {
-        strcat(bufx, "$c00156) $c0012Character Stats.[$c0015None "
-                     "Picked$c0012]\n\r");
-    } else {
-        strcat(bufx, "$c00156) $c0012Character Stats.[$c0015Done$c0012]\n\r");
-    }
-    sprintf(buf, "$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r",
-            (GET_ALIGNMENT(player->charData) ?
-             AlignDesc(GET_ALIGNMENT(player->charData)) : "None"));
-    strcat(bufx, buf);
-
-    strcat(bufx, "$c0015D) $c0012Done!\n\r\n\r");
-    strcat(bufx, "$c0011Please pick an option: \n\r");
-
-    SendOutput(player, bufx);
+    SendOutput(player, "$c0015D) $c0012Done!\n\r\n\r");
+    SendOutput(player, "$c0011Please pick an option: \n\r");
 }
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
-    int             chosen = 0;
-    int             i;
+    struct char_data   *ch;
+    int                 chosen = 0;
+    int                 i;
 
     if( !player ) {
         return;
     }
+
+    ch = player->charData;
 
     switch( newstate ) {
     case STATE_CHOOSE_SEX:
@@ -410,14 +399,14 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         show_race_choice(player);
         SendOutput(player, "For help type '?'- will list level limits. \n\r"
                            " RACE:  ");
-        player->charData->player.class = 0;
-        player->charData->specials.remortclass = 0;
+        ch->player.class = 0;
+        ch->specials.remortclass = 0;
         break;
     case STATE_CHOOSE_CLASS:
-        GET_ALIGNMENT(player->charData) = 0;
-        GET_CON(player->charData) = 0;
+        GET_ALIGNMENT(ch) = 0;
+        GET_CON(ch) = 0;
         SendOutput(player, "\n\rSelect your class now.\n\r");
-        show_class_selection(player, GET_RACE(player->charData));
+        show_class_selection(player, GET_RACE(ch));
         SendOutput(player, "Enter ? for help.\n\r\n\rClass :");
         break;
     case STATE_CHOOSE_MAIN_CLASS:
@@ -425,7 +414,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "below.\n\r");
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
-            if (HasClass(player->charData, pc_num_class(chosen))) {
+            if (HasClass(ch, pc_num_class(chosen))) {
                 SendOutput(player, "[%2d] %s\n\r", chosen + 1,
                                    classes[chosen].name);
             }
@@ -434,13 +423,13 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_CHOOSE_STATS:
         SendOutput(player, "\n\rSelect your stat priority, by listing them from"
-                           " highest to lowest\n\r");
-        SendOutput(player, "Separated by spaces.. don't duplicate\n\r");
-        SendOutput(player, "for example: 'S I W D Co Ch' would put the highest"
-                           " roll in Strength, \n\r");
-        SendOutput(player, "next in intelligence, Wisdom, Dex, Con, and lastly"
-                           " charisma\n\r");
-        SendOutput(player, "Your choices? ");
+                           " highest to lowest\n\r"
+                           "Separated by spaces.. don't duplicate\n\r"
+                           "for example: 'S I W D Co Ch' would put the highest"
+                           " roll in Strength, \n\r"
+                           "next in intelligence, Wisdom, Dex, Con, and lastly"
+                           " charisma\n\r"
+                           "Your choices? ");
         break;
     case STATE_CHOOSE_ALIGNMENT:
         SendOutput(player, "Your alignment is an indication of how well or "
@@ -456,15 +445,15 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "makes you evil, and\n\r"
                            "the spell heal makes you good\n\r");
 
-        if (HasClass(player->charData, CLASS_PALADIN)) {
+        if (HasClass(ch, CLASS_PALADIN)) {
             SendOutput(player, "Please select your alignment "
                                "($c000WGood$c000w)");
-        } else if (HasClass(player->charData, CLASS_DRUID)) {
+        } else if (HasClass(ch, CLASS_DRUID)) {
             SendOutput(player, "Please select your alignment (Neutral)");
-        } else if (HasClass(player->charData, CLASS_NECROMANCER)) {
+        } else if (HasClass(ch, CLASS_NECROMANCER)) {
             SendOutput(player, "Please select your alignment "
                                "($c000REvil$c000w)");
-        } else if (HasClass(player->charData, CLASS_RANGER)) {
+        } else if (HasClass(ch, CLASS_RANGER)) {
             SendOutput(player, "Please select your alignment "
                                "($c000WGood$c000w/Neutral$c000w)");
         } else {
@@ -488,18 +477,16 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_CONFIRM_NAME:
-        SendOutput(player, "Did I get that right, %s (Y/N)? ",
-                   GET_NAME(player->charData));
+        SendOutput(player, "Did I get that right, %s (Y/N)? ", GET_NAME(ch));
         break;
     case STATE_GET_NEW_USER_PASSWORD:
-        SendOutput(player, "Give me a password for %s: ", 
-                   GET_NAME(player->charData));
+        SendOutput(player, "Give me a password for %s: ", GET_NAME(ch));
         SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_GET_NAME:
-        if (GET_NAME(player->charData)) {
-            free(GET_NAME(player->charData));
-            GET_NAME(player->charData) = NULL;
+        if (GET_NAME(ch)) {
+            free(GET_NAME(ch));
+            GET_NAME(ch) = NULL;
         }
         SendOutput(player, "What is thy name? ");
         break;
@@ -512,21 +499,14 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_REROLL:
         SendOutput(player, "Your current stats are:\n\r");
-        SendOutput(player, "STR: -]%s\n\r", 
-                   STAT_SWORD(GET_STR(player->charData)));
-        SendOutput(player, "CON: -]%s\n\r", 
-                   STAT_SWORD(GET_CON(player->charData)));
-        SendOutput(player, "DEX: -]%s\n\r", 
-                   STAT_SWORD(GET_DEX(player->charData)));
-        SendOutput(player, "INT: -]%s\n\r", 
-                   STAT_SWORD(GET_INT(player->charData)));
-        SendOutput(player, "WIS: -]%s\n\r", 
-                   STAT_SWORD(GET_WIS(player->charData)));
-        SendOutput(player, "CHR: -]%s\n\r", 
-                   STAT_SWORD(GET_CHR(player->charData)));
+        SendOutput(player, "STR: -]%s\n\r", STAT_SWORD(GET_STR(ch)));
+        SendOutput(player, "CON: -]%s\n\r", STAT_SWORD(GET_CON(ch)));
+        SendOutput(player, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(ch)));
+        SendOutput(player, "INT: -]%s\n\r", STAT_SWORD(GET_INT(ch)));
+        SendOutput(player, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(ch)));
+        SendOutput(player, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(ch)));
         SendOutput(player, "\n\rYou have %d rerolls left, press R to reroll, "
-                           "any other key to keep.\n\r", 
-                           player->charData->reroll);
+                           "any other key to keep.\n\r", ch->reroll);
         break;
     case STATE_CHECK_MAGE_TYPE:
         for( i = 0; ru_sorcerer[i]; i++ ) {
@@ -548,7 +528,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_EDIT_EXTRA_DESCR:
         SendOutput(player, "<type /w to save.>\n\r");
-        EditorStart(player, &player->charData->player.description, 240);
+        EditorStart(player, &ch->player.description, 240);
         break;
     case STATE_PRESS_ENTER:
         SendOutput(player, "\n\r<Press enter to continue>");
@@ -569,9 +549,13 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 }
 
 
+/**
+ * @todo Fix character deletion
+ * @todo Fix character load/save
+ * @todo Fix reconnection
+ */
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
-    char            buf[1024];
     int             player_i;
     int             class,
                     race,
@@ -580,14 +564,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     char            tmp_name[20];
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
+    struct char_data *ch;
     int             i = 0;
     int             tmpi = 0;
     int             pick = 0;
-    struct char_file_u ch_st;
-    FILE           *char_file;
     PlayerStruct_t *oldPlayer;
     InputStateItem_t   *stateItem;
 
+    ch = player->charData;
     SendOutputRaw(player, echo_on, 6);
 
     switch (player->state) {
@@ -615,28 +599,28 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case 'n':
-            if (!HasClass(player->charData, CLASS_PALADIN) &&
-                !HasClass(player->charData, CLASS_NECROMANCER)) {
-                GET_ALIGNMENT(player->charData) = 1;
+            if (!HasClass(ch, CLASS_PALADIN) &&
+                !HasClass(ch, CLASS_NECROMANCER)) {
+                GET_ALIGNMENT(ch) = 1;
                 SendOutput(player, "You have chosen to be Neutral in "
                                    "alignment.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
         case 'g':
-            if (!HasClass(player->charData, CLASS_DRUID) &&
-                !HasClass(player->charData, CLASS_NECROMANCER)) {
-                GET_ALIGNMENT(player->charData) = 1000;
+            if (!HasClass(ch, CLASS_DRUID) &&
+                !HasClass(ch, CLASS_NECROMANCER)) {
+                GET_ALIGNMENT(ch) = 1000;
                 SendOutput(player, "You have chosen to be a follower of "
                                    "light.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
             break;
         case 'e':
-            if (!HasClass(player->charData, CLASS_DRUID) &&
-                !HasClass(player->charData, CLASS_PALADIN) &&
-                !HasClass(player->charData, CLASS_RANGER)) {
-                GET_ALIGNMENT(player->charData) = -1000;
+            if (!HasClass(ch, CLASS_DRUID) &&
+                !HasClass(ch, CLASS_PALADIN) &&
+                !HasClass(ch, CLASS_RANGER)) {
+                GET_ALIGNMENT(ch) = -1000;
                 SendOutput(player, "You have chosen the dark side.\n\r\n\r");
                 EnterState(player, STATE_SHOW_CREATION_MENU);
             }
@@ -652,34 +636,34 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if( !arg ) {
             SendOutput(player, "Please type Yes or No.\n\r"
-                               "Would you like ansi colors? :");
+                               "Would you like ANSI colors? :");
             return;
         }
 
         switch (tolower(*arg)) {
         case 'y':
-            SET_BIT(player->charData->player.user_flags, USE_ANSI);
+            SET_BIT(ch->player.user_flags, USE_ANSI);
 
-            SendOutput(player, "$c0012A$c0010n$c0011s$c0014i$c0007 colors "
+            SendOutput(player, "$c0012A$c0010N$c0011S$c0014I$c0007 colors "
                                "enabled.\n\r\n\r");
             EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
         case 'n':
-            REMOVE_BIT(player->charData->player.user_flags, USE_ANSI);
+            REMOVE_BIT(ch->player.user_flags, USE_ANSI);
             EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
         default:
             SendOutput(player, "Please type Yes or No.\n\r"
-                               "Would you like ansi colors? :");
+                               "Would you like ANSI colors? :");
             return;
             break;
         }
         break;
 
     case STATE_CHOOSE_RACE:
-        player->charData->reroll = 20;
+        ch->reroll = 20;
         arg = skip_spaces(arg);
         if (!arg) {
             EnterState(player, STATE_CHOOSE_RACE);
@@ -696,7 +680,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
        
         tmpi = atoi(arg);
         if (tmpi >= 1 && tmpi <= race_choice_count) {
-            GET_RACE(player->charData) = race_choice[tmpi - 1].raceNum;
+            GET_RACE(ch) = race_choice[tmpi - 1].raceNum;
             EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
             SendOutput(player, "\n\rThat's not a race.\n\rRACE?:");
@@ -708,10 +692,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     /*
      * wait for input of name
      */
-        if (!player->charData) {
+        if (!ch) {
             CREATE(player->charData, struct char_data, 1);
-            clear_char(player->charData);
-            player->charData->playerDesc = player;
+            ch = player->charData;
+            clear_char(ch);
+            ch->playerDesc = player;
         }
 
         arg = skip_spaces(arg);
@@ -740,7 +725,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * connecting an existing character ...
              */
             store_to_char(&tmp_store, player->charData);
-            strcpy(player->charData->pwd, tmp_store.pwd);
+            strcpy(ch->pwd, tmp_store.pwd);
 #ifdef TODO
             d->pos = player_table[player_i].nr;
 #endif
@@ -749,23 +734,23 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             /*
              * player unknown gotta make a new
              */
-            if (_check_ass_name(tmp_name)) {
-                SendOutput(player, "\n\rIllegal name, please try another.");
-                SendOutput(player, "Name: ");
-                return;
-            }
-
             if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
                 SendOutput(player, "Sorry, no new characters at this time\n\r");
                 EnterState(player, STATE_WIZLOCKED);
                 return;
             }
 
+            if (_check_ass_name(tmp_name)) {
+                SendOutput(player, "\n\rIllegal name, please try another.");
+                SendOutput(player, "Name: ");
+                return;
+            }
+
             /*
              * move forward creating new character
              */
-            CREATE(GET_NAME(player->charData), char, strlen(tmp_name) + 1);
-            strcpy(GET_NAME(player->charData), CAP(tmp_name));
+            CREATE(GET_NAME(ch), char, strlen(tmp_name) + 1);
+            strcpy(GET_NAME(ch), CAP(tmp_name));
             EnterState(player, STATE_CONFIRM_NAME);
         }
         break;
@@ -773,8 +758,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CONFIRM_NAME:
         /*
          * wait for conf. of new name
-         */
-        /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
@@ -805,8 +788,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_GET_PASSWORD:
         /*
          * get pwd for known player
-         */
-        /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
@@ -815,20 +796,18 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
-        if (strncmp((char *) crypt(arg, player->charData->pwd), 
-                    player->charData->pwd, 10)) {
+        if (strncmp((char *) crypt(arg, ch->pwd), ch->pwd, 10)) {
             SendOutput(player, "Wrong password.\n\r");
-            LogPrint(LOG_INFO, "%s entered a wrong password", 
-                     GET_NAME(player->charData));
+            LogPrint(LOG_INFO, "%s entered a wrong password", GET_NAME(ch));
             connClose( player->connection );
             return;
         }
 
 #ifdef IMPL_SECURITY
         if (top_of_p_table > 0) {
-            if (GetMaxLevel(player->charData) >= 58) {
+            if (GetMaxLevel(ch) >= 58) {
                 ProtectedDataLock(player->connection->hostName);
-                switch (SecCheck(GET_NAME(player->charData), 
+                switch (SecCheck(GET_NAME(ch), 
                                  (char *)player->connection->hostName->data)) {
                 case -1:
                 case 0:
@@ -851,7 +830,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /*
          * Check if already playing
          */
-        oldPlayer = FindCharacterNamed( GET_NAME(player->charData), player );
+        oldPlayer = FindCharacterNamed( GET_NAME(ch), player );
         if( oldPlayer ) {
             connClose( oldPlayer->connection );
             break;
@@ -861,16 +840,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * Check if disconnected ...
          */
         for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
-            if ((!strcasecmp(GET_NAME(player->charData), GET_NAME(tmp_ch)) 
+            if ((!strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch)) 
                  && !tmp_ch->playerDesc && !IS_NPC(tmp_ch)) ||
                 (IS_NPC(tmp_ch) && tmp_ch->orig &&
-                 !strcasecmp(GET_NAME(player->charData),
-                             GET_NAME(tmp_ch->orig)))) {
+                 !strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch->orig)))) {
 
                 SendOutputRaw(player, echo_on, 6);
                 SendOutput(player, "Reconnecting.\n\r");
 
-                free_char(player->charData);
+                free_char(ch);
                 tmp_ch->playerDesc = player;
                 player->charData = tmp_ch;
                 tmp_ch->specials.timer = 0;
@@ -886,29 +864,28 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 }
 #endif
 
-                player->charData->persist = 0;
+                ch->persist = 0;
 
                 if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
                     act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
                     ProtectedDataLock(player->connection->hostName);
-                    LogPrint(LOG_INFO, "%s[%s] has reconnected.", 
-                             GET_NAME(player->charData),
+                    LogPrint(LOG_INFO, "%s[%s] has reconnected.", GET_NAME(ch),
                              (char *)player->connection->hostName->data);
                     ProtectedDataUnlock(player->connection->hostName);
                 }
                 
-                if (player->charData->specials.hostip) {
-                    free(player->charData->specials.hostip);
+                if (ch->specials.hostip) {
+                    free(ch->specials.hostip);
                 }
 
                 ProtectedDataLock(player->connection->hostName);
-                player->charData->specials.hostip = 
+                ch->specials.hostip = 
                             strdup((char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
 
-                write_char_extra(player->charData);
+                write_char_extra(ch);
                 EnterState(player, STATE_PLAYING);
-                if( IS_IMMORTAL(player->charData) ) {
+                if( IS_IMMORTAL(ch) ) {
                     player->handlingQ = InputImmortQ;
                 } else {
                     player->handlingQ = InputPlayerQ;
@@ -917,44 +894,40 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             }
         }
 
-        load_char_extra(player->charData);
-        if (player->charData->specials.hostip == NULL) {
-            if (!IS_IMMORTAL(player->charData) ||
-                player->charData->invis_level <= 58) {
+        load_char_extra(ch);
+        if (ch->specials.hostip == NULL) {
+            if (!IS_IMMORTAL(ch) ||
+                ch->invis_level <= 58) {
                 ProtectedDataLock(player->connection->hostName);
-                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", 
-                         GET_NAME(player->charData),
+                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", GET_NAME(ch),
                          (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
             }
-        } else if (!IS_IMMORTAL(player->charData) ||
-                   player->charData->invis_level <= 58) {
+        } else if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
             ProtectedDataLock(player->connection->hostName);
             LogPrint(LOG_INFO, "%s[%s] has connected - Last connected from[%s]",
-                     GET_NAME(player->charData), 
+                     GET_NAME(ch), 
                      (char *)player->connection->hostName->data,
-                     player->charData->specials.hostip);
+                     ch->specials.hostip);
             ProtectedDataUnlock(player->connection->hostName);
         }
 
-        if (player->charData->specials.hostip) {
-            free(player->charData->specials.hostip);
+        if (ch->specials.hostip) {
+            free(ch->specials.hostip);
         }
         ProtectedDataLock(player->connection->hostName);
-        player->charData->specials.hostip = 
+        ch->specials.hostip = 
                         strdup((char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
-        player->charData->last_tell = NULL;
+        ch->last_tell = NULL;
 
-        write_char_extra(player->charData);
+        write_char_extra(ch);
         EnterState(player, STATE_SHOW_MOTD);
         break;
 
     case STATE_GET_NEW_USER_PASSWORD:
         /*
          * get pwd for new player
-         */
-        /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
@@ -965,9 +938,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-        strncpy(player->charData->pwd, 
-                (char *)crypt(arg, player->charData->player.name), 10);
-        player->charData->pwd[10] = '\0';
+        strncpy(ch->pwd, (char *)crypt(arg, ch->player.name), 10);
+        ch->pwd[10] = '\0';
 
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_PASSWORD);
@@ -976,13 +948,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CONFIRM_PASSWORD:
         /*
          * get confirmation of new pwd
-         */
-        /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
-                            player->charData->pwd, 10)) {
+        if (!arg || strncmp((char *) crypt(arg, ch->pwd), ch->pwd, 10)) {
             SendOutputRaw(player, echo_on, 6);
 
             SendOutput(player, "Passwords don't match.\n\r");
@@ -1013,14 +982,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             /*
              * sex MALE
              */
-            player->charData->player.sex = SEX_MALE;
+            ch->player.sex = SEX_MALE;
             break;
 
         case 'f':
             /*
              * sex FEMALE
              */
-            player->charData->player.sex = SEX_FEMALE;
+            ch->player.sex = SEX_FEMALE;
             break;
 
         default:
@@ -1079,8 +1048,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         if (index < MAX_STAT) {
-            SendOutput(player, "You did not enter enough legal stats\n\r");
-            SendOutput(player, "That was an invalid choice.\n\r");
+            SendOutput(player, "You did not enter enough legal stats\n\r"
+                               "That was an invalid choice.\n\r");
             EnterState(player, STATE_CHOOSE_STATS);
             return;
         } 
@@ -1092,16 +1061,16 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * set the AUTH flags
              * (3 chances)
              */
-            player->charData->generic = NEWBIE_REQUEST + NEWBIE_CHANCES;
+            ch->generic = NEWBIE_REQUEST + NEWBIE_CHANCES;
         }
 
-        player->charData->reroll--;
+        ch->reroll--;
         EnterState(player, STATE_REROLL);
         break;
 
     case STATE_REROLL:
         arg = skip_spaces(arg);
-        player->charData->reroll--;
+        ch->reroll--;
 
         if (!arg || tolower(*arg) != 'r') {
             SendOutput(player, "Stats chosen!\n\r");
@@ -1116,24 +1085,18 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         
         roll_abilities(player);
 
-        if (player->charData->reroll != 0) {
+        if (ch->reroll != 0) {
             EnterState(player, STATE_REROLL);
             return;
         } 
         
         SendOutput(player, "Your final stats are:\n\r");
-        SendOutput(player, "STR: -]%s\n\r", 
-                   STAT_SWORD(GET_STR(player->charData)));
-        SendOutput(player, "CON: -]%s\n\r", 
-                   STAT_SWORD(GET_CON(player->charData)));
-        SendOutput(player, "DEX: -]%s\n\r", 
-                   STAT_SWORD(GET_DEX(player->charData)));
-        SendOutput(player, "INT: -]%s\n\r", 
-                   STAT_SWORD(GET_INT(player->charData)));
-        SendOutput(player, "WIS: -]%s\n\r", 
-                   STAT_SWORD(GET_WIS(player->charData)));
-        SendOutput(player, "CHR: -]%s\n\r", 
-                   STAT_SWORD(GET_CHR(player->charData)));
+        SendOutput(player, "STR: -]%s\n\r", STAT_SWORD(GET_STR(ch)));
+        SendOutput(player, "CON: -]%s\n\r", STAT_SWORD(GET_CON(ch)));
+        SendOutput(player, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(ch)));
+        SendOutput(player, "INT: -]%s\n\r", STAT_SWORD(GET_INT(ch)));
+        SendOutput(player, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(ch)));
+        SendOutput(player, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(ch)));
         SendOutput(player, "Stats chosen!");
 
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
@@ -1145,11 +1108,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
     case STATE_CHOOSE_MAIN_CLASS:
         arg = skip_spaces(arg);
-        player->charData->specials.remortclass = 0;
+        ch->specials.remortclass = 0;
 
         if (arg && (pick = atoi(arg)) &&
-            HasClass(player->charData, pc_num_class(pick-1))) {
-            player->charData->specials.remortclass = pick;
+            HasClass(ch, pc_num_class(pick-1))) {
+            ch->specials.remortclass = pick;
             EnterState(player, STATE_SHOW_CREATION_MENU);
             return;
         } 
@@ -1162,7 +1125,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /*
          * skip whitespaces
          */
-        player->charData->player.class = 0;
+        ch->player.class = 0;
 
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -1180,8 +1143,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         class = atoi(arg);
-        race  = GET_RACE(player->charData);
-        race = 0;
+        race  = GET_RACE(ch);
 
         if( class <= 0 ) {
             SendOutput(player, "Invalid selection!\n\r");
@@ -1201,20 +1163,19 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 }
 
                 /* Class choice is valid */
-                player->charData->player.class = 
-                    race_choice[i].classesAvail[class - 1];
+                ch->player.class = race_choice[i].classesAvail[class - 1];
                 found = TRUE;
             }
         }
                     
-        if (player->charData->player.class == 0) {
+        if (ch->player.class == 0) {
             SendOutput(player, "Invalid selection!\n\r");
             EnterState(player, STATE_CHOOSE_CLASS);
             return;
         }
 
         if( found ) {
-            if (HasClass(player->charData, CLASS_MAGIC_USER)) {
+            if (HasClass(ch, CLASS_MAGIC_USER)) {
                 EnterState(player, STATE_CHECK_MAGE_TYPE);
                 return;
             }
@@ -1230,53 +1191,48 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_WAIT_FOR_AUTH:
-        if (player->charData->generic >= NEWBIE_START) {
+        if (ch->generic >= NEWBIE_START) {
             /*
              * now that classes are set, initialize
              */
-            init_char(player->charData);
+            init_char(ch);
 
             /*
              * create an entry in the file
              */
 #ifdef TODO
-            d->pos = create_entry(GET_NAME(player->charData));
+            d->pos = create_entry(GET_NAME(ch));
 #endif
-            save_char(player->charData, AUTO_RENT);
+            save_char(ch, AUTO_RENT);
             EnterState(player, STATE_SHOW_MOTD);
             return;
         } 
         
-        if (player->charData->generic >= NEWBIE_REQUEST) {
+        if (ch->generic >= NEWBIE_REQUEST) {
             ProtectedDataLock(player->connection->hostName);
-            SysLogPrint(LOG_INFO, "%s [%s] new player.", 
-                                  GET_NAME(player->charData),
+            SysLogPrint(LOG_INFO, "%s [%s] new player.", GET_NAME(ch),
                                   (char *)player->connection->hostName->data);
             ProtectedDataUnlock(player->connection->hostName);
 
-            /*
-             * I decided to give them another chance.  -Steppenwolf
-             * They blew it. -DM
-             */
             if (top_of_p_table > 0) {
                 SysLogPrint(LOG_INFO, "Type Authorize %s [Yes | No | Message]",
-                                      GET_NAME(player->charData));
+                                      GET_NAME(ch));
                 SysLogPrintNoArg(LOG_INFO, "type 'Wizhelp Authorize' for other "
                                            "commands");
             } else {
                 LogPrintNoArg(LOG_NOTICE, "Initial character.  Authorized "
                                           "Automatically");
-                player->charData->generic = NEWBIE_START + 5;
+                ch->generic = NEWBIE_START + 5;
             }
 
             /*
-             **  enough for gods.  now player is told to shut up.
-             */
-            /* NEWBIE_START == 3 == 3 chances */
-            player->charData->generic--;
+             * enough for gods.  now player is told to shut up.
+             * NEWBIE_START == 3 == 3 chances 
+             */ 
+            ch->generic--;
             SendOutput(player, "Please wait. You have %d requests "
-                               "remaining.\n\r", player->charData->generic);
-            if (player->charData->generic == 0) {
+                               "remaining.\n\r", ch->generic);
+            if (ch->generic == 0) {
                 EnterState(player, STATE_WIZLOCKED);
             } else {
                 EnterState(player, STATE_WAIT_FOR_AUTH);
@@ -1289,8 +1245,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CHECK_MAGE_TYPE:
         arg = skip_spaces(arg);
         if (arg && tolower(*arg) == 'y') {
-            player->charData->player.class -= CLASS_MAGIC_USER;
-            player->charData->player.class += CLASS_SORCERER;
+            ch->player.class -= CLASS_MAGIC_USER;
+            ch->player.class += CLASS_SORCERER;
         }
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
@@ -1299,20 +1255,20 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /*
          * read CR after printing motd
          */
-        if (IS_IMMORTAL(player->charData)) {
+        if (IS_IMMORTAL(ch)) {
             EnterState(player, STATE_SHOW_WMOTD);
             break;
         }
 
-        if (player->charData->term != 0) {
-            ScreenOff(player->charData);
+        if (ch->term != 0) {
+            ScreenOff(ch);
         }
 
 
         ProtectedDataLock(player->connection->hostName);
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
              SiteLock((char *)player->connection->hostName->data)) &&
-            !IS_IMMORTAL(player->charData)) {
+            !IS_IMMORTAL(ch)) {
             ProtectedDataUnlock(player->connection->hostName);
             SendOutput(player, "Sorry, the game is locked up for repair or "
                                "your site is banned.\n\r");
@@ -1330,7 +1286,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         ProtectedDataLock(player->connection->hostName);
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
              SiteLock((char *)player->connection->hostName->data)) &&
-            !IS_IMMORTAL(player->charData)) {
+            !IS_IMMORTAL(ch)) {
             ProtectedDataUnlock(player->connection->hostName);
             SendOutput(player, "Sorry, the game is locked up for repair or "
                                "your site is banned.\n\r");
@@ -1348,12 +1304,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_DELETE_USER:
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
-            strcasecmp("Guest", GET_NAME(player->charData))) {
-            LogPrint(LOG_INFO, "%s just killed theirself!", 
-                     GET_NAME(player->charData));
+            strcasecmp("Guest", GET_NAME(ch))) {
+            LogPrint(LOG_INFO, "%s just killed theirself!", GET_NAME(ch));
+#ifdef TODO
             for (i = 0; i <= top_of_p_table; i++) {
-                if (!strcasecmp(player_table[i].name, 
-                                GET_NAME(player->charData))) {
+                if (!strcasecmp(player_table[i].name, GET_NAME(ch))) {
                     if (player_table[i].name) {
                         free(player_table[i].name);
                     }
@@ -1384,10 +1339,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                                      sizeof(struct char_file_u)), 0);
             fwrite(&ch_st, sizeof(struct char_file_u), 1, char_file);
             fclose(char_file);
-            sprintf(buf, "rent/%s", lower(GET_NAME(player->charData)));
+            sprintf(buf, "rent/%s", lower(GET_NAME(ch)));
             remove(buf);
-            sprintf(buf, "rent/%s.aux", GET_NAME(player->charData));
+            sprintf(buf, "rent/%s.aux", GET_NAME(ch));
             remove(buf);
+#endif
             connClose( player->connection );
         }
 
@@ -1417,7 +1373,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         case '1':
             EnterState(player, STATE_PLAYING);
-            if( IS_IMMORTAL(player->charData) ) {
+            if( IS_IMMORTAL(ch) ) {
                 player->handlingQ = InputImmortQ;
             } else {
                 player->handlingQ = InputPlayerQ;
@@ -1441,13 +1397,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         case '2':
             SendOutput(player, "Enter a text you'd like others to see when "
                                "they look at you.\n\r");
-            if (player->charData->player.description) {
+            if (ch->player.description) {
                 SendOutput(player, "Old description :\n\r");
-                SendOutput(player, player->charData->player.description);
-                if (player->charData->player.description) {
-                    free(player->charData->player.description);
+                if (ch->player.description) {
+                    SendOutput(player, ch->player.description);
+                    free(ch->player.description);
+                } else {
+                    SendOutput(player, "None");
                 }
-                player->charData->player.description = 0;
+                ch->player.description = NULL;
             }
             EnterState(player, STATE_EDIT_EXTRA_DESCR);
             break;
@@ -1490,9 +1448,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-        strncpy(player->charData->pwd, 
-                (char *) crypt(arg, player->charData->player.name), 10);
-        player->charData->pwd[10] = '\0';
+        strncpy(ch->pwd, (char *)crypt(arg, ch->player.name), 10);
+        ch->pwd[10] = '\0';
         SendOutputRaw(player, echo_on, 6);
 
         EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
@@ -1507,8 +1464,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || strncmp((char *) crypt(arg, player->charData->pwd), 
-                            player->charData->pwd, 10)) {
+        if (!arg || strncmp((char *)crypt(arg, ch->pwd), ch->pwd, 10)) {
             SendOutputRaw(player, echo_on, 6);
             SendOutput(player, "Passwords don't match.\n\r");
             EnterState(player, STATE_GET_NEW_PASSWORD);
@@ -1539,6 +1495,9 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     int             bit;
     int             bitcount;
     int             i;
+    struct char_data *ch;
+
+    ch = player->charData;
 
     switch (arg) 
     {
@@ -1555,15 +1514,15 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         EnterState(player, STATE_CHOOSE_CLASS);
         break;
     case '5':
-        if (player->charData->player.class != 0) {
+        if (ch->player.class != 0) {
             EnterState(player, STATE_CHOOSE_MAIN_CLASS);
         } else {
             SendOutput(player, "\nPlease select a class first.\n\r");
         }
         break;
     case '6':
-        player->charData->reroll = 20;
-        if (player->charData->player.class != 0) {
+        ch->reroll = 20;
+        if (ch->player.class != 0) {
             EnterState(player, STATE_CHOOSE_STATS);
         } else {
             SendOutput(player, "\nPlease select a class first.\n\r");
@@ -1577,7 +1536,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     case 'D':
         bitcount = 0;
         for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
-            if (HasClass(player->charData, pc_num_class(bit))) {
+            if (HasClass(ch, pc_num_class(bit))) {
                 bitcount++;
             }
         }
@@ -1585,42 +1544,42 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
             SendOutput(player, "Please enter a valid class.");
             return;
         }
-        if (player->charData->specials.remortclass <= 0) {
+        if (ch->specials.remortclass <= 0) {
             SendOutput(player, "Please enter a valid main class.");
             return;
         }
 
-        if (GET_SEX(player->charData) == 0) {
+        if (GET_SEX(ch) == 0) {
             SendOutput(player, "Please enter a proper sex.");
             return;
         }
 
-        if (!GET_ALIGNMENT(player->charData)) {
+        if (!GET_ALIGNMENT(ch)) {
             SendOutput(player, "Please choose an alignment.");
             return;
         }
-        if (!GET_CON(player->charData) || GET_CON(player->charData) == 0) {
+        if (GET_CON(ch) == 0) {
             SendOutput(player, "Please pick your stats.");
             return;
         }
 
         ProtectedDataLock(player->connection->hostName);
-        LogPrint(LOG_INFO, "%s [%s] new player.", GET_NAME(player->charData), 
+        LogPrint(LOG_INFO, "%s [%s] new player.", GET_NAME(ch), 
                  (char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
 
         /*
          * now that classes are set, initialize
          */
-        init_char(player->charData);
+        init_char(ch);
 
         /*
          * create an entry in the file
          */
 #ifdef TODO
-        d->pos = create_entry(GET_NAME(player->charData));
+        d->pos = create_entry(GET_NAME(ch));
 #endif
-        save_char(player->charData, AUTO_RENT);
+        save_char(ch, AUTO_RENT);
 
         for( i = 0; newbie_note[i]; i++ ) {
             SendOutput(player, newbie_note[i]);
@@ -1669,32 +1628,30 @@ void show_race_choice(PlayerStruct_t *player)
 {
     int             i,
                     j;
-    char            buf[255],
-                    buf2[254];
 
     SendOutput(player, "                                  Level Limits\n\r");
-    sprintf(buf, "%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s "
+    SendOutput(player, 
+                 "%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s "
                  "%-3s %-3s %-3s\n\r",
-            "#", "Race", "ma", "cl", "wa", "th", "dr", "mk", "ba", "so",
-            "pa", "ra", "ps", "ne");
-    SendOutput(player, buf);
+                 "#", "Race", "ma", "cl", "wa", "th", "dr", "mk", "ba", "so",
+                 "pa", "ra", "ps", "ne");
 
     for (i = 0; i < race_choice_count; i++) {
-        sprintf(buf, "%s$c000W%-3d)$c0007 %-15s", 
-                (race_choice[i].raceNum == RACE_DROW ?
-                 "$c000WThe Races Listed below may have some racials hatreds."
-                 "  Advanced players only.\n\r" : ""),
-                i + 1, races[race_choice[i].raceNum].racename);
+        SendOutput(player, "%s$c000W%-3d)$c0007 %-15s", 
+                           (race_choice[i].raceNum == RACE_DROW ?
+                            "$c000WThe Races Listed below may have some "
+                            "racial hatreds.  Advanced players only.\n\r" : ""),
+                            i + 1, races[race_choice[i].raceNum].racename);
+
         /*
          * show level limits 
          */
         for (j = 0; j < MAX_CLASS; j++) {
-            sprintf(buf2, " %-3d", races[race_choice[i].raceNum].racialMax[j]);
-            strcat(buf, buf2);
+            SendOutput(player, " %-3d", 
+                               races[race_choice[i].raceNum].racialMax[j]);
         }
 
-        strcat(buf, "\n\r");
-        SendOutput(player, buf);
+        SendOutput(player, "\n\r");
     }
 
     SendOutput(player, "$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"
@@ -1707,8 +1664,8 @@ void LoginSendBanner( PlayerStruct_t *player )
 {
     SendOutput(player, login);
     SendOutput(player, "If you're using Tintin or Lyntin, your client may not "
-                       "display the password\n\r");
-    SendOutput(player, "sequence unless you change your settings. Please do not"
+                       "display the password\n\r"
+                       "sequence unless you change your settings. Please do not"
                        " be discouraged.\n\r\n\r");
     EnterState(player, STATE_GET_NAME);
 }

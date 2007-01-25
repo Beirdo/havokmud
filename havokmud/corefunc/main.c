@@ -79,6 +79,8 @@ int             numberhosts;                    /**< count of banned hosts */
 
 bool            GlobalAbort = FALSE;
 long            SystemFlags;
+long            total_connections;
+long            total_max_players;
 
 /*
  *********************************************************************

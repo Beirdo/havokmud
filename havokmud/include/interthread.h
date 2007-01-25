@@ -207,6 +207,8 @@ extern int coreCommandCount;
 
 extern bool GlobalAbort;
 extern long SystemFlags;
+extern long total_connections;
+extern long total_max_players;
 
 /*
  * Prototypes of the thread entry points

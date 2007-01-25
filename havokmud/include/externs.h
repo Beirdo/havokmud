@@ -92,8 +92,6 @@ extern int      ItemSaveThrows[22][5];
 extern struct dex_app_type dex_app[];
 extern char    *room_bits[];
 
-extern long     total_connections;
-extern long     total_max_players;
 extern char     *motd;
 extern char     *wmotd;
 extern struct player_index_element *player_table;
