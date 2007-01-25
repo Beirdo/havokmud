@@ -1429,7 +1429,9 @@ int             BestMagicClass(struct char_data *ch);
 int             GetSecMaxLev(struct char_data *ch);
 int             GetALevel(struct char_data *ch, int which);
 int             GetThirdMaxLev(struct char_data *ch);
+#ifdef MOVED
 int             GetMaxLevel(struct char_data *ch);
+#endif
 int             GetTotLevel(struct char_data *ch);
 void            StartLevels(struct char_data *ch);
 int             BestClassIND(struct char_data *ch);

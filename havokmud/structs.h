@@ -1277,6 +1277,10 @@ struct char_player_data {
     struct time_data time;      /* PC s AGE in days */
 
     byte            level[ABS_MAX_CLASS];       /* PC / NPC s level */
+#ifndef TODO
+    int             max_level;                  /* Maximum level (no need to 
+                                                 * recalc all the time */
+#endif
     unsigned short int q_points;        /* Quest points of player */
     bool            has_mail;   /* Has the player mail waiting? */
 };

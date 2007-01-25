@@ -375,20 +375,6 @@ int GetThirdMaxLev(struct char_data *ch)
     return (GetALevel(ch, 3));
 }
 
-int GetMaxLevel(struct char_data *ch)
-{
-    register int    max = 0,
-                    i;
-
-    for (i = 0; i <= MAX_CLASS - 1; i++) {
-        if (GET_LEVEL(ch, i) > max) {
-            max = GET_LEVEL(ch, i);
-        }
-    }
-
-    return (max);
-}
-
 int GetTotLevel(struct char_data *ch)
 {
     int             max = 0,

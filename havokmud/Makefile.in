@@ -45,6 +45,9 @@ ${EXE} : ${OBJS}
 	${LD} -g -o $@ $+ ${LDFLAGS} ${LIBS}
 
 ${NEWEXE} make.out : ${NEWLIBFILES} force
+	${MAKE} -C util all
+	${MAKE} -C threads all
+	${MAKE} -C corefunc all
 	-${LD} -g -o ${NEWEXE} ${LDFLAGS} ${NEWLIBS} ${LIBS} 2> make.out
 
 depend : ${DEPS}

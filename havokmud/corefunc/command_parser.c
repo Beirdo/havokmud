@@ -62,16 +62,24 @@ int special(struct char_data *ch, int cmd, char *arg);
 int fill_word(char *argument);
 CommandDef_t *FindCommand( char *string );
 
+/**
+ * @brief Runs when somebody has just logged in (not from linkdead)
+ * @todo Make this cleaner yet
+ */
+
 void JustLoggedIn( PlayerStruct_t *player )
 {
     struct obj_data *obj;
     int             count_players;
-    reset_char(player->charData);
+    struct char_data *ch;
+    int             homeroom;
+
+    ch = player->charData;
+    reset_char(ch);
     total_connections++;
-    if (!IS_IMMORTAL(player->charData) ||
-        player->charData->invis_level <= 58) {
-        LogPrint(LOG_INFO, "Loading %s's equipment", 
-                 player->charData->player.name);
+    if (!IS_IMMORTAL(ch) ||
+        ch->invis_level <= 58) {
+        LogPrint(LOG_INFO, "Loading %s's equipment", ch->player.name);
     }
 
     count_players = GetPlayerCount();
@@ -80,84 +88,69 @@ void JustLoggedIn( PlayerStruct_t *player )
         total_max_players = count_players;
     }
 
-    load_char_objs(player->charData);
+    load_char_objs(ch);
 
-    save_char(player->charData, AUTO_RENT);
+    save_char(ch, AUTO_RENT);
     SendOutput(player, WELC_MESSG);
-    player->charData->next = character_list;
-    character_list = player->charData;
-    if (player->charData->in_room == NOWHERE ||
-        player->charData->in_room == AUTO_RENT) {
-        if (!IS_IMMORTAL(player->charData)) {
-            if (player->charData->specials.start_room <= 0) {
-                if (GET_RACE(player->charData) == RACE_HALFLING) {
-                    char_to_room(player->charData, 1103);
-                    player->charData->player.hometown = 1103;
-                } else {
-                    char_to_room(player->charData, 3001);
-                    player->charData->player.hometown = 3001;
+
+    ch->next = character_list;
+    character_list = ch;
+
+    homeroom = 3001;
+    if (ch->in_room == NOWHERE || ch->in_room == AUTO_RENT) {
+        if (!IS_IMMORTAL(ch)) {
+            if (ch->specials.start_room <= 0) {
+                if (GET_RACE(ch) == RACE_HALFLING) {
+                    homeroom = 1103;
                 }
             } else {
-                char_to_room(player->charData,
-                             player->charData->specials.start_room);
-                player->charData->player.hometown =
-                    player->charData->specials.start_room;
+                homeroom = ch->specials.start_room;
             }
         } else {
-            if (player->charData->specials.start_room <= NOWHERE) {
-                char_to_room(player->charData, 1000);
-                player->charData->player.hometown = 1000;
-            } else {
-                if (real_roomp(player->charData->specials.start_room)) {
-                    char_to_room(player->charData,
-                                 player->charData->specials.start_room);
-                    player->charData->player.hometown =
-                        player->charData->specials.start_room;
-                } else {
-                    char_to_room(player->charData, 1000);
-                    player->charData->player.hometown = 1000;
-                }
+            homeroom = 1000;
+            if (ch->specials.start_room > NOWHERE && 
+                real_roomp(ch->specials.start_room)) {
+                homeroom = ch->specials.start_room;
             }
         }
-    } else if (real_roomp(player->charData->in_room)) {
-        char_to_room(player->charData, player->charData->in_room);
-        player->charData->player.hometown = player->charData->in_room;
-    } else {
-        char_to_room(player->charData, 3001);
-        player->charData->player.hometown = 3001;
+    } else if (real_roomp(ch->in_room)) {
+        homeroom = ch->in_room;
     }
 
-    player->charData->specials.tick = plr_tick_count++;
+    char_to_room(ch, homeroom);
+    ch->player.hometown = homeroom;
+
+    ch->specials.tick = plr_tick_count++;
     if (plr_tick_count == PLR_TICK_WRAP) {
         plr_tick_count = 0;
     }
-    act("$n has entered the game.", TRUE, player->charData, 0, 0, TO_ROOM);
+    act("$n has entered the game.", TRUE, ch, 0, 0, TO_ROOM);
 
-    if (!GetMaxLevel(player->charData)) {
+    if (!GetMaxLevel(ch)) {
         do_start(player->charData);
     }
-    do_look(player->charData, NULL, 15);
+    do_look(ch, NULL, 15);
 
     /*
      * do an auction check, grant reimbs as needed
      */
-    if (player->charData->specials.auction) {
-        obj = player->charData->specials.auction;
-        player->charData->specials.auction = 0;
+    if (ch->specials.auction) {
+        obj = ch->specials.auction;
+        ch->specials.auction = 0;
         obj->equipped_by = 0;
         obj->eq_pos = -1;
 
-        obj_to_char(obj, player->charData);
+        obj_to_char(obj, ch);
         SendOutput(player, "Your item is returned to you.\n\r");
-        do_save(player->charData, "", 0);
+        do_save(ch, "", 0);
     }
 
-    if (player->charData->specials.minbid) {
-        GET_GOLD(player->charData) += player->charData->specials.minbid;
-        player->charData->specials.minbid = 0;
+    if (ch->specials.minbid) {
+        GET_GOLD(ch) += ch->specials.minbid;
+        ch->specials.minbid = 0;
         SendOutput(player, "You are returned your deposit for this "
                            "auction.\n\r");
-        do_save(player->charData, "", 0);
+        do_save(ch, "", 0);
     }
     player->prompt_mode = 1;
 }

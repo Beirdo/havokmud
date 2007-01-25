@@ -243,6 +243,7 @@ void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 char *ParseAnsiColors(int UsingAnsi, char *txt);
 char *skip_spaces(char *string);
+int GetMaxLevel( struct char_data *ch );
 
 
 #endif
