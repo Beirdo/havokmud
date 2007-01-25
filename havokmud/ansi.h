@@ -1,6 +1,7 @@
 #ifndef _ansi_h
 #define _ansi_h
-/*
+/**
+ * @todo clean up this file
  **     Ansi color Codes
  **     DaleMUD 2.0, msw addtions
  **     03/07/94
