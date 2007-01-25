@@ -15,7 +15,7 @@ CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
 	 ${INCDIRS}
 
 ##  Libraries
-LIBS = @LIBS@
+LIBS = @LIBS@ -pthread
 LDFLAGS = @LDFLAGS@
 
 
@@ -29,14 +29,23 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	spec_procs4.c spec_procs.c spell_parser.c trap.c \
 	utility.c weather.c
 EXE =	havokmud@EXEEXT@
+NEWEXE = havoknew@EXEEXT@
+
+NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
+	      corefunc/libhavokcore.a 
+#NEWLIBS = -Lutil -Lthreads -Lcorefunc -lhavokcore -lhavokthread -lhavokutils -lhavokthread -lhavokcore 
+NEWLIBS = util/*.o threads/*.o corefunc/*.o
 
 OBJS = ${SRCS:.c=.o}
 DEPS = ${SRCS:.c=.d}
 
-all : $(EXE)
+all : ${EXE}
 
-$(EXE) : ${OBJS}
-	$(LD) -g -o $@ $+ ${LDFLAGS} ${LIBS}
+${EXE} : ${OBJS}
+	${LD} -g -o $@ $+ ${LDFLAGS} ${LIBS}
+
+${NEWEXE} make.out : ${NEWLIBFILES}
+	-${LD} -g -o ${NEWEXE} ${LDFLAGS} ${NEWLIBS} ${LIBS} 2> make.out
 
 depend : ${DEPS}
 
@@ -46,16 +55,28 @@ ${DEPS} : Makefile
 	@echo "Making $@ (dependencies for $<)"
 	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
 
-.PHONY: clean cleanall doxygen doxygen-rsync
+util/libhavokutils.a:
+	make -C util
+
+threads/libhavokthread.a:
+	make -C threads
+
+corefunc/libhavokcore.a:
+	make -C corefunc
+
+.PHONY: clean cleanall doxygen doxygen-rsync cleannew
 
 clean:
-	rm -f $(OBJS) $(EXE)
+	rm -f ${OBJS} ${EXE}
 
 cleanall: clean
 	rm -f ${DEPS}
 
 distclean: cleanall
 	rm -f config.status config.log Makefile config.h
+
+cleannew:
+	rm -f ${NEWEXE} make.out undefs
 
 configure: configure.ac
 	autoconf
@@ -71,6 +92,11 @@ doxygen:
 
 doxygen-rsync:
 	rsync -e ssh -avz doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
+
+undefs:	make.out
+	grep "undefined reference " $+ | \
+		sed -e 's/^.*undefined reference to `//' -e "s/'$$//" | \
+		sort | uniq > $@
 
 -include ${DEPS}
 
