@@ -206,7 +206,9 @@ void            do_attribute(struct char_data *ch, char *argument,
 void            do_resistances(struct char_data *ch, char *argument,
                                int cmd);
 void            do_value(struct char_data *ch, char *argument, int cmd);
+#ifdef MOVED
 char           *AlignDesc(int a);
+#endif
 char           *ArmorDesc(int a);
 char           *HitRollDesc(int a);
 char           *DamRollDesc(int a);

@@ -77,6 +77,62 @@ int HowManyClasses( struct char_data *ch )
     return( ch->player.class_count );
 }
 
+typedef struct {
+    int     maxval;
+    char   *desc;
+} Descrip_t;
+
+/**
+ * Descriptions of the different alignment levels
+ */
+static Descrip_t align_desc[] = {
+    { -900, "Chaotic Evil" },
+    { -500, "Neutral Evil" },
+    { -351, "Lawful Evil" },
+    { -100, "Chaotic Evil" },
+    {  100, "True Neutral" },
+    {  350, "Lawful Neutral" },
+    {  500, "Chaotic Good" },
+    {  900, "Neutral Good" },
+    { 1000, "Lawful Good" },
+    {   -1, NULL }
+};
+
+/**
+ * @brief Outputs a description as looked up in a table by the value <= maxval
+ * @param value value to look up in the table
+ * @param table a pointer to a Descrip_t table indicating maxval and 
+ *        descriptions.  Table is terminated by a NULL desc.
+ * @return The appropriate description text
+ *
+ * The values in the table give a maximum value and a description.  The table 
+ * is terminated by a NULL description.  The table MUST be in numerically
+ * increasing maxval order or this code will give odd results.
+ */
+char *GetDescription( int value, Descrip_t *table )
+{
+    int             i;
+    Descrip_t      *desc;
+    static char    *empty = "No Description";
+
+    for( i = 0; table[i].desc; i++ ) {
+        desc = &table[i];
+        if( value <= desc->maxval ) {
+            return( desc->desc );
+        }
+    }
+
+    return( empty );
+}
+
+/**
+ * @brief Outputs the description of a character's alignment
+ */
+char *AlignDesc(int value)
+{
+    return( GetDescription( value, align_desc ) );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

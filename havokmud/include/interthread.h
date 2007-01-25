@@ -252,6 +252,7 @@ char *skip_spaces(char *string);
 int GetMaxLevel( struct char_data *ch );
 int HasClass(struct char_data *ch, int class);
 int HowManyClasses( struct char_data *ch );
+char *AlignDesc(int value);
 
 
 #endif

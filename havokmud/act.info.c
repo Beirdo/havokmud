@@ -3957,29 +3957,6 @@ void do_value(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-char           *AlignDesc(int a)
-{
-    if (a <= -900) {
-        return ("Chaotic Evil");
-    } else if (a <= -500) {
-        return ("Neutral Evil");
-    } else if (a <= -351) {
-        return ("Lawful Evil");
-    } else if (a <= -100) {
-        return ("Chaotic Neutral");
-    } else if (a <= 100) {
-        return ("True Neutral");
-    } else if (a <= 350) {
-        return ("Lawful Neutral");
-    } else if (a <= 500) {
-        return ("Chaotic Good");
-    } else if (a <= 900) {
-        return ("Neutral Good");
-    } else {
-        return ("Lawful Good");
-    }
-}
-
 char           *ArmorDesc(int a)
 {
     if (a >= 90) {
