@@ -1,0 +1,21 @@
+#! /bin/sh
+
+echo "Summary" > $2
+grep "undefined reference " $1 | sort | uniq | wc -l >> $2
+echo "" >> $2
+echo "Undefined symbols" >> $2
+echo "=================" >> $2
+grep "undefined reference " $1 | \
+	sed -e 's/^.*undefined reference to `//' -e "s/'$//" | \
+	sort | uniq -c >> $2
+echo "" >> $2
+echo "Files with undefined symbols" >> $2
+echo "============================" >> $2
+grep "undefined reference " $1 | \
+	sed -e "s@"`pwd`"/@@" -e "s/\:.*//" | sort | uniq -c >> $2
+echo "" >> $2
+echo "All undefined symbols by file" >> $2
+echo "=============================" >> $2
+grep "undefined reference " $1 | \
+	sed -e "s@"`pwd`"/@@" | sort | uniq >> $2
+

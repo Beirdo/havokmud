@@ -99,24 +99,7 @@ doxygen-rsync:
 	rsync -e ssh -avz doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
 
 undefs:	make.out
-	echo "Summary" > $@
-	grep "undefined reference " $+ | sort | uniq | wc -l >> $@
-	echo "" >> $@
-	echo "Undefined symbols" >> $@
-	echo "=================" >> $@
-	grep "undefined reference " $+ | \
-		sed -e 's/^.*undefined reference to `//' -e "s/'$$//" | \
-		sort | uniq -c >> $@
-	echo "" >> $@
-	echo "Files with undefined symbols" >> $@
-	echo "============================" >> $@
-	grep "undefined reference " $+ | \
-		sed -e "s@"`pwd`"/@@" -e "s/\:.*//" | sort | uniq -c >> $@
-	echo "" >> $@
-	echo "All undefined symbols by file" >> $@
-	echo "=============================" >> $@
-	grep "undefined reference " $+ | \
-		sed -e "s@"`pwd`"/@@" | sort | uniq >> $@
+	scripts/make-undefs $+ $@
 
 -include ${DEPS}
 
