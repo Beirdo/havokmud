@@ -125,7 +125,6 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( portal_regulator, PROC_MOBILE ),
     REGISTER_PROC( PostMaster, PROC_MOBILE ),
     REGISTER_PROC( pridemirror, PROC_MOBILE ),
-    REGISTER_PROC( PrisonGuard, PROC_MOBILE ),
     REGISTER_PROC( PrydainGuard, PROC_MOBILE ),
     REGISTER_PROC( PsiGuildmaster, PROC_MOBILE ),
     REGISTER_PROC( QPSalesman, PROC_MOBILE ),
