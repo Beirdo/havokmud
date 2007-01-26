@@ -15,6 +15,46 @@
 
 #define BUGMAIL 521
 
+/*
+ * command numbers of the "mail", "check", and "receive" commands in your
+ * interpreter. 
+ */
+#define CMD_MAIL        366
+#define CMD_CHECK       367
+#define CMD_RECEIVE     368
+
+int PostMaster(struct char_data *ch, int cmd, char *arg,
+               struct char_data *mob, int type)
+{
+    if (!ch->desc) {
+        /* so mobs don't get caught here */
+        return (FALSE);
+    }
+
+    switch (cmd) {
+    case CMD_MAIL:
+        /* mail */
+        postmaster_send_mail(ch, cmd, arg);
+        return 1;
+        break;
+    case CMD_CHECK: 
+        /* check */
+        postmaster_check_mail(ch, cmd, arg);
+        return 1;
+        break;
+    case CMD_RECEIVE:
+        /* receive */
+        postmaster_receive_mail(ch, cmd, arg);
+        return 1;
+        break;
+    default:
+        return (FALSE);
+        break;
+    }
+
+    return (FALSE);
+}
+
 
 /*
  * find the postmaster in the room where ch is standing 
