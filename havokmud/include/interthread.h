@@ -38,6 +38,7 @@
 #include "protected_data.h"
 #include "logging.h"
 #include "balanced_btree.h"
+#include "structs.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -252,17 +253,54 @@ void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf);
+
+/*
+ * text_process.c
+ */
 char *skip_spaces(char *string);
+int search_block(char *arg, char **list, bool exact);
+void remove_cr(char *output, char *input);
 
 /*
  * char_data.c
  */
 int GetMaxLevel( struct char_data *ch );
-int HasClass(struct char_data *ch, int class);
+int HasClass(struct char_data *ch, int clss);
 int HowManyClasses( struct char_data *ch );
+int pc_num_class(int clss);
 char *AlignDesc(int value);
 int number(int from, int to);
 int dice(int number, int size);
+
+
+/*************************************************************************
+ * Support for different platforms
+ *************************************************************************/
+#include "config.h"
+
+#if defined( __CYGWIN__ )
+/* Since stupid cygwin doesn't define this in the standard place */
+char *crypt(const char *key, const char *salt);
+#endif
+
+#ifndef HAVE_STRNLEN 
+/* FreeBSD and Solaris seem to be missing strnlen */
+size_t strnlen(const char *s, size_t maxlen);
+#endif
+
+#ifndef HAVE_STRSEP
+/* Solaris seems to be missing strsep */
+char *strsep(char **stringp, const char *delim);
+#endif
+
+#ifndef HAVE_STRDUP
+char           *strdup(const char *str)
+#endif
+
+#ifndef HAVE_STRSTR
+char           *strstr(register const char *s, register const char *find)
+#endif
+
 
 
 #endif

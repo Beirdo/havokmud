@@ -40,33 +40,6 @@ int color_strlen(struct char_data *ch, char *arg)
     return (rel);
 }
 
-int search_block(char *arg, char **list, bool exact)
-{
-    int length;
-    int i;
-
-    if (exact) {
-        for( i = 0; *list[i] != '\n'; i++ ) {
-            if( !strcasecmp( arg, list[i] ) ) {
-                return( i );
-            }
-        }
-    } else {
-        length = strlen( arg );
-        if( length == 0 ) {
-            return( -1 );
-        }
-
-        for( i = 0; *list[i] != '\n'; i++ ) {
-            if( !strncasecmp( arg, list[i], length ) ) {
-                return( i );
-            }
-        }
-    }
-
-    return( -1 );
-}
-
 int find_direction(char *arg)
 {
     int length;

@@ -82,14 +82,8 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
         return;
     }
 
-    len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI), buf, 
-                           outbuf->buf );
-
-    /**
-     * @todo make sure that the buffer length here includes any ANSI expansion
-     *       that may have been done
-     */
-    outbuf->len = len;
+    outbuf->len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI),
+                                   buf, outbuf->buf );
 
     QueueEnqueueItem( player->outputQ, outbuf );
 }

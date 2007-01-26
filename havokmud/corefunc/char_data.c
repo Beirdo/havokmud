@@ -49,14 +49,14 @@ int GetMaxLevel( struct char_data *ch )
  * @todo replace this with a macro
  * @todo see what that NPC block is all about, seems pointless
  */
-int HasClass(struct char_data *ch, int class)
+int HasClass(struct char_data *ch, int clss)
 {
 #if 0
     if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF) && 
-        (!IS_SET(class, CLASS_MONK) || !IS_SET(class, CLASS_DRUID) ||
-         !IS_SET(class, CLASS_BARBARIAN) || !IS_SET(class, CLASS_SORCERER) ||
-         !IS_SET(class, CLASS_PALADIN) || !IS_SET(class, CLASS_RANGER) || 
-         !IS_SET(class, CLASS_PSI) || !IS_SET(class, CLASS_NECROMANCER))) {
+        (!IS_SET(clss, CLASS_MONK) || !IS_SET(clss, CLASS_DRUID) ||
+         !IS_SET(clss, CLASS_BARBARIAN) || !IS_SET(clss, CLASS_SORCERER) ||
+         !IS_SET(clss, CLASS_PALADIN) || !IS_SET(clss, CLASS_RANGER) || 
+         !IS_SET(clss, CLASS_PSI) || !IS_SET(clss, CLASS_NECROMANCER))) {
         /*
          * I have yet to figure out why we do this 
          * but is seems to be needed 
@@ -65,7 +65,7 @@ int HasClass(struct char_data *ch, int class)
     }
 #endif
 
-    return(IS_SET(ch->player.class, class));
+    return(IS_SET(ch->player.class, clss));
 }
 
 /**
@@ -76,6 +76,15 @@ int HowManyClasses( struct char_data *ch )
 {
     return( ch->player.class_count );
 }
+
+/**
+ * @todo replace this with a macro
+ */
+int pc_num_class(int clss)
+{
+    return( 1 << clss );
+}
+
 
 typedef struct {
     int     maxval;
@@ -176,6 +185,7 @@ int dice(int number, int size)
     }
     return (sum);
 }
+
 
 
 

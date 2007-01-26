@@ -789,7 +789,6 @@ void            do_mforce(struct char_data *ch, char *argument, int cmd);
 
 void            commando(int number, int min_pos, void (*pointer) (),
                          int min_level);
-int             search_block(char *arg, char **list, bool exact);
 int             old_search_block(char *argument, int begin, int length,
                                  char **list, int mode);
 void            command_interpreter(struct char_data *ch, char *argument);
@@ -3524,7 +3523,6 @@ int fwrite_string(FILE * fl, char *buf);
 char           *strip_cr(char *newbuf, const char *orig, size_t maxlen);
 void            str2ansi(char *p2, char *p1, int start, int stop);
 void             construct_prompt(char *buf, struct char_data *ch);
-void remove_cr(char *output, char *input);
 void ReadTextZone(FILE * fl);
 int CheckKillFile(long virtual);
 void CleanZone(int zone);
@@ -3590,7 +3588,6 @@ int open_door(struct char_data *ch, int dir);
 int raw_open_door(struct char_data *ch, int dir);
 int DisplayMove(struct char_data *ch, int dir, int was_in, int total);
 void go_direction(struct char_data *ch, int dir);
-int pc_num_class(int clss);
 
 int ValidMove(struct char_data *ch, int cmd);
 void spell_wizard_eye(int level, struct char_data *ch,
@@ -4135,25 +4132,6 @@ struct index_data *db_generate_object_index(int *top, int *sort_top,
  * @todo Crap to be removed
  */
 void            oldSendOutput(struct char_data *ch, char *fmt, ...);
-
-
-/*************************************************************************
- * Support for different platforms
- *************************************************************************/
-#if defined( __CYGWIN__ )
-/* Since stupid cygwin doesn't define this in the standard place */
-char *crypt(const char *key, const char *salt);
-#endif
-
-#ifndef HAVE_STRNLEN 
-/* FreeBSD and Solaris seem to be missing strnlen */
-size_t strnlen(const char *s, size_t maxlen);
-#endif
-
-#ifndef HAVE_STRSEP
-/* Solaris seems to be missing strsep */
-char *strsep(char **stringp, const char *delim);
-#endif
 
 
 

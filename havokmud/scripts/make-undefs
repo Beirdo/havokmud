@@ -5,7 +5,7 @@ grep "undefined reference " $1 | sort | uniq | wc -l >> $2
 echo "" >> $2
 echo "Undefined symbols" >> $2
 echo "=================" >> $2
-grep "undefined reference " $1 | \
+grep "undefined reference " $1 | sort | uniq | \
 	sed -e 's/^.*undefined reference to `//' -e "s/'$//" | \
 	sort | uniq -c >> $2
 echo "" >> $2

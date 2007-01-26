@@ -5895,11 +5895,6 @@ int num_bitvector(int temp)
 
 }
 
-int pc_num_class(int clss)
-{
-    return( 1 << clss );
-}
-
 char           *DescAge(int age, int race)
 {
     if (age > races[race].venerable) {
@@ -6395,121 +6390,6 @@ int is_abbrev(char *arg1, char *arg2)
     }
     return (1);
 }
-
-/*
- * ---------- Start of change_cr_to_nl) ----------
- */
-/*
- * change each occurence of a Carriage Return
- * by a New Line in a buffer
- */
-void remove_cr(char *output, char *input)
-{
-    while (*input) {
-        if( *input != '\r' ) {
-            *output++ = *input;
-        }
-        input++;
-    }
-    *output = '\0';
-}
-
-
-/*************************************************************************
- * Support for different platforms
- *************************************************************************/
-
-#ifndef HAVE_STRNLEN
-/* FreeBSD and Solaris seem to be missing strnlen */
-
-size_t strnlen(const char *s, size_t maxlen) 
-{
-    size_t len;
-
-    for( len = 0; *s && len < maxlen; s++, len++ ) {
-        /* Empty loop */
-    }
-
-    return( len );
-}
-
-#endif
-
-#ifndef HAVE_STRSEP
-/* Solaris seems to be missing strsep */
-char *strsep(char **stringp, const char *delim)
-{
-    char *start, *end, *delimstart = NULL, *del;
-
-    if( !stringp || !delim || !*stringp ) {
-        return( NULL );
-    }
-
-    start = *stringp;
-
-    for( end = start, del = (char *)delim; *end && *del; end++ ) {
-        if( *end == *del ) {
-            if( del == delim ) {
-                delimstart = end;
-            }
-            del++;
-        } else {
-            del = (char *)delim;
-        }
-    }
-
-    if( !*end ) {
-        /* It's the whole string */
-        *stringp = NULL;
-    } else {
-        /* Found a token */
-        *delimstart = '\0';
-        *stringp = end;
-    }
-
-    return( start );
-}
-#endif
-
-#ifndef HAVE_STRDUP
-char           *strdup(const char *str)
-{
-    int             len;
-    char           *copy;
-
-    len = strlen(str) + 1;
-    if (!(copy = (char *) malloc((u_int) len))) {
-        return ((char *) NULL);
-    }
-    bcopy(str, copy, len);
-    return (copy);
-}
-#endif
-
-#ifndef HAVE_STRSTR
-/*
- * Find the first occurrence of find in s.
- */
-char           *strstr(register const char *s, register const char *find)
-{
-    register char   c,
-                    sc;
-    register size_t len;
-
-    if ((c = *find++) != 0) {
-        len = strlen(find);
-        do {
-            do {
-                if ((sc = *s++) == 0) {
-                    return (NULL);
-                }
-            } while (sc != c);
-        } while (strncmp(s, find, len) != 0);
-        s--;
-    }
-    return ((char *) s);
-}
-#endif
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

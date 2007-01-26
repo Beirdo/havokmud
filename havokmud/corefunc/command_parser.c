@@ -329,7 +329,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     }
 
     if (GET_GOLD(ch) > 2000000) {
-        LogPrint( LOG_INFO, "%s:%s", fname(ch->player.name), line);
+        LogPrint( LOG_INFO, "%s:%s", ch->player.name, line);
     }
 
     if (no_specials || !special(ch, cmd->number, arg2)) {
