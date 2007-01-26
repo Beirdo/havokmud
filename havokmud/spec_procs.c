@@ -94,6 +94,9 @@ extern int      rev_dir[];
  * predicates for find_path function
  */
 
+/**
+ * @todo Fix for 64bit
+ */
 int is_target_room_p(int room, void *tgt_room)
 {
     /* AMD64: Fix me */
@@ -2460,6 +2463,9 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
  * Returns the index to the dude who did it
  */
 
+/**
+ * @todo Fix for 64bit
+ */
 int affect_status(struct memory *mem, struct char_data *ch,
                   struct char_data *t, int aff_status)
 {

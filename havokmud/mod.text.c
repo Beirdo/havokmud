@@ -69,6 +69,9 @@ void do_chtextfile(struct char_data *ch, char *argument, int cmd)
     UpdateTfdMenu(ch);
 }
 
+/**
+ * @todo Fix for 64bit
+ */
 void UpdateTfdMenu(struct char_data *ch)
 {
     char            buf[255];
