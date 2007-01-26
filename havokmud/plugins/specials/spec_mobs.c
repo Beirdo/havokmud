@@ -10,130 +10,17 @@
 #include "protos.h"
 #include "externs.h"
 
-#define INQ_SHOUT 1
-#define INQ_LOOSE 0
-
 #define SWORD_ANCIENTS 25000
-/*
- *  list of room #s
- */
-#define Elf_Home     1414
-#define Bakery       3009
-#define Dump         3030
 #define Ivory_Gate    1499
-
-/*
- * external vars
- */
-
-
-/*
- * Data declarations
- */
-
-struct social_type {
-    char           *cmd;
-    int             next_line;
-};
-
-struct memory {
-    short           pointer;
-    char          **names;
-    int            *status;
-    short           index;
-    short           c;
-};
-
-
-int affect_status(struct memory *mem, struct char_data *ch,
-                  struct char_data *t, int aff_status);
-
-
-/*************************************/
-/*
- * predicates for find_path function
- */
-
-int is_target_room_p(int room, void *tgt_room)
-{
-    /* AMD64: Fix me */
-    return( room == (int)(long) tgt_room );
-}
-
-int named_object_on_ground(int room, void *c_data)
-{
-    char           *name = c_data;
-    return( 0 != get_obj_in_list(name, real_roomp(room)->contents) );
-}
-
-/*
- * predicates for find_path function
- */
-/*************************************/
 
 /*
  ********************************************************************
  *  Special procedures for rooms                                    *
  ******************************************************************** */
 
-struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
-{
-    struct char_data *temp_char,
-                   *targ;
-
-    targ = 0;
-
-    if (room > NOWHERE) {
-        for (temp_char = real_roomp(room)->people; (!targ) && (temp_char);
-             temp_char = temp_char->next_in_room) {
-            if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
-                targ = temp_char;
-            }
-        }
-    } else {
-        return (NULL);
-    }
-    return (targ);
-}
-
-struct char_data *find_mobile_here_with_spec_proc(int (*fcn) (), int rnumber)
-{
-    struct char_data *temp_char;
-
-    for (temp_char = real_roomp(rnumber)->people; temp_char;
-         temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == fcn) {
-            return temp_char;
-        }
-    }
-    return NULL;
-}
-
-
 #define Bandits_Path   2180
 #define BASIL_GATEKEEPER_MAX_LEVEL 10
-#define Fountain_Level 20
 
-#define CMD_SAY 17
-#define CMD_ASAY 169
-
-#define TONGUE_ITEM 22
-
-#define GIVE 72
-#define GAIN 243
-
-#define PRISON_ROOM 2639
-#define PRISON_LET_OUT_ROOM 2640
-
-#define HOLDING_MAX  10         /* max mobs that can be in tank :) */
-#define HOLDING_TANK 60         /* room number to drop the mobs in */
-
-#define NOD  35
-#define DRUID_MOB 600
-#define MONK_MOB  650
-#define FLEE 151
-
-#define ENTER 7
 #define ATTACK_ROOM 3004
 
 #define WHO_TO_HUNT  6112       /* green dragon */
@@ -142,29 +29,19 @@ struct char_data *find_mobile_here_with_spec_proc(int (*fcn) (), int rnumber)
 
 #define AST_MOB_NUM 2715
 
-extern struct room_data *world;
 extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
 extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 extern struct index_data *mob_index;
 extern struct weather_data weather_info;
-extern int      top_of_world;
-extern struct int_app_type int_app[26];
-extern char    *pc_class_types[];
-extern char    *dirs[];
 extern struct QuestItem QuestList[4][IMMORTAL];
-extern int      gSeason;        /* what season is it ? */
 
 extern struct spell_info_type spell_info[];
 extern int      spell_index[MAX_SPL_LIST];
-extern char    *spells[];
-extern int      rev_dir[];
 
 #define NADIA_PILL 45431
 #define PEN_MIGHT 45445
 #define DRAGON_SCEPTRE_ONE 45470
-#define DRAGON_SCEPTRE_TWO 45481
 #define MARBLES 45475
 #define JESTER_KEY 45480
 #define NADIA_KEY 45489
@@ -172,23 +49,16 @@ extern int      rev_dir[];
 #define GATEKEEPER_KEY 45491
 #define BLACK_PILL 45492
 #define BLUE_PILL 45493
-#define GRAYSWANDIR 45504
-#define BAHAMUT_SKIN 45503
-#define WEST_WING_KEY 45500
 
-#define BAHAMUT 45461
 #define TMK_GUARD_ONE 45401
 #define TMK_GUARD_TWO 45402
 #define BRAXIS 45406
 #define NADIA 45409
-#define MIME_JERRY 45410
 #define ZORK 45413
 #define ELAMIN 45417
 #define STARVING_MAN 45440
 #define GOBLIN_CHUIRGEON 45443
 
-#define ZORK_ROOM 45496
-#define CALM_BEFORE_STORM 45517
 #define BAHAMUT_HOME 46378
 
 #define RESCUE_VIRGIN  1950
@@ -205,20 +75,25 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
                              struct char_data *mob, struct riddle_answer *rid,
                              int ridCount, int exp, int portal);
 
-void            printmap(struct char_data *ch, int x, int y, int sizex,
-                         int sizey);
-struct obj_data *SailDirection(struct obj_data *obj, int direction);
-int             CanSail(struct obj_data *obj, int direction);
 int ReadObjs(FILE * fl, struct obj_file_u *st);
-
-/*
- * two global integers for Sentinel's cog room procedure 
- */
-extern int      cog_sequence;
-int             chest_pointer = 0;
 
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
 extern struct obj_data *object_list;
+
+struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
+{
+    struct char_data *temp_char;
+
+    if (room > NOWHERE) {
+        for (temp_char = real_roomp(room)->people; temp_char;
+             temp_char = temp_char->next_in_room) {
+            if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
+                return( temp_char );
+            }
+        }
+    } 
+    return (NULL);
+}
 
 
 /*************************
@@ -1473,18 +1348,6 @@ int regenerator(struct char_data *ch, int cmd, char *arg,
 int Ringwraith(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
-#if 0
-    static char     buf[256];
-    struct char_data *victim;
-    static int      howmanyrings = -1;
-    struct obj_data *ring;
-    struct wraith_hunt {
-        int             ringnumber;
-        int             chances;
-    }              *wh;
-    int             rnum,
-                    dir;
-#endif
 
     if (!AWAKE(ch) || !IS_NPC(ch) || cmd) {
         return (FALSE);
@@ -1512,148 +1375,6 @@ int Ringwraith(struct char_data *ch, int cmd, char *arg,
     } else {
         return (FALSE);
     }
-
-#if 0
-/*
- * Disable the one ring proc...
- */
-    if (howmanyrings == -1) {   /* how many one rings are in the game? */
-        howmanyrings = 1;
-        get_obj_vis_world(ch, "999.one ring.", &howmanyrings);
-    }
-
-    if (ch->act_ptr == 0) {     /* does our ringwraith have his state
-                                 * info? */
-        ch->act_ptr = (struct wraith_hunt *) malloc(sizeof(*wh));
-        /* this will never get freed  :( */
-        wh = (struct wraith_hunt *) ch->act_ptr;
-        wh->ringnumber = 0;
-    } else {
-        /* yuck, talk to loki about the act_ptr */
-        wh = (struct wraith_hunt *) ch->act_ptr;
-    }
-
-    if (!wh->ringnumber) {
-        /* is he currently tracking a ring */
-        wh->chances = 0;
-        wh->ringnumber = number(1, howmanyrings++);
-    }
-
-    /* where is this ring? */
-    sprintf(buf, "%d.one ring.", (int) wh->ringnumber);
-
-    if (!(ring = get_obj_vis_world(ch, buf, NULL))) {
-        /*
-         * there aren't as many one rings in the game as we thought
-         */
-        howmanyrings = 1;
-        get_obj_vis_world(ch, "999.one ring.", &howmanyrings);
-        wh->ringnumber = 0;
-        return FALSE;
-    }
-
-    rnum = room_of_object(ring);
-
-    if (rnum != ch->in_room) {
-        dir = find_path(ch->in_room, is_target_room_p, (void *) rnum, -5000, 0);
-        if (dir < 0) {
-            /* we can't find the ring */
-            wh->ringnumber = 0;
-            return FALSE;
-        }
-        go_direction(ch, dir);
-        return TRUE;
-    }
-
-    /*
-     * the ring is in the same room!
-     */
-
-    if (victim = char_holding(ring)) {
-        if (victim == ch) {
-            obj_from_char(ring);
-            extract_obj(ring);
-            wh->ringnumber = 0;
-            act("$n grimaces happily.", FALSE, ch, NULL, victim, TO_ROOM);
-        } else {
-            switch (wh->chances) {
-            case 0:
-                sprintf(buf, "wake %s", GET_NAME(victim));
-                command_interpreter(ch, buf);
-                if (!check_soundproof(ch))
-                    act("$n says '$N, give me The Ring'.", FALSE, ch, NULL,
-                        victim, TO_ROOM);
-                else
-                    act("$n pokes you in the ribs.", FALSE, ch, NULL,
-                        victim, TO_ROOM);
-                wh->chances++;
-                return (TRUE);
-                break;
-            case 1:
-                if (IS_NPC(victim)
-                    && !IS_SET(victim->specials.act, ACT_POLYSELF)) {
-#if 0
-                    act("$N quickly surrenders The Ring to $n.", FALSE, ch,
-                        NULL, victim, TO_ROOM);
-                    if (ring->carried_by)
-                        obj_from_char(ring);
-                    else if (ring->equipped_by)
-                        unequip_char(victim, ring->eq_pos);
-                    obj_to_char(ring, ch);
-#else
-                    /*
-                     * this otta suprize them! Purge a mob
-                     */
-                    for (ring = victim->carrying; ring;
-                         extract_obj(ring), ring = ring->next_content);
-                    sprintf(buf, "purge %s", GET_NAME(victim));
-                    command_interpreter(ch, buf);
-#endif
-                } else {
-                    if (!check_soundproof(ch))
-                        act("$n says '$N, give me The Ring *NOW*'.",
-                            FALSE, ch, NULL, victim, TO_ROOM);
-                    else {
-                        act("$n pokes you in the ribs very painfully.",
-                            FALSE, ch, NULL, victim, TO_ROOM);
-                    }
-
-                    wh->chances++;
-                }
-                return (TRUE);
-                break;
-            default:
-                if (check_peaceful(ch, "Damn, he's in a safe spot.")) {
-                    if (!check_soundproof(ch))
-                        act("$n says 'You can't stay here forever, $N'.",
-                            FALSE, ch, NULL, victim, TO_ROOM);
-                } else {
-                    if (!check_soundproof(ch))
-                        act("$n says 'I guess I'll just have to get it "
-                            "myself'.", FALSE, ch, NULL, victim, TO_ROOM);
-                    hit(ch, victim, TYPE_UNDEFINED);
-                }
-                break;
-            }
-        }
-    } else if (ring->in_obj) {
-        /*
-         * the ring is in an object
-         */
-        obj_from_obj(ring);
-        obj_to_char(ring, ch);
-        act("$n gets the One Ring.", FALSE, ch, NULL, victim, TO_ROOM);
-    } else if (ring->in_room != NOWHERE) {
-        obj_from_room(ring);
-        obj_to_char(ring, ch);
-        act("$n gets the Ring.", FALSE, ch, NULL, 0, TO_ROOM);
-    } else {
-        Log("a One Ring was completely disconnected!?");
-        wh->ringnumber = 0;
-    }
-    return TRUE;
-
-#endif
 }
 
 int RustMonster(struct char_data *ch, int cmd, char *arg,
@@ -2360,21 +2081,6 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
-#if 0
-    /*
-     ** damage stuff
-
-     DestroyedItems = 0;
-
-     DamageStuff(ch, SPELL_ACID_BLAST, 100);
-
-     if (DestroyedItems) {
-     act("$n lets off a real rip-roarer!", FALSE, ch, 0, 0, TO_ROOM);
-     DestroyedItems = 0;
-     }
-
-     Hrm... those mobs do not really need to scrap EVERYTHING they have :P */
-#endif
 
     /*
      * swallow
@@ -3758,25 +3464,6 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     count;
     char            buf[255];
 
-#if 0
-    char           *name;
-
-    if(type == PULSE_COMMAND) { 
-        if(cmd == 19) {
-            if(!strncasecmp(arg,"biff", 4)) { 
-                do_follow(ch, arg, cmd); 
-                name = strdup(GET_NAME(ch));
-                do_group(mob, name, 0); 
-                if( name ) {
-                    free( name );
-                }
-                return(TRUE); 
-            }
-        }
-        return(FALSE); 
-    }
-#endif
-
     if (type == PULSE_TICK) {
         if (ch->specials.position == POSITION_SITTING) {
             ch->generic = 0;
@@ -4313,19 +4000,6 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     if (!MobCastCheck(ch, 0)) {
-#if 0        
-        if(ch->specials.fighting) { 
-            act("$n reevaluates his priorities, and decides it's"
-                " best to get out.", 1, ch, 0, 0, TO_ROOM);
-            do_flee(ch, NULL, 0); 
-        } else { 
-            /* 
-             * mages get funky skillz 
-             */
-             act("$n quickly prepares a potion of dispel magic, "
-                 "and quaffs it!", 1, ch, 0, 0, TO_ROOM); 
-             spell_dispel_magic(level, ch, ch, 0); } 
-#endif         
         return (TRUE);
     }
 
@@ -5658,58 +5332,6 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
     if (check_peaceful(ch, "")) {
         return FALSE;
     }
-#if 0
-
-    /*
-     * disabled, to many bugs in murder/stole jail and settings 
-     * might try and find them some other time 
-     */
-
-    for (tch = real_roomp(ch->in_room)->people; tch;
-         tch = tch->next_in_room) {
-
-        if (IS_MURDER(tch) && CAN_SEE(ch, tch)) {
-            if (GetMaxLevel(tch) >= 20) {
-                if (!check_soundproof(ch))
-                    act("$n screams 'MURDERER!!!  EVIL!!!  KILLER!!!  "
-                        "BANZAI!!'", FALSE, ch, 0, 0, TO_ROOM);
-                hit(ch, tch, TYPE_UNDEFINED);
-                return (TRUE);
-            } else {
-                act("$n thawacks $N muttering 'Murderer' and has $M dragged "
-                    "off to prison!", TRUE, ch, 0, tch, TO_NOTVICT);
-                act("$n thawacks you muttering 'Murderer' and has you dragged "
-                    "off to prison!", TRUE, ch, 0, tch, TO_VICT);
-                char_from_room(tch);
-                char_to_room(tch, PRISON_ROOM);
-                do_look(tch, NULL, 0);
-                act("The prison door slams shut behind you!",
-                    TRUE, ch, 0, tch, TO_VICT);
-                return (TRUE);
-            }
-        } else if (IS_STEALER(tch) && CAN_SEE(ch, tch)) {
-            if (!number(0, 30)) {
-                if (!check_soundproof(ch))
-                    act("$n screams 'ROBBER!!!  EVIL!!!  THIEF!!!  BANZAI!!'",
-                        FALSE, ch, 0, 0, TO_ROOM);
-                hit(ch, tch, TYPE_UNDEFINED);
-                return (TRUE);
-            } else {
-                act("$n thawacks $N muttering 'Thief' and has $M dragged off "
-                    "to prison!", TRUE, ch, 0, tch, TO_NOTVICT);
-                act("$n thawacks you muttering 'Thief' and has you dragged off "
-                    "to prison!", TRUE, ch, 0, tch, TO_VICT);
-                char_from_room(tch);
-                char_to_room(tch, PRISON_ROOM);
-                do_look(tch, NULL, 0);
-                act("The prison door slams shut behind you!",
-                    TRUE, ch, 0, tch, TO_VICT);
-                return (TRUE);
-            }
-        }
-    }
-
-#endif
 
     for (tch = real_roomp(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
@@ -6804,9 +6426,6 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg,
         act("$N pushes you off the ship.", TRUE, targ, 0, ch, TO_CHAR);
         act("$N gives $n a good push off the ship.", TRUE, targ, 0, ch,
             TO_ROOM);
-#if 0        
-        char_from_room(mob);
-#endif        
         if (!(target = get_char_vis_world(ch, "ship", NULL))) {
             send_to_char("Where did that darn ship go??.\n\r", ch);
             return(FALSE);
@@ -8317,9 +7936,6 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
          * buy? 
          */
         temp = 13;              
-#if 0        
-        ch->player.q_points;
-#endif        
         /*
          * lets search for item..
          */
@@ -8443,9 +8059,6 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
                 act("$N gives you $p.", FALSE, ch, obj2, vict, TO_CHAR);
                 act("$N gives $p to $n.", FALSE, ch, obj2, vict, TO_ROOM);
                 obj_to_char(obj2, ch);
-#if 0
-                act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
-#endif                
                 obj_from_char(obj);
                 extract_obj(obj);
                 return (TRUE);
@@ -8577,9 +8190,6 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         } else {
             time_diff = time(NULL) - last_time;
-#if 0            
-            printf("Questor Time?? - %d.\n", time_diff);
-#endif        
         }
         return (FALSE);
     }
@@ -8629,19 +8239,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                         GET_NAME(ch));
                 command_interpreter(vict, buf);
             } else {
-#if 0                
-                if(!(strcmp(questwinner,GET_NAME(ch)))) { 
-                    questwon++;
-                    ch->specials.questwon = ch->specials.questwon + 1; 
-                } else { 
-                    sprintf(questwinner,"%s",GET_NAME(ch)); 
-                    questwon = 0; 
-                } 
-#endif                 
                 ch->specials.questwon = ch->specials.questwon + 1;
-#if 0
-                do_say(vict, "Thanks-you!! Just what i needed!! Here ya go",0);
-#endif
                 switch (number(0, 20 + ch->specials.questwon)) {
                 case 0:
                 case 1:
@@ -9188,23 +8786,6 @@ int snake_avt(struct char_data *ch, int cmd, char *arg,
 {
     byte            lspell = 0;
     struct char_data *vict;
-
-#if 0
-    static int      done = -1;
-    /*
-     * so we only load the virgin once a boot 
-     * case the virgin is killed and 
-     * a second snake avt is loaded 
-     */
-
-    /*
-     * does not work!! 
-     */
-    if (type == EVENT_BIRTH && ch->in_room == RESCUE_ROOM) {
-        done++;
-        return (FALSE);
-    }
-#endif
 
     if (type == EVENT_DEATH && ch->in_room == RESCUE_ROOM) {
         mob = get_char_vis(ch, "zifnab");
@@ -10390,9 +9971,6 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
                  * make tysha follow Vaelhar 
                  */
                 if (i->master) {
-#if 0                    
-                    hero = get_char_room(i->master, ch->in_room);
-#endif                    
                     hero = i->master;
                     stop_follower(i);
                 }
@@ -10800,9 +10378,6 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
          */
         t = ch->specials.fighting;
         if (t->in_room == ch->in_room) {
-#if 0
-            Log("woah, you dare fight me? dead you are");
-#endif
             act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
             act("You are engulfed by $n, and are quickly disassembled.",
                 FALSE, ch, 0, t, TO_VICT);
@@ -10838,9 +10413,6 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         }
 
         if (GET_HIT(ch) < 0) {
-#if 0
-            Log("death due to lack of hps");
-#endif
             act("$n dissipates, you breathe a sigh of relief.", FALSE, ch,
                 0, 0, TO_ROOM);
             extract_char(ch);
@@ -10932,9 +10504,6 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 break;
             }
         }
-#if 0
-        Log("finished finding targets, wait for next func call");
-#endif
     }
     return( FALSE );
 }
@@ -13925,6 +13494,38 @@ int dragon(struct char_data *ch, int cmd, char *arg,
     }
     return(TRUE);
 }
+
+
+
+void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
+{
+    struct room_data *rp;
+    int             or;
+    char            buf[200];
+
+    rp = real_roomp(v->in_room);
+    if (rp && rp->dir_option[dir] && rp->dir_option[dir]->to_room &&
+        EXIT(v, dir)->to_room != NOWHERE) {
+        if (v->specials.fighting) {
+            stop_fighting(v);
+        }
+
+        sprintf(buf, "%s picks you up and throws you %s\n\r",
+                ch->player.short_descr, direction[dir].dir);
+        send_to_char(buf, v);
+
+        or = v->in_room;
+        char_from_room(v);
+        char_to_room(v, (real_roomp(or))->dir_option[dir]->to_room);
+        do_look(v, NULL, 15);
+
+        if (IS_SET(RM_FLAGS(v->in_room), DEATH) && !IS_IMMORTAL(v)) {
+            NailThisSucker(v);
+        }
+    }
+}
+
+
 
 
 /*
