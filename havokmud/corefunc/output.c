@@ -56,8 +56,9 @@ static char ident[] _UNUSED_ =
 void SendOutput( PlayerStruct_t *player, char *fmt, ... )
 {
     OutputBuffer_t *outbuf;
-    static char     buf[MAX_STRING_LENGTH];     /* better safe than sorry */
+    char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
     int             len;
+    struct char_data *ch;
     va_list         args;
 
     if( !fmt ) {
@@ -73,13 +74,16 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
     len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
     va_end(args);
 
-    outbuf->buf = strdup( 
-            ParseAnsiColors(IS_SET(player->charData->player.user_flags, 
-                                   USE_ANSI), buf) );
+    ch = player->charData;
+
+    outbuf->buf = (char *)malloc(MAX_STRING_LENGTH);
     if( !outbuf->buf ) {
         free( outbuf );
         return;
     }
+
+    len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI), buf, 
+                           outbuf->buf );
 
     /**
      * @todo make sure that the buffer length here includes any ANSI expansion

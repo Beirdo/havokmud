@@ -48,12 +48,18 @@ void str2ansi(char *p2, char *p1, int start, int stop);
 int ansi_parse(char *code, char *buf);
 
 /**
- * @todo Make this to be thread-safe
+ * @brief Copies the string, expanding any MUD color codes to ANSI codes in the
+ *        process (or stripping them)
+ * @param UsingAnsi Set to TRUE when a user wants ANSI, FALSE if not
+ * @param txt The input text with MUD color codes
+ * @param buf The output buffer (size of at least MAX_STRING_LENGTH) to write
+ *            the expanded text into
+ * @return length of the expanded string
  */
-char           *ParseAnsiColors(int UsingAnsi, char *txt)
+int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf)
 {
-    static char     buf[MAX_STRING_LENGTH];
     char            ansibuf[255];
+    char           *string;
 
     register int    i,
                     j,
@@ -61,13 +67,17 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
 
     buf[0] = '\0';
     for (i = 0, j = 0; txt[i] && j < MAX_STRING_LENGTH; i++) {
+        string = &txt[i];
         /*
          * Catch $c0001 and $$c0001 - ANSI colors
          */
-        if( txt[i] == '$' && 
-            (toupper(txt[i+1]) == 'C' ||
-             (txt[i+1] == '$' && toupper(txt[i+2]) == 'C')) ) {
-            if( txt[i+1] == '$' ) {
+        if( string[0] == '$' && 
+            (toupper(string[1]) == 'C' ||
+             (string[1] == '$' && toupper(string[2]) == 'C')) ) {
+            /*
+             * Skip over the $C or $$C
+             */
+            if( string[1] == '$' ) {
                 i += 3;
             } else {
                 i += 2;
@@ -76,26 +86,32 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
             if( UsingAnsi ) {
                 j += ansi_parse( &txt[i], ansibuf );
                 strcat( buf, ansibuf );
+                found++;
             }
 
+            /* 
+             * Skip the rest of the MUD color code
+             */
             i += 4;
-            j = strlen(buf);
-            found++;
         } else {
             buf[j++] = txt[i];
+            /*
+             * Keep it zero-terminated so strcat will work
+             */
+            buf[j] = '\0';
         }
-        buf[j] = '\0';
     }
 
-    if (found && UsingAnsi) {
+    if (found) {
         /*
-         * Change back to normal light gray if there was a color change
+         * Change back to normal light gray if there was a color change and
+         * we are using ANSI (which is implicit in the found variable)
          */
         ansi_parse( "0007", ansibuf );
         strcat(buf, ansibuf);
     }
 
-    return buf;
+    return( strlen(buf) );
 }
 
 

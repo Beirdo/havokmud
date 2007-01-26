@@ -206,9 +206,6 @@ void            do_attribute(struct char_data *ch, char *argument,
 void            do_resistances(struct char_data *ch, char *argument,
                                int cmd);
 void            do_value(struct char_data *ch, char *argument, int cmd);
-#ifdef MOVED
-char           *AlignDesc(int a);
-#endif
 char           *ArmorDesc(int a);
 char           *HitRollDesc(int a);
 char           *DamRollDesc(int a);
@@ -412,9 +409,6 @@ void            do_mend(struct char_data *ch, char *argument, int cmd);
 void            do_load(struct char_data *ch, char *argument, int cmd);
 void            purge_one_room(int rnum, struct room_data *rp, int *range);
 void            do_purge(struct char_data *ch, char *argument, int cmd);
-#ifdef MOVED
-void            roll_abilities(struct char_data *ch);
-#endif
 void            do_start(struct char_data *ch);
 void            do_advance(struct char_data *ch, char *argument, int cmd);
 void            do_reroll(struct char_data *ch, char *argument, int cmd);
@@ -1422,10 +1416,6 @@ int             GetClassLevel(struct char_data *ch, int class);
 int             CountBits(int class);
 int             OnlyClass(struct char_data *ch, int class);
 int             MainClass(struct char_data *ch, int indicator);
-#ifdef MOVED
-int             HasClass(struct char_data *ch, int class);
-int             HowManyClasses(struct char_data *ch);
-#endif
 int             BestFightingClass(struct char_data *ch);
 int             HasFightingClass(struct char_data *ch);
 int             BestThiefClass(struct char_data *ch);
@@ -1433,9 +1423,6 @@ int             BestMagicClass(struct char_data *ch);
 int             GetSecMaxLev(struct char_data *ch);
 int             GetALevel(struct char_data *ch, int which);
 int             GetThirdMaxLev(struct char_data *ch);
-#ifdef MOVED
-int             GetMaxLevel(struct char_data *ch);
-#endif
 int             GetTotLevel(struct char_data *ch);
 void            StartLevels(struct char_data *ch);
 int             BestClassIND(struct char_data *ch);
@@ -2252,9 +2239,6 @@ void            say_spell(struct char_data *ch, int si);
 bool            saves_spell(struct char_data *ch, sh_int save_type);
 bool            ImpSaveSpell(struct char_data *ch, sh_int save_type,
                              int mod);
-#ifdef MOVED
-char           *skip_spaces(char *string);
-#endif
 char           *skip_word(char *string);
 void            do_cast(struct char_data *ch, char *argument, int cmd);
 void            assign_spell_pointers(void);
@@ -2970,10 +2954,6 @@ int             WeaponImmune(struct char_data *ch);
 unsigned        IsImmune(struct char_data *ch, int bit);
 unsigned        IsResist(struct char_data *ch, int bit);
 unsigned        IsSusc(struct char_data *ch, int bit);
-#ifdef MOVED
-int             number(int from, int to);
-int             dice(int number, int size);
-#endif
 int             scan_number(char *text, int *rval);
 void            log_sev(char *str, int sev);
 void            slog(char *str);
@@ -3128,13 +3108,6 @@ void            DeleteExit(struct room_data *rp, struct char_data *ch,
 NODE           *SearchForNodeByName(NODE * head, char *name, int length);
 int             FindCommandNumber(char *cmd);
 char           *FindCommandName(int num);
-
-/*
- * ansi_parser.c 
- */
-#ifdef MOVED
-char           *ansi_parse(char *code);
-#endif
 
 /*
  * mail.c 
@@ -3550,9 +3523,6 @@ void list_end(struct descriptor_data *d);
 int fwrite_string(FILE * fl, char *buf);
 char           *strip_cr(char *newbuf, const char *orig, size_t maxlen);
 void            str2ansi(char *p2, char *p1, int start, int stop);
-#ifdef MOVED
-char           *ParseAnsiColors(int UsingAnsi, char *txt);
-#endif
 void             construct_prompt(char *buf, struct char_data *ch);
 void remove_cr(char *output, char *input);
 void ReadTextZone(FILE * fl);
@@ -3694,10 +3664,6 @@ int countPeople(int zonenr);
 int count_People_in_room(int room);
 void FORGET(struct char_data *ch, int spl);
 void SpaceForSkills(struct char_data *ch);
-#ifdef MOVED
-void            AddCommand(char *name, void (*func)(), int number,
-                           int min_pos, int min_lev);
-#endif
 
 void            do_wclean(struct char_data *ch, char *argument, int cmd);
 void            do_setobjmax(struct char_data *ch, char *argument,

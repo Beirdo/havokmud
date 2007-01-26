@@ -251,7 +251,7 @@ void CommandParser( PlayerStruct_t *player, char *line );
 void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
-char *ParseAnsiColors(int UsingAnsi, char *txt);
+int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf);
 char *skip_spaces(char *string);
 
 /*
