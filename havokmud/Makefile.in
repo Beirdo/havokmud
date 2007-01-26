@@ -26,8 +26,8 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	limits.c magicutils.c mail.c mobact.c modify.c mod.text.c multiclass.c \
 	opinion.c paginate.c parser.c reception.c security.c shop.c sound.c \
 	spec_assign.c spec_guildmaster.c spec_procs2.c spec_procs3.c \
-	spec_procs4.c spec_procs.c spec_rooms.c spell_parser.c trap.c \
-	utility.c weather.c
+	spec_procs4.c spec_procs.c spec_rooms.c spec_objects.c \
+	spell_parser.c trap.c utility.c weather.c
 EXE =	havokmud@EXEEXT@
 NEWEXE = havoknew@EXEEXT@
 
