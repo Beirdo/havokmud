@@ -791,6 +791,7 @@ int coreCommandCount = NELEMENTS(coreCommands);
  * @param cmd The command number
  * @todo fix this so the player structure is valid, not NULL.  Will currently
  *       cause a crash
+ * @todo add database support for the banned host list
  */
 void do_siteban(struct char_data *ch, char *argument, int cmd)
 {
