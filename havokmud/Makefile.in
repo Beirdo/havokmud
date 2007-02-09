@@ -30,6 +30,7 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 EXE =	havokmud@EXEEXT@
 NEWEXE = havoknew@EXEEXT@
 
+SUBDIRS = util threads corefunc
 NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
 	      corefunc/libhavokcore.a 
 #NEWLIBS = -Lutil -Lthreads -Lcorefunc -lhavokcore -lhavokthread -lhavokutils -lhavokthread -lhavokcore 
@@ -44,9 +45,7 @@ ${EXE} : ${OBJS}
 	${LD} -g -o $@ $+ ${LDFLAGS} ${LIBS}
 
 ${NEWEXE} make.out : ${NEWLIBFILES} force
-	${MAKE} -C util all
-	${MAKE} -C threads all
-	${MAKE} -C corefunc all
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
 	-${LD} -g -o ${NEWEXE} ${LDFLAGS} ${NEWLIBS} ${LIBS} 2> make.out
 
 depend : ${DEPS}
@@ -72,6 +71,7 @@ force:
 
 clean:
 	rm -f ${OBJS} ${EXE}
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i clean ; done
 
 cleanall: clean
 	rm -f ${DEPS}

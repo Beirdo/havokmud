@@ -1,20 +1,9 @@
 #ifndef _vt100c_h
 #define _vt100c_h
 
-/*
- * File: VT100C.H
- * Usage: VT100 code definitions
- * Copyright ()) 1993 by Dan Brumleve and the creators of DikuMUD.
- *
- * Part of:
- *   /\    ____                                     __     ____   |\   |
- *  /__\   |___|   /\  /\    /\    __  ___  +--\   |  \   /    \  | \  |
- * /    \  |   \  /  \/  \  /--\  /    [_   |   \  |   |  |    |  |  \ |
- * \    /  |   /  \      /  \  /  \_]  [__  |___/  |__/   \____/  |   \|
- *
- * Unauthorized distribution of this source code is punishable by 
- * eternal damnation to the hell pits of Suk-krath.  Have a nice day.
- *
+/**
+ * @file
+ * @brief VT100 code definitions
  */
 
 #define UNKNOWN       0
@@ -38,7 +27,7 @@
 #define VT_CURREST    "\0338"
 
 /*
- * Infobar stuffage added for SillyMUD 
+ * Infobar stuffage
  */
 #define INFO_HP            1
 #define INFO_MANA          2

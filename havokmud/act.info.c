@@ -4166,12 +4166,6 @@ void do_display(struct char_data *ch, char *arg, int cmd)
     }
 }
 
-void ScreenOff(struct char_data *ch)
-{
-    oldSendOutput(ch, VT_MARGSET, 0, ch->size - 1);
-    send_to_char(VT_HOMECLR, ch);
-}
-
 void do_resize(struct char_data *ch, char *arg, int cmd)
 {
     int             i;

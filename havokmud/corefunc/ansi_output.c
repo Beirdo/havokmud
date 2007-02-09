@@ -281,6 +281,15 @@ int ansi_parse(char *code, char *buf)
     return( strlen(buf) );
 }
 
+/**
+ * @brief Reset and clear the screen
+ */
+void ScreenOff( PlayerStruct_t *player )
+{
+    SendOutput( player, VT_MARGSET, 0, player->charData->size - 1 );
+    SendOutput( player, VT_HOMECLR );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

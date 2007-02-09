@@ -130,7 +130,6 @@ void            list_groups(struct char_data *ch, char *argument, int cmd);
 void            do_command_list(struct char_data *ch, char *arg, int cmd);
 void            do_show_skill(struct char_data *ch, char *arg, int cmd);
 void            do_resize(struct char_data *ch, char *arg, int cmd);
-void            ScreenOff(struct char_data *ch);
 void            do_display(struct char_data *ch, char *arg, int cmd);
 int             singular(struct obj_data *o);
 struct obj_data *get_object_in_equip_vis(struct char_data *ch, char *arg,

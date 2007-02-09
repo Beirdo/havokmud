@@ -1271,7 +1271,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         if (ch->term != 0) {
-            ScreenOff(ch);
+            ScreenOff(player);
         }
 
 

@@ -252,7 +252,10 @@ void CommandParser( PlayerStruct_t *player, char *line );
 void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
+
+/* ansi_output.c */
 int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf);
+void ScreenOff( PlayerStruct_t *player );
 
 /*
  * text_process.c
