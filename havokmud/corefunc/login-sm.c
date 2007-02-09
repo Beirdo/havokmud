@@ -56,6 +56,7 @@ void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
+int SiteLock(char *site);
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
@@ -1903,6 +1904,19 @@ void roll_abilities(PlayerStruct_t *player)
 
     ch->points.max_hit /= HowManyClasses(ch);
     ch->tmpabilities = ch->abilities;
+}
+
+int SiteLock(char *site)
+{
+#ifdef SITELOCK
+    BalancedBTreeItem_t    *item;
+
+    item = BalancedBTreeFind( banHostTree, (void *)&site, UNLOCKED, TRUE );
+    if( item ) {
+        return( TRUE );
+    }
+#endif
+    return (FALSE);
 }
 
 

@@ -2930,7 +2930,6 @@ int             MaxChrForRace(struct char_data *ch);
 int             MaxStrForRace(struct char_data *ch);
 
 int             MaxLimited(int lev);
-int             SiteLock(char *site);
 int             IsSpecialized(int sk_num);
 int             CanSeeTrap(int num, struct char_data *ch);
 int             anti_barbarian_stuff(struct obj_data *obj_object);

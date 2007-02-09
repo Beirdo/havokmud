@@ -5108,25 +5108,6 @@ int MaxLimited(int lev)
     }
 }
 
-int SiteLock(char *site)
-{
-#ifdef SITELOCK
-    int             i,
-                    length;
-
-    length = strlen(site);
-
-    for (i = 0; i < numberhosts; i++) {
-        if (!strncasecmp(hostlist[i], site, length)) {
-            return (TRUE);
-        }
-    }
-    return (FALSE);
-#else
-    return (FALSE);
-#endif
-}
-
 int MaxDexForRace(struct char_data *ch)
 {
     switch (GET_RACE(ch)) {

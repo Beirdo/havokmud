@@ -221,12 +221,6 @@ extern char *mysql_user;
 extern char *mysql_passwd;
 extern char *mysql_host;
 
-
-#ifdef SITELOCK
-extern int      numberhosts;
-extern char     hostlist[MAX_BAN_HOSTS][256];
-#endif
-
 extern int      mudshutdown;
 extern int      reboot_now;
 

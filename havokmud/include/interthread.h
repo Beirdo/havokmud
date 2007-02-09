@@ -219,6 +219,8 @@ extern char *wmotd;
 extern char *news;
 extern char *info;
 
+extern BalancedBTree_t    *banHostTree;
+
 /*
  * Prototypes of the thread entry points
  */

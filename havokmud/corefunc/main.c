@@ -44,6 +44,7 @@
 #include "utils.h"
 #include "version.h"
 #include "logging.h"
+#include "balanced_btree.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -74,8 +75,7 @@ int             no_specials;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
-char            hostlist[MAX_BAN_HOSTS][256];   /**< list of sites to ban */
-int             numberhosts;                    /**< count of banned hosts */
+BalancedBTree_t    *banHostTree;
 #endif
 
 bool            GlobalAbort = FALSE;
@@ -279,9 +279,6 @@ int main(int argc, char **argv)
     void            signal_setup(void);
     int             load(void);
 
-#ifdef SITELOCK
-    int             a;
-#endif
 #if defined(__sun__) || defined(__NetBSD__)
     struct rlimit   rl;
     int             res;
@@ -327,11 +324,7 @@ int main(int argc, char **argv)
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
 #ifdef SITELOCK
-    LogPrintNoArg(LOG_CRIT, "Blanking denied hosts.");
-    for (a = 0; a < MAX_BAN_HOSTS; a++) {
-        strcpy(hostlist[a], " \0\0\0\0");
-    }
-    numberhosts = 0;
+    banHostTree = BalancedBTreeCreate( BTREE_KEY_STRING );
 #endif
 
     /*
