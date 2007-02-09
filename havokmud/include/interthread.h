@@ -255,7 +255,9 @@ void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 
-/* ansi_output.c */
+/* 
+ * ansi_output.c 
+ */
 int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf);
 void ScreenOff( PlayerStruct_t *player );
 
@@ -277,6 +279,10 @@ char *AlignDesc(int value);
 int number(int from, int to);
 int dice(int number, int size);
 
+/*
+ * core_commands.c
+ */
+void            do_siteban(struct char_data *ch, char *argument, int cmd);
 
 /*************************************************************************
  * Support for different platforms

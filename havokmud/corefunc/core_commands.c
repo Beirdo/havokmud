@@ -48,6 +48,7 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
+void banHostDepthFirst( PlayerStruct_t *player, BalancedBTreeItem_t *item );
 
 CommandDef_t coreCommands[] = {
     { "north", do_move, 1, POSITION_STANDING, 0 },
@@ -55,9 +56,8 @@ CommandDef_t coreCommands[] = {
     { "south", do_move, 3, POSITION_STANDING, 0 },
     { "west", do_move, 4, POSITION_STANDING, 0 },
     { "up", do_move, 5, POSITION_STANDING, 0 },
-    { "down", do_move, 6, POSITION_STANDING, 0 }
+    { "down", do_move, 6, POSITION_STANDING, 0 },
 #if 0
-    ,
     { "enter", do_enter, 7, POSITION_STANDING, 0 },
     { "exits", do_exits, 8, POSITION_RESTING, 0 },
     { "kiss", do_action, 9, POSITION_RESTING, 1 },
@@ -317,7 +317,10 @@ CommandDef_t coreCommands[] = {
     { "rsave", do_rsave, 228, POSITION_DEAD, 53 },
     { "rload", do_rload, 229, POSITION_DEAD, 53 },
     { "track", do_track, 230, POSITION_STANDING, 1 },
-    { "siteban", do_wizlock, 231, POSITION_DEAD, 54 },
+#endif
+    { "siteban", do_siteban, 231, POSITION_DEAD, 54 }
+#if 0
+    ,
     { "highfive", do_highfive, 232, POSITION_DEAD, 0 },
     { "title", do_title, 233, POSITION_DEAD, 20 },
     { "whozone", do_who, 234, POSITION_DEAD, 0 },
@@ -778,6 +781,158 @@ CommandDef_t coreCommands[] = {
 };
 int coreCommandCount = NELEMENTS(coreCommands);
 
+
+
+/**
+ * @brief Allows to add or remove hosts from the ban list, or show the current
+ *        banlist
+ * @param ch The character performing the command
+ * @param argument The command arguments
+ * @param cmd The command number
+ * @todo fix this so the player structure is valid, not NULL.  Will currently
+ *       cause a crash
+ */
+void do_siteban(struct char_data *ch, char *argument, int cmd)
+{
+#ifdef SITELOCK
+    char                   *arg1;
+    char                   *arg2;
+    int                     length;
+    BalancedBTreeItem_t    *item;
+    PlayerStruct_t         *player = NULL;  /**< @todo fix this */
+#endif
+
+    if ((GetMaxLevel(ch) < DEMIGOD) || (IS_NPC(ch))) {
+        SendOutput( player, "You cannot Siteban.\n\r" );
+        return;
+    }
+
+#ifdef SITELOCK
+    /*
+     * all, add (place), list, rem (place)
+     * get first piece..
+     */
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+    if (!arg1) {
+        SendOutput( player, "Siteban {add <host> | rem <host> | list}\n\r" );
+        return;
+    }
+
+    if (strcasecmp(arg1, "add") == 0) {
+        if (!arg2) {
+            SendOutput( player, "Siteban add <host_name>\n\r" );
+            return;
+        }
+
+        length = strlen(arg2);
+        if ((length <= 3) || (length >= 80)) {
+            SendOutput( player, "Host is too long or short, please try "
+                                "again\n\r" );
+            return;
+        }
+
+        BalancedBTreeLock( banHostTree );
+
+        item = BalancedBTreeFind( banHostTree, (void *)&arg2, LOCKED, TRUE );
+        if( item ) {
+            SendOutput( player, "Host is already in database\n\r" );
+            BalancedBTreeUnlock( banHostTree );
+            return;
+        }
+
+        item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        if( !item ) {
+            SendOutput( player, "Can't, out of memory!\n\r" );
+            BalancedBTreeUnlock( banHostTree );
+            return;
+        }
+
+        item->item = (void *)strdup(arg2);
+        item->key  = &(item->item);
+
+        BalancedBTreeAdd( banHostTree, item, LOCKED, TRUE );
+        BalancedBTreeUnlock( banHostTree );
+
+        LogPrint( LOG_CRIT, "%s has added host %s to the access denied list.", 
+                            GET_NAME(ch), arg2 );
+    } else if (strcasecmp(arg1, "rem") == 0) {
+        if (!arg2) {
+            SendOutput( player, "Siteban rem <host_name>\n\r" );
+            return;
+        }
+
+        length = strlen(arg2);
+        if ((length <= 3) || (length >= 80)) {
+            SendOutput( player, "Host length is bad, please try again\n\r" );
+            return;
+        }
+
+        BalancedBTreeLock( banHostTree );
+
+        if( !banHostTree->root ) {
+            SendOutput( player, "Banned Host list is empty\n\r" );
+            BalancedBTreeUnlock( banHostTree );
+            return;
+        }
+
+        item = BalancedBTreeFind( banHostTree, (void *)&arg2, LOCKED, TRUE );
+        if( !item ) {
+            SendOutput( player, "Host is not in database\n\r" );
+            BalancedBTreeUnlock( banHostTree );
+            return;
+        }
+
+        BalancedBTreeRemove( banHostTree, item, LOCKED, TRUE );
+        BalancedBTreeUnlock( banHostTree );
+
+        LogPrint( LOG_CRIT, "%s has removed host %s from the access denied "
+                            "list.", GET_NAME(ch), arg2);
+
+        free( item->item );
+        free( item );
+    } else if (strcasecmp(arg1, "list") == 0) {
+        BalancedBTreeLock( banHostTree );
+
+        if( !banHostTree->root ) {
+            SendOutput( player, "Banned Host list is empty\n\r" );
+            BalancedBTreeUnlock( banHostTree );
+            return;
+        }
+
+        banHostDepthFirst( player, banHostTree->root );
+        
+        BalancedBTreeUnlock( banHostTree );
+    } else {
+        SendOutput( player, "Siteban {add <host> | rem <host> | list}\n\r" );
+    }
+#endif
+}
+
+/**
+ * @brief Prints the the banned hosts lists in sorted order
+ * @param player Player to send the output to
+ * @param item Item at which to start the recursion of the tree
+ *
+ * This function recursively traverses the binary tree for the banned hosts
+ * and outputs each entry in sorted order.  It should be called with item set
+ * to banHostTree->root to print the whole tree.
+ */
+void banHostDepthFirst( PlayerStruct_t *player, BalancedBTreeItem_t *item )
+{
+    char            *host;
+
+    if( !item ) {
+        return;
+    }
+
+    banHostDepthFirst( player, item->left );
+
+    host = (char *)item->item;
+    SendOutput( player, "Host: %s\n\r", host );
+
+    banHostDepthFirst( player, item->right );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

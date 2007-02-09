@@ -382,7 +382,6 @@ void            do_removehost(struct char_data *ch, char *argument,
 void            do_listhosts(struct char_data *ch, char *argument,
                              int command);
 void            do_silence(struct char_data *ch, char *argument, int cmd);
-void            do_wizlock(struct char_data *ch, char *argument, int cmd);
 void            do_rload(struct char_data *ch, char *argument, int cmd);
 void            do_rsave(struct char_data *ch, char *argument, int cmd);
 void            do_emote(struct char_data *ch, char *argument, int cmd);
