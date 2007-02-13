@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2007 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
  * $Id$
  *
- * Copyright 2005 Gavin Hurlbut
+ * Copyright 2007 Gavin Hurlbut
  * All rights reserved
  *
  * Comments :
@@ -374,6 +374,10 @@ void db_report_entry(int reportId, struct char_data *ch, char *report)
     db_queue_query( 0, QueryTable, data, 4, NULL, NULL, NULL );
 }
 
+/**
+ * @todo make the calling functions expect all of the report lines at once
+ *       rather than one at a time with repeated calls like it was before.
+ */
 struct user_report *db_get_report(int reportId)
 {
     MYSQL_BIND         *data;
