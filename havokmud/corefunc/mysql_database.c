@@ -43,16 +43,7 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-static MYSQL *sql;
-
-static char sqlbuf[MAX_STRING_LENGTH];
-
 /* Externally accessible */
-char *mysql_db    = NULL;
-char *mysql_user   = NULL;
-char *mysql_passwd = NULL;
-char *mysql_host   = NULL;
-
 struct class_def *classes;
 int             classCount;
 
@@ -77,8 +68,8 @@ int             bannedUserCount;
 struct social_messg *socialMessages = NULL;
 int                 socialMessageCount = 0;
 
-struct kick_messg  *kickMessages;
-int                 kickMessageCount;
+struct message_list  *kickMessages;
+int                   kickMessageCount;
 
 struct pose_type   *poseMessages;
 int                 poseMessageCount;
@@ -104,162 +95,316 @@ void db_load_races(void);
 void db_load_languages(void);
 
 
-void db_setup(void)
-{
-    if( !mysql_db ) {
-        mysql_db = strdup(DEF_MYSQL_DB);
-    }
+void chain_load_classes( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_skills( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_messages( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_socials( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_poses( MYSQL_RES *res, QueryItem_t *item );
+void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_races( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_languages( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_textfiles( MYSQL_RES *res, QueryItem_t *item );
+void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item );
+void chain_generate_object_index( MYSQL_RES *res, QueryItem_t *item );
 
-    if( !mysql_user ) {
-        mysql_user = strdup(DEF_MYSQL_USER);
-    }
+void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_generate_object_index( MYSQL_RES *res, MYSQL_BIND *input, 
+                                   void *arg );
 
-    if( !mysql_passwd ) {
-        mysql_passwd = strdup(DEF_MYSQL_PASSWD);
-    }
 
-    if( !mysql_host ) {
-        mysql_host = strdup(DEF_MYSQL_HOST);
-    }
+QueryTable_t    QueryTable[] = {
+    /* 0 */
+    { "INSERT INTO `userReports` (`reportId`, `reportTime`, `character`, "
+      "`roomNum`, `report`) VALUES ( ?, NULL, ?, ?, ? )", NULL, NULL, FALSE },
+    /* 1 */
+    { "SELECT `reportTime`, `character`, `roomNum`, `report` FROM "
+      "`userReports` WHERE `reportId` = ? ORDER BY `reportTime` ASC", NULL,
+      NULL, FALSE },
+    /* 2 */
+    { "DELETE FROM `userReports` WHERE `reportId` = ?",  NULL, NULL, FALSE },
+    /* 3 */
+    { "SELECT classId, className, classAbbrev FROM classes ORDER BY classId "
+      "ASC", chain_load_classes, NULL, FALSE },
+    /* 4 */
+    { "SELECT skills.skillName, skills.skillID, classSkills.minLevel, "
+      "classSkills.maxTeach FROM skills, classSkills "
+      "WHERE skills.skillId = classSkills.skillId AND classSkills.classId = ? "
+      "AND classSkills.mainSkill = ? ORDER BY skills.skillName ASC", NULL, 
+      NULL, FALSE },
+    /* 5 */
+    { "SELECT level, thaco, maleTitle, femaleTitle, minExp FROM classLevels "
+      "WHERE classId = ? ORDER BY level", NULL, NULL, FALSE },
+    /* 6 */
+    { "SELECT skillId, skillName, skillType FROM skills ORDER BY skillId ASC",
+      chain_load_skills, NULL, FALSE },
+    /* 7 */
+    { "SELECT text FROM skillMessages WHERE `skillId` = ? AND `msgId` = ? AND "
+      "`index` = ?", NULL, NULL, FALSE },
+    /* 8 */
+    { "SELECT forward, reverse, trapBits, exit, listExit, direction, "
+      "description FROM directions ORDER BY forward ASC", NULL, NULL, FALSE },
+    /* 9 */
+    { "SELECT clanId, clanName, shortName, description, homeRoom "
+      "FROM playerClans ORDER BY clanId ASC", NULL, NULL, FALSE },
+    /* 10 */
+    { "SELECT sectorType, mapChar, moveLoss FROM sectorType ORDER BY "
+      "sectorId ASC", NULL, NULL, FALSE },
+    /* 11 */
+    { "SELECT DISTINCT skillId FROM skillMessages WHERE msgId = ? ORDER BY "
+      "skillId", chain_load_messages, NULL, FALSE },
+    /* 12 */
+    { "SELECT name FROM bannedName", NULL, NULL, FALSE },
+    /* 13 */
+    { "SELECT socialId, hide, minPosition FROM socials ORDER BY socialId",
+      chain_load_socials, NULL, FALSE },
+    /* 14 */
+    { "SELECT DISTINCT skillId FROM skillMessages WHERE msgId = 5 OR "
+      "msgId = 6 ORDER BY skillId", chain_load_poses, NULL, FALSE },
+    /* 15 */
+    { "SELECT `vnum`, `procedure` FROM procAssignments WHERE `procType` = ? "
+      "ORDER BY `vnum`", chain_assign_specials, NULL, FALSE },
+    /* 16 */
+    { "SELECT raceId, raceName, description, raceSize, ageStart, ageYoung, "
+      "ageMature, ageMiddle, ageOld, ageAncient, ageVenerable, nativeLanguage "
+      "FROM races ORDER BY raceId", chain_load_races, NULL, FALSE },
+    /* 17 */
+    { "SELECT maxLevel FROM racialMax WHERE raceId = ? AND classId = ?", NULL,
+      NULL, FALSE },
+    /* 18 */
+    { "SELECT `langId`, `skillId`, `name` FROM languages ORDER BY `langId`",
+      chain_load_languages, NULL, FALSE },
+    /* 19 */
+    { "SELECT fileContents FROM textFiles WHERE fileId = ?", 
+      chain_load_textfiles, NULL, FALSE },
+    /* 20 */
+    { "DELETE FROM textFiles WHERE `fileId` = ?", NULL, NULL, FALSE },
+    /* 21 */
+    { "INSERT INTO textFiles (`fileId`, `lastModified`, `lastModBy`, "
+      "`fileContents`) VALUES (?, NULL, ?, ?)", NULL, NULL, FALSE },
+    /* 22 */
+    { "SELECT `messageNum` FROM `boardMessages` WHERE `boardId` = ? AND "
+      "`replyToMessageNum` = ?", chain_delete_board_message, NULL, FALSE },
+    /* 23 */
+    { "DELETE FROM `boardMessages` where `messageNum` = ? AND `boardId` = ?",
+      NULL, NULL, FALSE },
+    /* 24 */
+    { "UPDATE `boardMessages` SET `messageNum` = `messageNum` - 1 " 
+      "WHERE `messageNum` > ? AND `boardId` = ?", NULL, NULL, FALSE },
+    /* 25 */
+    { "UPDATE `boards` SET `maxPostNum` = `maxPostNum` - 1 WHERE boardId = ?",
+      NULL, NULL, FALSE },
+    /* 26 */
+    { "SELECT `boardId`, `maxPostNum`, `minLevel` FROM `boards` WHERE "
+      "`vnum` = ?", NULL, NULL, FALSE },
+    /* 27 */
+    { "SELECT `poster`, `topic`, `post`, UNIX_TIMESTAMP(`postTime`), "
+      "`messageNum`, `replyToMessageNum` FROM `boardMessages` "
+      "WHERE `boardId` = ? AND messageNum = ?", NULL, NULL, FALSE },
+    /* 28 */
+    { "SELECT `poster`, `topic`, `post`, `messageNum`, " 
+      "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` FROM `boardMessages` "
+      "WHERE `boardId` = ? AND replyToMessageNum = ? ORDER BY `messageNum`", 
+      NULL, NULL, FALSE },
+    /* 29 */
+    { "INSERT INTO `boardMessages` (`boardId`, `messageNum`, "
+      "`replyToMessageNum`, `topic`, `poster`, `postTime`, `post`) VALUES "
+      "(?, ?, ?, ?, ?, NULL, ?)", NULL, NULL, FALSE },
+    /* 30 */
+    { "UPDATE `boards` SET `maxPostNum` = `maxPostNum` + 1 WHERE `boardId` = ?",
+      NULL, NULL, FALSE },
+    /* 31 */
+    { "INSERT INTO `mailMessages` (`mailFrom`, `mailTo`, `timestamp`, "
+      "`message`) VALUES (?, ?, NULL, ?)", NULL, NULL, FALSE },
+    /* 32 */
+    { "SELECT HIGH_PRIORITY COUNT(*) as count FROM `mailMessages` "
+      "WHERE LOWER(`mailTo`) = LOWER(?)", NULL, NULL, FALSE },
+    /* 33 */
+    { "SELECT `messageNum` FROM `mailMessages` WHERE LOWER(`mailTo`) = "
+      "LOWER(?) ORDER BY `timestamp` LIMIT ?", NULL, NULL, FALSE },
+    /* 34 */
+    { "SELECT `mailFrom`, `mailTo`, "
+      "DATE_FORMAT(`timestamp`, '%a %b %c %Y  %H:%i:%S'), `message` "
+      "FROM `mailMessages` WHERE `messageNum` = ?", NULL, NULL, FALSE },
+    /* 35 */
+    { "DELETE FROM `mailMessages` WHERE `messageNum` = ?", NULL, NULL, FALSE },
+    /* 36 */
+    { "SELECT `vnum` FROM `mobKillfile` WHERE `vnum` = ?", NULL, NULL, FALSE },
+    /* 37 */
+    { "SELECT `keywords`, `helpText` FROM `helpTopics` WHERE `helpType` = ? "
+      "AND UPPER(`keywords`) = UPPER(?)", NULL, NULL, FALSE },
+    /* 38 */
+    { "SELECT UPPER(`keywords`), "
+      "MATCH(`keywords`, `helpText`) AGAINST(?) AS score "
+      "FROM  `helpTopics` WHERE `helpType` = ? AND "
+      "MATCH(keywords, helpText) AGAINST(?) ORDER BY score DESC LIMIT 10",
+      NULL, NULL, FALSE },
+    /* 39 */
+    { "REPLACE INTO `objects` (`vnum`, `ownerId`, `ownedItemId`, "
+      "`shortDescription`, `description`, `actionDescription`, `modBy`, "
+      "`itemType`, `value0`, `value1`, `value2`, `value3`, `weight`, `cost`, "
+      "`costPerDay`, `level`, `max`, `modified`, `speed`, `weaponType`, "
+      "`tweak`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+      "FROM_UNIXTIME(?), ?, ?, ?)", NULL, NULL, FALSE },
+    /* 40 */
+    { "REPLACE INTO `objectKeywords` (`vnum`, `ownerId`, `ownedItemId`, "
+      "`seqNum`, `keyword`) VALUES ( ?, ?, ?, ?, ?)", NULL, NULL, FALSE },
+    /* 41 */
+    { "DELETE FROM `objectKeywords` WHERE `vnum` = ? AND `ownerId` = ? "
+      "AND `ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
+    /* 42 */
+    { "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, `ownedItemId`, "
+      "`takeable`, `wearFinger`, `wearNeck`, `wearBody`, `wearHead`, "
+      "`wearLegs`, `wearFeet`, `wearHands`, `wearArms`, `wearShield`, "
+      "`wearAbout`, `wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
+      "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
+      "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, `magic`, "
+      "`cursed`, `brittle`, `resistant`, `immune`, `rare`, `uberRare`, "
+      "`quest`, `antiSun`, `antiGood`, `antiEvil`, `antiNeutral`, `antiMale`, "
+      "`antiFemale`, `onlyMage`, `onlyCleric`, `onlyWarrior`, `onlyThief`, "
+      "`onlyDruid`, `onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
+      "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
+      "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, `antiDruid`, "
+      "`antiMonk`, `antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
+      "`antiRanger`, `antiPsionicist`, `antiNecromancer`) "
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      NULL, NULL, FALSE },
+    /* 43 */
+    { "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, `ownedItemId`, "
+      "`seqNum`, `keyword`, `description`) VALUES ( ?, ?, ?, ?, ?, ? )", NULL, 
+      NULL, FALSE },
+    /* 44 */
+    { "DELETE FROM `objectExtraDesc` WHERE `vnum` = ? AND `ownerId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` > ?", NULL, NULL, FALSE },
+    /* 45 */
+    { "REPLACE INTO `objectAffects` (`vnum`, `ownerId`, `ownedItemId`, "
+      "`seqNum`, `location`, `modifier`) VALUES ( ?, ?, ?, ?, ?, ? )", NULL,
+      NULL, FALSE },
+    /* 46 */
+    { "DELETE FROM `objectAffects` WHERE `vnum` = ? AND `ownerId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` > ?", NULL, NULL, FALSE },
+    /* 47 */
+    { "SELECT `shortDescription`, `description`, `actionDescription`, "
+      "`modBy`, `itemType`, `value0`, `value1`, `value2`, `value3`, `weight`, "
+      "`cost`, " "`costPerDay`, `level`, `max`, UNIX_TIMESTAMP(`modified`), "
+      "`speed`, `weaponType`, `tweak` FROM `objects` WHERE `vnum` = ? AND "
+      "`ownerId` = ? AND `ownedItemId` = ?", NULL, NULL, FALSE },
+    /* 48 */
+    { "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = ? AND "
+      "`ownerId` = ? AND `ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL,
+      FALSE },
+    /* 49 */
+    { "SELECT `takeable`, `wearFinger`, `wearNeck`, `wearBody`, `wearHead`, "
+      "`wearLegs`, `wearFeet`, `wearHands`, `wearArms`, `wearShield`, "
+      "`wearAbout`, `wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
+      "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
+      "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, `magic`, "
+      "`cursed`, `brittle`, `resistant`, `immune`, `rare`, `uberRare`, "
+      "`quest`, `antiSun`, `antiGood`, `antiEvil`, `antiNeutral`, `antiMale`, "
+      "`antiFemale`, `onlyMage`, `onlyCleric`, `onlyWarrior`, `onlyThief`, "
+      "`onlyDruid`, `onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
+      "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
+      "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, `antiDruid`, "
+      "`antiMonk`, `antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
+      "`antiRanger`, `antiPsionicist`, `antiNecromancer` FROM `objectFlags` " 
+      "WHERE `vnum` = ? AND `ownerId` = ? AND `ownedItemId` = ?", NULL, NULL,
+      FALSE },
+    /* 50 */
+    { "SELECT `keyword`, `description` FROM `objectExtraDesc` WHERE "
+      "`vnum` = ? AND `ownerId` = ? AND `ownerItemId` = ? ORDER BY `seqNum`", 
+      NULL, NULL, FALSE },
+    /* 51 */
+    { "SELECT `location`, `modifier` FROM `objectAffects` WHERE `vnum` = ? "
+      "AND `ownerId` = ? AND `ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL,
+      FALSE },
+    /* 52 */
+    { "SELECT `vnum` FROM `objects` WHERE `ownerId` = -1 AND "
+      "ownedItemId = -1 ORDER BY `vnum`", chain_generate_object_index, NULL,
+      FALSE },
+    /* 53 */
+    { "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = ? AND "
+      "`ownerId` = -1 AND `ownedItemId` = -1 ORDER BY `seqNum`", NULL, NULL,
+      FALSE },
+    { NULL, NULL, NULL, FALSE }
 
-    if( !(sql = mysql_init(NULL)) ) {
-        LogPrintNoArg(LOG_CRIT, "Unable to initialize a MySQL structure!!");
-        exit(1);
-    }
 
-    LogPrint(LOG_CRIT, "Using database %s at %s", mysql_db, mysql_host);
-
-    if( !mysql_real_connect(sql, mysql_host, mysql_user, mysql_passwd, 
-                            mysql_db, 0, NULL, 0) ) {
-        LogPrintNoArg(LOG_CRIT, "Unable to connect to the database");
-        mysql_error(sql);
-        exit(1);
-    }
-}
-
-char *db_quote(char *string)
-{
-    int             len,
-                    i,
-                    j,
-                    count;
-    char           *retString;
-
-    len = strlen(string);
-
-    for(i = 0, count = 0; i < len; i++) {
-        if( string[i] == '\'' || string[i] == '\"' ) {
-            count++;
-        }
-    }
-
-    if( !count ) {
-        return( strdup(string) );
-    }
-
-    retString = (char *)malloc(len + count + 1);
-    for(i = 0, j = 0; i < len; i++, j++) {
-        if( string[i] == '\'' || string[i] == '\"' ) {
-            retString[j++] = '\\';
-        }
-        retString[j] = string[i];
-    }
-    retString[j] = '\0';
-
-    return( retString );
-}
+};
 
 void db_report_entry(int reportId, struct char_data *ch, char *report)
 {
-    char           *string;
+    MYSQL_BIND     *data;
 
     if( !report ) {
         return;
     }
 
-    string = db_quote(report);
-    if( string ) {
-        sprintf( sqlbuf, "INSERT INTO `userReports` (`reportId`, `reportTime`, "
-                         "`character`, `roomNum`, `report`) "
-                         "VALUES ( %d, NULL, '%s', %ld, '%s' )", reportId,
-                         GET_NAME(ch), ch->in_room, string );
-        mysql_query(sql, sqlbuf);
-        free( string );
-    }
+    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
+    bind_string( &data[1], GET_NAME(ch), MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[2], ch->in_room, MYSQL_TYPE_LONG );
+    bind_string( &data[3], report, MYSQL_TYPE_VAR_STRING );
+
+    db_queue_query( 0, QueryTable, data, 4, NULL, NULL, NULL );
 }
 
-struct user_report *db_get_report(int reportId, struct user_report *report)
+struct user_report *db_get_report(int reportId)
 {
-    MYSQL_RES          *res;
-    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    struct user_report *report;
 
-    if( !report ) {
-        /* Need to to the query */
-        sprintf( sqlbuf, "SELECT `reportTime`, `character`, `roomNum`, "
-                         "`report` FROM `userReports` WHERE `reportId` = %d "
-                         "ORDER BY `reportTime` ASC", reportId );
-        mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-        report = (struct user_report *)malloc(sizeof(struct user_report));
-        if( !report ) {
-            LogPrintNoArg( LOG_CRIT, "Can't allocate a user report buffer!" );
-            return( NULL );
-        }
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-        memset( report, 0, sizeof(struct user_report) );
-
-        res = mysql_store_result(sql);
-        report->res = (void *)res;
-
-        if( !res || !(report->resCount = mysql_num_rows(res))) {
-            /* No reports */
-            report->resCount  = 0;
-            report->timestamp = NULL;
-            report->character = NULL;
-            report->report    = strdup("No reports at this time");
-            return(report);
-        }
-    }
-
-    if( report->timestamp ) {
-        free( report->timestamp );
-    }
-
-    if( report->character ) {
-        free( report->character );
-    }
-
-    if( report->report ) {
-        free( report->report );
-    }
-
-    res = (MYSQL_RES *)report->res;
-
-    if( report->resCount == 0 ) {
-        if( res ) {
-            mysql_free_result(res);
-        }
-        free( report );
-        return( NULL );
-    }
-
-    report->resCount--;
-
-    row = mysql_fetch_row(res);
-    report->timestamp = strdup(row[0]);
-    report->character = strdup(row[1]);
-    report->roomNum   = atoi(row[2]);
-    report->report    = strdup(row[3]);
+    bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
+    db_queue_query( 1, QueryTable, data, 1, result_get_report, 
+                    (void *)&report, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
     return( report );
 }
 
 void db_clean_report(int reportId)
 {
+    MYSQL_BIND         *data;
 
-    sprintf( sqlbuf, "DELETE FROM `userReports` WHERE `reportId` = %d", 
-                     reportId );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
+    db_queue_query( 2, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 void db_initial_load(void)
@@ -278,307 +423,44 @@ void db_initial_load(void)
 
 void db_load_classes(void)
 {
-    int                 i,
-                        j,
-                        level;
-    int                 classId;
-    int                 skillCount;
-    int                 err = FALSE;
-    MYSQL_RES           *resClass, *resSkill;
-    MYSQL_ROW           row;
-
     LogPrintNoArg(LOG_CRIT, "Loading classes[] from SQL");
 
-    strcpy(sqlbuf, "SELECT classId, className, classAbbrev "
-                   "FROM classes ORDER BY classId ASC");
-    mysql_query(sql, sqlbuf);
-
-    resClass = mysql_store_result(sql);
-    if( !resClass || !(classCount = mysql_num_rows(resClass))) {
-        /* No classes!? */
-        LogPrintNoArg( LOG_CRIT, "No classes defined in the database!" );
-        exit(1);
-    }
-
-    classes = (struct class_def *)malloc(classCount * sizeof(struct class_def));
-    if( !classes ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating classes[]" );
-        exit(1);
-    }
-
-    for( i = 0; i < classCount; i++ ) {
-        row = mysql_fetch_row(resClass);
-        classId = atoi(row[0]);
-        classes[i].name = strdup(row[1]);
-        classes[i].abbrev = strdup(row[2]);
-
-        sprintf( sqlbuf, "SELECT skills.skillName, skills.skillID, "
-                         "classSkills.minLevel, classSkills.maxTeach "
-                         "FROM skills, classSkills "
-                         "WHERE skills.skillId = classSkills.skillId AND "
-                         "classSkills.classId = %d AND "
-                         "classSkills.mainSkill = 0 "
-                         "ORDER BY skills.skillName ASC", classId );
-        mysql_query(sql, sqlbuf);
-
-        resSkill = mysql_store_result(sql);
-        if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
-            /* No result for this query */
-            classes[i].skillCount = 0;
-            classes[i].skills = NULL;
-        } else {
-            classes[i].skillCount = skillCount;
-            classes[i].skills = (struct skillset *)malloc(skillCount * 
-                                                     sizeof(struct skillset));
-            if( !classes[i].skills ) {
-                classes[i].skillCount = 0;
-                LogPrintNoArg( LOG_CRIT, "Dumping skills due to lack of "
-                                         "memory" );
-                err = TRUE;
-            } else {
-                for( j = 0; j < skillCount; j++ ) {
-                    row = mysql_fetch_row(resSkill);
-                    classes[i].skills[j].name = strdup(row[0]);
-                    classes[i].skills[j].skillnum = atoi(row[1]);
-                    classes[i].skills[j].level = atoi(row[2]);
-                    classes[i].skills[j].maxlearn = atoi(row[3]);
-                }
-            }
-            mysql_free_result(resSkill);
-        }
-
-
-        sprintf( sqlbuf, "SELECT skills.skillName, skills.skillID, "
-                         "classSkills.minLevel, classSkills.maxTeach "
-                         "FROM skills, classSkills "
-                         "WHERE skills.skillId = classSkills.skillId AND "
-                         "classSkills.classId = %d AND "
-                         "classSkills.mainSkill = 1 "
-                         "ORDER BY skills.skillName ASC", classId );
-        mysql_query(sql, sqlbuf);
-
-        resSkill = mysql_store_result(sql);
-        if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
-            /* No result for this query */
-            classes[i].mainskillCount = 0;
-            classes[i].mainskills = NULL;
-        } else {
-            classes[i].mainskillCount = skillCount;
-            classes[i].mainskills = (struct skillset *)malloc(skillCount * 
-                                                     sizeof(struct skillset));
-            if( !classes[i].mainskills ) {
-                classes[i].mainskillCount = 0;
-                LogPrintNoArg( LOG_CRIT, "Dumping mainskills due to lack of "
-                                         "memory" );
-                err = TRUE;
-            } else {
-                for( j = 0; j < skillCount; j++ ) {
-                    row = mysql_fetch_row(resSkill);
-                    classes[i].mainskills[j].name = strdup(row[0]);
-                    classes[i].mainskills[j].skillnum = atoi(row[1]);
-                    classes[i].mainskills[j].level = atoi(row[2]);
-                    classes[i].mainskills[j].maxlearn = atoi(row[3]);
-                }
-            }
-        }
-        mysql_free_result(resSkill);
-
-        sprintf( sqlbuf, "SELECT level, thaco, maleTitle, femaleTitle, minExp "
-                         "FROM classLevels WHERE classId = %d ORDER BY level",
-                         classId );
-        mysql_query(sql, sqlbuf);
-
-        resSkill = mysql_store_result(sql);
-        if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
-            /* No result for this query */
-            classes[i].levelCount = 0;
-            classes[i].levels = NULL;
-        } else {
-            classes[i].levelCount = skillCount;
-            classes[i].levels = (struct class_level_t *)malloc(skillCount * 
-                                                 sizeof(struct class_level_t));
-            if( !classes[i].levels ) {
-                classes[i].levelCount = 0;
-                LogPrintNoArg( LOG_CRIT, "Dumping levels due to lack of "
-                                         "memory" );
-                err = TRUE;
-            } else {
-                for( j = 0; j < skillCount; j++ ) {
-                    row = mysql_fetch_row(resSkill);
-                    level = atoi(row[0]);
-                    classes[i].levels[level].thaco = atoi(row[1]);
-                    classes[i].levels[level].title_m = strdup(row[2]);
-                    classes[i].levels[level].title_f = strdup(row[3]);
-                    classes[i].levels[level].exp = atol(row[4]);
-                }
-            }
-            mysql_free_result(resSkill);
-        }
-    }
-    mysql_free_result(resClass);
-    LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
-
-    if( err ) {
-        exit(1);
-    }
+    db_queue_query( 3, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
+
 
 void db_load_skills(void)
 {
-    int             i,
-                    j;
-
-    int             skillId;
-    int             err = FALSE;
-    MYSQL_RES      *resSkill, *resMsg;
-    MYSQL_ROW       row;
-
     LogPrintNoArg(LOG_CRIT, "Loading skills[] from SQL");
 
-    strcpy(sqlbuf, "SELECT skillId, skillName, skillType "
-                   "FROM skills ORDER BY skillId ASC");
-    mysql_query(sql, sqlbuf);
-
-    resSkill = mysql_store_result(sql);
-    if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
-        /* No skills!? */
-        LogPrintNoArg( LOG_CRIT, "No skills defined in the database!" );
-        exit(1);
-    }
-
-    skills = (struct skill_def *)malloc((skillCount + 1) * 
-                                        sizeof(struct skill_def));
-    if( !skills ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating skills[]" );
-        exit(1);
-    }
-
-    /* Leave skill 0 emtpy */
-    memset( skills, 0, (skillCount + 1) * sizeof(struct skill_def) );
-
-    for( i = 1; i <= skillCount; i++ ) {
-        row = mysql_fetch_row(resSkill);
-        skillId = atoi(row[0]);
-        skills[i].skillId   = skillId;
-        skills[i].name      = strdup(row[1]);
-        skills[i].skillType = atoi(row[2]);
-
-        for(j = 0; j < SKILL_MSG_COUNT; j++) {
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 1 AND "
-                             "`index` = %d", skillId, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                skills[i].message[j] = strdup(row[0]);
-            }
-            mysql_free_result(resMsg);
-        }
-    }
-    mysql_free_result(resSkill);
-
-    if( err ) {
-        exit(1);
-    }
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading skills[] from SQL");
+    db_queue_query( 6, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
 
 void db_load_structures(void)
 {
-    int             i;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    pthread_mutex_t    *mutex;
 
     LogPrintNoArg(LOG_CRIT, "Loading misc structures from SQL");
 
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
     /* direction[] */
-    strcpy(sqlbuf, "SELECT forward, reverse, trapBits, exit, listExit, "
-                   "direction, description "
-                   "FROM directions ORDER BY forward ASC");
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(directionCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No directions defined in the database!" );
-        exit(1);
-    }
-
-    direction = (struct dir_data *)malloc(directionCount * 
-                                          sizeof(struct dir_data));
-    if( !direction ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating direction[]" );
-        exit(1);
-    }
-
-    for( i = 0; i < directionCount; i++ ) {
-        row = mysql_fetch_row(res);
-        direction[i].forward  = atoi(row[0]);
-        direction[i].rev      = atoi(row[1]);
-        direction[i].trap     = atoi(row[2]);
-        direction[i].exit     = strdup(row[3]);
-        direction[i].listexit = strdup(row[4]);
-        direction[i].dir      = strdup(row[5]);
-        direction[i].desc     = strdup(row[6]);
-    }
-    mysql_free_result(res);
-
+    db_queue_query( 8, QueryTable, NULL, 0, result_load_structures_1, NULL, 
+                    mutex );
+    pthread_mutex_unlock( mutex );
 
     /* clan_list[] */
-    strcpy(sqlbuf, "SELECT clanId, clanName, shortName, description, homeRoom "
-                   "FROM playerClans ORDER BY clanId ASC");
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(clanCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No clans defined in the database!" );
-        exit(1);
-    }
-
-    clan_list = (struct clan *)malloc(clanCount * sizeof(struct clan));
-    if( !direction ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating clan_list[]" );
-        exit(1);
-    }
-
-    for( i = 0; i < clanCount; i++ ) {
-        row = mysql_fetch_row(res);
-        clan_list[i].number    = atoi(row[0]);
-        clan_list[i].name      = strdup(row[1]);
-        clan_list[i].shortname = strdup(row[2]);
-        clan_list[i].desc      = strdup(row[3]);
-        clan_list[i].home      = atoi(row[4]);
-    }
-    mysql_free_result(res);
+    db_queue_query( 9, QueryTable, NULL, 0, result_load_structures_2, NULL, 
+                    mutex );
+    pthread_mutex_unlock( mutex );
 
     /* sectors[] */
-    strcpy(sqlbuf, "SELECT sectorType, mapChar, moveLoss "
-                   "FROM sectorType ORDER BY sectorId ASC");
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(sectorCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No sector types defined in the database!" );
-        exit(1);
-    }
-
-    sectors = (struct sector_data *)malloc(sectorCount * 
-                                           sizeof(struct sector_data));
-    if( !sectors ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating sectors[]" );
-        exit(1);
-    }
-
-    for( i = 0; i < sectorCount; i++ ) {
-        row = mysql_fetch_row(res);
-        sectors[i].type     = strdup(row[0]);
-        sectors[i].mapChar  = strdup(row[1]);
-        sectors[i].moveLoss = atoi(row[2]);
-    }
-    mysql_free_result(res);
+    db_queue_query( 10, QueryTable, NULL, 0, result_load_structures_3, NULL, 
+                    mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finished loading misc structures from SQL");
 }
@@ -586,300 +468,51 @@ void db_load_structures(void)
 
 void db_load_messages(void)
 {
-    int             i,
-                    j,
-                    skill;
-
-    MYSQL_RES      *res, *resMsg;
-    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
 
     LogPrintNoArg(LOG_CRIT, "Loading fight messages from SQL");
 
-    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
-                    "WHERE msgId = 2 ORDER BY skillId" );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(fightMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No fight messages defined in the database!" );
-        exit(1);
-    }
+    bind_numeric( &data[0], 2, MYSQL_TYPE_LONG );
 
-    fightMessages = (struct message_list *)malloc(fightMessageCount * 
-                                                  sizeof(struct message_list));
-    if( !direction ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating fightMessages[]" );
-        exit(1);
-    }
-
-    memset( fightMessages, 0, fightMessageCount * sizeof(struct message_list) );
-
-    for( i = 0; i < fightMessageCount; i++ ) {
-        row = mysql_fetch_row(res);
-        skill = atoi(row[0]);
-        fightMessages[i].a_type = skill;
-
-        for( j = 0; j < FIGHT_MSG_COUNT; j++ ) {
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 2 AND "
-                             "`index` = %d", skill, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                fightMessages[i].msg[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
-            }
-        }
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading fight messages from SQL");
+    db_queue_query( 11, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 void db_load_bannedUsers(void)
 {
-    /*
-     * 0 - full match
-     * 1 - from start of string
-     * 2 - from end of string
-     * 3 - somewhere in string
-     */
-    int             i;
-    char           *tmp;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
-
     LogPrintNoArg(LOG_CRIT, "Loading banned usernames from SQL");
-
-    strcpy( sqlbuf, "SELECT name FROM bannedName" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(bannedUserCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No banned usernames defined in the "
-                                 "database!" );
-        exit(1);
-    }
-
-    bannedUsers = (struct banned_user *)malloc(bannedUserCount * 
-                                               sizeof(struct banned_user));
-    if( !bannedUsers ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating bannedUsers[]" );
-        exit(1);
-    }
-
-    for (i = 0; i < bannedUserCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = row[0];
-        if (*tmp == '*') {
-            if (tmp[strlen(tmp) - 1] == '*') {
-                bannedUsers[i].how = 3;
-                tmp[strlen(tmp) - 1] = '\0';
-            } else {
-                bannedUsers[i].how = 2;
-            }
-            tmp++;
-        } else if (tmp[strlen(tmp) - 1] == '*') {
-                bannedUsers[i].how = 1;
-                tmp[strlen(tmp) - 1] = '\0';
-        } else {
-            bannedUsers[i].how = 0;
-        }
-        bannedUsers[i].name = strdup(tmp);
-        bannedUsers[i].len  = strlen(bannedUsers[i].name);
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading banned usernames from SQL");
+    db_queue_query( 12, QueryTable, NULL, 0, result_load_bannedUsers, NULL,
+                    NULL );
 }
 
 void db_load_socials(void)
 {
-    int             i,
-                    j;
-    int             tmp;
-
-    MYSQL_RES      *res, *resMsg;
-    MYSQL_ROW       row;
-
-
     LogPrintNoArg(LOG_CRIT, "Loading social messages from SQL");
 
-    strcpy( sqlbuf, "SELECT socialId, hide, minPosition FROM socials "
-                    "ORDER BY socialId" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No social messages defined in the "
-                                 "database!" );
-        exit(1);
-    }
-
-    socialMessages = (struct social_messg *)malloc(socialMessageCount * 
-                                                   sizeof(struct social_messg));
-    if( !socialMessages ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating socialMessages[]" );
-        exit(1);
-    }
-
-    memset( socialMessages, 0, 
-            socialMessageCount * sizeof(struct social_messg) );
-
-    for (i = 0; i < socialMessageCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-        socialMessages[i].act_nr = tmp;
-        socialMessages[i].hide = atoi(row[1]);
-        socialMessages[i].min_victim_position = atoi(row[2]);
-
-        for( j = 0; j < SOCIAL_MSG_COUNT; j++ ) {
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 3 AND "
-                             "`index` = %d", tmp, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                socialMessages[i].msg[j] = strdup(row[0]);
-            }
-            mysql_free_result(resMsg);
-        }
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finishing loading social messages from SQL");
+    db_queue_query( 13, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
 
 void db_load_kick_messages(void)
 {
-    int             i,
-                    j;
-    int             tmp;
-
-    MYSQL_RES      *res, *resMsg;
-    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
 
     LogPrintNoArg(LOG_CRIT, "Loading kick messages from SQL");
 
-    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
-                    "WHERE msgId = 4 ORDER BY skillId" );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(kickMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No kick messages defined in the database!" );
-        exit(1);
-    }
+    bind_numeric( &data[0], 4, MYSQL_TYPE_LONG );
 
-    kickMessages = (struct kick_messg *)malloc(kickMessageCount * 
-                                               sizeof(struct kick_messg));
-    if( !kickMessages ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating kickMessages[]" );
-        exit(1);
-    }
-
-    memset( kickMessages, 0, 
-            kickMessageCount * sizeof(struct kick_messg) );
-
-    for (i = 0; i < kickMessageCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-
-        for( j = 0; j < KICK_MSG_COUNT; j++ ) {
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 4 AND "
-                             "`index` = %d", tmp, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                kickMessages[i].msg[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
-            }
-        }
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finishing loading kick messages from SQL");
+    db_queue_query( 11, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 void db_load_poses(void)
 {
-    int             i,
-                    j;
-    int             tmp;
-
-    MYSQL_RES      *res, *resMsg;
-    MYSQL_ROW       row;
-
     LogPrintNoArg(LOG_CRIT, "Loading pose messages from SQL");
 
-    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
-                    "WHERE msgId = 5 OR msgId = 6 ORDER BY skillId" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No pose messages defined in the database!" );
-        exit(1);
-    }
-
-    poseMessages = (struct pose_type *)malloc(poseMessageCount * 
-                                              sizeof(struct pose_type));
-    if( !poseMessages ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating poseMessages[]" );
-        exit(1);
-    }
-
-    memset( poseMessages, 0, poseMessageCount * sizeof(struct pose_type) );
-
-    for (i = 0; i < poseMessageCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-        poseMessages[i].level = tmp;
-
-        poseMessages[i].poser_msg = (char **)malloc(classCount * sizeof(char*));
-        poseMessages[i].room_msg  = (char **)malloc(classCount * sizeof(char*));
-        if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
-            LogPrintNoArg(LOG_CRIT, "Out of memory allocating poses" );
-            exit(1);
-        }
-
-        for( j = 0; j < classCount; j++ ) {
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 5 AND "
-                             "`index` = %d", tmp, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                poseMessages[i].poser_msg[j] = strdup(row[0]);
-            }
-            mysql_free_result(resMsg);
-
-            sprintf( sqlbuf, "SELECT text FROM skillMessages "
-                             "WHERE `skillId` = %d AND `msgId` = 6 AND "
-                             "`index` = %d", tmp, j+1 );
-            mysql_query(sql, sqlbuf);
-
-            resMsg = mysql_store_result(sql);
-            if( resMsg && mysql_num_rows(resMsg) ) {
-                row = mysql_fetch_row(resMsg);
-                poseMessages[i].room_msg[j] = strdup(row[0]);
-            }
-            mysql_free_result(resMsg);
-        }
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finishing loading pose messages from SQL");
+    db_queue_query( 14, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
 
 /*
@@ -887,50 +520,16 @@ void db_load_poses(void)
  */
 void assign_mobiles( void )
 {
-    int             i,
-                    rnum,
-                    vnum,
-                    count;
-    int_func        func;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
 
     LogPrintNoArg(LOG_CRIT, "Loading mobile procs from SQL");
 
-    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_MOBILE );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No mobile procedures defined in the "
-                                "database!" );
-        return;
-    }
+    bind_numeric( &data[0], PROC_MOBILE, MYSQL_TYPE_LONG );
 
-    for (i = 0; i < count; i++) {
-        row = mysql_fetch_row(res);
-
-        if( !(func = procGetFuncByName( row[1], PROC_MOBILE )) ) {
-            LogPrint(LOG_CRIT, "assign_mobiles: proc for mobile %s (%s) not "
-                               "registered.", row[0], row[1] );
-            continue;
-        }
-        
-        vnum = atoi(row[0]);
-        rnum = real_mobile(vnum);
-        if (rnum < 0) {
-            LogPrint(LOG_CRIT, "assign_mobiles: Mobile %d not found in "
-                               "database.", vnum);
-            continue;
-        }
-
-        mob_index[rnum].func = func;
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished mobile procs from SQL");
+    db_queue_query( 15, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 /*
@@ -938,50 +537,16 @@ void assign_mobiles( void )
  */
 void assign_objects( void )
 {
-    int             i,
-                    rnum,
-                    vnum,
-                    count;
-    int_func        func;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
 
     LogPrintNoArg(LOG_CRIT, "Loading object procs from SQL");
 
-    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_OBJECT );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No object procedures defined in the "
-                                "database!" );
-        return;
-    }
+    bind_numeric( &data[0], PROC_OBJECT, MYSQL_TYPE_LONG );
 
-    for (i = 0; i < count; i++) {
-        row = mysql_fetch_row(res);
-
-        if( !(func = procGetFuncByName( row[1], PROC_OBJECT )) ) {
-            LogPrint(LOG_CRIT, "assign_objects: proc for object %s (%s) not "
-                               "registered.", row[0], row[1] );
-            continue;
-        }
-        
-        vnum = atoi(row[0]);
-        rnum = real_object(vnum);
-        if (rnum < 0) {
-            LogPrint(LOG_CRIT, "assign_objects: Object %d not found in "
-                               "database.", vnum);
-            continue;
-        }
-
-        obj_index[rnum].func = func;
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished object procs from SQL");
+    db_queue_query( 15, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 /*
@@ -989,259 +554,96 @@ void assign_objects( void )
  */
 void assign_rooms( void )
 {
-    int             i,
-                    vnum,
-                    count;
-    struct room_data *rp;
-    int_func        func;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
 
     LogPrintNoArg(LOG_CRIT, "Loading room procs from SQL");
 
-    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_ROOM );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No room procedures defined in the database!" );
-        return;
-    }
+    bind_numeric( &data[0], PROC_ROOM, MYSQL_TYPE_LONG );
 
-    for (i = 0; i < count; i++) {
-        row = mysql_fetch_row(res);
-
-        if( !(func = procGetFuncByName( row[1], PROC_ROOM )) ) {
-            LogPrint(LOG_CRIT, "assign_rooms: proc for room %s (%s) not "
-                               "registered.", row[0], row[1] );
-            continue;
-        }
-        
-        vnum = atoi(row[0]);
-        rp = real_roomp(vnum);
-        if (!rp) {
-            LogPrint(LOG_CRIT, "assign_objects: Room %d not found in database.",
-                     vnum);
-            continue;
-        }
-
-        rp->funct = func;
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished room procs from SQL");
+    db_queue_query( 15, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 
 void db_load_races(void) 
 {
-    int             i,
-                    j;
-
-    MYSQL_RES      *res, *resMax;
-    MYSQL_ROW       row;
-
     LogPrintNoArg(LOG_CRIT, "Loading races[] from SQL");
 
-    strcpy( sqlbuf, "SELECT raceId, raceName, description, raceSize, ageStart, "
-                    "ageYoung, ageMature, ageMiddle, ageOld, ageAncient, "
-                    "ageVenerable, nativeLanguage "
-                    "FROM races ORDER BY raceId" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(raceCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No races defined in the database!" );
-        return;
-    }
-
-    races = (struct race_type *)malloc(raceCount * sizeof(struct race_type));
-    if( !races ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating races[]" );
-        exit(1);
-    }
-
-    memset( races, 0, raceCount * sizeof(struct race_type) );
-
-    for (i = 0; i < raceCount; i++) {
-        row = mysql_fetch_row(res);
-
-        races[i].race = atoi(row[0]) - 1;
-        races[i].racename = strdup(row[1]);
-        if( row[2] ) {
-            races[i].desc = strdup(row[2]);
-        } else {
-            races[i].desc = NULL;
-        }
-        races[i].size = atoi(row[4]);
-        races[i].start = atoi(row[5]);
-        races[i].young = atoi(row[6]);
-        races[i].mature = atoi(row[7]);
-        races[i].middle = atoi(row[8]);
-        races[i].old = atoi(row[9]);
-        races[i].venerable = atoi(row[10]);
-        races[i].nativeLanguage = atoi(row[11]) - 1;
-        if( races[i].nativeLanguage < 0 ) {
-            races[i].nativeLanguage = 0;
-        }
-
-        races[i].racialMax = (int *)malloc(classCount * sizeof(int));
-        if( !races[i].racialMax ) {
-            LogPrintNoArg(LOG_CRIT, "Out of memory allocating "
-                                    "races[i].racialMax" );
-            exit(1);
-        }
-
-        memset( races[i].racialMax, 0, classCount * sizeof(int) );
-
-        for( j = 0; j < classCount; j++ ) {
-            sprintf( sqlbuf, "SELECT maxLevel FROM racialMax "
-                             "WHERE raceId = %d AND classId = %d",
-                             races[i].race + 1, j + 1 );
-            mysql_query(sql, sqlbuf);
-
-            resMax = mysql_store_result(sql);
-            if( resMax && mysql_num_rows(resMax) ) {
-                row = mysql_fetch_row(resMax);
-                races[i].racialMax[j] = atoi(row[0]);
-            }
-            mysql_free_result(resMax);
-        }
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading races[] from SQL");
+    db_queue_query( 16, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
 
 
 void db_load_languages(void) 
 {
-    int             i;
-
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
-
     LogPrintNoArg(LOG_CRIT, "Loading languages[] from SQL");
 
-    strcpy( sqlbuf, "SELECT `langId`, `skillId`, `name` FROM languages "
-                    "ORDER BY `langId`" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
-    if( !res || !(languageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No languages defined in the database!" );
-        return;
-    }
-
-    languages = (struct lang_def *)malloc(languageCount * 
-                                          sizeof(struct lang_def));
-    if( !languages ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating languages[]" );
-        exit(1);
-    }
-
-
-    for (i = 0; i < languageCount; i++) {
-        row = mysql_fetch_row(res);
-
-        languages[i].langSpeaks = atoi(row[0]);
-        languages[i].langSkill  = atoi(row[1]);
-        languages[i].name       = strdup(row[2]);
-    }
-    mysql_free_result(res);
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading languages[] from SQL");
+    db_queue_query( 18, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
+
+typedef struct {
+    int         id;
+    char      **buffer;
+    char       *descr;
+} TextFiles_t;
+
+static TextFiles_t textfile[] = {
+    { 1, &credits,  "credits" },
+    { 2, &info,     "info" },
+    { 3, &login,    "login" },
+    { 4, &motd,     "motd" },
+    { 5, &news,     "news" },
+    { 6, &wmotd,    "wmotd" }
+};
+static int textfileCount = NELEMENTS(textfile);
 
 void db_load_textfiles(void)
 {
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    int                 i;
+    TextFiles_t        *file;
 
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
     LogPrintNoArg(LOG_CRIT, "Loading Essential Text Files.");
 
-    if( news ) {
-        free( news );
-    }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 5" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        news = strdup(row[0]);
-    }
-    mysql_free_result(res);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    if( credits ) {
-        free( credits );
-    }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 1" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        credits = strdup(row[0]);
-    }
-    mysql_free_result(res);
+    for( i = 0; i < textfileCount; i++ ) {
+        file = &textfile[i];
 
-    if( motd ) {
-        free( motd );
-    }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 4" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        motd = strdup(row[0]);
-    }
-    mysql_free_result(res);
+        /* Load up the defined file */
+        LogPrint( LOG_CRIT, "Loading '%s' file", file->descr );
 
-    if( wmotd ) {
-        free( wmotd );
-    }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 6" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        wmotd = strdup(row[0]);
-    }
-    mysql_free_result(res);
+        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
-    if( info ) {
-        free( info );
-    }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 2" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        info = strdup(row[0]);
-    }
-    mysql_free_result(res);
+        bind_numeric( &data[0], file->id, MYSQL_TYPE_LONG );
+        bind_null_blob( &data[1], (void *)file->buffer );
 
-    if( login ) {
-        free( login );
+        db_queue_query( 19, QueryTable, data, 2, NULL, NULL, mutex );
+        pthread_mutex_unlock( mutex );
     }
-    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 3" );
-    mysql_query(sql, sqlbuf);
-    res = mysql_store_result(sql);
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        login = strdup(row[0]);
-    }
-    mysql_free_result(res);
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 }
 
+/**
+ * @todo make player be populated from ch, will currently crash
+ */
 int db_save_textfile(struct char_data *ch)
 {
-    char           *outbuf;
-    struct edit_txt_msg *tfd;
-    int             fileId;
-    char            author[100];
+    char                   *outbuf;
+    struct edit_txt_msg    *tfd;
+    int                     fileId;
+    PlayerStruct_t         *player;
+    MYSQL_BIND             *data;
+    pthread_mutex_t        *mutex;
+
+    player = NULL;
 
     if (!ch) {
         return (FALSE);
@@ -1266,55 +668,66 @@ int db_save_textfile(struct char_data *ch)
         fileId = 6;
         break;
     default:
-        send_to_char("Cannot save this file type.\n\r", ch);
+        SendOutput( player, "Cannot save this file type.\n\r" );
         return (FALSE);
         break;
     }
 
-    strcpy(sqlbuf, "\n");
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    outbuf = (char *)malloc(MAX_STRING_LENGTH+2);
+    memset( outbuf, 0, MAX_STRING_LENGTH+2 );
+
+    strcpy(outbuf, "\n");
     if (tfd->date) {
-        strcat(sqlbuf, tfd->date);
-        while(sqlbuf[strlen(sqlbuf) - 1] == '~') {
-            sqlbuf[strlen(sqlbuf) - 1] = '\0';
+        strcat(outbuf, tfd->date);
+        
+        while(outbuf[strlen(outbuf) - 1] == '~') {
+            outbuf[strlen(outbuf) - 1] = '\0';
         }
-        strcat(sqlbuf, "\n");
+        strcat(outbuf, "\n");
     }
 
     if (tfd->body) {
-        strcat(sqlbuf, "\n");
-        remove_cr(&sqlbuf[strlen(sqlbuf)], tfd->body);
-        while (sqlbuf[strlen(sqlbuf) - 1] == '~') {
-            sqlbuf[strlen(sqlbuf) - 1] = '\0';
+        strcat(outbuf, "\n");
+        remove_cr(&outbuf[strlen(outbuf)], tfd->body);
+        while (outbuf[strlen(outbuf) - 1] == '~') {
+            outbuf[strlen(outbuf) - 1] = '\0';
         }
     }
 
     if (tfd->author) {
-        strcat(sqlbuf, "\nLast edited by ");
-        strcat(sqlbuf, tfd->author);
-        strcat(sqlbuf, ".");
-        sprintf( author, "'%s'", tfd->author );
-    } else {
-        strcpy( author, "NULL" );
+        strcat(outbuf, "\nLast edited by ");
+        strcat(outbuf, tfd->author);
+        strcat(outbuf, ".");
     }
 
-    strcat(sqlbuf, "\n");
+    strcat(outbuf, "\n");
 
-    outbuf = db_quote(sqlbuf);
+    /* Delete old file */
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    sprintf( sqlbuf, "DELETE FROM textFiles WHERE `fileId` = %d", fileId );
-    mysql_query(sql, sqlbuf);
+    bind_numeric( &data[0], fileId, MYSQL_TYPE_LONG );
+    db_queue_query( 20, QueryTable, data, 1, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
 
-    sprintf( sqlbuf, "INSERT INTO textFiles (`fileId`, `lastModified`, "
-                     "`lastModBy`, `fileContents`) VALUES (%d, NULL, %s, '%s')",
-                     fileId, author, outbuf );
+    /* Insert new file */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], fileId, MYSQL_TYPE_LONG );
+    bind_string( &data[1], tfd->author, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[2], outbuf, MYSQL_TYPE_STRING );
+    db_queue_query( 21, QueryTable, data, 3, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
     free( outbuf );
-
-    mysql_query(sql, sqlbuf);
 
     return (TRUE);
 }
-
-
 
 
 /*
@@ -1322,75 +735,74 @@ int db_save_textfile(struct char_data *ch)
  */
 void db_delete_board_message(struct board_def *board, short message_id)
 {
-    int             i,
-                    count,
-                    msgId;
+    MYSQL_BIND             *data;
+    pthread_mutex_t        *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
 
     /*
      * First check to see if we have a reply to this message -- if so
-     * axe it
+     * axe it (done in the chain routine)
      */
-    sprintf(sqlbuf, "SELECT `messageNum` FROM `boardMessages` "
-                    "WHERE `boardId` = %d AND `replyToMessageNum` = %d",
-                    board->boardId, message_id );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( res && (count = mysql_num_rows(res)) ) {
-        for( i = 0; i < count; i++ ) {
-            row = mysql_fetch_row(res);
-            msgId = atoi(row[0]);
-            db_delete_board_message(board, msgId);
-        }
-    }
-    mysql_free_result(res);
+    bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], message_id, MYSQL_TYPE_LONG );
+    bind_null_blob( &data[2], board );
+    db_queue_query( 22, QueryTable, data, 3, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
 
-    sprintf(sqlbuf, "DELETE FROM `boardMessages` where `messageNum` = %d AND "
-                    "`boardId` = %d", message_id, board->boardId );
-    mysql_query(sql, sqlbuf);
-    sprintf(sqlbuf, "UPDATE `boardMessages` "
-                    "SET `messageNum` = `messageNum` - 1 "
-                    "WHERE `messageNum` > %d AND `boardId` = %d", message_id, 
-                    board->boardId );
-    mysql_query(sql, sqlbuf);
-    sprintf(sqlbuf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` - 1 "
-                    "WHERE boardId = %d", board->boardId );
-    mysql_query(sql, sqlbuf);
+    /* delete the message */
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], message_id, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], board->boardId, MYSQL_TYPE_LONG );
+    db_queue_query( 23, QueryTable, data, 2, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    /* Renumber any following messages */
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], message_id, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], board->boardId, MYSQL_TYPE_LONG );
+    db_queue_query( 24, QueryTable, data, 2, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    /* Renumber max posts for the board */
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
+    db_queue_query( 25, QueryTable, data, 1, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 }
 
 struct board_def *db_lookup_board(int vnum)
 {
-    struct board_def *board;
+    struct board_def   *board;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    sprintf(sqlbuf, "SELECT `boardId`, `maxPostNum`, `minLevel` "
-                    "FROM `boards` WHERE `vnum` = %d", vnum);
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return( NULL );
-    }
-
-    row = mysql_fetch_row(res);
-    
-    board = (struct board_def *)malloc(sizeof(struct board_def));
-    if( !board ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a board structure!" );
-        mysql_free_result(res);
-        return( NULL );
-    }
-
-    board->boardId = atoi(row[0]);
-    board->messageCount = atoi(row[1]);
-    board->minLevel = atoi(row[2]);
-    mysql_free_result(res);
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    db_queue_query( 26, QueryTable, data, 1, result_lookup_board, 
+                    (void *)&board, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
     return( board );
 }
@@ -1398,41 +810,22 @@ struct board_def *db_lookup_board(int vnum)
 struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
 {
     struct bulletin_board_message *msg;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    sprintf(sqlbuf, "SELECT `poster`, `topic`, `post`, "
-                    "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
-                    "FROM `boardMessages` "
-                    "WHERE `boardId` = %d AND messageNum = %d", boardId,
-                    msgNum );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return( NULL );
-    }
-
-    row = mysql_fetch_row(res);
-    
-    msg = (struct bulletin_board_message *)
-              malloc(sizeof(struct bulletin_board_message));
-    if( !msg ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
-                                "structure!" );
-        mysql_free_result(res);
-        return( NULL );
-    }
-
-    msg->author = strdup(row[0]);
-    msg->title = strdup(row[1]);
-    msg->text = strdup(row[2]);
-    msg->date = atoi(row[3]);
-    msg->message_id = msgNum;
-    msg->reply_to - atoi(row[4]);
-    mysql_free_result(res);
+    bind_numeric( &data[0], boardId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], msgNum, MYSQL_TYPE_LONG );
+    db_queue_query( 27, QueryTable, data, 2, result_get_board_message, 
+                    (void *)&msg, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
     return( msg );
 }
@@ -1458,51 +851,35 @@ void db_free_board_message(struct bulletin_board_message *msg)
     free( msg );
 }
 
+typedef struct {
+    struct bulletin_board_message **msg;
+    int                             count;
+} BoardRepliesArgs_t;
+
 int db_get_board_replies(struct board_def *board, int msgId, 
                          struct bulletin_board_message **msg)
 {
-    int             count,
-                    i;
+    BoardRepliesArgs_t  args;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    args.msg = msg;
 
-    sprintf(sqlbuf, "SELECT `poster`, `topic`, `post`, `messageNum`, "
-                    "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
-                    "FROM `boardMessages` "
-                    "WHERE `boardId` = %d AND replyToMessageNum = %d "
-                    "ORDER BY `messageNum`", board->boardId, msgId );
-    mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        mysql_free_result(res);
-        *msg = NULL;
-        return( 0 );
-    }
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
-    *msg = (struct bulletin_board_message *)
-              malloc(sizeof(struct bulletin_board_message) * count);
-    if( !*msg ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
-                                "structure!" );
-        mysql_free_result(res);
-        return( 0 );
-    }
+    bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], msgId, MYSQL_TYPE_LONG );
+    db_queue_query( 28, QueryTable, data, 2, result_get_board_message, 
+                    (void *)&args, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    for(i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-
-        (*msg)[i].author = strdup(row[0]);
-        (*msg)[i].title = strdup(row[1]);
-        (*msg)[i].text = strdup(row[2]);
-        (*msg)[i].message_id = atoi(row[3]);
-        (*msg)[i].date = atoi(row[4]);
-        (*msg)[i].reply_to = atoi(row[5]);
-    }
-    mysql_free_result(res);
-
-    return( count );
+    return( args.count );
 }
 
 void db_free_board_replies(struct bulletin_board_message *msg, int count)
@@ -1533,232 +910,232 @@ void db_free_board_replies(struct bulletin_board_message *msg, int count)
 void db_post_message(struct board_def *board, 
                      struct bulletin_board_message *msg)
 {
-    char           *topic,
-                   *post;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    topic = db_quote(msg->title);
-    post  = db_quote(msg->text);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    sprintf(sqlbuf, "INSERT INTO `boardMessages` (`boardId`, `messageNum`, "
-                    "`replyToMessageNum`, `topic`, `poster`, `postTime`, "
-                    "`post`) VALUES (%d, %d, %d, '%s', '%s', NULL, '%s')",
-                    board->boardId, board->messageCount + 1, msg->reply_to,
-                    topic, msg->author, post );
-    mysql_query(sql, sqlbuf);
-    
-    free(topic);
-    free(post);
+    /* Write the post */
+    data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+    memset( data, 0, 6 * sizeof(MYSQL_BIND) );
 
-    sprintf(sqlbuf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` + 1 "
-                    "WHERE `boardId` = %d", board->boardId );
-    mysql_query(sql, sqlbuf);
+    bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], board->messageCount + 1, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], msg->reply_to, MYSQL_TYPE_LONG );
+    bind_string( &data[3], msg->title, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[4], msg->author, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[5], msg->text, MYSQL_TYPE_STRING );
+    db_queue_query( 29, QueryTable, data, 6, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
 
-    db_free_board_message(msg);
+    /* update the board's max post */
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
+    db_queue_query( 30, QueryTable, data, 1, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 }
 
 void db_store_mail(char *to, char *from, char *message_pointer)
 {
-    char           *post;
+    MYSQL_BIND         *data;
 
-    post = db_quote(message_pointer);
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
-    sprintf(sqlbuf, "INSERT INTO `mailMessages` (`mailFrom`, `mailTo`, "
-                    "`timestamp`, `message`) VALUES ('%s', '%s', NULL, '%s')",
-                    from, to, post );
-    mysql_query(sql, sqlbuf);
-
-    free(post);
+    bind_string( &data[0], from, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[1], to, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[2], message_pointer, MYSQL_TYPE_STRING );
+    db_queue_query( 31, QueryTable, data, 3, NULL, NULL, NULL );
 }
 
 int             db_has_mail(char *recipient)
 {
-    int             count;
+    int                 count;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    sprintf(sqlbuf, "SELECT HIGH_PRIORITY COUNT(*) as count FROM "
-                    "`mailMessages` WHERE LOWER(`mailTo`) = LOWER('%s')", 
-                    recipient );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return( 0 );
-    }
-
-    row = mysql_fetch_row(res);
-    count = atoi(row[0]);
-    mysql_free_result(res);
+    bind_string( &data[0], recipient, MYSQL_TYPE_VAR_STRING );
+    db_queue_query( 32, QueryTable, data, 1, result_has_mail, (void *)&count, 
+                    mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
     return( count );
 }
+
+typedef struct {
+    int         *msgNum;
+    int         count;
+} MailIdsArgs_t;
 
 int db_get_mail_ids(char *recipient, int *messageNum, int count)
 {
-    int             i;
+    MailIdsArgs_t       args;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    args.msgNum = messageNum;
+    args.count  = count;
 
-    sprintf(sqlbuf, "SELECT `messageNum` FROM `mailMessages` "
-                    "WHERE LOWER(`mailTo`) = LOWER('%s') ORDER BY `timestamp` "
-                    "LIMIT %d", recipient, count );
-    mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        mysql_free_result(res);
-        return(0);
-    }
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-        messageNum[i] = atoi(row[0]);
-    }
-    mysql_free_result(res);
+    bind_string( &data[0], recipient, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[1], count, MYSQL_TYPE_LONG );
+    db_queue_query( 33, QueryTable, data, 2, result_get_mail_ids, (void *)&args,
+                    mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    return( count );
+    return( args.count );
 }
+
 
 char *db_get_mail_message(int messageId)
 {
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    char               *msg;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    sprintf(sqlbuf, "SELECT `mailFrom`, `mailTo`, "
-                    "DATE_FORMAT(`timestamp`, '%%a %%b %%c %%Y  %%H:%%i:%%S'), "
-                    "`message` FROM `mailMessages` WHERE `messageNum` = %d",
-                    messageId );
-    mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    res = mysql_store_result(sql);
-    if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return(NULL);
-    }
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    row = mysql_fetch_row(res);
+    bind_numeric( &data[0], messageId, MYSQL_TYPE_LONG );
+    db_queue_query( 34, QueryTable, data, 1, result_get_mail_message, 
+                    (void *)&msg, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    sprintf(sqlbuf, " * * * * Havok Mail System * * * *\n\r"
-                    "Date: %s\n\r"
-                    "  To: %s\n\r"
-                    "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
-    mysql_free_result(res);
-
-    return( strdup(sqlbuf) );
+    return( msg );
 }
 
 void db_delete_mail_message(int messageId)
 {
-    sprintf(sqlbuf, "DELETE FROM `mailMessages` WHERE `messageNum` = %d",
-                    messageId );
-    mysql_query(sql, sqlbuf);
+    MYSQL_BIND         *data;
+
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], messageId, MYSQL_TYPE_LONG );
+    db_queue_query( 35, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 int CheckKillFile(long virtual)
 {
-    MYSQL_RES      *res;
-    int             count;
+    int                 count;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    sprintf(sqlbuf, "SELECT `vnum` FROM `mobKillfile` WHERE `vnum` = %ld", 
-                    virtual );
-    mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    res = mysql_store_result(sql);
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    count = (res ? mysql_num_rows(res) : 0 );
+    bind_numeric( &data[0], virtual, MYSQL_TYPE_LONG );
+    db_queue_query( 36, QueryTable, data, 1, result_check_kill_file, 
+                    (void *)&count, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    mysql_free_result(res);
-    return (count);
+    return( count );
 }
 
 
 char *db_lookup_help( int type, char *keywords )
 {
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    char               *msg;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    sprintf(sqlbuf, "SELECT `keywords`, `helpText` FROM `helpTopics` "
-                    "WHERE `helpType` = %d AND "
-                    "UPPER(`keywords`) = UPPER('%s')", type, keywords );
-    mysql_query(sql, sqlbuf);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    res = mysql_store_result(sql);
-    if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return(NULL);
-    }
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
-    row = mysql_fetch_row(res);
+    bind_numeric( &data[0], type, MYSQL_TYPE_LONG );
+    bind_string( &data[1], keywords, MYSQL_TYPE_VAR_STRING );
+    db_queue_query( 37, QueryTable, data, 2, result_lookup_help, 
+                    (void *)&msg, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    sprintf(sqlbuf, "\"%s\"\n\r\n\r"
-                 "%s\n\r", row[0], row[1] );
-    mysql_free_result(res);
-
-    return( strdup(sqlbuf) );
+    return( msg );
 }
+
+typedef struct {
+    char           *msg;
+    char           *keywords;
+} LookupHelpArgs_t;
 
 char *db_lookup_help_similar( int type, char *keywords )
 {
-    char            line[256];
-    int             count,
-                    i;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    LookupHelpArgs_t    args;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
 
-    sprintf(sqlbuf, "SELECT UPPER(`keywords`), "
-                    "MATCH(`keywords`, `helpText`) AGAINST('%s') AS score "
-                    "FROM  `helpTopics` WHERE `helpType` = %d AND "
-                    "MATCH(keywords, helpText) AGAINST('%s') "
-                    "ORDER BY score DESC LIMIT 10", keywords, type, keywords );
-    mysql_query(sql, sqlbuf);
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
-    res = mysql_store_result(sql);
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        mysql_free_result(res);
-        return(NULL);
-    }
+    bind_string( &data[0], keywords, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[1], type, MYSQL_TYPE_LONG );
+    bind_string( &data[2], keywords, MYSQL_TYPE_VAR_STRING );
+    db_queue_query( 38, QueryTable, data, 3, result_lookup_help_similar, 
+                    (void *)&args, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 
-    sprintf(sqlbuf, "No exact matches found for \"%s\".  Top %d relevant "
-                    "topics are:\n\r  %-68s Score\n\r", keywords, count,
-                    "Keywords" );
-
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-
-        snprintf(line, 255, "    %-66s %6.3f\n\r", row[0],
-                            strtod(row[1], NULL));
-        strcat(sqlbuf, line);
-    }
-
-    mysql_free_result(res);
-
-    strcat(sqlbuf, "Please retry help using one of these keywords.\n\r");
-
-    return( strdup(sqlbuf) );
+    return( args.msg );
 }
 
 void db_save_object(struct obj_data *obj, int owner, int ownerItem )
 {
     char           *name,
-                   *shortDesc,
-                   *desc,
                    *actDesc,
-                   *keyword,
-                   *quoted;
+                   *keyword;
     int             i,
                     j;
     struct extra_descr_data *descr;
     int             vnum;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    shortDesc = db_quote(obj->short_description);
-    desc      = db_quote(obj->description);
-    actDesc   = db_quote(obj->action_description);
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+
     vnum      = obj_index[obj->item_number].virtual;
+    actDesc   = obj->action_description;
 
+    /* Strip trailing \n\r from the action description */
     i = strlen(actDesc) - 1;
     while( i > 0 &&
            (actDesc[i] == '\n' || actDesc[i] == '\r') &&
@@ -1770,173 +1147,218 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         actDesc[0] = '\0';
     }
 
-    sprintf(sqlbuf, "REPLACE INTO `objects` (`vnum`, `ownerId`, `ownedItemId`, "
-                    "`shortDescription`, `description`, "
-                    "`actionDescription`, `modBy`, `itemType`, `value0`, "
-                    "`value1`, `value2`, `value3`, `weight`, `cost`, "
-                    "`costPerDay`, `level`, `max`, `modified`, "
-                    "`speed`, `weaponType`, `tweak`) VALUES ( %d, %d, %d, "
-                    "'%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, "
-                    "%d, %d, FROM_UNIXTIME(%ld), %d, %d, %d)", 
-                    vnum, owner, ownerItem,
-                    shortDesc, desc, actDesc, obj->modBy,
-                    obj->obj_flags.type_flag, obj->obj_flags.value[0],
-                    obj->obj_flags.value[1], obj->obj_flags.value[2],
-                    obj->obj_flags.value[3], obj->obj_flags.weight,
-                    obj->obj_flags.cost, obj->obj_flags.cost_per_day, 
-                    obj->level, obj->max, (long)obj->modified, 
-                    (IS_WEAPON(obj)? obj->speed : 0),
-                    (IS_WEAPON(obj) ? obj->weapontype : 0), obj->tweak );
-    mysql_query(sql, sqlbuf);
-    free(shortDesc);
-    free(desc);
-    free(actDesc);
+    /* Replace the object */
+    data = (MYSQL_BIND *)malloc(21 * sizeof(MYSQL_BIND));
+    memset( data, 0, 21 * sizeof(MYSQL_BIND) );
 
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    bind_string( &data[3], obj->short_description, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[4], obj->description, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[5], obj->action_description, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[6], obj->modBy, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[7], obj->obj_flags.type_flag, MYSQL_TYPE_LONG );
+    bind_numeric( &data[8], obj->obj_flags.value[0], MYSQL_TYPE_LONG );
+    bind_numeric( &data[9], obj->obj_flags.value[1], MYSQL_TYPE_LONG );
+    bind_numeric( &data[10], obj->obj_flags.value[2], MYSQL_TYPE_LONG );
+    bind_numeric( &data[11], obj->obj_flags.value[3], MYSQL_TYPE_LONG );
+    bind_numeric( &data[12], obj->obj_flags.weight, MYSQL_TYPE_LONG );
+    bind_numeric( &data[13], obj->obj_flags.cost, MYSQL_TYPE_LONG );
+    bind_numeric( &data[14], obj->obj_flags.cost_per_day, 
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[15], obj->level, MYSQL_TYPE_LONG );
+    bind_numeric( &data[16], obj->max, MYSQL_TYPE_LONG );
+    bind_numeric( &data[17], (long)obj->modified, MYSQL_TYPE_LONG );
+    bind_numeric( &data[18], (IS_WEAPON(obj)? obj->speed : 0), 
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[19], (IS_WEAPON(obj) ? obj->weapontype : 0),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[20], obj->tweak, MYSQL_TYPE_LONG );
+    db_queue_query( 39, QueryTable, data, 21, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    /* Make a copy of the name as strsep is destructive */
     name = strdup(obj->name);
     i = 0;
     while( (keyword = strsep(&name, " \t\n\r")) ) {
-        quoted = db_quote(keyword);
-        sprintf(sqlbuf, "REPLACE INTO `objectKeywords` (`vnum`, `ownerId`, "
-                        "`ownedItemId`, `seqNum`, `keyword`) VALUES ( %d, %d, "
-                        "%d, %d, '%s')", vnum, owner, ownerItem, i, quoted);
-        mysql_query(sql, sqlbuf);
-        free(quoted);
+        /* Update the keywords */
+        data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+        memset( data, 0, 5 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+        bind_string( &data[4], keyword, MYSQL_TYPE_VAR_STRING );
+        db_queue_query( 40, QueryTable, data, 5, NULL, NULL, mutex );
+        pthread_mutex_unlock( mutex );
+
         i++;
     }
     free(name);
 
-    sprintf(sqlbuf, "DELETE FROM `objectKeywords` WHERE `vnum` = %d AND "
-                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` >= %d",
-                    vnum, owner, ownerItem, i);
-    mysql_query(sql, sqlbuf);
+    /* Remove any unused keywords */
+    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
-    strcpy(sqlbuf, "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, "
-                   "`ownedItemId`, `takeable`, `wearFinger`, `wearNeck`, "
-                   "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, "
-                   "`wearHands`, `wearArms`, `wearShield`, `wearAbout`, "
-                   "`wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
-                   "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, "
-                   "`wearThrow`, `glow`, `hum`, `metal`, `mineral`, `organic`, "
-                   "`invisible`, `magic`, `cursed`, `brittle`, `resistant`, "
-                   "`immune`, `rare`, `uberRare`, `quest`, `antiSun`, "
-                   "`antiGood`, `antiEvil`, ");
-    strcat(sqlbuf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
-                   "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
-                   "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
-                   "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, "
-                   "`onlyNecromancer`, `antiMage`, `antiCleric`, "
-                   "`antiWarrior`, `antiThief`, `antiDruid`, `antiMonk`, "
-                   "`antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
-                   "`antiRanger`, `antiPsionicist`, `antiNecromancer`) "
-                   "VALUES (" );
-    sprintf( &sqlbuf[strlen(sqlbuf)], "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                      "%d, %d, %d, %d, %d, %d, %d)", 
-                                      vnum, owner, ownerItem,
-                                      WEAR_FLAG(obj, ITEM_TAKE),
-                                      WEAR_FLAG(obj, ITEM_WEAR_FINGER),
-                                      WEAR_FLAG(obj, ITEM_WEAR_NECK),
-                                      WEAR_FLAG(obj, ITEM_WEAR_BODY),
-                                      WEAR_FLAG(obj, ITEM_WEAR_HEAD),
-                                      WEAR_FLAG(obj, ITEM_WEAR_LEGS),
-                                      WEAR_FLAG(obj, ITEM_WEAR_FEET),
-                                      WEAR_FLAG(obj, ITEM_WEAR_HANDS),
-                                      WEAR_FLAG(obj, ITEM_WEAR_ARMS),
-                                      WEAR_FLAG(obj, ITEM_WEAR_SHIELD),
-                                      WEAR_FLAG(obj, ITEM_WEAR_ABOUT),
-                                      WEAR_FLAG(obj, ITEM_WEAR_WAISTE),
-                                      WEAR_FLAG(obj, ITEM_WEAR_WRIST),
-                                      WEAR_FLAG(obj, ITEM_WEAR_BACK),
-                                      WEAR_FLAG(obj, ITEM_WEAR_EAR),
-                                      WEAR_FLAG(obj, ITEM_WEAR_EYE),
-                                      WEAR_FLAG(obj, ITEM_LIGHT_SOURCE),
-                                      WEAR_FLAG(obj, ITEM_HOLD),
-                                      WEAR_FLAG(obj, ITEM_WIELD),
-                                      WEAR_FLAG(obj, ITEM_THROW),
-                                      EXTRA_FLAG(obj, ITEM_GLOW),
-                                      EXTRA_FLAG(obj, ITEM_HUM),
-                                      EXTRA_FLAG(obj, ITEM_METAL),
-                                      EXTRA_FLAG(obj, ITEM_MINERAL),
-                                      EXTRA_FLAG(obj, ITEM_ORGANIC),
-                                      EXTRA_FLAG(obj, ITEM_INVISIBLE),
-                                      EXTRA_FLAG(obj, ITEM_MAGIC),
-                                      EXTRA_FLAG(obj, ITEM_NODROP),
-                                      EXTRA_FLAG(obj, ITEM_BRITTLE),
-                                      EXTRA_FLAG(obj, ITEM_RESISTANT),
-                                      EXTRA_FLAG(obj, ITEM_IMMUNE),
-                                      EXTRA_FLAG(obj, ITEM_RARE),
-                                      EXTRA_FLAG(obj, ITEM_UNUSED),
-                                      EXTRA_FLAG(obj, ITEM_QUEST),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_SUN),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_GOOD),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_EVIL),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_NEUTRAL),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_MEN),
-                                      EXTRA_FLAG(obj, ITEM_ANTI_WOMEN),
-                                      ONLY_FLAG(obj, ITEM_ANTI_MAGE),
-                                      ONLY_FLAG(obj, ITEM_ANTI_CLERIC),
-                                      ONLY_FLAG(obj, ITEM_ANTI_FIGHTER),
-                                      ONLY_FLAG(obj, ITEM_ANTI_THIEF),
-                                      ONLY_FLAG(obj, ITEM_ANTI_DRUID),
-                                      ONLY_FLAG(obj, ITEM_ANTI_MONK),
-                                      ONLY_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                                      ONLY_FLAG(obj, ITEM_ANTI_MAGE),
-                                      ONLY_FLAG(obj, ITEM_ANTI_PALADIN),
-                                      ONLY_FLAG(obj, ITEM_ANTI_RANGER),
-                                      ONLY_FLAG(obj, ITEM_ANTI_PSI),
-                                      ONLY_FLAG(obj, ITEM_ANTI_NECROMANCER),
-                                      ANTI_FLAG(obj, ITEM_ANTI_MAGE),
-                                      ANTI_FLAG(obj, ITEM_ANTI_CLERIC),
-                                      ANTI_FLAG(obj, ITEM_ANTI_FIGHTER),
-                                      ANTI_FLAG(obj, ITEM_ANTI_THIEF),
-                                      ANTI_FLAG(obj, ITEM_ANTI_DRUID),
-                                      ANTI_FLAG(obj, ITEM_ANTI_MONK),
-                                      ANTI_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                                      ANTI_FLAG(obj, ITEM_ANTI_MAGE),
-                                      ANTI_FLAG(obj, ITEM_ANTI_PALADIN),
-                                      ANTI_FLAG(obj, ITEM_ANTI_RANGER),
-                                      ANTI_FLAG(obj, ITEM_ANTI_PSI),
-                                      ANTI_FLAG(obj, ITEM_ANTI_NECROMANCER));
-    mysql_query(sql, sqlbuf);
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+    db_queue_query( 41, QueryTable, data, 4, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    /* Update the object's flags */
+    data = (MYSQL_BIND *)malloc(67 * sizeof(MYSQL_BIND));
+    memset( data, 0, 67 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    bind_numeric( &data[3], WEAR_FLAG(obj, ITEM_TAKE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[4], WEAR_FLAG(obj, ITEM_WEAR_FINGER), MYSQL_TYPE_LONG );
+    bind_numeric( &data[5], WEAR_FLAG(obj, ITEM_WEAR_NECK), MYSQL_TYPE_LONG );
+    bind_numeric( &data[6], WEAR_FLAG(obj, ITEM_WEAR_BODY), MYSQL_TYPE_LONG );
+    bind_numeric( &data[7], WEAR_FLAG(obj, ITEM_WEAR_HEAD), MYSQL_TYPE_LONG );
+    bind_numeric( &data[8], WEAR_FLAG(obj, ITEM_WEAR_LEGS), MYSQL_TYPE_LONG );
+    bind_numeric( &data[9], WEAR_FLAG(obj, ITEM_WEAR_FEET), MYSQL_TYPE_LONG );
+    bind_numeric( &data[10], WEAR_FLAG(obj, ITEM_WEAR_HANDS), MYSQL_TYPE_LONG );
+    bind_numeric( &data[11], WEAR_FLAG(obj, ITEM_WEAR_ARMS), MYSQL_TYPE_LONG );
+    bind_numeric( &data[12], WEAR_FLAG(obj, ITEM_WEAR_SHIELD),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[13], WEAR_FLAG(obj, ITEM_WEAR_ABOUT), MYSQL_TYPE_LONG );
+    bind_numeric( &data[14], WEAR_FLAG(obj, ITEM_WEAR_WAISTE),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[15], WEAR_FLAG(obj, ITEM_WEAR_WRIST), MYSQL_TYPE_LONG );
+    bind_numeric( &data[16], WEAR_FLAG(obj, ITEM_WEAR_BACK), MYSQL_TYPE_LONG );
+    bind_numeric( &data[17], WEAR_FLAG(obj, ITEM_WEAR_EAR), MYSQL_TYPE_LONG );
+    bind_numeric( &data[18], WEAR_FLAG(obj, ITEM_WEAR_EYE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[19], WEAR_FLAG(obj, ITEM_LIGHT_SOURCE),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[20], WEAR_FLAG(obj, ITEM_HOLD), MYSQL_TYPE_LONG );
+    bind_numeric( &data[21], WEAR_FLAG(obj, ITEM_WIELD), MYSQL_TYPE_LONG );
+    bind_numeric( &data[22], WEAR_FLAG(obj, ITEM_THROW), MYSQL_TYPE_LONG );
+    bind_numeric( &data[23], EXTRA_FLAG(obj, ITEM_GLOW), MYSQL_TYPE_LONG );
+    bind_numeric( &data[24], EXTRA_FLAG(obj, ITEM_HUM), MYSQL_TYPE_LONG );
+    bind_numeric( &data[25], EXTRA_FLAG(obj, ITEM_METAL), MYSQL_TYPE_LONG );
+    bind_numeric( &data[26], EXTRA_FLAG(obj, ITEM_MINERAL), MYSQL_TYPE_LONG );
+    bind_numeric( &data[27], EXTRA_FLAG(obj, ITEM_ORGANIC), MYSQL_TYPE_LONG );
+    bind_numeric( &data[28], EXTRA_FLAG(obj, ITEM_INVISIBLE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[29], EXTRA_FLAG(obj, ITEM_MAGIC), MYSQL_TYPE_LONG );
+    bind_numeric( &data[30], EXTRA_FLAG(obj, ITEM_NODROP), MYSQL_TYPE_LONG );
+    bind_numeric( &data[31], EXTRA_FLAG(obj, ITEM_BRITTLE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[32], EXTRA_FLAG(obj, ITEM_RESISTANT), MYSQL_TYPE_LONG );
+    bind_numeric( &data[33], EXTRA_FLAG(obj, ITEM_IMMUNE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[34], EXTRA_FLAG(obj, ITEM_RARE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[35], EXTRA_FLAG(obj, ITEM_UNUSED), MYSQL_TYPE_LONG );
+    bind_numeric( &data[36], EXTRA_FLAG(obj, ITEM_QUEST), MYSQL_TYPE_LONG );
+    bind_numeric( &data[37], EXTRA_FLAG(obj, ITEM_ANTI_SUN), MYSQL_TYPE_LONG );
+    bind_numeric( &data[38], EXTRA_FLAG(obj, ITEM_ANTI_GOOD), MYSQL_TYPE_LONG );
+    bind_numeric( &data[39], EXTRA_FLAG(obj, ITEM_ANTI_EVIL), MYSQL_TYPE_LONG );
+    bind_numeric( &data[40], EXTRA_FLAG(obj, ITEM_ANTI_NEUTRAL),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[41], EXTRA_FLAG(obj, ITEM_ANTI_MEN), MYSQL_TYPE_LONG );
+    bind_numeric( &data[42], EXTRA_FLAG(obj, ITEM_ANTI_WOMEN),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[43], ONLY_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[44], ONLY_FLAG(obj, ITEM_ANTI_CLERIC),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[45], ONLY_FLAG(obj, ITEM_ANTI_FIGHTER),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[46], ONLY_FLAG(obj, ITEM_ANTI_THIEF), MYSQL_TYPE_LONG );
+    bind_numeric( &data[47], ONLY_FLAG(obj, ITEM_ANTI_DRUID), MYSQL_TYPE_LONG );
+    bind_numeric( &data[48], ONLY_FLAG(obj, ITEM_ANTI_MONK), MYSQL_TYPE_LONG );
+    bind_numeric( &data[49], ONLY_FLAG(obj, ITEM_ANTI_BARBARIAN),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[50], ONLY_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[51], ONLY_FLAG(obj, ITEM_ANTI_PALADIN),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[52], ONLY_FLAG(obj, ITEM_ANTI_RANGER),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[53], ONLY_FLAG(obj, ITEM_ANTI_PSI), MYSQL_TYPE_LONG );
+    bind_numeric( &data[54], ONLY_FLAG(obj, ITEM_ANTI_NECROMANCER),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[55], ANTI_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[56], ANTI_FLAG(obj, ITEM_ANTI_CLERIC),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[57], ANTI_FLAG(obj, ITEM_ANTI_FIGHTER),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[58], ANTI_FLAG(obj, ITEM_ANTI_THIEF), MYSQL_TYPE_LONG );
+    bind_numeric( &data[59], ANTI_FLAG(obj, ITEM_ANTI_DRUID), MYSQL_TYPE_LONG );
+    bind_numeric( &data[60], ANTI_FLAG(obj, ITEM_ANTI_MONK), MYSQL_TYPE_LONG );
+    bind_numeric( &data[61], ANTI_FLAG(obj, ITEM_ANTI_BARBARIAN),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[62], ANTI_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
+    bind_numeric( &data[63], ANTI_FLAG(obj, ITEM_ANTI_PALADIN),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[64], ANTI_FLAG(obj, ITEM_ANTI_RANGER),
+                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[65], ANTI_FLAG(obj, ITEM_ANTI_PSI), MYSQL_TYPE_LONG );
+    bind_numeric( &data[66], ANTI_FLAG(obj, ITEM_ANTI_NECROMANCER),
+                  MYSQL_TYPE_LONG );
+    db_queue_query( 42, QueryTable, data, 67, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
 
     for (descr = obj->ex_description, i = 0; descr; descr = descr->next, i++) {
-        desc = db_quote(descr->description);
-        name = db_quote(descr->keyword);
-        sprintf(sqlbuf, "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, "
-                        "`ownedItemId`, `seqNum`, `keyword`, `description`) "
-                        "VALUES ( %d, %d, %d, %d, '%s', '%s')",
-                        vnum, owner, ownerItem, i, name, desc );
-        mysql_query(sql, sqlbuf);
-        free(name);
-        free(desc);
+        /* Update extra descriptions */
+        data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+        memset( data, 0, 6 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+        bind_string( &data[4], descr->keyword, MYSQL_TYPE_VAR_STRING );
+        bind_string( &data[5], descr->description, MYSQL_TYPE_VAR_STRING );
+        db_queue_query( 43, QueryTable, data, 6, NULL, NULL, mutex );
+        pthread_mutex_unlock( mutex );
     }
 
-    sprintf(sqlbuf, "DELETE FROM `objectExtraDesc` WHERE `vnum` = %d AND "
-                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                    vnum, owner, ownerItem, i );
-    mysql_query(sql, sqlbuf);
+    /* remove unused extra descriptions */
+    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+    db_queue_query( 44, QueryTable, data, 4, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
 
     for (i = 0, j = 0; i < MAX_OBJ_AFFECT; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
-            sprintf(sqlbuf, "REPLACE INTO `objectAffects` (`vnum`, `ownerId`, "
-                            "`ownedItemId`, `seqNum`, `location`, `modifier`) "
-                            "VALUES ( %d, %d, %d, %d, %d, %ld )",
-                            vnum, owner, ownerItem, j, 
-                            obj->affected[i].location,
-                            obj->affected[i].modifier);
-            mysql_query(sql, sqlbuf);
+            /* update affects */
+            data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+            memset( data, 0, 6 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+            bind_numeric( &data[3], j, MYSQL_TYPE_LONG );
+            bind_numeric( &data[4], obj->affected[i].location, 
+                          MYSQL_TYPE_LONG );
+            bind_numeric( &data[5], obj->affected[i].modifier, 
+                          MYSQL_TYPE_LONG );
+            db_queue_query( 45, QueryTable, data, 6, NULL, NULL, mutex );
+            pthread_mutex_unlock( mutex );
             j++;
         }
     }
 
-    sprintf(sqlbuf, "DELETE FROM `objectAffects` WHERE `vnum` = %d AND "
-                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                    vnum, owner, ownerItem, j);
-    mysql_query(sql, sqlbuf);
+    /* remove unused affects */
+    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    bind_numeric( &data[3], j, MYSQL_TYPE_LONG );
+    db_queue_query( 46, QueryTable, data, 4, NULL, NULL, mutex );
+    pthread_mutex_unlock( mutex );
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
 }
 
 struct obj_flag_bits {
@@ -2015,64 +1437,1440 @@ struct obj_flag_bits obj_flags[] = {
 struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
                                 int ownerItem )
 {
-    unsigned int   *var;
-    struct extra_descr_data *descr;
-    struct extra_descr_data *prev;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+
+    /* load the object */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+    db_queue_query( 47, QueryTable, data, 3, result_read_object_1, 
+                    (void *)&obj, mutex );
+    pthread_mutex_unlock( mutex );
+
+    if( obj ) {
+        /* load the keywords */
+        data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+        memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        db_queue_query( 48, QueryTable, data, 3, result_read_object_2, 
+                        (void *)&obj, mutex );
+        pthread_mutex_unlock( mutex );
+    }
+
+    if( obj ) {
+        /* load the flags */
+        data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+        memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        db_queue_query( 49, QueryTable, data, 3, result_read_object_3, 
+                        (void *)&obj, mutex );
+        pthread_mutex_unlock( mutex );
+    }
+    
+    if( obj ) {
+        /* load extra descriptions */
+        data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+        memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        db_queue_query( 50, QueryTable, data, 3, result_read_object_4, 
+                        (void *)&obj, mutex );
+        pthread_mutex_unlock( mutex );
+    }
+
+    if( obj ) {
+        /* load affects */
+        data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+        memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+        bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+        db_queue_query( 51, QueryTable, data, 3, result_read_object_5, 
+                        (void *)&obj, mutex );
+        pthread_mutex_unlock( mutex );
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    return(obj);
+}
+
+struct keyword_list;
+struct keyword_list {
+    struct keyword_list *next;
+    char *keyword;
+};
+
+QueryTable_t    QueryKeywords[] = {
+    /* 0 */
+    { "SELECT a1.vnum "
+      "FROM `objectKeywords` as a1 "
+      "WHERE a1.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE },
+    /* 1 */
+    { "SELECT a1.vnum FROM `objectKeywords` as a1, `objectKeywords` as a2 "
+      "WHERE a2.vnum = a1.vnum AND "
+      "a1.keyword REGEXP ? AND a2.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE },
+    /* 2 */
+    { "SELECT a1.vnum from `objectKeywords` as a1, `objectKeywords` as a2, "
+      "`objectKeywords` as a3 "
+      "WHERE a2.vnum = a1.vnum AND a3.vnum = a1.vnum AND "
+      "a1.keyword REGEXP ? AND a2.keyword REGEXP ? AND a3.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE },
+    /* 3 */
+    { "SELECT a1.vnum from `objectKeywords` as a1, `objectKeywords` as a2, "
+      "`objectKeywords` as a3, `objectKeywords` as a4 "
+      "WHERE a2.vnum = a1.vnum AND a3.vnum = a1.vnum AND a4.vnum = a1.vnum AND "
+      "a1.keyword REGEXP ? AND a2.keyword REGEXP ? AND a3.keyword REGEXP ? AND "
+      "a4.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE },
+    /* 4 */
+    { "SELECT a1.vnum from `objectKeywords` as a1, `objectKeywords` as a2, "
+      "`objectKeywords` as a3, `objectKeywords` as a4, `objectKeywords` as a5 "
+      "WHERE a2.vnum = a1.vnum AND a3.vnum = a1.vnum AND a4.vnum = a1.vnum AND "
+      "a5.vnum = a1.vnum AND "
+      "a1.keyword REGEXP ? AND a2.keyword REGEXP ? AND a3.keyword REGEXP ? AND "
+      "a4.keyword REGEXP ? AND a5.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE },
+    /* 5 */
+    { "SELECT a1.vnum from `objectKeywords` as a1, `objectKeywords` as a2, "
+      "`objectKeywords` as a3, `objectKeywords` as a4, `objectKeywords` as a5, "
+      "`objectKeywords` as a6 "
+      "WHERE a2.vnum = a1.vnum AND a3.vnum = a1.vnum AND a4.vnum = a1.vnum AND "
+      "a5.vnum = a1.vnum AND a6.vnum = a1.vnum AND "
+      "a1.keyword REGEXP ? AND a2.keyword REGEXP ? AND a3.keyword REGEXP ? AND "
+      "a4.keyword REGEXP ? AND a5.keyword REGEXP ? AND a6.keyword REGEXP ? "
+      "LIMIT 1", NULL, NULL, FALSE }
+};
+static int maxKeywords = NELEMENTS( QueryKeywords );
+
+int db_find_object_named(char *string, int owner, int ownerItem)
+{
     int             count;
     int             i;
-    int             len;
+    char           *keyword;
+    struct keyword_list *keywordList;
+    struct keyword_list *prev;
+    struct keyword_list *curr;
+    int             vnum;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
-    MYSQL_RES      *res;
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+
+    keywordList = NULL;
+    prev = NULL;
+    count = 0;
+
+    while( ( keyword = strsep( &string, "- \t\n\r" ) ) ) {
+        curr = (struct keyword_list *)malloc(sizeof(struct keyword_list));
+        curr->next = NULL;
+        curr->keyword = (char *)malloc(strlen(keyword)+2);
+        strcpy( curr->keyword, "^" );
+        strcat( curr->keyword, keyword );
+
+        if( !prev ) {
+            keywordList = curr;
+        } else {
+            prev->next = curr;
+        }
+        prev = curr;
+        count++;
+    }
+
+    /* search for the keywords, up to a maximum number of them */
+    if( count > maxKeywords ) {
+        LogPrint( LOG_CRIT, "User entered %d keywords, searching on only "
+                            "first %d keywords", count, maxKeywords );
+        count = maxKeywords;
+    }
+    vnum = -1;
+
+    data = (MYSQL_BIND *)malloc(count * sizeof(MYSQL_BIND));
+    memset( data, 0, count * sizeof(MYSQL_BIND) );
+
+    for( i = 0, curr = keywordList; i < count; i++, curr = curr->next ) {
+        bind_string( &data[i], curr->keyword, MYSQL_TYPE_VAR_STRING );
+    }
+    db_queue_query( count - 1, QueryKeywords, data, count, 
+                    result_find_object_named, (void *)&vnum, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    for( curr = keywordList; curr; curr = prev ) {
+        prev = curr->next;
+        free( curr->keyword );
+        free( curr );
+    }
+
+    return( vnum );
+}
+
+struct index_data *db_generate_object_index(int *top, int *sort_top,
+                                            int *alloc_top)
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    struct index_data *index = NULL;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+
+    bind_null_blob( &data[0], (void *)top );
+    bind_null_blob( &data[1], (void *)sort_top );
+    bind_null_blob( &data[2], (void *)alloc_top );
+    bind_null_blob( &data[3], (void *)&index );
+    db_queue_query( 52, QueryTable, data, 4, NULL, NULL, mutex );
+
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    return( index );
+}
+
+/*
+ * Query chaining functions
+ */
+
+void chain_update_nick( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             count;
+    MYSQL_BIND     *data;
+    MYSQL_BIND      temp[2];
+
+    data = item->queryData;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        count = 0;
+    }
+
+    memcpy( temp, &data[2], 2 * sizeof(MYSQL_BIND) );
+    memcpy( &data[2], &data[0], 2 * sizeof(MYSQL_BIND) );
+    memcpy( &data[0], temp, 2 * sizeof(MYSQL_BIND) );
+
+    if( count ) {
+        /* update */
+        db_queue_query( 4, QueryTable, data, 4, NULL, NULL, NULL );
+    } else {
+        /* insert */
+        db_queue_query( 5, QueryTable, data, 4, NULL, NULL, NULL );
+    }
+}
+
+
+void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
+{
+    int                 count;
+    int                 classId;
+    int                 i;
+    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    if( !res || !(count = mysql_num_rows(res))) {
+        /* No classes!? */
+        LogPrintNoArg( LOG_CRIT, "No classes defined in the database!" );
+        exit(1);
+    }
+
+    classCount = count;
+    classes = (struct class_def *)malloc(classCount * sizeof(struct class_def));
+    if( !classes ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating classes[]" );
+        exit(1);
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        classId = atoi(row[0]);
+        classes[i].name = strdup(row[1]);
+        classes[i].abbrev = strdup(row[2]);
+
+        /* 4, classId, 0 */
+        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], 0, MYSQL_TYPE_LONG );
+        db_queue_query( 4, QueryTable, data, 2, result_load_classes_1, 
+                        (void *)&classes[i], mutex );
+
+        pthread_mutex_unlock( mutex );
+
+        /* 4, classId, 1 */
+        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
+        bind_numeric( &data[1], 1, MYSQL_TYPE_LONG );
+        db_queue_query( 4, QueryTable, data, 2, result_load_classes_2, 
+                        (void *)&classes[i], mutex );
+
+        pthread_mutex_unlock( mutex );
+
+        /* 5 */
+        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
+        db_queue_query( 4, QueryTable, data, 1, result_load_classes_3, 
+                        (void *)&i, mutex );
+
+        pthread_mutex_unlock( mutex );
+    }
+    
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
+}
+
+void chain_load_skills( MYSQL_RES *res, QueryItem_t *item )
+{
+    int                 count;
+    int                 i,
+                        j;
+    int                 skillId;
+    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        /* No skills!? */
+        LogPrintNoArg( LOG_CRIT, "No skills defined in the database!" );
+        exit(1);
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    skills = (struct skill_def *)malloc((count + 1) * sizeof(struct skill_def));
+    if( !skills ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating skills[]" );
+        exit(1);
+    }
+
+    /* Leave skill 0 emtpy */
+    memset( skills, 0, (count + 1) * sizeof(struct skill_def) );
+
+    for( i = 1; i <= count; i++ ) {
+        row = mysql_fetch_row(res);
+        skillId = atoi(row[0]);
+        skills[i].skillId   = skillId;
+        skills[i].name      = strdup(row[1]);
+        skills[i].skillType = atoi(row[2]);
+
+        for(j = 0; j < SKILL_MSG_COUNT; j++) {
+            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], skillId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], 1, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
+                            (void *)skills[i].message[j], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+    }
+    
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrintNoArg(LOG_CRIT, "Finished loading skills[] from SQL");
+}
+
+void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
+{
+    int                 i,
+                        j,
+                        tmp;
+    int                 count;
+    int                 count2;
+    int                 type;
+
+    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    struct message_list *msgs;
+
+    static char        *types[] = { "", "", "fight", "", "kick" };
+
+    type = *(int *)item->queryData[0].buffer;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        LogPrint( LOG_CRIT, "No %s messages defined in the database!",
+                  types[type] );
+        exit(1);
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    msgs = (struct message_list *)malloc(count * sizeof(struct message_list));
+    if( !msgs ) {
+        LogPrint( LOG_CRIT, "Out of memory allocating %sMessages[]", 
+                            types[type] );
+        exit(1);
+    }
+
+    if( type == 2 ) {
+        fightMessages = msgs;
+        fightMessageCount = count;
+        count2 = FIGHT_MSG_COUNT;
+    } else {
+        kickMessages = msgs;
+        kickMessageCount = count;
+        count2 = KICK_MSG_COUNT;
+    }
+
+    memset( msgs, 0, count * sizeof(struct message_list) );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        tmp = atoi(row[0]);
+        if( type == 2 ) {
+            msgs[i].a_type = tmp;
+        }
+
+        for( j = 0; j < count2; j++ ) {
+            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], type, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
+                            (void *)msgs[i].msg[j], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+    }
+    
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrint(LOG_CRIT, "Finished loading %s messages from SQL", types[type] );
+}
+
+void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             i,
+                    j;
+    int             tmp;
+
+    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg( LOG_CRIT, "No social messages defined in the "
+                                 "database!" );
+        exit(1);
+    }
+
+    socialMessages = (struct social_messg *)malloc(socialMessageCount * 
+                                                   sizeof(struct social_messg));
+    if( !socialMessages ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating socialMessages[]" );
+        exit(1);
+    }
+
+    memset( socialMessages, 0, 
+            socialMessageCount * sizeof(struct social_messg) );
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+
+    for (i = 0; i < socialMessageCount; i++) {
+        row = mysql_fetch_row(res);
+        tmp = atoi(row[0]);
+        socialMessages[i].act_nr = tmp;
+        socialMessages[i].hide = atoi(row[1]);
+        socialMessages[i].min_victim_position = atoi(row[2]);
+
+        for( j = 0; j < SOCIAL_MSG_COUNT; j++ ) {
+            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], 3, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
+                            (void *)socialMessages[i].msg[j], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+    }
+    
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrintNoArg(LOG_CRIT, "Finishing loading social messages from SQL");
+}
+
+void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             i,
+                    j;
+    int             tmp;
+
+    MYSQL_ROW       row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg(LOG_CRIT, "No pose messages defined in the database!" );
+        exit(1);
+    }
+
+    poseMessages = (struct pose_type *)malloc(poseMessageCount * 
+                                              sizeof(struct pose_type));
+    if( !poseMessages ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating poseMessages[]" );
+        exit(1);
+    }
+
+    memset( poseMessages, 0, poseMessageCount * sizeof(struct pose_type) );
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    for (i = 0; i < poseMessageCount; i++) {
+        row = mysql_fetch_row(res);
+        tmp = atoi(row[0]);
+        poseMessages[i].level = tmp;
+
+        poseMessages[i].poser_msg = (char **)malloc(classCount * sizeof(char*));
+        poseMessages[i].room_msg  = (char **)malloc(classCount * sizeof(char*));
+        if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
+            LogPrintNoArg(LOG_CRIT, "Out of memory allocating poses" );
+            exit(1);
+        }
+
+        for( j = 0; j < classCount; j++ ) {
+            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], 5, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
+                            (void *)poseMessages[i].poser_msg[j], mutex );
+            pthread_mutex_unlock( mutex );
+
+
+            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], 6, MYSQL_TYPE_LONG );
+            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
+                            (void *)poseMessages[i].room_msg[j], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrintNoArg(LOG_CRIT, "Finishing loading pose messages from SQL");
+}
+
+void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
+{
+    static char        *desc[] = { "", "mobile", "object", "room" };
+    int                 type;
+    int                 i,
+                        rnum,
+                        vnum,
+                        count;
+    struct room_data   *rp = NULL;
+    int_func            func;
+
     MYSQL_ROW       row;
 
-    sprintf(sqlbuf, "SELECT `shortDescription`, `description`, "
-                    "`actionDescription`, `modBy`, `itemType`, `value0`, "
-                    "`value1`, `value2`, `value3`, `weight`, `cost`, "
-                    "`costPerDay`, `level`, `max`, UNIX_TIMESTAMP(`modified`), "
-                    "`speed`, `weaponType`, `tweak` FROM `objects` "
-                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
-                    "`ownedItemId` = %d", vnum, owner, ownerItem);
-    mysql_query(sql, sqlbuf);
+    type = *(int *)item->queryData[0].buffer;
 
-    res = mysql_store_result(sql);
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        LogPrint(LOG_CRIT, "No %s procedures defined in the database!",
+                           desc[type]);
+        return;
+    }
+
+    for (i = 0; i < count; i++) {
+        row = mysql_fetch_row(res);
+
+        if( !(func = procGetFuncByName( row[1], type )) ) {
+            LogPrint(LOG_CRIT, "assign_procs: proc for %s %s (%s) not "
+                               "registered.", desc[type], row[0], row[1] );
+            continue;
+        }
+        
+        vnum = atoi(row[0]);
+        switch( type ) {
+        case PROC_MOBILE:
+            rnum = real_mobile(vnum);
+            break;
+        case PROC_OBJECT:
+            rnum = real_object(vnum);
+            break;
+        case PROC_ROOM:
+            rp = real_roomp(vnum);
+            rnum = ( rp ? 1 : -1 );
+            break;
+        default:
+            LogPrint(LOG_CRIT, "Unknown special proc type %d!", type );
+            return;
+        }
+
+        if (rnum < 0) {
+            LogPrint(LOG_CRIT, "assign_procs: %s %d not found in database.", 
+                               desc[type], vnum);
+            continue;
+        }
+
+        switch( type ) {
+        case PROC_MOBILE:
+            mob_index[rnum].func = func;
+            break;
+        case PROC_OBJECT:
+            obj_index[rnum].func = func;
+            break;
+        case PROC_ROOM:
+            rp->funct = func;
+            break;
+        default:
+            return;
+        }
+    }
+
+    LogPrint(LOG_CRIT, "Finished %s procs from SQL", desc[type]);
+}
+
+
+void chain_load_races( MYSQL_RES *res, QueryItem_t *item )
+{
+    int                 i,
+                        j;
+
+    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    if( !res || !(raceCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg(LOG_CRIT, "No races defined in the database!" );
+        return;
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    races = (struct race_type *)malloc(raceCount * sizeof(struct race_type));
+    if( !races ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating races[]" );
+        exit(1);
+    }
+
+    memset( races, 0, raceCount * sizeof(struct race_type) );
+
+    for (i = 0; i < raceCount; i++) {
+        row = mysql_fetch_row(res);
+
+        races[i].race = atoi(row[0]) - 1;
+        races[i].racename = strdup(row[1]);
+        if( row[2] ) {
+            races[i].desc = strdup(row[2]);
+        } else {
+            races[i].desc = NULL;
+        }
+        races[i].size = atoi(row[4]);
+        races[i].start = atoi(row[5]);
+        races[i].young = atoi(row[6]);
+        races[i].mature = atoi(row[7]);
+        races[i].middle = atoi(row[8]);
+        races[i].old = atoi(row[9]);
+        races[i].venerable = atoi(row[10]);
+        races[i].nativeLanguage = atoi(row[11]) - 1;
+        if( races[i].nativeLanguage < 0 ) {
+            races[i].nativeLanguage = 0;
+        }
+
+        races[i].racialMax = (int *)malloc(classCount * sizeof(int));
+        if( !races[i].racialMax ) {
+            LogPrintNoArg(LOG_CRIT, "Out of memory allocating "
+                                    "races[i].racialMax" );
+            exit(1);
+        }
+
+        memset( races[i].racialMax, 0, classCount * sizeof(int) );
+
+        for( j = 0; j < classCount; j++ ) {
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], races[i].race + 1, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], j+1, MYSQL_TYPE_LONG );
+            db_queue_query( 17, QueryTable, data, 2, result_load_races,
+                            (void *)&races[i].racialMax[j], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    LogPrintNoArg(LOG_CRIT, "Finished loading races[] from SQL");
+}
+
+void chain_load_languages( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             i;
+
+    MYSQL_ROW       row;
+
+    if( !res || !(languageCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg(LOG_CRIT, "No languages defined in the database!" );
+        return;
+    }
+
+    languages = (struct lang_def *)malloc(languageCount * 
+                                          sizeof(struct lang_def));
+    if( !languages ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating languages[]" );
+        exit(1);
+    }
+
+
+    for (i = 0; i < languageCount; i++) {
+        row = mysql_fetch_row(res);
+
+        languages[i].langSpeaks = atoi(row[0]);
+        languages[i].langSkill  = atoi(row[1]);
+        languages[i].name       = strdup(row[2]);
+    }
+
+    LogPrintNoArg(LOG_CRIT, "Finished loading languages[] from SQL");
+}
+
+void chain_load_textfiles( MYSQL_RES *res, QueryItem_t *item )
+{
+    char          **buffer;
+    MYSQL_ROW       row;
+
+    buffer = (char **)item->queryData[1].buffer;
+    if( *buffer ) {
+        free( *buffer );
+        *buffer = NULL;
+    }
+
+    if( res && mysql_num_rows(res) ) {
+        row = mysql_fetch_row(res);
+        *buffer = strdup(row[0]);
+    }
+}
+
+void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item )
+{
+    int                 i;
+    int                 count;
+    int                 msgId;
+    MYSQL_ROW           row;
+    struct board_def   *board;
+
+    board = (struct board_def *)item->queryData[2].buffer;
+
+    if( res && (count = mysql_num_rows(res)) ) {
+        for( i = 0; i < count; i++ ) {
+            row = mysql_fetch_row(res);
+            msgId = atoi(row[0]);
+            db_delete_board_message(board, msgId);
+        }
+    }
+}
+
+void chain_generate_object_index( MYSQL_RES *res, QueryItem_t *item )
+{
+    struct index_data **retindex;
+    struct index_data  *index = NULL;
+    int                *top;
+    int                *sort_top;
+    int                *alloc_top;
+    int                 i,
+                        vnum;
+    int                 count;
+
+    MYSQL_ROW           row;
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    top       = (int *)item->queryData[0].buffer;
+    sort_top  = (int *)item->queryData[1].buffer;
+    alloc_top = (int *)item->queryData[2].buffer;
+    retindex  = (struct index_data **)item->queryData[3].buffer;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        *retindex = NULL;
+        return;
+    }
+
+    index = (struct index_data *)malloc(count * sizeof(struct index_data));
+    *retindex = index;
+    if( !index ) {
+        return;
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        vnum = atoi(row[0]);
+        index[i].virtual = vnum;
+        index[i].pos = -1;
+        index[i].number = 0;
+        index[i].data = NULL;
+        index[i].func = NULL;
+
+        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+        db_queue_query( 53, QueryTable, data, 1, result_generate_object_index,
+                        (void *)&index[i], mutex );
+        pthread_mutex_unlock( mutex );
+
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    *sort_top = count - 1;
+    *alloc_top = count;
+    *top = count;
+}
+
+/*
+ * Query result callbacks
+ */
+
+void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct user_report **rept;
+    struct user_report *report;
+    int             count;
+    int             mcount;
+    int             i;
+    MYSQL_ROW       row;
+
+    rept = (struct user_report **)arg;
+
+    count = mysql_num_rows(res);
+    mcount = ( count ? count : 1 );
+
+    report = (struct user_report *)malloc(mcount * sizeof(struct user_report));
+    *rept = report;
+    if( !report ) {
+        LogPrintNoArg( LOG_CRIT, "Can't allocate a user report buffer!" );
+        return;
+    }
+
+    if( !count ) {
+        /* No reports */
+        report->resCount  = 0;
+        report->timestamp = NULL;
+        report->character = NULL;
+        report->report    = strdup("No reports at this time");
+        return;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        report[i].resCount  = count;
+        report[i].timestamp = strdup(row[0]);
+        report[i].character = strdup(row[1]);
+        report[i].roomNum   = atoi(row[2]);
+        report[i].report    = strdup(row[3]);
+    }
+}
+
+void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int                 count;
+    struct class_def   *cls;
+    int                 i;
+    MYSQL_ROW           row;
+
+    cls = (struct class_def *)arg;
+    
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        /* No result for this query */
+        cls->skillCount = 0;
+        cls->skills = NULL;
+        return;
+    } 
+
+    cls->skillCount = count;
+    cls->skills = (struct skillset *)malloc(count * sizeof(struct skillset));
+    if( !cls->skills ) {
+        cls->skillCount = 0;
+        LogPrintNoArg( LOG_CRIT, "Dumping skills due to lack of memory" );
+        exit(1);
+    }
+    
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        cls->skills[i].name     = strdup(row[0]);
+        cls->skills[i].skillnum = atoi(row[1]);
+        cls->skills[i].level    = atoi(row[2]);
+        cls->skills[i].maxlearn = atoi(row[3]);
+    }
+}
+
+void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int                 count;
+    struct class_def   *cls;
+    int                 i;
+    MYSQL_ROW           row;
+
+    cls = (struct class_def *)arg;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        /* No result for this query */
+        cls->mainskillCount = 0;
+        cls->mainskills = NULL;
+        return;
+    }
+    
+    cls->mainskillCount = count;
+    cls->mainskills = (struct skillset *)malloc(count* sizeof(struct skillset));
+
+    if( !cls->mainskills ) {
+        cls->mainskillCount = 0;
+        LogPrintNoArg( LOG_CRIT, "Dumping mainskills due to lack of memory" );
+        exit( 1 );
+    } 
+    
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        cls->mainskills[i].name     = strdup(row[0]);
+        cls->mainskills[i].skillnum = atoi(row[1]);
+        cls->mainskills[i].level    = atoi(row[2]);
+        cls->mainskills[i].maxlearn = atoi(row[3]);
+    }
+}
+
+
+void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int                 count;
+    struct class_def   *cls;
+    int                 i;
+    int                 level;
+    MYSQL_ROW           row;
+
+    cls = (struct class_def *)arg;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        /* No result for this query */
+        cls->levelCount = 0;
+        cls->levels = NULL;
+        return;
+    } 
+    
+    cls->levelCount = count;
+    cls->levels = (struct class_level_t *)
+                      malloc(count * sizeof(struct class_level_t));
+
+    if( !cls->levels ) {
+        cls->levelCount = 0;
+        LogPrintNoArg( LOG_CRIT, "Dumping levels due to lack of memory" );
+        exit( 1 );
+    } 
+    
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        level = atoi(row[0]);
+        cls->levels[level].thaco   = atoi(row[1]);
+        cls->levels[level].title_m = strdup(row[2]);
+        cls->levels[level].title_f = strdup(row[3]);
+        cls->levels[level].exp     = atol(row[4]);
+    }
+}
+
+void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    char               *msg;
+    MYSQL_ROW           row;
+
+    msg = (char *)arg;
+
+    if( res && mysql_num_rows(res) ) {
+        row = mysql_fetch_row(res);
+        msg = strdup(row[0]);
+    }
+}
+
+void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int             i;
+
+    MYSQL_ROW       row;
+
+    if( !res || !(directionCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg( LOG_CRIT, "No directions defined in the database!" );
+        exit(1);
+    }
+
+    direction = (struct dir_data *)malloc(directionCount * 
+                                          sizeof(struct dir_data));
+    if( !direction ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating direction[]" );
+        exit(1);
+    }
+
+    for( i = 0; i < directionCount; i++ ) {
+        row = mysql_fetch_row(res);
+        direction[i].forward  = atoi(row[0]);
+        direction[i].rev      = atoi(row[1]);
+        direction[i].trap     = atoi(row[2]);
+        direction[i].exit     = strdup(row[3]);
+        direction[i].listexit = strdup(row[4]);
+        direction[i].dir      = strdup(row[5]);
+        direction[i].desc     = strdup(row[6]);
+    }
+}
+
+void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int             i;
+
+    MYSQL_ROW       row;
+
+    if( !res || !(clanCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg( LOG_CRIT, "No clans defined in the database!" );
+        exit(1);
+    }
+
+    clan_list = (struct clan *)malloc(clanCount * sizeof(struct clan));
+    if( !direction ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating clan_list[]" );
+        exit(1);
+    }
+
+    for( i = 0; i < clanCount; i++ ) {
+        row = mysql_fetch_row(res);
+        clan_list[i].number    = atoi(row[0]);
+        clan_list[i].name      = strdup(row[1]);
+        clan_list[i].shortname = strdup(row[2]);
+        clan_list[i].desc      = strdup(row[3]);
+        clan_list[i].home      = atoi(row[4]);
+    }
+}
+
+void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int             i;
+    MYSQL_ROW       row;
+
+    if( !res || !(sectorCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg( LOG_CRIT, "No sector types defined in the database!" );
+        exit(1);
+    }
+
+    sectors = (struct sector_data *)malloc(sectorCount * 
+                                           sizeof(struct sector_data));
+    if( !sectors ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating sectors[]" );
+        exit(1);
+    }
+
+    for( i = 0; i < sectorCount; i++ ) {
+        row = mysql_fetch_row(res);
+        sectors[i].type     = strdup(row[0]);
+        sectors[i].mapChar  = strdup(row[1]);
+        sectors[i].moveLoss = atoi(row[2]);
+    }
+}
+
+void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    /*
+     * 0 - full match
+     * 1 - from start of string
+     * 2 - from end of string
+     * 3 - somewhere in string
+     */
+    int             i;
+    char           *tmp;
+
+    MYSQL_ROW       row;
+
+    if( !res || !(bannedUserCount = mysql_num_rows(res)) ) {
+        LogPrintNoArg( LOG_CRIT, "No banned usernames defined in the "
+                                 "database!" );
+        exit(1);
+    }
+
+    bannedUsers = (struct banned_user *)malloc(bannedUserCount * 
+                                               sizeof(struct banned_user));
+    if( !bannedUsers ) {
+        LogPrintNoArg( LOG_CRIT, "Out of memory allocating bannedUsers[]" );
+        exit(1);
+    }
+
+    for (i = 0; i < bannedUserCount; i++) {
+        row = mysql_fetch_row(res);
+        tmp = row[0];
+        if (*tmp == '*') {
+            if (tmp[strlen(tmp) - 1] == '*') {
+                bannedUsers[i].how = 3;
+                tmp[strlen(tmp) - 1] = '\0';
+            } else {
+                bannedUsers[i].how = 2;
+            }
+            tmp++;
+        } else if (tmp[strlen(tmp) - 1] == '*') {
+                bannedUsers[i].how = 1;
+                tmp[strlen(tmp) - 1] = '\0';
+        } else {
+            bannedUsers[i].how = 0;
+        }
+        bannedUsers[i].name = strdup(tmp);
+        bannedUsers[i].len  = strlen(bannedUsers[i].name);
+    }
+
+    LogPrintNoArg(LOG_CRIT, "Finished loading banned usernames from SQL");
+}
+
+void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int            *value;
+    MYSQL_ROW       row;
+
+    value = (int *)arg;
+
+    if( res && mysql_num_rows(res) ) {
+        row = mysql_fetch_row(res);
+        *value = atoi(row[0]);
+    }
+}
+
+void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct board_def  **retboard;
+    struct board_def   *board;
+    MYSQL_ROW           row;
+
+    retboard = (struct board_def **)arg;
+
+    /* result_lookup_board */
     if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
-        return(NULL);
+        *retboard = NULL;
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+    
+    board = (struct board_def *)malloc(sizeof(struct board_def));
+    *retboard = board;
+    if( !board ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a board structure!" );
+        return;
+    }
+
+    board->boardId = atoi(row[0]);
+    board->messageCount = atoi(row[1]);
+    board->minLevel = atoi(row[2]);
+}
+
+void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct bulletin_board_message **retmsg;
+    struct bulletin_board_message *msg;
+
+    MYSQL_ROW       row;
+
+    retmsg = (struct bulletin_board_message **)arg;
+
+    if( !res || !mysql_num_rows(res) ) {
+        *retmsg = NULL;
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+    
+    msg = (struct bulletin_board_message *)
+              malloc(sizeof(struct bulletin_board_message));
+    *retmsg = msg;
+    if( !msg ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
+                                "structure!" );
+        return;
+    }
+
+    msg->author = strdup(row[0]);
+    msg->title = strdup(row[1]);
+    msg->text = strdup(row[2]);
+    msg->date = atoi(row[3]);
+    msg->message_id = atoi(row[4]);
+    msg->reply_to = atoi(row[5]);
+}
+
+void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    BoardRepliesArgs_t *args;
+    struct bulletin_board_message *msg;
+
+    int             i;
+
+    MYSQL_ROW       row;
+
+    args = (BoardRepliesArgs_t *)arg;
+    args->count = 0;
+    
+    if( !res || !(args->count = mysql_num_rows(res)) ) {
+        *args->msg = NULL;
+        return;
+    }
+
+    msg = (struct bulletin_board_message *)
+              malloc(sizeof(struct bulletin_board_message) * args->count);
+    *args->msg = msg;
+    if( !msg ) {
+        LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
+                                "structure!" );
+        return;
+    }
+
+    for(i = 0; i < args->count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        msg[i].author     = strdup(row[0]);
+        msg[i].title      = strdup(row[1]);
+        msg[i].text       = strdup(row[2]);
+        msg[i].message_id = atoi(row[3]);
+        msg[i].date       = atoi(row[4]);
+        msg[i].reply_to   = atoi(row[5]);
+    }
+}
+
+void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int          *retval;
+    MYSQL_ROW     row;
+
+    retval = (int *)arg;
+
+    /* result_has_mail */
+    if( !res || !mysql_num_rows(res) ) {
+        *retval = 0;
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+    *retval = atoi(row[0]);
+}
+
+
+void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    MailIdsArgs_t  *args;
+    int             i;
+    MYSQL_ROW       row;
+
+    args = (MailIdsArgs_t *)arg;
+    args->count = 0;
+
+    if( !res || !(args->count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    for( i = 0; i < args->count; i++ ) {
+        row = mysql_fetch_row(res);
+        args->msgNum[i] = atoi(row[0]);
+    }
+}
+
+void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    char          **retmsg;
+    char           *msg;
+    MYSQL_ROW       row;
+
+    retmsg = (char **)arg;
+
+    if( !res || !mysql_num_rows(res) ) {
+        *retmsg = NULL;
+        return;
     }
 
     row = mysql_fetch_row(res);
 
-    obj->short_description = strdup(row[0]);
-    obj->description = strdup(row[1]);
-    obj->action_description = strdup(row[2]);
-    obj->modBy = strdup(row[3]);
-    obj->obj_flags.type_flag = atoi(row[4]);
-    obj->obj_flags.value[0] = atoi(row[5]);
-    obj->obj_flags.value[1] = atoi(row[6]);
-    obj->obj_flags.value[2] = atoi(row[7]);
-    obj->obj_flags.value[3] = atoi(row[8]);
-    obj->obj_flags.weight = atoi(row[9]);
-    obj->obj_flags.cost = atoi(row[10]);
-    obj->obj_flags.cost_per_day = atoi(row[11]);
-    obj->level = atoi(row[12]);
-    obj->max = atoi(row[13]);
-    obj->modified = atol(row[14]); 
-    obj->speed = atoi(row[15]);
-    obj->weapontype = atoi(row[16]);
-    obj->tweak = atoi(row[17]);
+    msg = (char *)malloc( 64 + strlen(row[0]) + strlen(row[1]) + 
+                          strlen(row[2]) + strlen(row[3]) + 2 );
+    *retmsg = msg;
+    sprintf(msg, " * * * * Havok Mail System * * * *\n\r"
+                 "Date: %s\n\r"
+                 "  To: %s\n\r"
+                 "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
+}
 
-    mysql_free_result(res);
+void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    int            *count;
 
-    sprintf(sqlbuf, "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = %d "
-                    "AND `ownerId` = %d AND `ownedItemId` = %d ORDER BY "
-                    "`seqNum`", vnum, owner, ownerItem );
-    mysql_query(sql, sqlbuf);
+    count = (int *)arg;
 
-    res = mysql_store_result(sql);
+    *count = (res ? mysql_num_rows(res) : 0 );
+}
+
+
+void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    char          **retmsg;
+    char           *msg;
+    MYSQL_ROW       row;
+
+    retmsg = (char **)arg;
+
+    if( !res || !mysql_num_rows(res) ) {
+        *retmsg = NULL;
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+
+    msg = (char *)malloc( 8 + strlen(row[0]) + strlen(row[1]) + 2);
+    *retmsg = msg;
+
+    sprintf(msg, "\"%s\"\n\r\n\r%s\n\r", row[0], row[1] );
+}
+
+
+void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    LookupHelpArgs_t   *args;
+    char               *msg;
+    MYSQL_ROW           row;
+
+    char                line[256];
+    int                 count,
+                        len,
+                        i;
+
+    args = (LookupHelpArgs_t *)arg;
+
     if( !res || !(count = mysql_num_rows(res)) ) {
-        mysql_free_result(res);
+        args->msg = NULL;
+        return;
+    }
+
+    len = 200 + (count * 82) + 50 + strlen(args->keywords);
+
+    msg = (char *)malloc(len);
+    args->msg = msg;
+
+    sprintf(msg, "No exact matches found for \"%s\".  Top %d relevant "
+                 "topics are:\n\r  %-68s Score\n\r", args->keywords, count,
+                 "Keywords" );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        snprintf(line, 255, "    %-66s %6.3f\n\r", row[0],
+                                                   strtod(row[1], NULL));
+        strcat(msg, line);
+    }
+
+    strcat(msg, "Please retry help using one of these keywords.\n\r");
+}
+
+void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct obj_data           **retobj;
+    struct obj_data            *obj;
+
+    MYSQL_ROW                   row;
+
+    retobj = (struct obj_data **)arg;
+    obj = *retobj;
+
+    if( !res || !mysql_num_rows(res) ) {
+        *retobj = NULL;
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+
+    obj->short_description      = strdup(row[0]);
+    obj->description            = strdup(row[1]);
+    obj->action_description     = strdup(row[2]);
+    obj->modBy                  = strdup(row[3]);
+    obj->obj_flags.type_flag    = atoi(row[4]);
+    obj->obj_flags.value[0]     = atoi(row[5]);
+    obj->obj_flags.value[1]     = atoi(row[6]);
+    obj->obj_flags.value[2]     = atoi(row[7]);
+    obj->obj_flags.value[3]     = atoi(row[8]);
+    obj->obj_flags.weight       = atoi(row[9]);
+    obj->obj_flags.cost         = atoi(row[10]);
+    obj->obj_flags.cost_per_day = atoi(row[11]);
+    obj->level                  = atoi(row[12]);
+    obj->max                    = atoi(row[13]);
+    obj->modified               = atol(row[14]); 
+    obj->speed                  = atoi(row[15]);
+    obj->weapontype             = atoi(row[16]);
+    obj->tweak                  = atoi(row[17]);
+}
+
+void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct obj_data           **retobj;
+    struct obj_data            *obj;
+    int                         count;
+    int                         i;
+    int                         len;
+
+    MYSQL_ROW                   row;
+
+    retobj = (struct obj_data **)arg;
+    obj = *retobj;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        *retobj = NULL;
         free_obj(obj);
-        return(NULL);
+        return;
     }
 
     obj->name = NULL;
@@ -2090,38 +2888,24 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
         }
         len = strlen(obj->name);
     }
-    mysql_free_result(res);
+}
 
+void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct obj_data           **retobj;
+    struct obj_data            *obj;
+    unsigned int               *var;
+    int                         i;
 
-    strcpy(sqlbuf, "SELECT `takeable`, `wearFinger`, `wearNeck`, "
-                   "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, "
-                   "`wearHands`, `wearArms`, `wearShield`, `wearAbout`, "
-                   "`wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
-                   "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, "
-                   "`wearThrow`, `glow`, `hum`, `metal`, `mineral`, `organic`, "
-                   "`invisible`, `magic`, `cursed`, `brittle`, `resistant`, "
-                   "`immune`, `rare`, `uberRare`, `quest`, `antiSun`, "
-                   "`antiGood`, `antiEvil`, ");
-    strcat(sqlbuf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
-                   "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
-                   "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
-                   "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, "
-                   "`onlyNecromancer`, `antiMage`, `antiCleric`, "
-                   "`antiWarrior`, `antiThief`, `antiDruid`, `antiMonk`, "
-                   "`antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
-                   "`antiRanger`, `antiPsionicist`, `antiNecromancer` "
-                   "FROM `objectFlags` ");
-                
-    sprintf( &sqlbuf[strlen(sqlbuf)], "WHERE `vnum` = %d AND `ownerId` = %d "
-                                      "AND `ownedItemId` = %d", 
-                                      vnum, owner, ownerItem );
-    mysql_query(sql, sqlbuf);
-    
-    res = mysql_store_result(sql);
+    MYSQL_ROW                   row;
+
+    retobj = (struct obj_data **)arg;
+    obj = *retobj;
+
     if( !res || !mysql_num_rows(res) ) {
-        mysql_free_result(res);
+        *retobj = NULL;
         free_obj(obj);
-        return(NULL);
+        return;
     }
 
     obj->obj_flags.wear_flags = 0;
@@ -2145,18 +2929,24 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
             REMOVE_BIT(*var, obj_flags[i].clear);
         }
     }
+}
 
-    mysql_free_result(res);
+void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct obj_data           **retobj;
+    struct obj_data            *obj;
+    struct extra_descr_data    *descr;
+    struct extra_descr_data    *prev;
+    int                         count;
+    int                         i;
+
+    MYSQL_ROW                   row;
+
+    retobj = (struct obj_data **)arg;
+    obj = *retobj;
 
     obj->ex_description = NULL;
 
-    sprintf(sqlbuf, "SELECT `keyword`, `description` FROM `objectExtraDesc` "
-                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
-                    "`ownerItemId` = %d ORDER BY `seqNum`", 
-                    vnum, owner, ownerItem );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
     if( res && (count = mysql_num_rows(res)) ) {
         descr = NULL;
         prev = NULL;
@@ -2179,15 +2969,20 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
             prev = descr;
         }
     }
-    mysql_free_result(res);
+}
 
-    sprintf(sqlbuf, "SELECT `location`, `modifier` FROM `objectAffects` "
-                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
-                    "`ownedItemId` = %d ORDER BY `seqNum`",
-                    vnum, owner, ownerItem);
-    mysql_query(sql, sqlbuf);
+void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct obj_data           **retobj;
+    struct obj_data            *obj;
+    int                         count;
+    int                         i;
 
-    res = mysql_store_result(sql);
+    MYSQL_ROW                   row;
+
+    retobj = (struct obj_data **)arg;
+    obj = *retobj;
+
     if( res && (count = mysql_num_rows(res)) ) {
         for( i = 0; i < count && i < MAX_OBJ_AFFECT; i++ ) {
             row = mysql_fetch_row(res);
@@ -2196,178 +2991,54 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
             obj->affected[i].modifier = atoi(row[1]);
         }
     }
-    mysql_free_result(res);
-
-    return(obj);
 }
 
-struct keyword_list;
-struct keyword_list {
-    struct keyword_list *next;
-    char *keyword;
-};
 
-int db_find_object_named(char *string, int owner, int ownerItem)
+void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 {
-    char            tempbuf[256];
-    int             count;
-    int             i;
-    char           *keyword;
-    char           *quoted;
-    struct keyword_list *keywordList;
-    struct keyword_list *prev;
-    struct keyword_list *curr;
-    int             vnum;
+    int                *retvnum;
+    int                 vnum;
+    MYSQL_ROW           row;
 
-    MYSQL_RES      *res;
-    MYSQL_ROW       row;
+    retvnum = (int *)arg;
 
-
-    keywordList = NULL;
-    prev = NULL;
-    count = 0;
-
-    while( ( keyword = strsep( &string, "- \t\n\r" ) ) ) {
-        quoted = db_quote(keyword);
-
-        curr = (struct keyword_list *)malloc(sizeof(struct keyword_list));
-        curr->next = NULL;
-        curr->keyword = quoted;
-
-        if( !prev ) {
-            keywordList = curr;
-        } else {
-            prev->next = curr;
-        }
-        prev = curr;
-        count++;
-    }
-
-    strcpy(sqlbuf, "SELECT a1.vnum from " );
-    for( i = 0; i < count; i++ ) {
-        if( i ) {
-            strcat(sqlbuf, ", ");
-        }
-        sprintf(tempbuf, "`objectKeywords` as a%d", i+1);
-        strcat(sqlbuf, tempbuf);
-    }
-    strcat(sqlbuf, " WHERE ");
-
-    if( count > 1 ) {
-        for( i = 1; i < count; i++ ) {
-            sprintf(tempbuf, "a%d.vnum = a1.vnum AND ", i+1);
-            strcat(sqlbuf, tempbuf);
-        }
-    }
-
-    for( i = 0, curr = keywordList; 
-         i < count && curr; 
-         i++, curr = curr->next ) {
-
-        sprintf(tempbuf, "a%d.keyword REGEXP '^%s' AND ", i+1, curr->keyword );
-        strcat(sqlbuf, tempbuf);
-    }
-    strcat(sqlbuf, "1 LIMIT 1");
-    mysql_query(sql, sqlbuf);
-
-    vnum = -1;
-
-    res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
 
         vnum = atoi(row[0]);
+        *retvnum = vnum;
     }
-    mysql_free_result(res);
-
-    for( curr = keywordList; curr; curr = prev ) {
-        prev = curr->next;
-        free( curr->keyword );
-        free( curr );
-    }
-
-    return( vnum );
 }
 
-
-struct index_data *db_generate_object_index(int *top, int *sort_top,
-                                            int *alloc_top)
+void result_generate_object_index( MYSQL_RES *res, MYSQL_BIND *input, 
+                                   void *arg )
 {
-    struct index_data *index = NULL;
-    int             i,
-                    vnum,
-                    j,
-                    len;
-    int             count,
-                    keyCount;
+    int                 len;
+    int                 count;
+    int                 i;
+    struct index_data  *index;
+    MYSQL_ROW           row;
 
-    MYSQL_RES      *res,
-                   *resKeywords;
-    MYSQL_ROW       row;
+    index = (struct index_data *)arg;
+    index->name = NULL;
+    len = 0;
 
-    strcpy(sqlbuf, "SELECT `vnum` FROM `objects` WHERE `ownerId` = -1 AND "
-                   "ownedItemId = -1 ORDER BY `vnum`" );
-    mysql_query(sql, sqlbuf);
-
-    res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
-        mysql_free_result(res);
-        return( NULL );
-    }
-
-    index = (struct index_data *)malloc(count * sizeof(struct index_data));
-    if( !index ) {
-        mysql_free_result(res);
-        return( NULL );
+        return;
     }
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        vnum = atoi(row[0]);
-        index[i].virtual = vnum;
-        index[i].pos = -1;
-        index[i].number = 0;
-        index[i].data = NULL;
-        index[i].func = NULL;
-
-        sprintf( sqlbuf, "SELECT `keyword` FROM `objectKeywords` "
-                         "WHERE `vnum` = %d AND `ownerId` = -1 AND "
-                         "`ownedItemId` = -1 ORDER BY `seqNum`", vnum );
-        mysql_query(sql, sqlbuf);
-
-        index[i].name = NULL;
-        len = 0;
-
-        resKeywords = mysql_store_result(sql);
-        if( !resKeywords || !(keyCount = mysql_num_rows(resKeywords)) ) {
-            mysql_free_result(resKeywords);
-            continue;
+        index->name = (char *)realloc(index->name, len + strlen(row[0]) + 2);
+        if( !len ) {
+            strcpy( index->name, row[0] );
+        } else {
+            strcat( index->name, " " );
+            strcat( index->name, row[0] );
         }
-
-        for( j = 0; j < keyCount; j++ ) {
-            row = mysql_fetch_row(resKeywords);
-
-            index[i].name = (char *)realloc(index[i].name, 
-                                            len + strlen(row[0]) + 2);
-            if( !len ) {
-                strcpy( index[i].name, row[0] );
-            } else {
-                strcat( index[i].name, " " );
-                strcat( index[i].name, row[0] );
-            }
-            len = strlen(index[i].name);
-        }
-
-        mysql_free_result(resKeywords);
+        len = strlen(index->name);
     }
-    mysql_free_result(res);
-
-    *sort_top = count - 1;
-    *alloc_top = count;
-    *top = count;
-
-    return (index);
 }
 
 /*

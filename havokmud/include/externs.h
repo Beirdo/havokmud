@@ -74,12 +74,6 @@ extern int      MaxArenaLevel,
                 MinArenaLevel;
 extern int spell_info_count;
 
-extern struct message_list *fightMessages;
-extern int fightMessageCount;
-
-extern struct banned_user *bannedUsers;
-extern int             bannedUserCount;
-
 extern struct spell_info_type spell_info[];
 extern int      spell_index[MAX_SPL_LIST];
 extern char    *ItemDamType[];
@@ -171,23 +165,6 @@ extern char    *att_kick_kill_ch[];
 
 extern struct breather breath_monsters[];
 
-extern struct sector_data *sectors;
-extern int             sectorCount;
-
-extern struct social_messg *socialMessages;
-extern int                 socialMessageCount;
-
-extern struct kick_messg  *kickMessages;
-extern int                 kickMessageCount;
-
-extern struct pose_type   *poseMessages;
-extern int                 poseMessageCount;
-
-extern struct spec_proc    specProcs[];
-extern int                 specProcCount;
-
-extern struct race_type   *races;
-extern int                 raceCount;
 
 extern char    *drinknames[];
 

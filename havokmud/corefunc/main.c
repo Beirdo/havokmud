@@ -45,6 +45,7 @@
 #include "version.h"
 #include "logging.h"
 #include "balanced_btree.h"
+#include "interthread.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -75,8 +76,14 @@ int             no_specials;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
-BalancedBTree_t    *banHostTree;
+BalancedBTree_t    *banHostTree;    /**< Balanced BTree of banned hosts, sorted
+                                         by hostname */
 #endif
+
+BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted 
+                                         by player name */
+BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
+                                         by socket descriptor number */
 
 bool            GlobalAbort = FALSE;
 long            SystemFlags;
@@ -162,34 +169,34 @@ void handleCmdLineArgs(int argc, char **argv)
 
         case 'D':
             /* Database */
-            if( mysql_db ) {
-                free( mysql_db );
+            if( mySQL_db ) {
+                free( mySQL_db );
             }
-            mysql_db = strdup(optarg);
+            mySQL_db = strdup(optarg);
             break;
 
         case 'U':
             /* Database user */
-            if( mysql_user ) {
-                free( mysql_user );
+            if( mySQL_user ) {
+                free( mySQL_user );
             }
-            mysql_user = strdup(optarg);
+            mySQL_user = strdup(optarg);
             break;
 
         case 'P':
             /* Database password */
-            if( mysql_passwd ) {
-                free( mysql_passwd );
+            if( mySQL_passwd ) {
+                free( mySQL_passwd );
             }
-            mysql_passwd = strdup(optarg);
+            mySQL_passwd = strdup(optarg);
             break;
 
         case 'H':
             /* Database host */
-            if( mysql_host ) {
-                free( mysql_host );
+            if( mySQL_host ) {
+                free( mySQL_host );
             }
-            mysql_host = strdup(optarg);
+            mySQL_host = strdup(optarg);
             break;
 
         case 'p':
@@ -335,7 +342,8 @@ int main(int argc, char **argv)
     db_setup();
     db_initial_load();
 
-    descriptor_list = NULL;
+    descNameTree = BalancedBTreeCreate( BTREE_KEY_STRING );
+    descNumTree  = BalancedBTreeCreate( BTREE_KEY_INT );
 
     LogPrintNoArg(LOG_CRIT, "Signal trapping.");
     signal_setup();

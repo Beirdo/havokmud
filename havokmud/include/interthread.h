@@ -39,6 +39,7 @@
 #include "logging.h"
 #include "balanced_btree.h"
 #include "structs.h"
+#include <mysql.h>
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 
@@ -188,6 +189,105 @@ typedef struct
     int                 min_level;
 } CommandDef_t;
 
+#if ( MYSQL_VERSION_ID < 40102 ) 
+
+#define NO_PREPARED_STATEMENTS
+
+/*
+ * Adapted libmysqlclient14 (4.1.x) mysql_com.h
+ */
+#ifndef MYSQL_TYPE_DECIMAL
+
+#define MYSQL_TYPE_DECIMAL     FIELD_TYPE_DECIMAL
+#define MYSQL_TYPE_TINY        FIELD_TYPE_TINY
+#define MYSQL_TYPE_SHORT       FIELD_TYPE_SHORT
+#define MYSQL_TYPE_LONG        FIELD_TYPE_LONG
+#define MYSQL_TYPE_FLOAT       FIELD_TYPE_FLOAT
+#define MYSQL_TYPE_DOUBLE      FIELD_TYPE_DOUBLE
+#define MYSQL_TYPE_NULL        FIELD_TYPE_NULL
+#define MYSQL_TYPE_TIMESTAMP   FIELD_TYPE_TIMESTAMP
+#define MYSQL_TYPE_LONGLONG    FIELD_TYPE_LONGLONG
+#define MYSQL_TYPE_INT24       FIELD_TYPE_INT24
+#define MYSQL_TYPE_DATE        FIELD_TYPE_DATE
+#define MYSQL_TYPE_TIME        FIELD_TYPE_TIME
+#define MYSQL_TYPE_DATETIME    FIELD_TYPE_DATETIME
+#define MYSQL_TYPE_YEAR        FIELD_TYPE_YEAR
+#define MYSQL_TYPE_NEWDATE     FIELD_TYPE_NEWDATE
+#define MYSQL_TYPE_ENUM        FIELD_TYPE_ENUM
+#define MYSQL_TYPE_SET         FIELD_TYPE_SET
+#define MYSQL_TYPE_TINY_BLOB   FIELD_TYPE_TINY_BLOB
+#define MYSQL_TYPE_MEDIUM_BLOB FIELD_TYPE_MEDIUM_BLOB
+#define MYSQL_TYPE_LONG_BLOB   FIELD_TYPE_LONG_BLOB
+#define MYSQL_TYPE_BLOB        FIELD_TYPE_BLOB
+#define MYSQL_TYPE_VAR_STRING  FIELD_TYPE_VAR_STRING
+#define MYSQL_TYPE_STRING      FIELD_TYPE_STRING
+#define MYSQL_TYPE_CHAR        FIELD_TYPE_TINY
+#define MYSQL_TYPE_INTERVAL    FIELD_TYPE_ENUM
+#define MYSQL_TYPE_GEOMETRY    FIELD_TYPE_GEOMETRY
+
+#endif
+
+/*
+ * From libmysqlclient14 (4.1.x) mysql.h
+ */
+typedef struct st_mysql_bind
+{
+  unsigned long *length;          /* output length pointer */
+  my_bool       *is_null;         /* Pointer to null indicator */
+  void          *buffer;          /* buffer to get/put data */
+  enum enum_field_types buffer_type;    /* buffer type */
+  unsigned long buffer_length;    /* buffer length, must be set for str/binary */  
+} MYSQL_BIND;
+
+#define MYSQL_STMT void
+
+#endif
+
+struct _QueryItem_t;
+typedef void (*QueryChainFunc_t)( MYSQL_RES *res, struct _QueryItem_t *item ); 
+
+typedef struct {
+    const char         *queryPattern;
+    QueryChainFunc_t    queryChainFunc;
+    MYSQL_STMT         *queryStatement;
+    bool                queryPrepared;
+} QueryTable_t;
+
+
+typedef void (*QueryResFunc_t)( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+
+typedef struct _QueryItem_t {
+    int                 queryId;
+    QueryTable_t       *queryTable;
+    MYSQL_BIND         *queryData;
+    int                 queryDataCount;
+    QueryResFunc_t      queryCallback;
+    void               *queryCallbackArg;
+    pthread_mutex_t    *queryMutex;
+    unsigned int        querySequence;
+} QueryItem_t;
+
+
+typedef enum {
+    PROC_UNDEF = 0,
+    PROC_MOBILE,
+    PROC_OBJECT,
+    PROC_ROOM
+} proc_type;
+
+typedef int (*int_func)();
+
+struct spec_proc {
+    char           *name;
+    int_func        func;
+    proc_type       type;
+};
+
+struct special_proc_entry {
+    int             vnum;
+    int_func        func;
+};
+
 
 /*
  * Externals used for interthread communication
@@ -220,6 +320,39 @@ extern char *news;
 extern char *info;
 
 extern BalancedBTree_t    *banHostTree;
+extern BalancedBTree_t    *descNameTree;
+extern BalancedBTree_t    *descNumTree;
+
+extern struct sector_data *sectors;
+extern int             sectorCount;
+
+extern struct message_list *fightMessages;
+extern int fightMessageCount;
+
+extern struct banned_user *bannedUsers;
+extern int             bannedUserCount;
+
+extern struct social_messg *socialMessages;
+extern int                 socialMessageCount;
+
+extern struct message_list  *kickMessages;
+extern int                 kickMessageCount;
+
+extern struct pose_type   *poseMessages;
+extern int                 poseMessageCount;
+
+extern struct spec_proc    specProcs[];
+extern int                 specProcCount;
+
+extern struct race_type   *races;
+extern int                 raceCount;
+
+extern char *mySQL_db;
+extern char *mySQL_user;
+extern char *mySQL_passwd;
+extern char *mySQL_host;
+extern int   mySQL_port;
+
 
 /*
  * Prototypes of the thread entry points
@@ -255,6 +388,14 @@ void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 
+/*
+ * TODO: move these!
+ */
+int_func procGetFuncByName( char *name, proc_type type );
+char *procGetNameByFunc( int_func func, proc_type type );
+int procIsRegistered( int_func func, proc_type type );
+
+
 /* 
  * ansi_output.c 
  */
@@ -283,6 +424,20 @@ int dice(int number, int size);
  * core_commands.c
  */
 void            do_siteban(struct char_data *ch, char *argument, int cmd);
+
+/*
+ * mysql_handler.c
+ */
+void db_setup(void);
+void db_initial_load(void);
+void bind_numeric( MYSQL_BIND *data, long long int value, 
+                   enum enum_field_types type );
+void bind_string( MYSQL_BIND *data, char *value, enum enum_field_types type );
+void bind_null_blob( MYSQL_BIND *data, void *value );
+void db_queue_query( int queryId, QueryTable_t *queryTable,
+                     MYSQL_BIND *queryData, int queryDataCount,
+                     QueryResFunc_t queryCallback, void *queryCallbackArg,
+                     pthread_mutex_t *queryMutex );
 
 /*************************************************************************
  * Support for different platforms

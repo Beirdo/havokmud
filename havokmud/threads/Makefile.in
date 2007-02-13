@@ -21,7 +21,7 @@ LDFLAGS = @LDFLAGS@
 
 
 SRCS =	master.c connections.c input.c login.c dns.c logging.c editor.c
-SRCS += playing.c
+SRCS += playing.c mysql_handler.c
 ARCHIVE =	libhavokthread.a
 
 OBJS = ${SRCS:.c=.o}
