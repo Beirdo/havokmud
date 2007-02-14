@@ -447,49 +447,50 @@ struct obj_affected_type {
  * ======================== Structure for object ========================
  */
 struct obj_data {
-    int             item_number;        /* Where in data-base */
-    int             in_room;            /* In what room -1 when conta/carr */
+    int             item_number;    /**< Where in database */
+    int             in_room;        /**< In what room, -1 when contained
+                                     *   or carried */
 
-    int             value[4];       /* Values of the item (see list) */
-    ItemType_t      type_flag;      /* Type of item */
-    long            wear_flags;     /* Where you can wear it */
-    long            extra_flags;    /* If it hums,glows etc */
-    int             weight;         /* Weight what else */
-    int             cost;           /* Value when sold (gp.) */
-    int             cost_per_day;   /* Cost to keep pr. real day */
-    int             timer;          /* Timer for object */
-    long            bitvector;      /* To set chars bits */
+    int             value[4];       /**< Values of the item (see list) */
+    ItemType_t      type_flag;      /**< Type of item */
+    long            wear_flags;     /**< Where you can wear it */
+    long            extra_flags;    /**< If it hums, glows etc */
+    int             weight;         /**< Weight of the item */
+    int             cost;           /**< Value when sold (gp.) */
+    int             cost_per_day;   /**< Cost to keep per real day */
+    int             timer;          /**< Timer for object */
+    long            bitvector;      /**< To set chars bits */
 
     struct obj_affected_type
-                    affected[MAX_OBJ_AFFECT];   /* Which abilities in PC
+                    affected[MAX_OBJ_AFFECT];   /**< Which abilities in PC
                                                  * to change */
 
-    sh_int          sector;             /* for large rooms */
-    int             char_vnum;          /* for ressurection */
-    long            char_f_pos;         /* for ressurection */
-    char           *name;               /* Title of object :get etc.  */
-    char           *description;        /* When in room */
-    char           *short_description;  /* when worn/carry/in cont.  */
-    char           *action_description; /* What to write when used */
-    struct extra_descr_data *ex_description;    /* extra descriptions */
-    struct char_data *carried_by;       /* Carried by :NULL in room/conta */
-    byte            eq_pos;             /* what is the equip. pos? */
-    struct char_data *equipped_by;      /* equipped by :NULL in room/conta */
-    struct obj_data *in_obj;            /* In what object NULL when none */
-    struct obj_data *contains;          /* Contains objects */
-    struct obj_data *next_content;      /* For 'contains' lists */
-    struct obj_data *next;              /* For the object list */
-    char           *old_name;           /* For Behead */
-    int             is_corpse;          /* For Behead */
-    int             beheaded_corpse;    /* For Behead */
-    int             level;              /* Level ego of the item */
-    int             max;                /* max of the object */
-    int             speed;              /* Speed of the weapon */
-    int             weapontype;
-    int             tweak;
+    sh_int          sector;             /**< for large rooms */
+    int             char_vnum;          /**< for ressurection */
+    long            char_f_pos;         /**< for ressurection */
+    char           *name;               /**< Title of object :get etc.  */
+    char           *description;        /**< When in room */
+    char           *short_description;  /**< when worn/carry/in cont.  */
+    char           *action_description; /**< What to write when used */
+    struct extra_descr_data *ex_description;    /**< extra descriptions */
+    struct char_data *carried_by;       /**< Carried by :NULL in room/conta */
+    byte            eq_pos;             /**< what is the equip. pos? */
+    struct char_data *equipped_by;      /**< equipped by :NULL in room/conta */
+    struct obj_data *in_obj;            /**< In what object NULL when none */
+    struct obj_data *contains;          /**< Contains objects */
+    struct obj_data *next_content;      /**< For 'contains' lists */
+    struct obj_data *next;              /**< For the object list */
+    char           *old_name;           /**< For Behead */
+    int             is_corpse;          /**< For Behead */
+    int             beheaded_corpse;    /**< For Behead */
+    int             level;              /**< Level ego of the item */
+    int             max;                /**< max of the object */
+    int             speed;              /**< Speed of the weapon */
+    int             weapontype;         /**< Weapon type */
+    int             tweak;              /**< Tweak value */
 
-    char           *modBy;
-    time_t          modified;
+    char           *modBy;              /**< Last modified by */
+    time_t          modified;           /**< Last modification time */
 };
 
 
