@@ -45,6 +45,9 @@
 static char newstructs_h_ident[] _UNUSED_ = 
     "$Id$";
 
+
+#define BV(x) (1 << (x))
+
 typedef struct {
     int port;
     int timeout_sec;
@@ -287,6 +290,210 @@ struct special_proc_entry {
     int             vnum;
     int_func        func;
 };
+
+/**
+ * @todo clean up these definitions
+ */
+
+/*
+ * The following defs are for obj_data
+ */
+
+/*
+ * For 'type_flag'
+ */
+typedef enum {
+    ITEM_LIGHT = 1,
+    ITEM_SCROLL,
+    ITEM_WAND,
+    ITEM_STAFF,
+    ITEM_WEAPON,
+    ITEM_FIREWEAPON,
+    ITEM_MISSILE,
+    ITEM_TREASURE,
+    ITEM_ARMOR,
+    ITEM_POTION,
+    ITEM_WORN,
+    ITEM_OTHER,
+    ITEM_TRASH,
+    ITEM_TRAP,
+    ITEM_CONTAINER,
+    ITEM_NOTE,
+    ITEM_DRINKCON,
+    ITEM_KEY,
+    ITEM_FOOD,
+    ITEM_MONEY,
+    ITEM_PEN,
+    ITEM_BOAT,
+    ITEM_AUDIO,
+    ITEM_BOARD,
+    ITEM_TREE,
+    ITEM_ROCK,
+    ITEM_PORTAL,
+    ITEM_INSTRUMENT,
+    ITEM_SHIPS_HELM
+} ItemType_t;
+
+/*
+ * Bitvector For 'wear_flags'
+ */
+
+#define ITEM_TAKE               BV(0)
+#define ITEM_WEAR_FINGER        BV(1)
+#define ITEM_WEAR_NECK          BV(2)
+#define ITEM_WEAR_BODY          BV(3)
+#define ITEM_WEAR_HEAD          BV(4)
+#define ITEM_WEAR_LEGS          BV(5)
+#define ITEM_WEAR_FEET          BV(6)
+#define ITEM_WEAR_HANDS         BV(7)
+#define ITEM_WEAR_ARMS          BV(8)
+#define ITEM_WEAR_SHIELD        BV(9)
+#define ITEM_WEAR_ABOUT         BV(10)
+#define ITEM_WEAR_WAISTE        BV(11)
+#define ITEM_WEAR_WRIST         BV(12)
+#define ITEM_WIELD              BV(13)
+#define ITEM_HOLD               BV(14)
+#define ITEM_THROW              BV(15)
+#define ITEM_LIGHT_SOURCE       BV(16)
+#define ITEM_WEAR_BACK          BV(17)
+#define ITEM_WEAR_EAR           BV(18)
+#define ITEM_WEAR_EYE           BV(19)
+
+/*
+ * Bitvector for 'extra_flags'
+ */
+#define ITEM_GLOW               BV(0)
+#define ITEM_HUM                BV(1)
+#define ITEM_METAL              BV(2)
+#define ITEM_MINERAL            BV(3)
+#define ITEM_ORGANIC            BV(4)
+#define ITEM_INVISIBLE          BV(5)
+#define ITEM_MAGIC              BV(6)
+#define ITEM_NODROP             BV(7)
+#define ITEM_ANTI_NECROMANCER   BV(8)
+#define ITEM_ANTI_GOOD          BV(9)
+#define ITEM_ANTI_EVIL          BV(10)
+#define ITEM_ANTI_NEUTRAL       BV(11)
+#define ITEM_ANTI_CLERIC        BV(12)
+#define ITEM_ANTI_MAGE          BV(13)
+#define ITEM_ANTI_THIEF         BV(14)
+#define ITEM_ANTI_FIGHTER       BV(15)
+#define ITEM_BRITTLE            BV(16)
+#define ITEM_RESISTANT          BV(17)
+#define ITEM_IMMUNE             BV(18)
+#define ITEM_ANTI_MEN           BV(19)
+#define ITEM_ANTI_WOMEN         BV(20)
+#define ITEM_ANTI_SUN           BV(21)
+#define ITEM_ANTI_BARBARIAN     BV(22)
+#define ITEM_ANTI_RANGER        BV(23)
+#define ITEM_ANTI_PALADIN       BV(24)
+#define ITEM_ANTI_PSI           BV(25)
+#define ITEM_ANTI_MONK          BV(26)
+#define ITEM_ANTI_DRUID         BV(27)
+#define ITEM_ONLY_CLASS         BV(28)
+#define ITEM_UNUSED             BV(29)
+#define ITEM_RARE               BV(30)
+#define ITEM_QUEST              BV(31)
+
+/*
+ * Some different kind of liquids
+ */
+#define LIQ_WATER      0
+#define LIQ_BEER       1
+#define LIQ_WINE       2
+#define LIQ_ALE        3
+#define LIQ_DARKALE    4
+#define LIQ_WHISKY     5
+#define LIQ_LEMONADE   6
+#define LIQ_FIREBRT    7
+#define LIQ_LOCALSPC   8
+#define LIQ_SLIME      9
+#define LIQ_MILK       10
+#define LIQ_TEA        11
+#define LIQ_COFFE      12
+#define LIQ_BLOOD      13
+#define LIQ_SALTWATER  14
+#define LIQ_COKE       15
+
+/*
+ * special addition for drinks
+ */
+#define DRINK_POISON  BV(0)
+#define DRINK_PERM    BV(1)
+
+/*
+ * for containers - value[1]
+ */
+
+#define CONT_CLOSEABLE      BV(0)
+#define CONT_PICKPROOF      BV(1)
+#define CONT_CLOSED         BV(2)
+#define CONT_LOCKED         BV(3)
+
+struct extra_descr_data {
+    char           *keyword;    /* Keyword in look/examine */
+    char           *description;        /* What to see */
+    struct extra_descr_data *next;      /* Next in list */
+};
+
+#define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
+
+struct obj_flag_data {
+    int             value[4];       /* Values of the item (see list) */
+    ItemType_t      type_flag;      /* Type of item */
+    long            wear_flags;     /* Where you can wear it */
+    long            extra_flags;    /* If it hums,glows etc */
+    int             weight;         /* Weight what else */
+    int             cost;           /* Value when sold (gp.) */
+    int             cost_per_day;   /* Cost to keep pr. real day */
+    int             timer;          /* Timer for object */
+    long            bitvector;      /* To set chars bits */
+};
+
+struct obj_affected_type {
+    short           location;   /* Which ability to change (APPLY_XXX) */
+    long            modifier;   /* How much it changes by */
+};
+
+/*
+ * ======================== Structure for object ========================
+ */
+struct obj_data {
+    int             item_number;        /* Where in data-base */
+    int             in_room;            /* In what room -1 when conta/carr */
+    struct obj_flag_data obj_flags;     /* Object information */
+    struct obj_affected_type
+                    affected[MAX_OBJ_AFFECT];   /* Which abilities in PC
+                                                 * to change */
+
+    sh_int          sector;             /* for large rooms */
+    int             char_vnum;          /* for ressurection */
+    long            char_f_pos;         /* for ressurection */
+    char           *name;               /* Title of object :get etc.  */
+    char           *description;        /* When in room */
+    char           *short_description;  /* when worn/carry/in cont.  */
+    char           *action_description; /* What to write when used */
+    struct extra_descr_data *ex_description;    /* extra descriptions */
+    struct char_data *carried_by;       /* Carried by :NULL in room/conta */
+    byte            eq_pos;             /* what is the equip. pos? */
+    struct char_data *equipped_by;      /* equipped by :NULL in room/conta */
+    struct obj_data *in_obj;            /* In what object NULL when none */
+    struct obj_data *contains;          /* Contains objects */
+    struct obj_data *next_content;      /* For 'contains' lists */
+    struct obj_data *next;              /* For the object list */
+    char           *old_name;           /* For Behead */
+    int             is_corpse;          /* For Behead */
+    int             beheaded_corpse;    /* For Behead */
+    int             level;              /* Level ego of the item */
+    int             max;                /* max of the object */
+    int             speed;              /* Speed of the weapon */
+    int             weapontype;
+    int             tweak;
+
+    char           *modBy;
+    time_t          modified;
+};
+
 
 #endif
 
