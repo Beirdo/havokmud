@@ -1278,18 +1278,8 @@ void obj_to_char(struct obj_data *object, struct char_data *ch)
         return;
     }
 
-#if 0
-    if (!object->in_obj && !object->carried_by && !object->equipped_by &&
-        object->in_room == NOWHERE) {
-        Log("!object->in_obj && !object->carried_by && !object->equipped_by "
-            "&&       object->in_room == NOWHERE");
-        Log("Obj name (%s) Obj Vnum (%ld)", object->name, ObjVnum(object));
-        return;
-    }
-#else
     assert(!object->in_obj && !object->carried_by && !object->equipped_by &&
            object->in_room == NOWHERE);
-#endif
 
     if (ch->carrying) {
         object->next_content = ch->carrying;

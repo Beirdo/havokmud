@@ -5338,11 +5338,10 @@ void SaveTheWorld( void )
                         if (p->equipment[j] &&
                             p->equipment[j]->item_number >= 0) {
                             cmd = 'E';
-                            arg1 = ObjVnum(p->equipment[j]);
-                            arg2 = p->equipment[j]->item_number;
-                            arg3 = j;
+                            arg1 = p->equipment[j]->item_number;
+                            arg2 = j;
                             strcpy(buf, p->equipment[j]->short_description);
-                            Zwrite(fp, cmd, 1, arg1, arg2, arg3, buf);
+                            Zwrite(fp, cmd, 1, arg1, arg1, arg2, buf);
                             RecZwriteObj(fp, p->equipment[j]);
                         }
                     }
@@ -5350,11 +5349,10 @@ void SaveTheWorld( void )
                     for (o = p->carrying; o; o = o->next_content) {
                         if (o->item_number >= 0) {
                             cmd = 'G';
-                            arg1 = ObjVnum(o);
-                            arg2 = o->item_number;
-                            arg3 = 0;
+                            arg1 = o->item_number;
+                            arg2 = 0;
                             strcpy(buf, o->short_description);
-                            Zwrite(fp, cmd, 1, arg1, arg2, arg3, buf);
+                            Zwrite(fp, cmd, 1, arg1, arg1, arg2, buf);
                             RecZwriteObj(fp, o);
                         }
                     }

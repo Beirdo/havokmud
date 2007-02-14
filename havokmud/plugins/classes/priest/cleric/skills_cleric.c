@@ -675,7 +675,7 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
     }
 
     if (sac) {
-        if (ObjVnum(sac) != obj) {
+        if (sac->item_number != obj) {
             send_to_char("Your offering must be an item that the demon "
                          "values.\n\r", ch);
             return;

@@ -2978,7 +2978,6 @@ int             CAN_SEE(struct char_data *s, struct char_data *o);
 int             exit_ok(struct room_direction_data *exit,
                         struct room_data **rpp);
 long            MobVnum(struct char_data *c);
-long            ObjVnum(struct obj_data *o);
 int             WeaponImmune(struct char_data *ch);
 unsigned        IsImmune(struct char_data *ch, int bit);
 unsigned        IsResist(struct char_data *ch, int bit);

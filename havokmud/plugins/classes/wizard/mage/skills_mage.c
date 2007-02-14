@@ -428,7 +428,7 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
     }
 
     if (sac) {
-        if (ObjVnum(sac) != obj) {
+        if (sac->item_number != obj) {
             send_to_char("Your offering must be an item that the demon "
                          "values.\n\r", ch);
             return;
@@ -1105,7 +1105,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
     sac = unequip_char(ch, HOLD);
     if (sac) {
         obj_to_char(sac, ch);
-        if (ObjVnum(sac) != obj) {
+        if (sac->item_num != obj) {
             send_to_char("You must have the correct item to sacrifice.\n\r",
                          ch);
             return;

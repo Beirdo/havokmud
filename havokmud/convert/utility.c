@@ -292,15 +292,6 @@ long MobVnum(struct char_data *c)
     }
 }
 
-long ObjVnum(struct obj_data *o)
-{
-    if (o->item_number >= 0) {
-        return (obj_index[o->item_number].virtual);
-    } else {
-        return (-1);
-    }
-}
-
 void Zwrite(FILE * fp, char cmd, int tf, int arg1, int arg2, int arg3,
             char *desc)
 {
