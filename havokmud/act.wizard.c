@@ -1878,8 +1878,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
 
         strcpy(buf, "\n\rSpecial procedure : ");
-        if (j->item_number >= 0 && (index = objectIndex(j->item_number)) &&
-            (proc = procGetNameByFunc( index->func, PROC_OBJECT )) ) {
+        if (j->item_number >= 0 && 
+            (proc = procGetNameByFunc( j->index->func, PROC_OBJECT )) ) {
             strcat(buf, proc);
             strcat(buf, "\n\r");
         } else {

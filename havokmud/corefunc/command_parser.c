@@ -487,7 +487,7 @@ int special(struct char_data *ch, int cmd, char *arg)
                 AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
             }
 #endif
-            index = objectIndex( ch->equipment[j]->item_number );
+            index = ch->equipment[j]->index;
             if (ch->equipment[j] && index && index->func &&
                 (*index->func)(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND)) {
                 return (TRUE);
@@ -500,8 +500,8 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in inventory?
      */
     for (i = ch->carrying; i; i = i->next_content) {
-        if (i->item_number >= 0 && (index = objectIndex(i->item_number)) &&
-            index->func && (*index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
+        if (i->item_number >= 0 && i->index->func && 
+            (*i->index->func)(ch, cmd, arg, i, PULSE_COMMAND)) {
             /**
              * @bug Crashes here when saving item twice
              */
@@ -523,8 +523,8 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in object present?
      */
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (i->item_number >= 0 && (index = objectIndex( i->item_number )) &&
-            index->func && (*index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
+        if (i->item_number >= 0 && i->index->func && 
+            (*i->index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
             /**
              * @bug Crash here maybe?? FROZE HERE!! loop?
              */

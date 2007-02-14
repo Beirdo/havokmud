@@ -119,9 +119,8 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
     for (i = 0; i < st->number; i++) {
         if (st->objects[i].item_number > -1 ) {
             obj = read_object(st->objects[i].item_number, VIRTUAL);
-            index = objectIndex( obj->item_number );
             if (IS_RARE(obj)) {
-                index->number--;
+                obj->index->number--;
             }
             obj->value[0] = st->objects[i].value[0];
             obj->value[1] = st->objects[i].value[1];
@@ -530,10 +529,7 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
             obj_from_obj(obj);
         }
         if (IS_RARE(obj)) {
-            index = objectIndex( obj->item_number );
-            if( index ) {
-                index->.number++;
-            }
+            obj->index->.number++;
         }
         extract_obj(obj);
     }
@@ -774,16 +770,16 @@ void CountLimitedItems(struct obj_file_u *st)
                 if (obj->item_number < 0) {
                     abort();
                 }
-                index = objectIndex( obj->item_number );
-                if( index ) {
-                    index->number++;
-                }
+                obj->index->number++;
             }
             extract_obj(obj);
         }
     }
 }
 
+/**
+ * @todo reimplement with traversing the tree
+ */
 void PrintLimitedItems(void)
 {
     int             i;
@@ -1112,10 +1108,7 @@ void obj_store_to_room(int room, struct obj_file_u *st)
 
             obj = read_object(st->objects[i].item_number, VIRTUAL);
             if (IS_RARE(obj)) {
-                index = objectIndex( obj->item_number );
-                if( index ) {
-                    index->number--;
-                }
+                obj->index->number--;
             }
             obj->value[0] = st->objects[i].value[0];
             obj->value[1] = st->objects[i].value[1];

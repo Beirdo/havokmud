@@ -485,8 +485,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
              i = i->next_content) {
             if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
                 if (do_all || j == num) {
-                    index = objectIndex( i->item_number );
-                    if (index && index->func == knowdrop) {
+                    if (i->index->func == knowdrop) {
                         obj = i;
                         break;
                     }
@@ -510,8 +509,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     for (i = ch->carrying, j = 1; i && (j <= num); i = i->next_content) {
         if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
             if (do_all || j == num) {
-                index = objectIndex( i->item_number );
-                if (index && index->func == knowdrop) {
+                if (i->index->func == knowdrop) {
                     obj = i;
                     break;
                 } else if (!do_all) {
@@ -650,8 +648,7 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         return (FALSE);
     }
 
-    index = objectIndex( obj->item_number );
-    if (index && index->func != wash) {
+    if (obj->index->func != wash) {
         return (FALSE);
     }
 

@@ -2318,9 +2318,8 @@ void affect_update(int pulse)
                     }
                 }
             } else {
-                if ( (index = objectIndex( j->item_number ) ) &&
-                     index->func && j->item_number >= 0) {
-                    (*index->func) (0, 0, 0, j, PULSE_TICK);
+                if ( j->index->func && j->item_number >= 0) {
+                    (*j->index->func) (0, 0, 0, j, PULSE_TICK);
                 }
             }
         }

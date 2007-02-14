@@ -451,10 +451,28 @@ struct obj_affected_type {
     long            modifier;   /* How much it changes by */
 };
 
+/**
+ * @todo rename virtual to vnum
+ */
+struct index_data {
+    long            virtual;    /* virtual number of this mob/obj */
+    int             number;     /* number of existing units of this
+                                 * mob/obj */
+    int_func        func;       /* special procedure for this mob/obj */
+    void           *data;
+    char           *name;
+    char           *short_desc;
+    char           *long_desc;
+    int             MaxObjCount;
+};
+
 /*
  * ======================== Structure for object ========================
  */
 struct obj_data {
+    struct index_data *index;       /**< pointer back to the index entry to
+                                     *   save calls to objectIndex
+                                     */
     int             item_number;    /**< Where in database */
     int             in_room;        /**< In what room, -1 when contained
                                      *   or carried */
@@ -499,21 +517,6 @@ struct obj_data {
 
     char           *modBy;              /**< Last modified by */
     time_t          modified;           /**< Last modification time */
-};
-
-/**
- * @todo rename virtual to vnum
- */
-struct index_data {
-    long            virtual;    /* virtual number of this mob/obj */
-    int             number;     /* number of existing units of this
-                                 * mob/obj */
-    int_func        func;       /* special procedure for this mob/obj */
-    void           *data;
-    char           *name;
-    char           *short_desc;
-    char           *long_desc;
-    int             MaxObjCount;
 };
 
 

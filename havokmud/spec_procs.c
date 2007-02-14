@@ -5093,8 +5093,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     }
     for (obj = real_roomp(ch->in_room)->contents;
          obj; obj = obj->next_content) {
-        index = objectIndex( obj->item_number );
-        if (index && index->func == EvilBlade) {
+        if (obj->index->func == EvilBlade) {
             /*
              * I am on the floor 
              */
@@ -5147,8 +5146,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     for (holder = real_roomp(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
-            index = objectIndex( obj->item_number );
-            if (index && index->func && index->func != board) {
+            if (obj->index->func && obj->index->func != board) {
                 /*
                  * held
                  */
@@ -5194,7 +5192,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
         }
 
         if (holder->equipment[WIELD] && 
-            (index = objectIndex( holder->equipment[WIELD]->item_number) ) &&
+            (index = holder->equipment[WIELD]->index) &&
             index->func && index->func != board) {
             /*
              * YES! I am being held!
@@ -5397,8 +5395,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
      */
     for (obj = real_roomp(ch->in_room)->contents;
          obj; obj = obj->next_content) {
-        index = objectIndex( obj->item_number );
-        if (index && index->func == GoodBlade) {
+        if (obj->index->func == GoodBlade) {
             /*
              * I am on the floor 
              */
@@ -5448,8 +5445,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
     for (holder = real_roomp(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
-            index = objectIndex( obj->item_number );
-            if (index && index->func && index->func != board) {
+            if (obj->index->func && obj->index->func != board) {
                 /*
                  * held
                  */
@@ -5497,7 +5493,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
         }
 
         if (holder->equipment[WIELD]) {
-            index = objectIndex( holder->equipment[WIELD]->item_number );
+            index = holder->equipment[WIELD]->index;
             if ( index && index->func && index->func != board) {
                 /*
                  * YES! I am being held!

@@ -1432,10 +1432,8 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         /*
          * no checks on super ego items, they do it already 
          */
-        index = objectIndex( obj->item_number );
-        if (index && index->func != EvilBlade &&
-            index->func != NeutralBlade && index->func != GoodBlade &&
-            !CheckEgo(ch, obj)) {
+        if (obj->index->func != EvilBlade && obj->index->func != NeutralBlade &&
+            obj->index->func != GoodBlade && !CheckEgo(ch, obj)) {
             if (ch->in_room != NOWHERE) {
                 obj_to_room(obj, ch->in_room);
                 do_save(ch, "", 0);

@@ -303,8 +303,7 @@ void RecZwriteObj(FILE * fp, struct obj_data *o)
 
     if (ITEM_TYPE(o) == ITEM_CONTAINER) {
         for (t = o->contains; t; t = t->next_content) {
-            index = objectIndex( t->item_number );
-            Zwrite(fp, 'P', 1, t->item_number, index->number, o->item_number,
+            Zwrite(fp, 'P', 1, t->item_number, t->index->number, o->item_number,
                    t->short_description);
             RecZwriteObj(fp, t);
         }
@@ -347,9 +346,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                         p->equipment[j]->item_number >= 0) {
                         cmd = 'E';
                         arg1 = p->equipment[j]->item->number;
-                        index = objectIndex( arg1 );
-                        if (index && index->MaxObjCount) {
-                            arg2 = index->MaxObjCount;
+                        if (p->equipment[j]->index->MaxObjCount) {
+                            arg2 = p->equipment[j]->index->MaxObjCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -364,9 +362,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                     if (o->item_number >= 0) {
                         cmd = 'G';
                         arg1 = o->item_number;
-                        index = objectIndex( arg1 );
-                        if (index && index->MaxObjCount) {
-                            arg2 = index->MaxObjCount;
+                        if (o->index->MaxObjCount) {
+                            arg2 = o->index->MaxObjCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -386,9 +383,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
             if (o->item_number >= 0) {
                 cmd = 'O';
                 arg1 = o->item_number;
-                index = objectIndex( arg1 );
-                if (index && index->MaxObjCount) {
-                    arg2 = index->MaxObjCount;
+                if (o->index->MaxObjCount) {
+                    arg2 = o->index->MaxObjCount;
                 } else {
                     arg2 = 65535;
                 }
@@ -523,13 +519,10 @@ void CleanZone(int zone)
 
         for (obj = rp->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-            index = objectIndex( obj->item_number );
-            if( index ) {
-                index->number--;
-            }
+            obj->index->number--;
+
             /*
              * object maxxing.(GH)
-             *
              *
              * Do not clean out corpses, druid trees or quest items. Bit
              * of kludge to avoid deinit getting rid of quest items when a

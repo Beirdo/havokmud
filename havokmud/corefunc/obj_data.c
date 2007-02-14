@@ -99,6 +99,10 @@ void insert_object(struct obj_data *obj, long vnum)
     index->name = strdup(obj->name);
     index->number = 0;
     index->func = NULL;
+
+    item->key = &index->virtual;
+    item->item = (void *)index;
+    BalancedBTreeAdd( objectTree, item, UNLOCKED, TRUE );
 }
 
 
@@ -110,6 +114,8 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     struct extra_descr_data *new_descr,
                    *tmp_descr;
     int             i;
+
+    obj->index = osrc->index;
 
     if (osrc->name) {
         obj->name = strdup(osrc->name);
@@ -200,14 +206,14 @@ struct obj_data *read_object(int nr, int type)
     }
 
     obj->in_room = NOWHERE;
-    obj->next_content = 0;
-    obj->carried_by = 0;
-    obj->equipped_by = 0;
+    obj->next_content = NULL;
+    obj->carried_by = NULL;
+    obj->equipped_by = NULL;
     obj->eq_pos = -1;
-    obj->in_obj = 0;
-    obj->contains = 0;
+    obj->contains = NULL;
     obj->item_number = nr;
-    obj->in_obj = 0;
+    obj->index = index;
+    obj->in_obj = NULL;
 
     obj->next = object_list;
     object_list = obj;
@@ -352,10 +358,7 @@ void extract_obj(struct obj_data *obj)
     }
 
     if (obj->item_number >= 0) {
-        index = objectIndex( obj->item_number );
-        if( index ) {
-            index->number--;
-        }
+        obj->index->number--;
         obj_count--;
     }
     free_obj(obj);
