@@ -1361,7 +1361,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         /*
          * item not a corpse if v3 = 0 
          */
-        if (!j->obj_flags.value[3]) {
+        if (!j->value[3]) {
             send_to_char("Sorry, you cannot tan this.\n\r", ch);
             return;
         }

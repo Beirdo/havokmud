@@ -101,9 +101,9 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (ch->equipment[WIELD]->obj_flags.value[3] != 11 &&
-        ch->equipment[WIELD]->obj_flags.value[3] != 1 &&
-        ch->equipment[WIELD]->obj_flags.value[3] != 10) {
+    if (ch->equipment[WIELD]->value[3] != 11 &&
+        ch->equipment[WIELD]->value[3] != 1 &&
+        ch->equipment[WIELD]->value[3] != 10) {
         send_to_char("Only piercing or stabbing weapons can be used for "
                      "backstabbing.\n\r", ch);
         return;

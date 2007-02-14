@@ -80,7 +80,7 @@ void MakeSound(int pulse)
 
     for (obj = object_list; obj; obj = obj->next) {
         if (ITEM_TYPE(obj) == ITEM_AUDIO && 
-            ((obj->obj_flags.value[0] && !(pulse % obj->obj_flags.value[0])) ||
+            ((obj->value[0] && !(pulse % obj->value[0])) ||
              !number(0, 5))) {
             if (obj->carried_by) {
                 room = obj->carried_by->in_room;

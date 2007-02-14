@@ -263,7 +263,7 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
         act("$N is too big to charge at", FALSE, ch, 0, victim, TO_CHAR);
         return;
     }
-    if (ch->equipment[WIELD]->obj_flags.value[3] != 13) {
+    if (ch->equipment[WIELD]->value[3] != 13) {
         /*
          * TYPE_IMPALE
          */

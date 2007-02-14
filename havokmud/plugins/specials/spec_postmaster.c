@@ -201,11 +201,11 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
         tmp_obj->short_description = strdup("a piece of mail");
         tmp_obj->description = strdup("Someone has left a piece of mail here.");
 
-        tmp_obj->obj_flags.type_flag = ITEM_NOTE;
-        tmp_obj->obj_flags.wear_flags = ITEM_TAKE | ITEM_HOLD;
-        tmp_obj->obj_flags.weight = 1;
-        tmp_obj->obj_flags.cost = 30;
-        tmp_obj->obj_flags.cost_per_day = 10;
+        tmp_obj->type_flag = ITEM_NOTE;
+        tmp_obj->wear_flags = ITEM_TAKE | ITEM_HOLD;
+        tmp_obj->weight = 1;
+        tmp_obj->cost = 30;
+        tmp_obj->cost_per_day = 10;
 
         tmp_obj->action_description = db_get_mail_message(messageNum[i]);
         if (!tmp_obj->action_description) {

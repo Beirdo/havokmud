@@ -1162,15 +1162,14 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     bind_string( &data[4], obj->description, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[5], obj->action_description, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[6], obj->modBy, MYSQL_TYPE_VAR_STRING );
-    bind_numeric( &data[7], obj->obj_flags.type_flag, MYSQL_TYPE_LONG );
-    bind_numeric( &data[8], obj->obj_flags.value[0], MYSQL_TYPE_LONG );
-    bind_numeric( &data[9], obj->obj_flags.value[1], MYSQL_TYPE_LONG );
-    bind_numeric( &data[10], obj->obj_flags.value[2], MYSQL_TYPE_LONG );
-    bind_numeric( &data[11], obj->obj_flags.value[3], MYSQL_TYPE_LONG );
-    bind_numeric( &data[12], obj->obj_flags.weight, MYSQL_TYPE_LONG );
-    bind_numeric( &data[13], obj->obj_flags.cost, MYSQL_TYPE_LONG );
-    bind_numeric( &data[14], obj->obj_flags.cost_per_day, 
-                  MYSQL_TYPE_LONG );
+    bind_numeric( &data[7], obj->type_flag, MYSQL_TYPE_LONG );
+    bind_numeric( &data[8], obj->value[0], MYSQL_TYPE_LONG );
+    bind_numeric( &data[9], obj->value[1], MYSQL_TYPE_LONG );
+    bind_numeric( &data[10], obj->value[2], MYSQL_TYPE_LONG );
+    bind_numeric( &data[11], obj->value[3], MYSQL_TYPE_LONG );
+    bind_numeric( &data[12], obj->weight, MYSQL_TYPE_LONG );
+    bind_numeric( &data[13], obj->cost, MYSQL_TYPE_LONG );
+    bind_numeric( &data[14], obj->cost_per_day, MYSQL_TYPE_LONG );
     bind_numeric( &data[15], obj->level, MYSQL_TYPE_LONG );
     bind_numeric( &data[16], obj->max, MYSQL_TYPE_LONG );
     bind_numeric( &data[17], (long)obj->modified, MYSQL_TYPE_LONG );
@@ -2842,14 +2841,14 @@ void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     obj->description            = strdup(row[1]);
     obj->action_description     = strdup(row[2]);
     obj->modBy                  = strdup(row[3]);
-    obj->obj_flags.type_flag    = atoi(row[4]);
-    obj->obj_flags.value[0]     = atoi(row[5]);
-    obj->obj_flags.value[1]     = atoi(row[6]);
-    obj->obj_flags.value[2]     = atoi(row[7]);
-    obj->obj_flags.value[3]     = atoi(row[8]);
-    obj->obj_flags.weight       = atoi(row[9]);
-    obj->obj_flags.cost         = atoi(row[10]);
-    obj->obj_flags.cost_per_day = atoi(row[11]);
+    obj->type_flag              = atoi(row[4]);
+    obj->value[0]               = atoi(row[5]);
+    obj->value[1]               = atoi(row[6]);
+    obj->value[2]               = atoi(row[7]);
+    obj->value[3]               = atoi(row[8]);
+    obj->weight                 = atoi(row[9]);
+    obj->cost                   = atoi(row[10]);
+    obj->cost_per_day           = atoi(row[11]);
     obj->level                  = atoi(row[12]);
     obj->max                    = atoi(row[13]);
     obj->modified               = atol(row[14]); 
@@ -2912,8 +2911,8 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         return;
     }
 
-    obj->obj_flags.wear_flags = 0;
-    obj->obj_flags.extra_flags = 0;
+    obj->wear_flags = 0;
+    obj->extra_flags = 0;
 
     row = mysql_fetch_row(res);
 
@@ -2921,11 +2920,11 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         if( *row[i] == '1' ) {
             switch( obj_flags[i].var ) {
             case 0:
-                var = (unsigned int *)&(obj->obj_flags.wear_flags);
+                var = (unsigned int *)&(obj->wear_flags);
                 break;
             default:
             case 1:
-                var = (unsigned int *)&(obj->obj_flags.extra_flags);
+                var = (unsigned int *)&(obj->extra_flags);
                 break;
             }
 

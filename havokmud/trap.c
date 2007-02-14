@@ -77,7 +77,7 @@ int TriggerTrap(struct char_data *ch, struct obj_data *i)
 {
     struct char_data *v;
 
-    if (ITEM_TYPE(i) == ITEM_TRAP && i->obj_flags.value[TRAP_CHARGES]) {
+    if (ITEM_TYPE(i) == ITEM_TRAP && i->value[TRAP_CHARGES]) {
         act("You hear a strange noise...", TRUE, ch, 0, 0, TO_ROOM);
         act("You hear a strange noise...", TRUE, ch, 0, 0, TO_CHAR);
         GET_TRAP_CHARGES(i) -= 1;

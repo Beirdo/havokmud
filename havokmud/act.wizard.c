@@ -1732,18 +1732,18 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             oldSendOutput(ch, "Extra description keyword(s): None\n\r");
         }
 
-        sprintbit((unsigned) j->obj_flags.wear_flags, wear_bits, buf);
+        sprintbit((unsigned) j->wear_flags, wear_bits, buf);
         oldSendOutput(ch, "Can be worn on : %s\n\r", buf);
 
-        sprintbit((unsigned) j->obj_flags.bitvector, affected_bits, buf);
+        sprintbit((unsigned) j->bitvector, affected_bits, buf);
         oldSendOutput(ch, "Set char bits  : %s\n\r", buf);
 
-        sprintbit((unsigned) j->obj_flags.extra_flags, extra_bits, buf);
+        sprintbit((unsigned) j->extra_flags, extra_bits, buf);
         oldSendOutput(ch, "Extra flags: %s\n\r", buf);
 
         oldSendOutput(ch, "Weight: %d, Value: %d, Cost/day: %d, Timer: %d\n\r",
-                      j->obj_flags.weight, j->obj_flags.cost,
-                      j->obj_flags.cost_per_day, j->obj_flags.timer);
+                      j->weight, j->cost,
+                      j->cost_per_day, j->timer);
 
         if (j->level == 0) {
             oldSendOutput(ch, "Ego: None, ");
@@ -1770,77 +1770,77 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         strcat(buf, ", In object: ");
         strcat(buf, (!j->in_obj ? "None" : fname(j->in_obj->name)));
 
-        switch (j->obj_flags.type_flag) {
+        switch (j->type_flag) {
         case ITEM_LIGHT:
             sprintf(buf, "Colour : [%d]\n\rType : [%d]\n\rHours : [%d]",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2]);
+                    j->value[0], j->value[1],
+                    j->value[2]);
             break;
         case ITEM_SCROLL:
         case ITEM_POTION:
             sprintf(buf, "Spells (level %d): %d, %d, %d",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2], j->obj_flags.value[3]);
+                    j->value[0], j->value[1],
+                    j->value[2], j->value[3]);
             break;
         case ITEM_WAND:
         case ITEM_STAFF:
             sprintf(buf, "Level: %d Spell : %d\n\rCharges : %d",
-                    j->obj_flags.value[0], j->obj_flags.value[3],
-                    j->obj_flags.value[2]);
+                    j->value[0], j->value[3],
+                    j->value[2]);
             break;
         case ITEM_WEAPON:
             sprintf(buf, "Tohit : %d\n\rTodam : %dD%d\n\rType : %d",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2], j->obj_flags.value[3]);
+                    j->value[0], j->value[1],
+                    j->value[2], j->value[3]);
             break;
         case ITEM_FIREWEAPON:
             sprintf(buf,
                     "Tohit: %d\n\rDam: %d\n\rType: %d Min Weight: %d\n\r",
-                    j->obj_flags.value[2], j->obj_flags.value[3],
-                    j->obj_flags.value[0], j->obj_flags.value[1]);
+                    j->value[2], j->value[3],
+                    j->value[0], j->value[1]);
             break;
         case ITEM_MISSILE:
             sprintf(buf, "Tohit : %d\n\rTodam : %d\n\rType : %d",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[3]);
+                    j->value[0], j->value[1],
+                    j->value[3]);
             break;
         case ITEM_ARMOR:
             sprintf(buf, "AC-apply : [%d]\n\rFull Strength : [%d]",
-                    j->obj_flags.value[0], j->obj_flags.value[1]);
+                    j->value[0], j->value[1]);
 
             break;
         case ITEM_TRAP:
             sprintf(buf,
                     "Eff type: %d, Dam type: %d, level: %d, charges: %d",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2], j->obj_flags.value[3]);
+                    j->value[0], j->value[1],
+                    j->value[2], j->value[3]);
             break;
         case ITEM_CONTAINER:
             sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\r"
                          "Key to unlock: %d\n\rCorpse : %s\n\r",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2],
-                    (j->obj_flags.value[3] ? "Yes" : "No"));
+                    j->value[0], j->value[1],
+                    j->value[2],
+                    (j->value[3] ? "Yes" : "No"));
             break;
         case ITEM_DRINKCON:
-            sprinttype(j->obj_flags.value[2], drinks, buf2);
+            sprinttype(j->value[2], drinks, buf2);
             sprintf(buf, "Max-contains : %d\n\rContains : %d\n\r"
                          "Poisoned : %d\n\rLiquid : %s",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[3], buf2);
+                    j->value[0], j->value[1],
+                    j->value[3], buf2);
             break;
         case ITEM_NOTE:
-            sprintf(buf, "Tongue : %d", j->obj_flags.value[0]);
+            sprintf(buf, "Tongue : %d", j->value[0]);
             break;
         case ITEM_KEY:
-            sprintf(buf, "Keytype : %d", j->obj_flags.value[0]);
+            sprintf(buf, "Keytype : %d", j->value[0]);
             break;
         case ITEM_FOOD:
             sprintf(buf, "Makes full : %d\n\rPoisoned : %d",
-                    j->obj_flags.value[0], j->obj_flags.value[3]);
+                    j->value[0], j->value[3]);
             break;
         case ITEM_PORTAL:
-            sprintf(buf, "Portals to room : %d", j->obj_flags.value[0]);
+            sprintf(buf, "Portals to room : %d", j->value[0]);
             break;
         case ITEM_AUDIO:
             sprintf(buf, "Sound : %s\n\r", (j->action_description ?
@@ -1849,12 +1849,12 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             break;
         case ITEM_INSTRUMENT:
             sprintf(buf, "Mana reduction : %d\n\r",
-                    (j->obj_flags.value[0]));
+                    (j->value[0]));
             break;
         default:
             sprintf(buf, "Values 0-3 : [%d] [%d] [%d] [%d]",
-                    j->obj_flags.value[0], j->obj_flags.value[1],
-                    j->obj_flags.value[2], j->obj_flags.value[3]);
+                    j->value[0], j->value[1],
+                    j->value[2], j->value[3]);
             break;
         }
         send_to_char(buf, ch);
@@ -2070,32 +2070,32 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!strcmp(field, "wflags")) {
-            j->obj_flags.wear_flags = atol(parmstr);
+            j->wear_flags = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "afflags")) {
-            j->obj_flags.bitvector = atol(parmstr);
+            j->bitvector = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "exflags")) {
-            j->obj_flags.extra_flags = atol(parmstr);
+            j->extra_flags = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "weight")) {
-            j->obj_flags.weight = atol(parmstr);
+            j->weight = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "cost")) {
-            j->obj_flags.cost_per_day = atol(parmstr);
+            j->cost_per_day = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "value")) {
-            j->obj_flags.cost = atol(parmstr);
+            j->cost = atol(parmstr);
             return;
         }
 
@@ -2120,37 +2120,37 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!strcmp(field, "rent")) {
-            j->obj_flags.cost_per_day = atol(parmstr);
+            j->cost_per_day = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "timer")) {
-            j->obj_flags.timer = atol(parmstr);
+            j->timer = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "type")) {
-            j->obj_flags.type_flag = atol(parmstr);
+            j->type_flag = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "v0")) {
-            j->obj_flags.value[0] = atol(parmstr);
+            j->value[0] = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "v1")) {
-            j->obj_flags.value[1] = atol(parmstr);
+            j->value[1] = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "v2")) {
-            j->obj_flags.value[2] = atol(parmstr);
+            j->value[2] = atol(parmstr);
             return;
         }
 
         if (!strcmp(field, "v3")) {
-            j->obj_flags.value[3] = atol(parmstr);
+            j->value[3] = atol(parmstr);
             return;
         }
 
@@ -4058,7 +4058,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                 oi = which_i + objn;
                 obj = read_object(oi->virtual, VIRTUAL);
                 if (obj) {
-                    if (IS_SET(obj->obj_flags.wear_flags,
+                    if (IS_SET(obj->wear_flags,
                                pc_num_class(wearslot))) {
                         if (eval(obj) < -5) {
                             sprintf(color, "%s", "$c0008");
@@ -4253,9 +4253,9 @@ void do_show(struct char_data *ch, char *argument, int cmd)
              */
             obj = read_object(oi->virtual, VIRTUAL);
             if (obj) {
-                sprintbit((unsigned) obj->obj_flags.wear_flags, wear_bits,
+                sprintbit((unsigned) obj->wear_flags, wear_bits,
                           temp1);
-                sprintbit((unsigned) obj->obj_flags.extra_flags, extra_bits,
+                sprintbit((unsigned) obj->extra_flags, extra_bits,
                           temp2);
                 if (oi->number - 1 != 0) {
                     /*
@@ -4265,29 +4265,29 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;",
                             zone, oi->virtual,
                             ((oi->number - 1 == 0) ? 0 : 1),
-                            obj->obj_flags.cost_per_day,
+                            obj->cost_per_day,
                             oi->name, temp1, temp2);
                     append_to_string_block(&sb, buf);
 
                     switch (GET_ITEM_TYPE(obj)) {
                     case ITEM_SCROLL:
                     case ITEM_POTION:
-                        sprintf(buf, "Level %d:", obj->obj_flags.value[0]);
+                        sprintf(buf, "Level %d:", obj->value[0]);
                         append_to_string_block(&sb, buf);
-                        if (obj->obj_flags.value[1] >= 1) {
-                            sprinttype(obj->obj_flags.value[1] - 1, spells,
+                        if (obj->value[1] >= 1) {
+                            sprinttype(obj->value[1] - 1, spells,
                                        buf);
                             sprintf(buf2, "%s", buf);
                             append_to_string_block(&sb, buf2);
                         }
-                        if (obj->obj_flags.value[2] >= 1) {
-                            sprinttype(obj->obj_flags.value[2] - 1, spells,
+                        if (obj->value[2] >= 1) {
+                            sprinttype(obj->value[2] - 1, spells,
                                        buf);
                             sprintf(buf2, "%s", buf);
                             append_to_string_block(&sb, buf2);
                         }
-                        if (obj->obj_flags.value[3] >= 1) {
-                            sprinttype(obj->obj_flags.value[3] - 1, spells,
+                        if (obj->value[3] >= 1) {
+                            sprinttype(obj->value[3] - 1, spells,
                                        buf);
                             sprintf(buf2, "%s", buf);
                             append_to_string_block(&sb, buf2);
@@ -4295,10 +4295,10 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                         break;
                     case ITEM_WAND:
                     case ITEM_STAFF:
-                        sprintf(buf, "L:%d spell of:", obj->obj_flags.value[0]);
+                        sprintf(buf, "L:%d spell of:", obj->value[0]);
                         append_to_string_block(&sb, buf);
-                        if (obj->obj_flags.value[3] >= 1) {
-                            sprinttype(obj->obj_flags.value[3] - 1, spells,
+                        if (obj->value[3] >= 1) {
+                            sprinttype(obj->value[3] - 1, spells,
                                        buf);
                             sprintf(buf2, "%s", buf);
                             append_to_string_block(&sb, buf2);
@@ -4306,16 +4306,16 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                         break;
                     case ITEM_WEAPON:
                         sprintf(buf, "damage:'%dD%d'[%s]",
-                                obj->obj_flags.value[1],
-                                obj->obj_flags.value[2],
-                                AttackType[obj->obj_flags.value[3] /*-1*/ ]);
+                                obj->value[1],
+                                obj->value[2],
+                                AttackType[obj->value[3] /*-1*/ ]);
                         append_to_string_block(&sb, buf);
                         break;
                     case ITEM_ARMOR:
                         sprintf(buf, "AC-apply: %d,",
-                                obj->obj_flags.value[0]);
+                                obj->value[0]);
                         append_to_string_block(&sb, buf);
-                        sprintf(buf, "Size:%d", obj->obj_flags.value[2]);
+                        sprintf(buf, "Size:%d", obj->value[2]);
                         append_to_string_block(&sb, buf);
                         break;
                     default:
@@ -7280,9 +7280,9 @@ int eval(struct obj_data *object)
         total += -1;
     }
 
-    if (object->obj_flags.cost_per_day > 10000) {
-        total -= (int) (object->obj_flags.cost_per_day / 1000);
-    } else if (object->obj_flags.cost_per_day < 0) {
+    if (object->cost_per_day > 10000) {
+        total -= (int) (object->cost_per_day / 1000);
+    } else if (object->cost_per_day < 0) {
         /*
          * unrentable
          */
@@ -7308,14 +7308,14 @@ int eval(struct obj_data *object)
         total += 5;
         break;
     case ITEM_ARMOR: /* armor class */
-        total += object->obj_flags.value[0];
+        total += object->value[0];
         break;
     case ITEM_WEAPON: /* damage of sword */
         total -= 43;
-        total += object->obj_flags.value[1] * 2;
-        total += object->obj_flags.value[2] * 2;
+        total += object->value[1] * 2;
+        total += object->value[2] * 2;
 
-        switch (object->obj_flags.value[3]) {
+        switch (object->value[3]) {
         case 0:     /* TYPE_SMITE */
         case 1:     /* TYPE_STAB */
         case 2:     /* TYPE_WHIP */
@@ -7737,7 +7737,7 @@ int eval(struct obj_data *object)
             break;
         }
     }
-    if (!IS_SET(object->obj_flags.wear_flags, ITEM_TAKE)) {
+    if (!IS_SET(object->wear_flags, ITEM_TAKE)) {
         total = -100;
     }
     return total;

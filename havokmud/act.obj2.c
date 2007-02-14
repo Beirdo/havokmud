@@ -106,7 +106,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag != ITEM_DRINKCON) {
+    if (temp->type_flag != ITEM_DRINKCON) {
         act("You can't drink from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -123,39 +123,39 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag == ITEM_DRINKCON) {
-        if (temp->obj_flags.value[1] > 0) {
+    if (temp->type_flag == ITEM_DRINKCON) {
+        if (temp->value[1] > 0) {
             sprintf(buf, "$n drinks %s from $p",
-                    drinks[temp->obj_flags.value[2]]);
+                    drinks[temp->value[2]]);
             act(buf, TRUE, ch, temp, 0, TO_ROOM);
             oldSendOutput(ch, "You drink the %s.\n\r",
-                          drinks[temp->obj_flags.value[2]]);
+                          drinks[temp->value[2]]);
 
-            if (drink_aff[temp->obj_flags.value[2]][DRUNK] > 0) {
+            if (drink_aff[temp->value[2]][DRUNK] > 0) {
                 amount = (25 - GET_COND(ch, THIRST)) /
-                         drink_aff[temp->obj_flags.value[2]][DRUNK];
+                         drink_aff[temp->value[2]][DRUNK];
             } else {
                 amount = number(3, 10);
             }
 
-            amount = MIN(amount, temp->obj_flags.value[1]);
+            amount = MIN(amount, temp->value[1]);
 
-            if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM) &&
-                (temp->obj_flags.value[0] > 20)) {
+            if (!IS_SET(temp->value[3], DRINK_PERM) &&
+                (temp->value[0] > 20)) {
                 weight_change_object(temp, -amount);
             }
 
             if (!IS_IMMORTAL(ch)) {
                 gain_condition(ch, DRUNK, 
-                        (int)((int)drink_aff[temp->obj_flags.value[2]][DRUNK] *
+                        (int)((int)drink_aff[temp->value[2]][DRUNK] *
                               amount) / 4);
 
                 gain_condition(ch, FULL, 
-                        (int)((int)drink_aff[temp->obj_flags.value[2]][FULL] *
+                        (int)((int)drink_aff[temp->value[2]][FULL] *
                               amount) / 4);
 
                 gain_condition(ch, THIRST, 
-                        (int)((int)drink_aff[temp->obj_flags.value[2]][THIRST] *
+                        (int)((int)drink_aff[temp->value[2]][THIRST] *
                               amount) / 4);
             }
 
@@ -176,7 +176,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
                 act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
             }
             
-            if (IS_SET(temp->obj_flags.value[3], DRINK_POISON)) {
+            if (IS_SET(temp->value[3], DRINK_POISON)) {
                 act("Oops, it tasted rather strange ?!!?", FALSE, ch, 0, 0,
                     TO_CHAR);
                 act("$n chokes and utters some strange sounds.", TRUE, ch,
@@ -192,22 +192,22 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
             /*
              * empty the container, and no longer poison. 
              */
-            if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM)) {
-                temp->obj_flags.value[1] -= amount;
+            if (!IS_SET(temp->value[3], DRINK_PERM)) {
+                temp->value[1] -= amount;
             }
-            if (!temp->obj_flags.value[1]) {    
+            if (!temp->value[1]) {    
                 /* 
                  * The last bit 
                  */
-                temp->obj_flags.value[2] = 0;
-                temp->obj_flags.value[3] = 0;
+                temp->value[2] = 0;
+                temp->value[3] = 0;
                 name_from_drinkcon(temp);
             }
-            if (temp->obj_flags.value[1] < 1) { 
+            if (temp->value[1] < 1) { 
                 /* 
                  * its empty 
                  */
-                if (temp->obj_flags.value[0] < 20) {
+                if (temp->value[0] < 20) {
                     extract_obj(temp);  
                     /* 
                      * get rid of it 
@@ -239,7 +239,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag != ITEM_FOOD && GetMaxLevel(ch) < DEMIGOD) {
+    if (temp->type_flag != ITEM_FOOD && GetMaxLevel(ch) < DEMIGOD) {
         act("Your stomach refuses to eat that!?!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -261,7 +261,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!IS_IMMORTAL(ch)) {
-        gain_condition(ch, FULL, temp->obj_flags.value[0]);
+        gain_condition(ch, FULL, temp->value[0]);
     }
 
     if (GET_COND(ch, FULL) > 20) {
@@ -281,13 +281,13 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (temp->obj_flags.value[3] && !IS_IMMORTAL(ch)) {
+    if (temp->value[3] && !IS_IMMORTAL(ch)) {
         act("That tasted rather strange !!", FALSE, ch, 0, 0, TO_CHAR);
         act("$n coughs and utters some strange sounds.", FALSE, ch, 0, 0,
             TO_ROOM);
 
         af.type = SPELL_POISON;
-        af.duration = temp->obj_flags.value[0] * 2;
+        af.duration = temp->value[0] * 2;
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_POISON;
@@ -319,12 +319,12 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (from_obj->obj_flags.type_flag != ITEM_DRINKCON) {
+    if (from_obj->type_flag != ITEM_DRINKCON) {
         act("You can't pour from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
-    if (from_obj->obj_flags.value[1] == 0) {
+    if (from_obj->value[1] == 0) {
         act("The $p is empty.", FALSE, ch, from_obj, 0, TO_CHAR);
         return;
     }
@@ -338,11 +338,11 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         act("$n empties $p", TRUE, ch, from_obj, 0, TO_ROOM);
         act("You empty the $p.", FALSE, ch, from_obj, 0, TO_CHAR);
 
-        weight_change_object(from_obj, -from_obj->obj_flags.value[1]);
+        weight_change_object(from_obj, -from_obj->value[1]);
 
-        from_obj->obj_flags.value[1] = 0;
-        from_obj->obj_flags.value[2] = 0;
-        from_obj->obj_flags.value[3] = 0;
+        from_obj->value[1] = 0;
+        from_obj->value[2] = 0;
+        from_obj->value[3] = 0;
         name_from_drinkcon(from_obj);
 
         return;
@@ -353,60 +353,59 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (to_obj->obj_flags.type_flag != ITEM_DRINKCON) {
+    if (to_obj->type_flag != ITEM_DRINKCON) {
         act("You can't pour anything into that.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
-    if ((to_obj->obj_flags.value[1] != 0) &&
-        (to_obj->obj_flags.value[2] != from_obj->obj_flags.value[2])) {
+    if ((to_obj->value[1] != 0) &&
+        (to_obj->value[2] != from_obj->value[2])) {
         act("There is already another liquid in it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
-    if (!(to_obj->obj_flags.value[1] < to_obj->obj_flags.value[0])) {
+    if (!(to_obj->value[1] < to_obj->value[0])) {
         act("There is no room for more.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
     oldSendOutput(ch, "You pour the %s into the %s.",
-                  drinks[from_obj->obj_flags.value[2]], arg2);
+                  drinks[from_obj->value[2]], arg2);
 
     /*
      * New alias 
      */
-    if (to_obj->obj_flags.value[1] == 0) {
-        name_to_drinkcon(to_obj, from_obj->obj_flags.value[2]);
+    if (to_obj->value[1] == 0) {
+        name_to_drinkcon(to_obj, from_obj->value[2]);
     }
 
     /*
      * First same type liq. 
      */
-    to_obj->obj_flags.value[2] = from_obj->obj_flags.value[2];
+    to_obj->value[2] = from_obj->value[2];
 
     /*
      * the new, improved way of doing this... 
      */
-    temp = from_obj->obj_flags.value[1];
-    from_obj->obj_flags.value[1] = 0;
-    to_obj->obj_flags.value[1] += temp;
-    temp = to_obj->obj_flags.value[1] - to_obj->obj_flags.value[0];
+    temp = from_obj->value[1];
+    from_obj->value[1] = 0;
+    to_obj->value[1] += temp;
+    temp = to_obj->value[1] - to_obj->value[0];
 
     if (temp > 0) {
-        from_obj->obj_flags.value[1] = temp;
+        from_obj->value[1] = temp;
     } else {
         name_from_drinkcon(from_obj);
     }
 
-    if (from_obj->obj_flags.value[1] > from_obj->obj_flags.value[0]) {
-        from_obj->obj_flags.value[1] = from_obj->obj_flags.value[0];
+    if (from_obj->value[1] > from_obj->value[0]) {
+        from_obj->value[1] = from_obj->value[0];
     }
 
     /*
      * Then the poison boogie 
      */
-    to_obj->obj_flags.value[3] =
-        (to_obj->obj_flags.value[3] || from_obj->obj_flags.value[3]);
+    to_obj->value[3] = (to_obj->value[3] || from_obj->value[3]);
 
     return;
 }
@@ -426,7 +425,7 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag != ITEM_DRINKCON) {
+    if (temp->type_flag != ITEM_DRINKCON) {
         act("You can't sip from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -437,26 +436,26 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!temp->obj_flags.value[1]) {
+    if (!temp->value[1]) {
         act("But there is nothing in it?", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
     act("$n sips from the $p", TRUE, ch, temp, 0, TO_ROOM);
-    oldSendOutput(ch, "It tastes like %s.\n\r", drinks[temp->obj_flags.value[2]]);
+    oldSendOutput(ch, "It tastes like %s.\n\r", drinks[temp->value[2]]);
 
     gain_condition(ch, DRUNK, 
-                   (int)(drink_aff[temp->obj_flags.value[2]][DRUNK] / 4));
+                   (int)(drink_aff[temp->value[2]][DRUNK] / 4));
 
     gain_condition(ch, FULL,
-                   (int)(drink_aff[temp->obj_flags.value[2]][FULL] / 4));
+                   (int)(drink_aff[temp->value[2]][FULL] / 4));
 
     gain_condition(ch, THIRST, 
-                    (int)(drink_aff[temp->obj_flags.value[2]][THIRST] / 4));
+                    (int)(drink_aff[temp->value[2]][THIRST] / 4));
 
 #if 0
-    if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM) ||
-        (temp->obj_flags.value[0] > 19))
+    if (!IS_SET(temp->value[3], DRINK_PERM) ||
+        (temp->value[0] > 19))
         weight_change_object(temp, -1); 
     /* 
      * Subtract one unit, unless
@@ -473,7 +472,7 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
     if (GET_COND(ch, FULL) > 20) {
         act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
     }
-    if (IS_SET(temp->obj_flags.value[3], DRINK_POISON) && 
+    if (IS_SET(temp->value[3], DRINK_POISON) && 
         !IS_AFFECTED(ch, AFF_POISON)) {      
         /* It was poisoned ! */
         act("But it also had a strange taste!", FALSE, ch, 0, 0, TO_CHAR);
@@ -486,15 +485,15 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
         affect_to_char(ch, &af);
     }
 
-    if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM)) {
-        temp->obj_flags.value[1]--;
+    if (!IS_SET(temp->value[3], DRINK_PERM)) {
+        temp->value[1]--;
     }
-    if (!temp->obj_flags.value[1]) {    
+    if (!temp->value[1]) {    
         /* 
          * The last bit 
          */
-        temp->obj_flags.value[2] = 0;
-        temp->obj_flags.value[3] = 0;
+        temp->value[2] = 0;
+        temp->value[3] = 0;
         name_from_drinkcon(temp);
     }
 }
@@ -514,12 +513,12 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag == ITEM_DRINKCON) {
+    if (temp->type_flag == ITEM_DRINKCON) {
         do_sip(ch, argument, 0);
         return;
     }
 
-    if (!(temp->obj_flags.type_flag == ITEM_FOOD)) {
+    if (!(temp->type_flag == ITEM_FOOD)) {
         act("Taste that?!? Your stomach refuses!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -532,7 +531,7 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
     if (GET_COND(ch, FULL) > 20) {
         act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
     }
-    if (temp->obj_flags.value[3] && !IS_AFFECTED(ch, AFF_POISON)) {
+    if (temp->value[3] && !IS_AFFECTED(ch, AFF_POISON)) {
         act("Ooups, it did not taste good at all!", FALSE, ch, 0, 0, TO_CHAR);
 
         af.type = SPELL_POISON;
@@ -543,9 +542,9 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
         affect_to_char(ch, &af);
     }
 
-    temp->obj_flags.value[0]--;
+    temp->value[0]--;
 
-    if (!temp->obj_flags.value[0]) {    
+    if (!temp->value[0]) {    
         /* 
          * Nothing left 
          */
@@ -643,7 +642,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
     if (!IS_IMMORTAL(ch)) {
         BitMask = GetItemClassRestrictions(obj_object);
-        if (IS_SET(obj_object->obj_flags.extra_flags, ITEM_ONLY_CLASS)) {
+        if (IS_SET(obj_object->extra_flags, ITEM_ONLY_CLASS)) {
             if (!OnlyClassItemValid(ch, obj_object)) {
                 send_to_char("You are not the proper person for this.\n\r", ch);
                 return;
@@ -668,10 +667,10 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
      * huge   - giants
      */
     if (GET_ITEM_TYPE(obj_object) == ITEM_ARMOR &&
-        obj_object->obj_flags.value[2] != 0 &&
-        obj_object->obj_flags.value[2] != races[ch->race].size &&
-        obj_object->obj_flags.value[2] != races[ch->race].size + 1 &&
-        obj_object->obj_flags.value[2] != races[ch->race].size - 1) {
+        obj_object->value[2] != 0 &&
+        obj_object->value[2] != races[ch->race].size &&
+        obj_object->value[2] != races[ch->race].size + 1 &&
+        obj_object->value[2] != races[ch->race].size - 1) {
 
         send_to_char("It doesnt' seem to fit", ch);
         return;
@@ -687,13 +686,13 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         return;
     }
 
-    if (IS_SET(obj_object->obj_flags.extra_flags, ITEM_ANTI_MEN) &&
+    if (IS_SET(obj_object->extra_flags, ITEM_ANTI_MEN) &&
         GET_SEX(ch) != SEX_FEMALE) {
         send_to_char("Only women can do that.\n\r", ch);
         return;
     }
 
-    if (IS_SET(obj_object->obj_flags.extra_flags, ITEM_ANTI_WOMEN) &&
+    if (IS_SET(obj_object->extra_flags, ITEM_ANTI_WOMEN) &&
         GET_SEX(ch) != SEX_MALE) {
         send_to_char("Only men can do that.\n\r", ch);
         return;
@@ -712,17 +711,17 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("You are already holding a light source.\n\r",
                          ch);
         } else if (ch->equipment[WIELD] &&
-                   ch->equipment[WIELD]->obj_flags.weight >
+                   ch->equipment[WIELD]->weight >
                    str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
             send_to_char("You cannot wield a two handed weapon, and hold "
                          "a light source.\n\r", ch);
         } else if ((ch->equipment[WIELD] && ch->equipment[HOLD])) {
             send_to_char("Sorry, you only have two hands.\n\r", ch);
         } else if (rp->sector_type == SECT_UNDERWATER &&
-                   obj_object->obj_flags.value[2] != -1) {
+                   obj_object->value[2] != -1) {
             send_to_char("You can't light that underwater!\n\r", ch);
         } else {
-            if (obj_object->obj_flags.value[2]) {
+            if (obj_object->value[2]) {
                 real_roomp(ch->in_room)->light++;
             }
             oldSendOutput(ch, "You light %s and hold it.\n\r",
@@ -984,7 +983,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             if (ch->equipment[HOLD]) {
                 send_to_char("You are already holding something.\n\r", ch);
             } else if (ch->equipment[WIELD] && 
-                       ch->equipment[WIELD]->obj_flags.weight >
+                       ch->equipment[WIELD]->weight >
                         str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
                 send_to_char("You cannot wield a two handed weapon and hold "
                              "something also.\n\r", ch);
@@ -1028,7 +1027,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             if (ch->equipment[WEAR_SHIELD]) {
                 send_to_char("You are already using a shield\n\r", ch);
             } else if (ch->equipment[WIELD] &&
-                       ch->equipment[WIELD]->obj_flags.weight >
+                       ch->equipment[WIELD]->weight >
                        str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
                 send_to_char("You cannot wield a two handed weapon and "
                              "wear a shield.\n\r", ch);
@@ -1051,7 +1050,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
     case 15:
         if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) && 
-            obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
+            obj_object->type_flag == ITEM_CONTAINER) {
             if (ch->equipment[WEAR_BACK]) {
                 send_to_char("You already wear something on your back.\n\r", 
                              ch);
@@ -1201,7 +1200,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                     keyword = 12;
                 }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                    obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
+                    obj_object->type_flag == ITEM_CONTAINER) {
                     keyword = 15;
                 }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {                    
@@ -1272,7 +1271,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                         keyword = 3;
                     }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                        obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
+                        obj_object->type_flag == ITEM_CONTAINER) {
                         keyword = 15;
                     }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {
@@ -1372,7 +1371,7 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
     if (arg1) {
         obj_object = get_obj_in_list(arg1, ch->carrying);
         if (obj_object) {
-            if (obj_object->obj_flags.type_flag == ITEM_LIGHT) {
+            if (obj_object->type_flag == ITEM_LIGHT) {
                 wear(ch, obj_object, WEAR_LIGHT);
             } else {
                 wear(ch, obj_object, 13);
@@ -1409,9 +1408,8 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                                 obj_to_char(obj_object, ch);
                                 act("You stop using $p.", FALSE, ch,
                                     obj_object, 0, TO_CHAR);
-                                if (obj_object->obj_flags.type_flag ==
-                                    ITEM_LIGHT && 
-                                    obj_object->obj_flags.value[2]) {
+                                if (obj_object->type_flag == ITEM_LIGHT && 
+                                    obj_object->value[2]) {
                                     real_roomp(ch->in_room)->light--;
                                 }
 
@@ -1465,8 +1463,8 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                             act("$n stops using $p.", TRUE, ch, obj_object, 0,
                                 TO_ROOM);
 
-                            if (obj_object->obj_flags.type_flag == ITEM_LIGHT &&
-                                obj_object->obj_flags.value[2]) {
+                            if (obj_object->type_flag == ITEM_LIGHT &&
+                                obj_object->value[2]) {
                                 real_roomp(ch->in_room)->light--;
                             }
                         }
@@ -1495,8 +1493,8 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                 if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
                     obj_to_char(unequip_char(ch, j), ch);
 
-                    if (obj_object->obj_flags.type_flag == ITEM_LIGHT &&
-                        obj_object->obj_flags.value[2]) {
+                    if (obj_object->type_flag == ITEM_LIGHT &&
+                        obj_object->value[2]) {
                         real_roomp(ch->in_room)->light--;
                     }
 
@@ -1661,7 +1659,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (IS_SET(auctionobj->obj_flags.extra_flags, ITEM_MAGIC) && 
+    if (IS_SET(auctionobj->extra_flags, ITEM_MAGIC) && 
         HasClass(ch, CLASS_BARBARIAN) && !IS_IMMORTAL(ch)) {
         send_to_char("You sense magic on the item, and refrain from placing "
                      "a bid.\n\r", ch);

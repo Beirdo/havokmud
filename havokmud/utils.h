@@ -17,8 +17,8 @@
 
 #define FALSE 0
 
-#define WEAR_FLAG(o,f)  (IS_SET(o->obj_flags.wear_flags, f) != 0)
-#define EXTRA_FLAG(o,f) (IS_SET(o->obj_flags.extra_flags, f) != 0)
+#define WEAR_FLAG(o,f)  (IS_SET(o->wear_flags, f) != 0)
+#define EXTRA_FLAG(o,f) (IS_SET(o->extra_flags, f) != 0)
 #define ONLY_FLAG(o,f)  (EXTRA_FLAG(o, f) && EXTRA_FLAG(o, ITEM_ONLY_CLASS))
 #define ANTI_FLAG(o,f)  (EXTRA_FLAG(o, f) && !EXTRA_FLAG(o, ITEM_ONLY_CLASS))
 
@@ -28,9 +28,9 @@
 
 #define ISNEWL(ch) ((ch) == '\n' || (ch) == '\r')
 
-#define IS_WEAPON(o) (o->obj_flags.type_flag == ITEM_WEAPON)
+#define IS_WEAPON(o) (o->type_flag == ITEM_WEAPON)
 
-#define IS_RARE(obj) (IS_SET(obj->obj_flags.extra_flags, ITEM_RARE))
+#define IS_RARE(obj) (IS_SET(obj->extra_flags, ITEM_RARE))
 
 #define IF_STR(st) ((st) ? (st) : "\0")
 
@@ -233,14 +233,14 @@
  * Object And Carry related macros 
  */
 
-#define GET_ITEM_TYPE(obj) ((obj)->obj_flags.type_flag)
+#define GET_ITEM_TYPE(obj) ((obj)->type_flag)
 
-#define GET_XCOORD(obj)  ((obj)->obj_flags.value[0])
-#define GET_YCOORD(obj)  ((obj)->obj_flags.value[1])
+#define GET_XCOORD(obj)  ((obj)->value[0])
+#define GET_YCOORD(obj)  ((obj)->value[1])
 
-#define CAN_WEAR(obj, part) (IS_SET((obj)->obj_flags.wear_flags,part))
+#define CAN_WEAR(obj, part) (IS_SET((obj)->wear_flags,part))
 
-#define GET_OBJ_WEIGHT(obj) ((obj)->obj_flags.weight)
+#define GET_OBJ_WEIGHT(obj) ((obj)->weight)
 
 #define CAN_CARRY_W(ch) (str_app[STRENGTH_APPLY_INDEX(ch)].carry_w)
 
@@ -258,7 +258,7 @@
    (CAN_WEAR((obj), ITEM_TAKE) && CAN_CARRY_OBJ((ch),(obj)) &&          \
     CAN_SEE_OBJ((ch),(obj)))
 
-#define IS_OBJ_STAT(obj,stat) (IS_SET((obj)->obj_flags.extra_flags,stat))
+#define IS_OBJ_STAT(obj,stat) (IS_SET((obj)->extra_flags,stat))
 
 /*
  * char name/short_desc(for mobs) or someone? 
@@ -288,7 +288,7 @@
                        (mob_index[ch->nr].virtual == 3067))
 
 #define IS_CORPSE(obj) (GET_ITEM_TYPE((obj))==ITEM_CONTAINER && \
-                        (obj)->obj_flags.value[3] && \
+                        (obj)->value[3] && \
                         isname("corpse", (obj)->name))
 
 #define EXIT(ch, door)  (real_roomp((ch)->in_room)->dir_option[door])
@@ -310,7 +310,7 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 #define IS_EVIL(ch)    (GET_ALIGNMENT(ch) <= -350)
 #define IS_NEUTRAL(ch) (!IS_GOOD(ch) && !IS_EVIL(ch))
 
-#define ITEM_TYPE(obj)  ((int)(obj)->obj_flags.type_flag)
+#define ITEM_TYPE(obj)  ((int)(obj)->type_flag)
 
 #define IS_PC(ch) (!IS_NPC((ch)) || IS_SET((ch)->specials.act, ACT_POLYSELF))
 

@@ -258,7 +258,7 @@ int RawMove(struct char_data *ch, int dir)
                  * See if char is carrying a boat 
                  */
                 for (obj = ch->carrying; obj; obj = obj->next_content)
-                    if (obj->obj_flags.type_flag == ITEM_BOAT) {
+                    if (obj->type_flag == ITEM_BOAT) {
                         has_boat = TRUE;
                     }
                 if (IS_IMMORTAL(ch) && 
@@ -968,16 +968,16 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("But it's already open!\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSEABLE)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSEABLE)) {
             send_to_char("You can't do that.\n\r", ch);
-        } else if (IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+        } else if (IS_SET(obj->value[1], CONT_LOCKED)) {
             send_to_char("It seems to be locked.\n\r", ch);
         } else {
-            REMOVE_BIT(obj->obj_flags.value[1], CONT_CLOSED);
+            REMOVE_BIT(obj->value[1], CONT_CLOSED);
             send_to_char("Ok.\n\r", ch);
             act("$n opens $p.", FALSE, ch, obj, 0, TO_ROOM);
         }
@@ -1029,14 +1029,14 @@ void do_close(struct char_data *ch, char *argument, int cmd)
          * this is an object 
          */
 
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+        } else if (IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("But it's already closed!\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSEABLE)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSEABLE)) {
             send_to_char("That's impossible.\n\r", ch);
         } else {
-            SET_BIT(obj->obj_flags.value[1], CONT_CLOSED);
+            SET_BIT(obj->value[1], CONT_CLOSED);
             send_to_char("Ok.\n\r", ch);
             act("$n closes $p.", FALSE, ch, obj, 0, TO_ROOM);
         }
@@ -1173,18 +1173,18 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
          * this is an object 
          */
 
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Maybe you should close it first...\n\r", ch);
-        } else if (obj->obj_flags.value[2] < 0) {
+        } else if (obj->value[2] < 0) {
             send_to_char("That thing can't be locked.\n\r", ch);
-        } else if (!has_key(ch, obj->obj_flags.value[2])) {
+        } else if (!has_key(ch, obj->value[2])) {
             send_to_char("You don't seem to have the proper key.\n\r", ch);
-        } else if (IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+        } else if (IS_SET(obj->value[1], CONT_LOCKED)) {
             send_to_char("It is locked already.\n\r", ch);
         } else {
-            SET_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+            SET_BIT(obj->value[1], CONT_LOCKED);
             send_to_char("*Cluck*\n\r", ch);
             act("$n locks $p - 'cluck', it says.", FALSE, ch, obj, 0, TO_ROOM);
         }
@@ -1240,16 +1240,16 @@ void do_unlock(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (obj->obj_flags.value[2] < 0) {
+        } else if (obj->value[2] < 0) {
             send_to_char("Odd - you can't seem to find a keyhole.\n\r", ch);
-        } else if (!has_key(ch, obj->obj_flags.value[2])) {
+        } else if (!has_key(ch, obj->value[2])) {
             send_to_char("You don't seem to have the proper key.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+        } else if (!IS_SET(obj->value[1], CONT_LOCKED)) {
             send_to_char("Oh.. it wasn't locked, after all.\n\r", ch);
         } else {
-            REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+            REMOVE_BIT(obj->value[1], CONT_LOCKED);
             send_to_char("*Click*\n\r", ch);
             act("$n unlocks $p.", FALSE, ch, obj, 0, TO_ROOM);
         }
@@ -1328,18 +1328,18 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Silly - it ain't even closed!\n\r", ch);
-        } else if (obj->obj_flags.value[2] < 0) { 
+        } else if (obj->value[2] < 0) { 
             send_to_char("Odd - you can't seem to find a keyhole.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+        } else if (!IS_SET(obj->value[1], CONT_LOCKED)) {
             send_to_char("Oho! This thing is NOT locked!\n\r", ch);
-        } else if (IS_SET(obj->obj_flags.value[1], CONT_PICKPROOF)) {
+        } else if (IS_SET(obj->value[1], CONT_PICKPROOF)) {
             send_to_char("It resists your attempts at picking it.\n\r", ch);
         } else {
-            REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+            REMOVE_BIT(obj->value[1], CONT_LOCKED);
             send_to_char("*Click*\n\r", ch);
             act("$n fiddles with $p.", FALSE, ch, obj, 0, TO_ROOM);
         }
@@ -1399,7 +1399,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                 return;
             } 
 
-            to_room = portal->obj_flags.value[0];
+            to_room = portal->value[0];
             if (!rp) {
                 Log("Bad ObjValue1 for portal object, vnum %ld",
                     obj_index[portal->item_number].virtual);

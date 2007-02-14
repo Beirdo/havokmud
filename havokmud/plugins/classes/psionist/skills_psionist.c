@@ -2473,7 +2473,7 @@ void mind_sense_object(int level, struct char_data *ch,
     } else {
         for (i = object_list; i; i = i->next) {
             if (isname(name, i->name) &&
-                !IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
+                !IS_SET(i->extra_flags, ITEM_QUEST)) {
                 /* 
                  * ITEM_QUEST flag makes item !locate -Lennya 20030602 
                  */

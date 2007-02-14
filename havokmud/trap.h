@@ -31,10 +31,10 @@
 #define TRAP_EFF_UP      128
 #define TRAP_EFF_DOWN    256
 
-#define GET_TRAP_LEV(obj) (obj)->obj_flags.value[TRAP_LEVEL]
-#define GET_TRAP_EFF(obj) (obj)->obj_flags.value[TRAP_EFFECT_TYPE]
-#define GET_TRAP_CHARGES(obj) (obj)->obj_flags.value[TRAP_CHARGES]
-#define GET_TRAP_DAM_TYPE(obj) (obj)->obj_flags.value[TRAP_DAM_TYPE]
+#define GET_TRAP_LEV(obj) (obj)->value[TRAP_LEVEL]
+#define GET_TRAP_EFF(obj) (obj)->value[TRAP_EFFECT_TYPE]
+#define GET_TRAP_CHARGES(obj) (obj)->value[TRAP_CHARGES]
+#define GET_TRAP_DAM_TYPE(obj) (obj)->value[TRAP_DAM_TYPE]
 
 #endif
 /*

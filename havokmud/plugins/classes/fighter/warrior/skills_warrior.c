@@ -47,8 +47,8 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
     perc = number(1, 101);
     if (obj) {
         if (ITEM_TYPE(obj) == ITEM_ARMOR) {
-            if (obj->obj_flags.value[0] == 0 ||
-                obj->obj_flags.value[1] == 0) {
+            if (obj->value[0] == 0 ||
+                obj->value[1] == 0) {
                 sprintf(buf, "%s tried to mend an invalid armor value: %s, "
                              "vnum %ld.",
                         GET_NAME(ch), obj->short_description,
@@ -58,7 +58,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 
-            if (obj->obj_flags.value[0] >= obj->obj_flags.value[1]) {
+            if (obj->value[0] >= obj->value[1]) {
                 send_to_char("That item has no need of your attention.\n\r",
                              ch);
                 return;
@@ -69,7 +69,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                  * failure permanently lowers full strength by one
                  * point
                  */
-                obj->obj_flags.value[1] -= 1;
+                obj->value[1] -= 1;
                 sprintf(buf, "%s tries to mend %s, but only makes things "
                              "worse.", GET_NAME(ch), obj->short_description);
                 act(buf, FALSE, ch, 0, 0, TO_ROOM);
@@ -81,7 +81,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             } 
             
-            obj->obj_flags.value[0] = obj->obj_flags.value[1];
+            obj->value[0] = obj->value[1];
             sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                     obj->short_description);
             act(buf, FALSE, ch, 0, 0, TO_ROOM);
@@ -95,7 +95,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
         } 
         
         if (ITEM_TYPE(obj) == ITEM_WEAPON) {
-            if (obj->obj_flags.value[2] == 0) {
+            if (obj->value[2] == 0) {
                 sprintf(buf, "%s tried to mend an weapon with invalid "
                              "value: %s, vnum %d.",
                         GET_NAME(ch), obj->short_description,
@@ -105,7 +105,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             }
 
             cmp = read_object(obj->item_number, REAL);
-            if (cmp->obj_flags.value[2] == 0) {
+            if (cmp->value[2] == 0) {
                 sprintf(buf, "%s tried to mend an weapon with invalid "
                              "value: %s, vnum %d.",
                         GET_NAME(ch), obj->short_description,
@@ -115,7 +115,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 
-            if (cmp->obj_flags.value[2] == obj->obj_flags.value[2]) {
+            if (cmp->value[2] == obj->value[2]) {
                 send_to_char("That item has no need of your attention.\n\r",
                              ch);
                 extract_obj(cmp);
@@ -124,7 +124,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                     /*
                      * failure lowers damage die by one point
                      */
-                    obj->obj_flags.value[2] -= 1;
+                    obj->value[2] -= 1;
                     sprintf(buf, "%s tries to mend %s, but only makes matters "
                                  "worse.",
                             GET_NAME(ch), obj->short_description);
@@ -136,7 +136,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                     /*
                      * did this scrap the weapon?
                      */
-                    if (obj->obj_flags.value[2] < 1) {
+                    if (obj->value[2] < 1) {
                         sprintf(buf, "%s screwed up so bad that %s is reduced "
                                      "to junk!",
                                 GET_NAME(ch), obj->short_description);
@@ -151,7 +151,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                     LearnFromMistake(ch, SKILL_MEND, 0, 95);
                     WAIT_STATE(ch, PULSE_VIOLENCE * 2);
                 } else {
-                    obj->obj_flags.value[2] = cmp->obj_flags.value[2];
+                    obj->value[2] = cmp->value[2];
                     sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                             obj->short_description);
                     act(buf, FALSE, ch, 0, 0, TO_ROOM);

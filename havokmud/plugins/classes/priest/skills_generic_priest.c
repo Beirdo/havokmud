@@ -1358,9 +1358,9 @@ void spell_detect_poison(int level, struct char_data *ch,
         /*
          * It's an object
          */
-        if (obj->obj_flags.type_flag == ITEM_DRINKCON ||
-            obj->obj_flags.type_flag == ITEM_FOOD) {
-            if (obj->obj_flags.value[3]) {
+        if (obj->type_flag == ITEM_DRINKCON ||
+            obj->type_flag == ITEM_FOOD) {
+            if (obj->value[3]) {
                 act("Poisonous fumes are revealed.", FALSE, ch, 0, 0, TO_CHAR);
             } else {
                 send_to_char("It looks very delicious.\n\r", ch);
@@ -1411,15 +1411,15 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     if (obj) {
-        if (IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE))
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
+        if (IS_SET(obj->extra_flags, ITEM_INVISIBLE))
+            REMOVE_BIT(obj->extra_flags, ITEM_INVISIBLE);
 
         if (level >= 45) {
             /*
              * if level 45> then they can do this
              */
-            if (IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
-                REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+            if (IS_SET(obj->extra_flags, ITEM_MAGIC)) {
+                REMOVE_BIT(obj->extra_flags, ITEM_MAGIC);
             }
             /*
              * strip off everything
@@ -1430,11 +1430,11 @@ void spell_dispel_magic(int level, struct char_data *ch,
         }
 
         if (level >= IMMORTAL) {
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_GLOW);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_HUM);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_EVIL);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_NEUTRAL);
+            REMOVE_BIT(obj->extra_flags, ITEM_GLOW);
+            REMOVE_BIT(obj->extra_flags, ITEM_HUM);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_EVIL);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_NEUTRAL);
         }
         return;
     }
@@ -2391,18 +2391,18 @@ void spell_goodberry(int level, struct char_data *ch,
     tmp_obj->name = strdup("berry blue blueberry");
     tmp_obj->short_description = strdup("a plump blueberry");
     tmp_obj->description = strdup("A scrumptions blueberry lies here.");
-    tmp_obj->obj_flags.type_flag = ITEM_FOOD;
-    tmp_obj->obj_flags.wear_flags = ITEM_TAKE | ITEM_HOLD;
-    tmp_obj->obj_flags.value[0] = 10;
-    tmp_obj->obj_flags.weight = 1;
-    tmp_obj->obj_flags.cost = 10;
-    tmp_obj->obj_flags.cost_per_day = 1;
+    tmp_obj->type_flag = ITEM_FOOD;
+    tmp_obj->wear_flags = ITEM_TAKE | ITEM_HOLD;
+    tmp_obj->value[0] = 10;
+    tmp_obj->weight = 1;
+    tmp_obj->cost = 10;
+    tmp_obj->cost_per_day = 1;
 
     /*
      * give it a cure light wounds spell effect
      */
 
-    SET_BIT(tmp_obj->obj_flags.extra_flags, ITEM_MAGIC);
+    SET_BIT(tmp_obj->extra_flags, ITEM_MAGIC);
     tmp_obj->affected[0].location = APPLY_EAT_SPELL;
     tmp_obj->affected[0].modifier = SPELL_CURE_LIGHT;
     tmp_obj->next = object_list;
@@ -2934,12 +2934,12 @@ void spell_poison(int level, struct char_data *ch,
         } else {
             FailPoison(victim, ch);
         }
-    } else if (obj->obj_flags.type_flag == ITEM_DRINKCON ||
-               obj->obj_flags.type_flag == ITEM_FOOD) {
+    } else if (obj->type_flag == ITEM_DRINKCON ||
+               obj->type_flag == ITEM_FOOD) {
         /*
          * Object poison
          */
-        obj->obj_flags.value[3] = 1;
+        obj->value[3] = 1;
     }
 }
 
@@ -3581,9 +3581,9 @@ void spell_remove_poison(int level, struct char_data *ch,
             act("$N looks better.", FALSE, ch, 0, victim, TO_ROOM);
         }
     } else {
-        if ((obj->obj_flags.type_flag == ITEM_DRINKCON) ||
-            (obj->obj_flags.type_flag == ITEM_FOOD)) {
-            obj->obj_flags.value[3] = 0;
+        if ((obj->type_flag == ITEM_DRINKCON) ||
+            (obj->type_flag == ITEM_FOOD)) {
+            obj->value[3] = 0;
             act("The $p steams briefly.", FALSE, ch, obj, 0, TO_CHAR);
         }
     }

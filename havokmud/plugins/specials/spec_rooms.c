@@ -216,7 +216,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
                 send_to_char(buf, tmp_char);
             }
         }
-        value += (MIN(1000, MAX(k->obj_flags.cost / 4, 1)));
+        value += (MIN(1000, MAX(k->cost / 4, 1)));
         extract_obj(k);
     }
 
@@ -270,20 +270,19 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (obj->obj_flags.value[2] != LIQ_WATER &&
-            obj->obj_flags.value[1] != 0) {
+        if (obj->value[2] != LIQ_WATER && obj->value[1] != 0) {
             name_from_drinkcon(obj);
-            obj->obj_flags.value[2] = LIQ_SLIME;
+            obj->value[2] = LIQ_SLIME;
             name_to_drinkcon(obj, LIQ_SLIME);
         } else {
             /*
              * Calculate water it can contain
              */
-            water = obj->obj_flags.value[0] - obj->obj_flags.value[1];
+            water = obj->value[0] - obj->value[1];
 
             if (water > 0) {
-                obj->obj_flags.value[2] = LIQ_WATER;
-                obj->obj_flags.value[1] += water;
+                obj->value[2] = LIQ_WATER;
+                obj->value[1] += water;
                 weight_change_object(obj, water);
                 name_from_drinkcon(obj);
                 name_to_drinkcon(obj, LIQ_WATER);
@@ -470,7 +469,7 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                     TO_ROOM);
                 act("$p slowly fades into existence.", FALSE, ch, obj, 0,
                     TO_CHAR);
-                gold += obj->obj_flags.cost;
+                gold += obj->cost;
                 found = TRUE;
             }
         }
@@ -2218,11 +2217,11 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
 
                 for (obj = rp->contents; obj; obj = obj->next_content) {
                     if (obj_index[obj->item_number].virtual == chest_pointer) {
-                        if (IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
-                            REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+                        if (IS_SET(obj->value[1], CONT_LOCKED)) {
+                            REMOVE_BIT(obj->value[1], CONT_LOCKED);
                         }
-                        if (IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
-                            REMOVE_BIT(obj->obj_flags.value[1], CONT_CLOSED);
+                        if (IS_SET(obj->value[1], CONT_CLOSED)) {
+                            REMOVE_BIT(obj->value[1], CONT_CLOSED);
                         }
                         send_to_room("The machine grinds to a halt and one of "
                                      "the chests emits a loud click.\n\r",
@@ -3124,8 +3123,8 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 
     if(rp->special == 0) {
         /* This verifies the ventobject is actually closed when it should be */
-        if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
-            SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+        if (!IS_SET(ventobj->value[1], CONT_CLOSED)) {
+            SET_BIT(ventobj->value[1], CONT_CLOSED);
         }
     }
 
@@ -3189,8 +3188,8 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
             act("With a 'BANG!' $n accidently slams the vent closed, you "
                 "will have to open it again to get back into it.", FALSE, 
                 ch, 0, 0, TO_ROOM);
-            if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
-                SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+            if (!IS_SET(ventobj->value[1], CONT_CLOSED)) {
+                SET_BIT(ventobj->value[1], CONT_CLOSED);
             }
         }
     } else if (cmd == 67) {
@@ -3206,7 +3205,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         /*
          * close
          */
-        if (IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
+        if (IS_SET(ventobj->value[1], CONT_CLOSED)) {
             act("Oh, it looks like the vent is already closed.", FALSE,
                 ch, 0, 0, TO_CHAR);
         }
@@ -3217,8 +3216,8 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
             act("With a 'BANG!' $n accidently slams the vent closed, you "
                 "will have to open it again to get back into it.", FALSE,
                 ch, 0, 0, TO_ROOM);
-            if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
-                SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+            if (!IS_SET(ventobj->value[1], CONT_CLOSED)) {
+                SET_BIT(ventobj->value[1], CONT_CLOSED);
             }
         }
     }

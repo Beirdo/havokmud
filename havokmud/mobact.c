@@ -214,9 +214,9 @@ void MobScavenge(struct char_data *ch)
                 }
             }
 
-            if (CAN_GET_OBJ(ch, obj) && obj->obj_flags.cost > max) {
+            if (CAN_GET_OBJ(ch, obj) && obj->cost > max) {
                 best_obj = obj;
-                max = obj->obj_flags.cost;
+                max = obj->cost;
             }
         }
 
@@ -559,9 +559,9 @@ int UseViolentHeldItem(struct char_data *ch)
 #endif
     if (ch->equipment[HOLD] && HasHands(ch) && ch->specials.fighting) {
         obj = ch->equipment[HOLD];
-        index = spell_index[obj->obj_flags.value[3]];
+        index = spell_index[obj->value[3]];
 
-        if (!obj->obj_flags.value[2] <= 0 && index != -1 && 
+        if (!obj->value[2] <= 0 && index != -1 && 
             IS_SET(spell_info[index].targets, TAR_VIOLENT)) {
             /* 
              * item has charges 
@@ -811,8 +811,8 @@ int GetDamage(struct obj_data *w, struct char_data *ch)
      * return the average damage of the weapon, with plusses. 
      */
 
-    ave = w->obj_flags.value[2] / 2.0 + 0.5;
-    ave *= w->obj_flags.value[1];
+    ave = w->value[2] / 2.0 + 0.5;
+    ave *= w->value[1];
     ave += GetDamBonus(w);
 
     /*
@@ -1159,8 +1159,8 @@ void MobHit(struct char_data *ch, struct char_data *v, int type)
      */
     if (ch->equipment[WIELD]) {
         o = ch->equipment[WIELD];
-        if (o->obj_flags.value[3] != 11 && o->obj_flags.value[3] != 1 &&
-            o->obj_flags.value[3] != 10) {
+        if (o->value[3] != 11 && o->value[3] != 1 &&
+            o->value[3] != 10) {
             hit(ch, v, 0);
         } else {
             if (ch->specials.fighting) {

@@ -69,7 +69,7 @@ void spell_animate_dead(int level, struct char_data *ch,
     int             r_num = 100;
 
     if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER ||
-        !corpse->obj_flags.value[3]) {
+        !corpse->value[3]) {
         send_to_char("The magic fails abruptly!\n\r", ch);
         return;
     }
@@ -146,7 +146,7 @@ void cast_animate_dead(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_STAFF:
         for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->obj_flags.value[3]) {
+            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->value[3]) {
                 spell_animate_dead(level, ch, 0, i);
             }
         }
@@ -522,8 +522,8 @@ void spell_cacaodemon(int level, struct char_data *ch,
     if (GET_LEVEL(ch, CLERIC_LEVEL_IND) > 40 && IS_EVIL(ch)) {
         act("$p smokes briefly", TRUE, ch, obj, 0, TO_ROOM);
         act("$p smokes briefly", TRUE, ch, obj, 0, TO_CHAR);
-        obj->obj_flags.cost /= 2;
-        if (obj->obj_flags.cost < 100) {
+        obj->cost /= 2;
+        if (obj->cost < 100) {
             act("$p bursts into flame and disintegrates!",
                 TRUE, ch, obj, 0, TO_ROOM);
             act("$p bursts into flame and disintegrates!",
@@ -665,7 +665,7 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
 
     sac = unequip_char(ch, (held ? HOLD : WIELD));
     if ((sac) && (GET_LEVEL(ch, CLERIC_LEVEL_IND) > 40) && IS_EVIL(ch)) {
-        if (sac->obj_flags.cost >= 200) {
+        if (sac->cost >= 200) {
             equip_char(ch, sac, (held ? HOLD : WIELD));
         } else {
             obj_to_char(sac, ch);
@@ -895,12 +895,12 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->description = (char *)strdup("A really delicious looking magic"
                                           " mushroom lies here.");
 
-    tmp_obj->obj_flags.type_flag = ITEM_FOOD;
-    tmp_obj->obj_flags.wear_flags = ITEM_TAKE | ITEM_HOLD;
-    tmp_obj->obj_flags.value[0] = 5 + level;
-    tmp_obj->obj_flags.weight = 1;
-    tmp_obj->obj_flags.cost = 10;
-    tmp_obj->obj_flags.cost_per_day = 1;
+    tmp_obj->type_flag = ITEM_FOOD;
+    tmp_obj->wear_flags = ITEM_TAKE | ITEM_HOLD;
+    tmp_obj->value[0] = 5 + level;
+    tmp_obj->weight = 1;
+    tmp_obj->cost = 10;
+    tmp_obj->cost_per_day = 1;
 
     tmp_obj->next = object_list;
     object_list = tmp_obj;
@@ -951,7 +951,7 @@ void spell_light(int level, struct char_data *ch,
 
     tmp_obj = read_object(20, VIRTUAL); /* this is all you have to do */
     if (tmp_obj) {
-        tmp_obj->obj_flags.value[2] = 24 + level;
+        tmp_obj->value[2] = 24 + level;
         obj_to_char(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the ball of light\n\r", ch);
@@ -1002,20 +1002,19 @@ void spell_create_water(int level, struct char_data *ch,
     assert(ch && obj);
 
     if (GET_ITEM_TYPE(obj) == ITEM_DRINKCON) {
-	if (obj->obj_flags.value[2] != LIQ_WATER &&
-	    obj->obj_flags.value[1] != 0) {
+	if (obj->value[2] != LIQ_WATER &&
+	    obj->value[1] != 0) {
 
 	    name_from_drinkcon(obj);
-	    obj->obj_flags.value[2] = LIQ_SLIME;
+	    obj->value[2] = LIQ_SLIME;
 	    name_to_drinkcon(obj, LIQ_SLIME);
 	} else {
 	    water = 2 * level * ((weather_info.sky >= SKY_RAINING) ? 2 : 1);
-	    water = MIN(obj->obj_flags.value[0] - obj->obj_flags.value[1],
-			water);
+	    water = MIN(obj->value[0] - obj->value[1], water);
 
 	    if (water > 0) {
-		obj->obj_flags.value[2] = LIQ_WATER;
-		obj->obj_flags.value[1] += water;
+		obj->value[2] = LIQ_WATER;
+		obj->value[1] += water;
 
 		weight_change_object(obj, water);
 
@@ -1034,7 +1033,7 @@ void cast_create_water(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
-        if (tar_obj->obj_flags.type_flag != ITEM_DRINKCON) {
+        if (tar_obj->type_flag != ITEM_DRINKCON) {
             send_to_char("It is unable to hold water.\n\r", ch);
             return;
         }
@@ -1103,14 +1102,14 @@ void spell_curse(int level, struct char_data *ch,
         return;
     }
     if (obj) {
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD);
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_NODROP);
+        SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
+        SET_BIT(obj->extra_flags, ITEM_NODROP);
 
         /*
          * LOWER ATTACK DICE BY -1
          */
         if (IS_WEAPON(obj)) {
-            obj->obj_flags.value[2]--;
+            obj->value[2]--;
         }
         act("$p glows red.", FALSE, ch, obj, 0, TO_CHAR);
     } else {
@@ -1601,37 +1600,37 @@ void spell_golem(int level, struct char_data *ch,
     }
     for (o = rp->contents; o; o = o->next_content) {
         if (ITEM_TYPE(o) == ITEM_ARMOR) {
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_HEAD) && !helm) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_HEAD) && !helm) {
                 count++;
                 helm = o;
                 continue;
             }
 
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_FEET) && !boots) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_FEET) && !boots) {
                 count++;
                 boots = o;
                 continue;
             }
 
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_BODY) && !jacket) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_BODY) && !jacket) {
                 count++;
                 jacket = o;
                 continue;
             }
 
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_LEGS) && !leggings) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_LEGS) && !leggings) {
                 count++;
                 leggings = o;
                 continue;
             }
 
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_ARMS) && !sleeves) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_ARMS) && !sleeves) {
                 count++;
                 sleeves = o;
                 continue;
             }
 
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_HANDS) && !gloves) {
+            if (IS_SET(o->wear_flags, ITEM_WEAR_HANDS) && !gloves) {
                 count++;
                 gloves = o;
                 continue;
@@ -1663,12 +1662,12 @@ void spell_golem(int level, struct char_data *ch,
     /*
      * add up the armor values in the pieces
      */
-    armor = boots->obj_flags.value[0];
-    armor += helm->obj_flags.value[0];
-    armor += gloves->obj_flags.value[0];
-    armor += (leggings->obj_flags.value[0] * 2);
-    armor += (sleeves->obj_flags.value[0] * 2);
-    armor += (jacket->obj_flags.value[0] * 3);
+    armor = boots->value[0];
+    armor += helm->value[0];
+    armor += gloves->value[0];
+    armor += (leggings->value[0] * 2);
+    armor += (sleeves->value[0] * 2);
+    armor += (jacket->value[0] * 3);
 
     GET_AC(gol) -= armor;
 
@@ -2020,26 +2019,26 @@ void spell_identify(int level, struct char_data *ch,
             send_to_char(buf2, ch);
         }
 
-        if (obj->obj_flags.bitvector) {
+        if (obj->bitvector) {
             sprintf(buf2, "%sItem will give you following abilities:%s  ",
                     color1, color2);
             send_to_char(buf2, ch);
 
-            sprintbit((unsigned) obj->obj_flags.bitvector, affected_bits, buf);
+            sprintbit((unsigned) obj->bitvector, affected_bits, buf);
             strcat(buf, "\n\r");
             send_to_char(buf, ch);
         }
 
         sprintf(buf, "%sItem is:%s ", color1, color2);
         send_to_char(buf, ch);
-        sprintbit((unsigned) obj->obj_flags.extra_flags, extra_bits, buf2);
+        sprintbit((unsigned) obj->extra_flags, extra_bits, buf2);
         strcat(buf2, "\n\r");
         send_to_char(buf2, ch);
 
         sprintf(buf, "%sWeight: %s%d%s, Value: %s%d%s, Rent cost: %s%d%s ",
-                color1, color2, obj->obj_flags.weight, color1, color2,
-                obj->obj_flags.cost, color1, color2,
-                obj->obj_flags.cost_per_day, color1);
+                color1, color2, obj->weight, color1, color2,
+                obj->cost, color1, color2,
+                obj->cost_per_day, color1);
         send_to_char(buf, ch);
 
         if (IS_RARE(obj)) {
@@ -2050,7 +2049,7 @@ void spell_identify(int level, struct char_data *ch,
 
         sprintf(buf, "%sCan be worn on:%s ", color1, color2);
         send_to_char(buf, ch);
-        sprintbit((unsigned) obj->obj_flags.wear_flags, wear_bits, buf2);
+        sprintbit((unsigned) obj->wear_flags, wear_bits, buf2);
         strcat(buf2, "\n\r");
         send_to_char(buf2, ch);
 
@@ -2059,12 +2058,12 @@ void spell_identify(int level, struct char_data *ch,
         case ITEM_SCROLL:
         case ITEM_POTION:
             sprintf(buf, "%sLevel %s%d%s spells of:\n\r", color1, color2,
-                    obj->obj_flags.value[0], color1);
+                    obj->value[0], color1);
             send_to_char(buf, ch);
 
             for( i = 1; i < 4; i++ ) {
-                if (obj->obj_flags.value[i] >= 1) {
-                    sprinttype(obj->obj_flags.value[i] - 1, spells, buf);
+                if (obj->value[i] >= 1) {
+                    sprinttype(obj->value[i] - 1, spells, buf);
                     sprintf(buf2, "%s%s", color2, buf);
                     strcat(buf2, "\n\r");
                     send_to_char(buf2, ch);
@@ -2076,15 +2075,15 @@ void spell_identify(int level, struct char_data *ch,
         case ITEM_STAFF:
             sprintf(buf, "%sCosts %s%d%s mana to use, with %s%d%s charges "
                          "left.\n\r",
-                    color1, color2, obj->obj_flags.value[1], color1,
-                    color2, obj->obj_flags.value[2], color1);
+                    color1, color2, obj->value[1], color1,
+                    color2, obj->value[2], color1);
             send_to_char(buf, ch);
 
             sprintf(buf, "%sLevel %s%d%s spell of:\n\r", color1, color2,
-                    obj->obj_flags.value[0], color1);
+                    obj->value[0], color1);
             send_to_char(buf, ch);
-            if (obj->obj_flags.value[3] >= 1) {
-                sprinttype(obj->obj_flags.value[3] - 1, spells, buf);
+            if (obj->value[3] >= 1) {
+                sprinttype(obj->value[3] - 1, spells, buf);
                 sprintf(buf2, "%s%s", color2, buf);
                 strcat(buf2, "\n\r");
                 send_to_char(buf2, ch);
@@ -2093,17 +2092,17 @@ void spell_identify(int level, struct char_data *ch,
 
         case ITEM_WEAPON:
             sprintf(buf, "%sDamage Dice is '%s%dD%d%s' [%s%s%s] [%s%s%s]\n\r",
-                    color1, color2, obj->obj_flags.value[1],
-                    obj->obj_flags.value[2], color1, color2,
-                    AttackType[obj->obj_flags.value[3]], color1, color2,
+                    color1, color2, obj->value[1],
+                    obj->value[2], color1, color2,
+                    AttackType[obj->value[3]], color1, color2,
                     weaponskills[obj->weapontype].name, color1);
             send_to_char(buf, ch);
             break;
 
         case ITEM_ARMOR:
             sprintf(buf, "%sAC-apply is: %s%d%s,   Size of armor is: %s%s\n\r",
-                    color1, color2, obj->obj_flags.value[0], color1,
-                    color2, ArmorSize(obj->obj_flags.value[2]));
+                    color1, color2, obj->value[0], color1,
+                    color2, ArmorSize(obj->value[2]));
             send_to_char(buf, ch);
             break;
         }
@@ -2349,7 +2348,7 @@ void spell_locate_object(int level, struct char_data *ch,
 
     for (i = object_list; i && (j > 0); i = i->next) {
         if (isname(name, i->name) &&
-            !IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
+            !IS_SET(i->extra_flags, ITEM_QUEST)) {
             /*
              * we found at least one item
              */
@@ -2777,11 +2776,11 @@ void spell_remove_curse(int level, struct char_data *ch,
     assert(ch && (victim || obj));
 
     if (obj) {
-        if (IS_SET(obj->obj_flags.extra_flags, ITEM_NODROP)) {
+        if (IS_SET(obj->extra_flags, ITEM_NODROP)) {
             act("$p briefly glows blue.", TRUE, ch, obj, 0, TO_CHAR);
             act("$p, held by $n, briefly glows blue.", TRUE, ch, obj, 0,
                 TO_ROOM);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_NODROP);
+            REMOVE_BIT(obj->extra_flags, ITEM_NODROP);
         }
     } else {
         /*
@@ -2799,7 +2798,7 @@ void spell_remove_curse(int level, struct char_data *ch,
             i = 0;
             do {
                 if (victim->equipment[i] &&
-                    IS_SET(victim->equipment[i]->obj_flags.extra_flags,
+                    IS_SET(victim->equipment[i]->extra_flags,
                            ITEM_NODROP)) {
                     spell_remove_curse(level, victim, NULL,
                                        victim->equipment[i]);
@@ -3243,7 +3242,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
             /* 
              * set spell level.
              */
-            obj->obj_flags.value[0] = MAX_MORT;
+            obj->value[0] = MAX_MORT;
             
             /* 
              * set ego to level.
@@ -3253,7 +3252,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
             /* 
              * set spell level.
              */
-            obj->obj_flags.value[0] = GetMaxLevel(ch);
+            obj->value[0] = GetMaxLevel(ch);
 
             /*
              * set ego to level.
@@ -3264,8 +3263,8 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         /* 
          * set spell in slot.
          */
-        obj->obj_flags.value[1] = sn + 1;
-        obj->obj_flags.timer = 42;
+        obj->value[1] = sn + 1;
+        obj->timer = 42;
 
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
                      "your abilities.$c0007\n\r", ch);
@@ -3341,8 +3340,8 @@ void spell_succor(int level, struct char_data *ch,
     o = read_object(3052, VIRTUAL);
     obj_to_char(o, ch);
 
-    o->obj_flags.cost = 0;
-    o->obj_flags.cost_per_day = -1;
+    o->cost = 0;
+    o->cost_per_day = -1;
 
     act("$n waves $s hand, and creates $p.", TRUE, ch, o, 0, TO_ROOM);
     act("You wave your hand and create $p.", TRUE, ch, o, 0, TO_CHAR);

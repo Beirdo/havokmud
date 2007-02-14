@@ -46,7 +46,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (corpse->obj_flags.weight < 70) {
+    if (corpse->weight < 70) {
         send_to_char("There is no good meat left on it.\n\r", ch);
         return;
     }
@@ -78,11 +78,11 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         food->action_description = (char *) strdup(buffer);
         sprintf(buffer, "%s is lying on the ground.", food->short_description);
         food->description = (char *) strdup(buffer);
-        corpse->obj_flags.weight = corpse->obj_flags.weight - 50;
+        corpse->weight = corpse->weight - 50;
 
         i = number(1, 6);
         if (i == 6) {
-            food->obj_flags.value[3] = 1;
+            food->value[3] = 1;
         }
         obj_to_room(food, ch->in_room);
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);

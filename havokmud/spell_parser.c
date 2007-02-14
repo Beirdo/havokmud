@@ -2237,14 +2237,14 @@ void affect_update(int pulse)
         /*
          * If this is a corpse 
          */
-        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->obj_flags.value[3]) {
+        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->value[3]) {
             /*
              * timer count down 
              */
-            if (j->obj_flags.timer > 0) {
-                j->obj_flags.timer--;
+            if (j->timer > 0) {
+                j->timer--;
             }
-            if (!j->obj_flags.timer) {
+            if (!j->timer) {
                 if (j->carried_by) {
                     act("$p biodegrades in your hands. Everything in it falls "
                         "to the floor", FALSE, j->carried_by, j, 0, TO_CHAR);
@@ -2258,10 +2258,10 @@ void affect_update(int pulse)
                 ObjFromCorpse(j);
             }
         } else if (obj_index[j->item_number].virtual == EMPTY_SCROLL) {
-            if (j->obj_flags.timer > 0) {
-                j->obj_flags.timer--;
+            if (j->timer > 0) {
+                j->timer--;
             }
-            if (!j->obj_flags.timer) {
+            if (!j->timer) {
                 if (j->carried_by)  {
                     act("$p crumbles to dust.", FALSE, j->carried_by, j, 0,
                         TO_CHAR);
@@ -2275,10 +2275,10 @@ void affect_update(int pulse)
                 extract_obj(j);
             }
         } else if (obj_index[j->item_number].virtual == EMPTY_POTION) {
-            if (j->obj_flags.timer > 0) {
-                j->obj_flags.timer--;
+            if (j->timer > 0) {
+                j->timer--;
             }
-            if (!j->obj_flags.timer) {
+            if (!j->timer) {
                 if (j->carried_by) {
                     act("$p dissolves into nothingness.", FALSE,
                         j->carried_by, j, 0, TO_CHAR);
@@ -2296,8 +2296,8 @@ void affect_update(int pulse)
              *  Sound objects
              */
             if (ITEM_TYPE(j) == ITEM_AUDIO) {
-                if ((j->obj_flags.value[0] &&
-                     pulse % j->obj_flags.value[0] == 0) || !number(0, 5)) {
+                if ((j->value[0] &&
+                     pulse % j->value[0] == 0) || !number(0, 5)) {
                     if (j->carried_by) {
                         room = j->carried_by->in_room;
                     } else if (j->equipped_by) {
@@ -2508,14 +2508,14 @@ void affect_update(int pulse)
          * If this is a corpse 
          */
         if ((GET_ITEM_TYPE(j) == ITEM_CONTAINER) &&
-            (j->obj_flags.value[3])) {
+            (j->value[3])) {
             /*
              * timer count down 
              */
-            if (j->obj_flags.timer > 0)
-                j->obj_flags.timer--;
+            if (j->timer > 0)
+                j->timer--;
 
-            if (!j->obj_flags.timer) {
+            if (!j->timer) {
                 if (j->carried_by)
                     act("$p biodegrades in your hands.",
                         FALSE, j->carried_by, j, 0, TO_CHAR);
@@ -2535,8 +2535,8 @@ void affect_update(int pulse)
              *  Sound objects
              */
             if (ITEM_TYPE(j) == ITEM_AUDIO) {
-                if (((j->obj_flags.value[0]) &&
-                     (pulse % j->obj_flags.value[0]) == 0) ||
+                if (((j->value[0]) &&
+                     (pulse % j->value[0]) == 0) ||
                     (!number(0, 5))) {
                     if (j->carried_by) {
                         room = j->carried_by->in_room;

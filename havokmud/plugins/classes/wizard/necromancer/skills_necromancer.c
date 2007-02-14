@@ -28,7 +28,7 @@ void spell_animate_dead(int level, struct char_data *ch,
      * some sort of check for corpse hood
      */
     if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER ||
-        !corpse->obj_flags.value[3]) {
+        !corpse->value[3]) {
         send_to_char("The magic fails abruptly!\n\r", ch);
         return;
     }
@@ -117,7 +117,7 @@ void cast_animate_dead(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_STAFF:
         for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->obj_flags.value[3]) {
+            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->value[3]) {
                 spell_animate_dead(level, ch, 0, i);
             }
         }
@@ -579,7 +579,7 @@ void spell_cold_light(int level, struct char_data *ch,
 
     tmp_obj = read_object(COLD_LIGHT, VIRTUAL);
     if (tmp_obj) {
-        tmp_obj->obj_flags.value[2] = 24 + level;
+        tmp_obj->value[2] = 24 + level;
         obj_to_char(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the cold ball of ice.\n\r", ch);
@@ -2457,7 +2457,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
     for (i = object_list; i && !found; i = i->next) {
-        if (isname(name, i->name) && i->obj_flags.value[3]) {
+        if (isname(name, i->name) && i->value[3]) {
             found = 1;
             /*
              * we found a REAL corpse

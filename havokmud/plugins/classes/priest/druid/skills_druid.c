@@ -343,7 +343,7 @@ void spell_changestaff(int level, struct char_data *ch,
         return;
     }
 
-    if (!s->obj_flags.value[2]) {
+    if (!s->value[2]) {
         act("$p is not sufficiently powerful to complete this spell",
             FALSE, ch, s, 0, TO_CHAR);
         extract_obj(s);
@@ -369,7 +369,7 @@ void spell_changestaff(int level, struct char_data *ch,
 
         if (IS_PC(ch) || ch->master) {
             af.duration = follow_time(ch);
-            af.duration += s->obj_flags.value[2];
+            af.duration += s->value[2];
             af.modifier = 0;
             af.location = 0;
             af.bitvector = AFF_CHARM;
@@ -1131,16 +1131,16 @@ void spell_flame_blade(int level, struct char_data *ch,
     tmp_obj->name = strdup("blade flame");
     tmp_obj->short_description = strdup("a flame blade");
     tmp_obj->description = strdup("A flame blade burns brightly here.");
-    tmp_obj->obj_flags.type_flag = ITEM_WEAPON;
-    tmp_obj->obj_flags.wear_flags = ITEM_TAKE | ITEM_WIELD;
-    tmp_obj->obj_flags.value[0] = 0;
-    tmp_obj->obj_flags.value[1] = 1;
-    tmp_obj->obj_flags.value[2] = 4;
-    tmp_obj->obj_flags.value[3] = 3;
-    tmp_obj->obj_flags.weight = 1;
-    tmp_obj->obj_flags.cost = 10;
-    tmp_obj->obj_flags.cost_per_day = 1;
-    SET_BIT(tmp_obj->obj_flags.extra_flags, ITEM_MAGIC);
+    tmp_obj->type_flag = ITEM_WEAPON;
+    tmp_obj->wear_flags = ITEM_TAKE | ITEM_WIELD;
+    tmp_obj->value[0] = 0;
+    tmp_obj->value[1] = 1;
+    tmp_obj->value[2] = 4;
+    tmp_obj->value[3] = 3;
+    tmp_obj->weight = 1;
+    tmp_obj->cost = 10;
+    tmp_obj->cost_per_day = 1;
+    SET_BIT(tmp_obj->extra_flags, ITEM_MAGIC);
     tmp_obj->affected[0].location = APPLY_DAMROLL;
     tmp_obj->affected[0].modifier = 4 + GET_LEVEL(ch, DRUID_LEVEL_IND) / 8;
     tmp_obj->next = object_list;
@@ -1709,7 +1709,7 @@ void spell_shillelagh(int level, struct char_data *ch,
     }
 
     if ((GET_ITEM_TYPE(obj) == ITEM_WEAPON) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
+        !IS_SET(obj->extra_flags, ITEM_MAGIC)) {
 
         if (!isname("club", obj->name)) {
             send_to_char("That isn't a club!\n\r", ch);
@@ -1733,13 +1733,13 @@ void spell_shillelagh(int level, struct char_data *ch,
          * find the slots
          */
         i = getFreeAffSlot(obj);
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+        SET_BIT(obj->extra_flags, ITEM_MAGIC);
         obj->affected[i].location = APPLY_HITNDAM;
         obj->affected[i].modifier = 1;
-        obj->obj_flags.value[1] = 2;
-        obj->obj_flags.value[2] = 4;
+        obj->value[1] = 2;
+        obj->value[2] = 4;
         act("$p glows yellow.", FALSE, ch, obj, 0, TO_CHAR);
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
+        SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
     }
 }
 
@@ -1819,8 +1819,7 @@ void spell_sunray(int level, struct char_data *ch,
             if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
                 for (j = 0; j <= (MAX_WEAR - 1); j++) {
                     if (t->equipment[j] && t->equipment[j]->item_number >= 0 &&
-                        IS_SET(t->equipment[j]->obj_flags.extra_flags,
-                               ITEM_ANTI_SUN)) {
+                        IS_SET(t->equipment[j]->extra_flags, ITEM_ANTI_SUN)) {
                         obj = t->equipment[j];
                         act("$n's sunray strikes your $p, causing it to fall "
                             "apart!", FALSE, ch, 0, 0, TO_VICT);

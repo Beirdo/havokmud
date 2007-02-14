@@ -93,11 +93,11 @@ int trade_with(struct obj_data *item, int shop_nr)
 {
     int             counter;
 
-    if (item->obj_flags.cost < 1) {
+    if (item->cost < 1) {
         return (FALSE);
     }
     for (counter = 0; counter < MAX_TRADE; counter++) {
-        if (shop_index[shop_nr].type[counter] == item->obj_flags.type_flag) {
+        if (shop_index[shop_nr].type[counter] == item->type_flag) {
             return (TRUE);
         }
     }
@@ -180,16 +180,16 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     strcpy(newarg, temp1->name);
 
-    if (temp1->obj_flags.cost <= 0) {
+    if (temp1->cost <= 0) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
         extract_obj(temp1);
         return;
     }
 
-    cost = (temp1->obj_flags.cost * shop_index[shop_nr].profit_buy) -
-           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) /
-            100) + (int)(mult * temp1->obj_flags.cost);
+    cost = (temp1->cost * shop_index[shop_nr].profit_buy) -
+           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->cost) /
+            100) + (int)(mult * temp1->cost);
 
     if (GET_GOLD(ch) < num * cost && GetMaxLevel(ch) < DEMIGOD) {
         sprintf(buf, shop_index[shop_nr].missing_cash2, GET_NAME(ch));
@@ -214,7 +214,7 @@ void shopping_buy(char *arg, struct char_data *ch,
         return;
     }
 
-    if ((IS_CARRYING_W(ch) + (num * temp1->obj_flags.weight)) >
+    if ((IS_CARRYING_W(ch) + (num * temp1->weight)) >
         CAN_CARRY_W(ch)) {
         sprintf(buf, "%s : You can't carry that much weight.\n\r",
                 fname(temp1->name));
@@ -304,35 +304,35 @@ void shopping_sell(char *arg, struct char_data *ch,
         return;
     }
 
-    if (!trade_with(temp1, shop_nr) || temp1->obj_flags.cost < 1) {
+    if (!trade_with(temp1, shop_nr) || temp1->cost < 1) {
         sprintf(buf, shop_index[shop_nr].do_not_buy, GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
     }
 
-    cost = temp1->obj_flags.cost;
+    cost = temp1->cost;
 
     if (ITEM_TYPE(temp1) == ITEM_WAND || ITEM_TYPE(temp1) == ITEM_STAFF) {
-        if (temp1->obj_flags.value[1]) {
-            cost = (int) (cost * (float) (temp1->obj_flags.value[2] /
-                          (float) temp1->obj_flags.value[1]));
+        if (temp1->value[1]) {
+            cost = (int) (cost * (float) (temp1->value[2] /
+                          (float) temp1->value[1]));
         } else {
             cost = 0;
         }
     } else if (ITEM_TYPE(temp1) == ITEM_ARMOR) {
-        if (temp1->obj_flags.value[1]) {
-            cost = (int) (cost * (float) (temp1->obj_flags.value[0] /
-                          (float) (temp1->obj_flags.value[1])));
+        if (temp1->value[1]) {
+            cost = (int) (cost * (float) (temp1->value[0] /
+                          (float) (temp1->value[1])));
         } else {
             cost = 0;
         }
     }
 
-    temp1->obj_flags.cost = cost;
+    temp1->cost = cost;
 
-    cost2 = (temp1->obj_flags.cost * shop_index[shop_nr].profit_sell) +
-            ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) /
-             100) + (int)(mult * temp1->obj_flags.cost);
+    cost2 = (temp1->cost * shop_index[shop_nr].profit_sell) +
+            ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->cost) /
+             100) + (int)(mult * temp1->cost);
 
     if (cost2 < 0) {
         cost2 = 0;
@@ -419,9 +419,9 @@ void shopping_value(char *arg, struct char_data *ch,
         return;
     }
 
-    cost = (temp1->obj_flags.cost * shop_index[shop_nr].profit_sell) +
-           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 
-            100) + (int) (mult * temp1->obj_flags.cost);
+    cost = (temp1->cost * shop_index[shop_nr].profit_sell) +
+           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->cost) / 
+            100) + (int) (mult * temp1->cost);
 
     sprintf(buf, "%s I'll give you %d gold coins for that!",
             GET_NAME(ch), cost);
@@ -470,20 +470,20 @@ void shopping_list(char *arg, struct char_data *ch,
     found_obj = FALSE;
     if (keeper->carrying) {
         for (temp1 = keeper->carrying; temp1; temp1 = temp1->next_content) {
-            if (CAN_SEE_OBJ(ch, temp1) && temp1->obj_flags.cost > 0) {
+            if (CAN_SEE_OBJ(ch, temp1) && temp1->cost > 0) {
                 found_obj = TRUE;
-                cost = (temp1->obj_flags.cost * 
+                cost = (temp1->cost * 
                         shop_index[shop_nr].profit_buy) -
                        ((chr_apply[(int)GET_CHR(ch)].reaction *
-                         temp1->obj_flags.cost) / 100) +
-                       (int)(mult * temp1->obj_flags.cost);
-                if (temp1->obj_flags.type_flag != ITEM_DRINKCON) {
+                         temp1->cost) / 100) +
+                       (int)(mult * temp1->cost);
+                if (temp1->type_flag != ITEM_DRINKCON) {
                     sprintf(buf2, "%s for %d gold coins.\n\r",
                             temp1->short_description, cost);
                 } else {
-                    if (temp1->obj_flags.value[1]) {
+                    if (temp1->value[1]) {
                         sprintf(buf3, "%s of %s", temp1->short_description,
-                                drinks[temp1->obj_flags.value[2]]);
+                                drinks[temp1->value[2]]);
                     } else {
                         sprintf(buf3, "%s", (temp1->short_description));
                     }

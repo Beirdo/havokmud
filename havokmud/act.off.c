@@ -848,7 +848,7 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 #if 0
-            MAX_DISTANCE_SHOOT = weapon->obj_flags.value[1];
+            MAX_DISTANCE_SHOOT = weapon->value[1];
 #else
             MAX_DISTANCE_SHOOT = 1;
 #endif
@@ -1129,7 +1129,7 @@ void kick_messages(struct char_data *ch, struct char_data *victim,
 void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                   struct char_data *ch)
 {
-    int             w = o->obj_flags.weight,
+    int             w = o->weight,
                     sz,
                     max_range,
                     range,
@@ -1159,12 +1159,12 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
     }
     max_range = (((GET_STR(ch) + GET_ADD(ch) / 30) - 3) / 8) + 2;
     max_range = max_range / (sz + 1);
-    if (o->obj_flags.type_flag == ITEM_MISSILE && ch->equipment[WIELD] &&
-        ch->equipment[WIELD]->obj_flags.type_flag == ITEM_FIREWEAPON) {
+    if (o->type_flag == ITEM_MISSILE && ch->equipment[WIELD] &&
+        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
         /*
          * Add bow's range bonus
          */
-        max_range += ch->equipment[WIELD]->obj_flags.value[2];
+        max_range += ch->equipment[WIELD]->value[2];
     }
     if (max_range == 0) {
         act("$p immediately hits the ground.  A truly pitiful throw.",
@@ -1186,7 +1186,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 there = 1;
                 if (range_hit(ch, targ, range, o, dir, max_range)) {
                     if ((targ) && (GET_POS(targ) > POSITION_DEAD)) {
-                        if (number(1, 100) < o->obj_flags.value[0]) {
+                        if (number(1, 100) < o->value[0]) {
                             act("$p breaks into splinters.", TRUE, targ, o,
                                 0, TO_ROOM);
                             broken = TRUE;
@@ -1231,7 +1231,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                             o->short_description);
                 }
                 send_to_room(buf, rm);
-                if (number(1, 100) < o->obj_flags.value[0]) {
+                if (number(1, 100) < o->value[0]) {
                     sprintf(buf, "%s breaks into splinters.\n\r",
                             o->short_description);
                     obj_to_room(o, 3);
@@ -1377,15 +1377,15 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
     dlog("in do_weapon_load");
 
     fw = ch->equipment[WIELD];
-    if (!fw || fw->obj_flags.type_flag != ITEM_FIREWEAPON) {
+    if (!fw || fw->type_flag != ITEM_FIREWEAPON) {
         send_to_char("You must be wielding the projectile weapon you want to "
                      "load.\n\r", ch);
         return;
     }
-    if ((GET_STR(ch) + (GET_ADD(ch) / 3)) < fw->obj_flags.value[0]) {
+    if ((GET_STR(ch) + (GET_ADD(ch) / 3)) < fw->value[0]) {
         sprintf(arg1, "(%s) can't load (%s) because it requires (%d) strength "
                       "to wield",
-                GET_NAME(ch), fw->name, fw->obj_flags.value[0]);
+                GET_NAME(ch), fw->name, fw->value[0]);
         Log(arg1);
         send_to_char("You aren't strong enough to draw such a mighty "
                      "weapon.\n\r", ch);
@@ -1415,12 +1415,12 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (ms->obj_flags.type_flag != ITEM_MISSILE) {
+    if (ms->type_flag != ITEM_MISSILE) {
         act("$p is not a valid missile.", TRUE, ch, ms, 0, TO_CHAR);
         return;
     }
 
-    if (ms->obj_flags.value[3] != fw->obj_flags.value[2]) {
+    if (ms->value[3] != fw->value[2]) {
         act("You can't load $p in that sort of weapon.", TRUE, ch, ms, 0,
             TO_CHAR);
         return;
@@ -1446,7 +1446,7 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
     dlog("in do_fire");
 
     fw = ch->equipment[WIELD];
-    if ((!fw) || (fw->obj_flags.type_flag != ITEM_FIREWEAPON)) {
+    if ((!fw) || (fw->type_flag != ITEM_FIREWEAPON)) {
         send_to_char("You must be using a projectile weapon to fire "
                      "things!\n\r", ch);
         return;
@@ -1472,7 +1472,7 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
         /*
          * add spot check before letting mortals get farther
          */
-        if (rng > fw->obj_flags.value[1]) {
+        if (rng > fw->value[1]) {
             send_to_char("You just can't fire that far!\n\r", ch);
             return;
         }
@@ -1549,7 +1549,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
              * add spot check before letting mortals get father
              */
 
-            if (rng > throw->obj_flags.value[1]) {
+            if (rng > throw->value[1]) {
                 send_to_char("You just can't throw it that far!\n\r", ch);
                 return;
             }
@@ -1563,12 +1563,12 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_SET(throw->obj_flags.wear_flags, ITEM_THROW)) {
+    if (!IS_SET(throw->wear_flags, ITEM_THROW)) {
         send_to_char("You cant throw that!\n\r", ch);
         return;
     }
 
-    if (throw->obj_flags.type_flag != ITEM_WEAPON) {
+    if (throw->type_flag != ITEM_WEAPON) {
         /*
          * Friendly throw
          */
@@ -1941,18 +1941,18 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
         return;
     }
 
-    if(o->obj_flags.value[0] < 1) {
+    if(o->value[0] < 1) {
         send_to_char("The shovel appears to be broken!", ch);
         return;
     }
 
-    if(o->obj_flags.value[1] != ch->in_room) { /*not in currect room*/
+    if(o->value[1] != ch->in_room) { /*not in currect room*/
 
-        o->obj_flags.value[0]--;
+        o->value[0]--;
 
 
         /* if the object is below 0, break it..*/
-        if(o->obj_flags.value[0] < 1) {
+        if(o->value[0] < 1) {
             send_to_char("You start digging long and hard.  *SNAP*\n\r"
                         "Your shovel suddently breaks in two!",ch);
             /*Rename object afterwards-Not done*/
@@ -1963,7 +1963,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
 
         return;
     } else {  /*Bingo! We are in the right spot!!*/
-        if(o->obj_flags.value[3]==1) {
+        if(o->value[3]==1) {
 
             send_to_char("You dig and dig, but find nothing more "
                     "than what you found earlier.",ch);
@@ -1971,7 +1971,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
             return;
         }
 
-        if(!(prize = read_object(o->obj_flags.value[2], VIRTUAL))) {
+        if(!(prize = read_object(o->value[2], VIRTUAL))) {
             send_to_char("You dig and dig, but unfornuately, only find a shoe"
                          ,ch);
             /*Print message to all in room*/
@@ -1982,7 +1982,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
                 "You just discovered %s!!", prize->short_description );
          /* Print info to room*/
         obj_to_room(prize, ch->in_room);
-        o->obj_flags.value[3]=1;
+        o->value[3]=1;
 
     }
 }

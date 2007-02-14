@@ -1764,10 +1764,10 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
                  "'%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                  "%d, FROM_UNIXTIME(%ld), %d, %d, %d)", vnum, owner, ownerItem,
                  shortDesc, desc, actDesc, obj->modBy,
-                 obj->obj_flags.type_flag, obj->obj_flags.value[0],
-                 obj->obj_flags.value[1], obj->obj_flags.value[2],
-                 obj->obj_flags.value[3], obj->obj_flags.weight,
-                 obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
+                 obj->type_flag, obj->value[0],
+                 obj->value[1], obj->value[2],
+                 obj->value[3], obj->weight,
+                 obj->cost, obj->cost_per_day, obj->level,
                  obj->max, (long)obj->modified, 
                  (IS_WEAPON(obj)? obj->speed : 0),
                  (IS_WEAPON(obj) ? obj->weapontype : 0), obj->tweak );
@@ -2029,14 +2029,14 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     obj->description = strdup(row[1]);
     obj->action_description = strdup(row[2]);
     obj->modBy = strdup(row[3]);
-    obj->obj_flags.type_flag = atoi(row[4]);
-    obj->obj_flags.value[0] = atoi(row[5]);
-    obj->obj_flags.value[1] = atoi(row[6]);
-    obj->obj_flags.value[2] = atoi(row[7]);
-    obj->obj_flags.value[3] = atoi(row[8]);
-    obj->obj_flags.weight = atoi(row[9]);
-    obj->obj_flags.cost = atoi(row[10]);
-    obj->obj_flags.cost_per_day = atoi(row[11]);
+    obj->type_flag = atoi(row[4]);
+    obj->value[0] = atoi(row[5]);
+    obj->value[1] = atoi(row[6]);
+    obj->value[2] = atoi(row[7]);
+    obj->value[3] = atoi(row[8]);
+    obj->weight = atoi(row[9]);
+    obj->cost = atoi(row[10]);
+    obj->cost_per_day = atoi(row[11]);
     obj->level = atoi(row[12]);
     obj->max = atoi(row[13]);
     obj->modified = atol(row[14]); 
@@ -2109,11 +2109,11 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     for( i = 0; i < 64; i++ ) {
         switch( obj_flags[i].var ) {
         case 0:
-            var = (unsigned int *)&(obj->obj_flags.wear_flags);
+            var = (unsigned int *)&(obj->wear_flags);
             break;
         default:
         case 1:
-            var = (unsigned int *)&(obj->obj_flags.extra_flags);
+            var = (unsigned int *)&(obj->extra_flags);
             break;
         }
 

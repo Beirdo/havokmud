@@ -125,7 +125,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
                              ch);
                 return;
             }
-            value += (MIN(1000, MAX(tmp_object->obj_flags.cost / 4, 1)));
+            value += (MIN(1000, MAX(tmp_object->cost / 4, 1)));
             obj_from_char(tmp_object);
             extract_obj(tmp_object);
             if (num > 0) {
@@ -1383,7 +1383,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->obj_flags.type_flag != ITEM_POTION) {
+    if (temp->type_flag != ITEM_POTION) {
         act("You can only quaff potions.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -1419,11 +1419,11 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     act("You quaff $p which dissolves.", FALSE, ch, temp, 0, TO_CHAR);
 
     for (i = 1; i < 4; i++) {
-        if (temp->obj_flags.value[i] >= 1) {
-            index = spell_index[temp->obj_flags.value[i]];
+        if (temp->value[i] >= 1) {
+            index = spell_index[temp->value[i]];
             if( index != -1 && spell_info[index].spell_pointer ) {
                 ((*spell_info[index].spell_pointer)
-                 ((byte) temp->obj_flags.value[0], ch, "", SPELL_TYPE_POTION,
+                 ((byte) temp->value[0], ch, "", SPELL_TYPE_POTION,
                   ch, temp));
             }
         }
@@ -1487,12 +1487,12 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (scroll->obj_flags.type_flag != ITEM_SCROLL) {
+    if (scroll->type_flag != ITEM_SCROLL) {
         act("Recite is normally used for scrolls.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
-    spl = scroll->obj_flags.value[1];
+    spl = scroll->value[1];
     index = spell_index[spl];
 
     if (!spl || index == -1) {
@@ -1632,12 +1632,12 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         TO_CHAR);
 
     for (i = 1; i < 4; i++) {
-        if (scroll->obj_flags.value[0] > 0) {
+        if (scroll->value[0] > 0) {
             /*
              * spells for casting
              */
-            if (scroll->obj_flags.value[i] >= 1) {
-                index = spell_index[scroll->obj_flags.value[i]];
+            if (scroll->value[i] >= 1) {
+                index = spell_index[scroll->value[i]];
                 if (index == -1 || 
                     !IS_SET(spell_info[index].targets, target)) {
                     /*
@@ -1660,7 +1660,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
 
                 if( spell_info[index].spell_pointer ) {
                     ((*spell_info[index].spell_pointer)
-                     ((byte) scroll->obj_flags.value[0], ch, "", 
+                     ((byte) scroll->value[0], ch, "", 
                       SPELL_TYPE_SCROLL, victim, obj));
                 }
             }
@@ -1668,38 +1668,36 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             /*
              * this is a learning scroll
              */
-            if (scroll->obj_flags.value[0] < -30) {
+            if (scroll->value[0] < -30) {
                 /*
                  * max learning is 30%
                  */
-                scroll->obj_flags.value[0] = -30;
+                scroll->value[0] = -30;
             }
-            if (scroll->obj_flags.value[i] > 0) {
+            if (scroll->value[i] > 0) {
                 /*
                  * positive learning
                  */
                 if (ch->skills &&
-                    ch->skills[scroll->obj_flags.value[i]].learned < 45) {
-                    ch->skills[scroll->obj_flags.value[i]].learned +=
-                            (-scroll->obj_flags.value[0]);
+                    ch->skills[scroll->value[i]].learned < 45) {
+                    ch->skills[scroll->value[i]].learned +=
+                            (-scroll->value[0]);
                 }
             } else {
                 /*
                  * negative learning (cursed)
                  */
-                if (scroll->obj_flags.value[i] < 0) {
+                if (scroll->value[i] < 0) {
                     /*
                      * 0 = blank
                      */
                     if (ch->skills) {
-                        if (ch->skills[-scroll->obj_flags.value[i]].learned >
-                            0) {
-                            ch->skills[-scroll->obj_flags.value[i]].learned +=
-                                scroll->obj_flags.value[0];
+                        if (ch->skills[-scroll->value[i]].learned > 0) {
+                            ch->skills[-scroll->value[i]].learned +=
+                                scroll->value[0];
                         }
-                        ch->skills[-scroll->obj_flags.value[i]].learned =
-                            MAX(0,
-                                ch->skills[scroll->obj_flags.value[i]].learned);
+                        ch->skills[-scroll->value[i]].learned = 
+                            MAX(0, ch->skills[scroll->value[i]].learned);
                     }
                 }
             }
@@ -1800,32 +1798,31 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 
     stick = ch->equipment[HOLD];
 
-    if (stick->obj_flags.type_flag == ITEM_STAFF) {
+    if (stick->type_flag == ITEM_STAFF) {
         act("$n taps $p three times on the ground.", TRUE, ch, stick, 0,
             TO_ROOM);
         act("You tap $p three times on the ground.", FALSE, ch, stick, 0,
             TO_CHAR);
-        if (stick->obj_flags.value[2] > 0) {
+        if (stick->value[2] > 0) {
             /*
              * Are there any charges left?
              */
-            stick->obj_flags.value[2]--;
+            stick->value[2]--;
             if (check_nomagic(ch, "The magic is blocked by unknown forces.",
                               "The magic is blocked by unknown forces.")) {
                 return;
             }
 
-            index = spell_index[stick->obj_flags.value[3]];
+            index = spell_index[stick->value[3]];
             if( index != -1 && spell_info[index].spell_pointer) {
                 ((*spell_info[index].spell_pointer)
-                 ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_STAFF,
-                  0, 0));
+                 ((byte) stick->value[0], ch, "", SPELL_TYPE_STAFF, 0, 0));
                 WAIT_STATE(ch, PULSE_VIOLENCE);
             }
         } else {
             send_to_char("The staff seems powerless.\n\r", ch);
         }
-    } else if (buf2 && stick->obj_flags.type_flag == ITEM_WAND) {
+    } else if (buf2 && stick->type_flag == ITEM_WAND) {
         if (!strcmp(buf2, "self")) {
             tempname = strdup(GET_NAME(ch));
             buf2 = tempname;
@@ -1836,7 +1833,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
                                   FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch,
                             &tmp_char, &tmp_object);
-        index = spell_index[stick->obj_flags.value[3]];
+        index = spell_index[stick->value[3]];
 
         if( index != -1 ) {
             if (bits) {
@@ -1868,11 +1865,11 @@ void do_use(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (stick->obj_flags.value[2] > 0) {
+                if (stick->value[2] > 0) {
                     /*
                      * Are there any charges left?
                      */
-                    stick->obj_flags.value[2]--;
+                    stick->value[2]--;
 
                     if (check_nomagic(ch,
                                    "The magic is blocked by unknown forces.",
@@ -1882,7 +1879,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 
                     if( spellp->spell_pointer ) {
                         (*spellp->spell_pointer) 
-                            ((byte) stick->obj_flags.value[0], ch, "", 
+                            ((byte) stick->value[0], ch, "", 
                               SPELL_TYPE_WAND, tmp_char, tmp_object);
                         WAIT_STATE(ch, PULSE_VIOLENCE);
                     }
@@ -1895,16 +1892,16 @@ void do_use(struct char_data *ch, char *argument, int cmd)
                  */
                 spellp = &spell_info[index];
 
-                if (stick->obj_flags.value[3] != SPELL_KNOCK) {
+                if (stick->value[3] != SPELL_KNOCK) {
                     send_to_char("That spell is useless on doors.\n\r", ch);
                     return;
                 }
 
-                if (stick->obj_flags.value[2] > 0) {
+                if (stick->value[2] > 0) {
                     /*
                      * Are there any charges left?
                      */
-                    stick->obj_flags.value[2]--;
+                    stick->value[2]--;
 
                     if (check_nomagic(ch,
                                    "The magic is blocked by unknown forces.",
@@ -1916,7 +1913,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 
                     if( spellp->spell_pointer ) {
                         (*spellp->spell_pointer)
-                            ((byte) stick->obj_flags.value[0], ch, argument,
+                            ((byte) stick->value[0], ch, argument,
                              SPELL_TYPE_WAND, tmp_char, tmp_object);
                         WAIT_STATE(ch, PULSE_VIOLENCE);
                     }
@@ -3472,7 +3469,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
          * need to do weapon check..
          */
         /*
-         * obj_flags.value[value]
+         * value[value]
          */
         if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
               Getw_type(ch->equipment[WIELD]) == TYPE_CLEAVE)) {

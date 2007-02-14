@@ -2738,16 +2738,16 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
      *** numeric data ***
      */
 
-    obj->obj_flags.type_flag = osrc->obj_flags.type_flag;
-    obj->obj_flags.extra_flags = osrc->obj_flags.extra_flags;
-    obj->obj_flags.wear_flags = osrc->obj_flags.wear_flags;
-    obj->obj_flags.value[0] = osrc->obj_flags.value[0];
-    obj->obj_flags.value[1] = osrc->obj_flags.value[1];
-    obj->obj_flags.value[2] = osrc->obj_flags.value[2];
-    obj->obj_flags.value[3] = osrc->obj_flags.value[3];
-    obj->obj_flags.weight = osrc->obj_flags.weight;
-    obj->obj_flags.cost = osrc->obj_flags.cost;
-    obj->obj_flags.cost_per_day = osrc->obj_flags.cost_per_day;
+    obj->type_flag = osrc->type_flag;
+    obj->extra_flags = osrc->extra_flags;
+    obj->wear_flags = osrc->wear_flags;
+    obj->value[0] = osrc->value[0];
+    obj->value[1] = osrc->value[1];
+    obj->value[2] = osrc->value[2];
+    obj->value[3] = osrc->value[3];
+    obj->weight = osrc->weight;
+    obj->cost = osrc->cost;
+    obj->cost_per_day = osrc->cost_per_day;
 
     /*
      *** extra descriptions ***
@@ -2819,25 +2819,25 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
      */
 
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.type_flag = tmp;
+    obj->type_flag = tmp;
     fscanf(f, " %ld ", &ltmp);
-    obj->obj_flags.extra_flags = ltmp;
+    obj->extra_flags = ltmp;
     fscanf(f, " %ld ", &ltmp);
-    obj->obj_flags.wear_flags = ltmp;
+    obj->wear_flags = ltmp;
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[0] = tmp;
+    obj->value[0] = tmp;
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[1] = tmp;
+    obj->value[1] = tmp;
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[2] = tmp;
+    obj->value[2] = tmp;
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[3] = tmp;
+    obj->value[3] = tmp;
     fscanf(f, " %d ", &tmp);
-    obj->obj_flags.weight = tmp;
+    obj->weight = tmp;
     fscanf(f, " %d \n", &tmp);
-    obj->obj_flags.cost = tmp;
+    obj->cost = tmp;
     fscanf(f, " %d \n", &tmp);
-    obj->obj_flags.cost_per_day = tmp;
+    obj->cost_per_day = tmp;
 
     /*
      * New fields (GH)
@@ -3217,14 +3217,14 @@ void write_obj_to_file(struct obj_data *obj, FILE * f)
     fwrite_string(f, obj->action_description);
     fwrite_string(f, obj->modBy);
 
-    fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-            obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
-    fprintf(f, "%d %d %d %d\n", obj->obj_flags.value[0],
-            obj->obj_flags.value[1], obj->obj_flags.value[2],
-            obj->obj_flags.value[3]);
+    fprintf(f, "%d %ld %ld\n", obj->type_flag,
+            obj->extra_flags, obj->wear_flags);
+    fprintf(f, "%d %d %d %d\n", obj->value[0],
+            obj->value[1], obj->value[2],
+            obj->value[3]);
 
-    fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
-            obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
+    fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->weight,
+            obj->cost, obj->cost_per_day, obj->level,
             obj->max, (long)obj->modified, obj->speed, obj->weapontype, 
             obj->tweak);
 
@@ -3261,40 +3261,40 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
     fwrite_string(f, obj->action_description);
     fwrite_string(f, obj->modBy);
 #if 0
-    obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN
-    obj->obj_flags.extra_flags
+    obj->cost_per_day>LIM_ITEM_COST_MIN
+    obj->extra_flags
 #endif
 
     /*
      * let's get rid of the !bard flags, remove this when assigning a
      * decent flag here
      */
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_UNUSED)) {
-        REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_UNUSED);
+    if (IS_SET(obj->extra_flags, ITEM_UNUSED)) {
+        REMOVE_BIT(obj->extra_flags, ITEM_UNUSED);
     }
-    if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN) {
-        fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-                obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
+    if (obj->cost_per_day > LIM_ITEM_COST_MIN) {
+        fprintf(f, "%d %ld %ld\n", obj->type_flag,
+                obj->extra_flags, obj->wear_flags);
     } else {
-        fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-                obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
+        fprintf(f, "%d %ld %ld\n", obj->type_flag,
+                obj->extra_flags, obj->wear_flags);
     }
-    fprintf(f, "%d %d %d %d\n", obj->obj_flags.value[0],
-            obj->obj_flags.value[1], obj->obj_flags.value[2],
-            obj->obj_flags.value[3]);
+    fprintf(f, "%d %d %d %d\n", obj->value[0],
+            obj->value[1], obj->value[2],
+            obj->value[3]);
 
     if (IS_WEAPON(obj)) {
-        fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
-                obj->obj_flags.cost,
-                (obj->obj_flags.cost_per_day == -1 ? -1 :
-                 obj->obj_flags.cost_per_day), obj->level, obj->max,
+        fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->weight,
+                obj->cost,
+                (obj->cost_per_day == -1 ? -1 :
+                 obj->cost_per_day), obj->level, obj->max,
                 (long)obj->modified, obj->speed, obj->weapontype,
                 obj->tweak);
     } else {
-        fprintf(f, "%d %d %d %d %d %ld 0 0 %d\n", obj->obj_flags.weight,
-                obj->obj_flags.cost,
-                (obj->obj_flags.cost_per_day == -1 ? -1 :
-                 obj->obj_flags.cost_per_day), obj->level, obj->max,
+        fprintf(f, "%d %d %d %d %d %ld 0 0 %d\n", obj->weight,
+                obj->cost,
+                (obj->cost_per_day == -1 ? -1 :
+                 obj->cost_per_day), obj->level, obj->max,
                 (long)obj->modified, obj->tweak);
     }
 

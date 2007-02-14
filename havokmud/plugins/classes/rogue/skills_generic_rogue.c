@@ -146,18 +146,18 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+        } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Silly - it ain't even closed!\n\r", ch);
-        } else if (obj->obj_flags.value[2] < 0) { 
+        } else if (obj->value[2] < 0) { 
             send_to_char("Odd - you can't seem to find a keyhole.\n\r", ch);
-        } else if (!IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+        } else if (!IS_SET(obj->value[1], CONT_LOCKED)) {
             send_to_char("Oho! This thing is NOT locked!\n\r", ch);
-        } else if (IS_SET(obj->obj_flags.value[1], CONT_PICKPROOF)) {
+        } else if (IS_SET(obj->value[1], CONT_PICKPROOF)) {
             send_to_char("It resists your attempts at picking it.\n\r", ch);
         } else {
-            REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+            REMOVE_BIT(obj->value[1], CONT_LOCKED);
             send_to_char("*Click*\n\r", ch);
             act("$n fiddles with $p.", FALSE, ch, obj, 0, TO_ROOM);
         }

@@ -116,10 +116,10 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
         }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->obj_flags.extra_flags, i)) {
-            REMOVE_BIT(ch->specials.objedit->obj_flags.extra_flags, i);
+        if (IS_SET(ch->specials.objedit->extra_flags, i)) {
+            REMOVE_BIT(ch->specials.objedit->extra_flags, i);
         } else {
-            SET_BIT(ch->specials.objedit->obj_flags.extra_flags, i);
+            SET_BIT(ch->specials.objedit->extra_flags, i);
         }
     }
 
@@ -138,7 +138,7 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
         check = 1 << i;
 
         sprintf(buf, "%-2d [%s] %s", i + 1,
-                ((ch->specials.objedit->obj_flags.extra_flags & (check)) ? 
+                ((ch->specials.objedit->extra_flags & (check)) ? 
                  "X" : " "), extra_bits[i]);
         send_to_char(buf, ch);
     }
@@ -171,10 +171,10 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
         }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->obj_flags.wear_flags, i)) {
-            REMOVE_BIT(ch->specials.objedit->obj_flags.wear_flags, i);
+        if (IS_SET(ch->specials.objedit->wear_flags, i)) {
+            REMOVE_BIT(ch->specials.objedit->wear_flags, i);
         } else {
-            SET_BIT(ch->specials.objedit->obj_flags.wear_flags, i);
+            SET_BIT(ch->specials.objedit->wear_flags, i);
         }
     }
 
@@ -193,7 +193,7 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
         check = 1 << i;
 
         sprintf(buf, "%-2d [%s] %s", i + 1,
-                ((ch->specials.objedit->obj_flags.wear_flags & (check)) ? 
+                ((ch->specials.objedit->wear_flags & (check)) ? 
                  "X" : " "), wear_bits[i]);
         send_to_char(buf, ch);
     }
@@ -550,7 +550,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
             if (update < 0 || update > 29) {
                 return;
             } else {
-                ch->specials.objedit->obj_flags.type_flag = update;
+                ch->specials.objedit->type_flag = update;
                 ch->specials.oedit = OBJ_MAIN_MENU;
                 UpdateObjMenu(ch);
                 return;
@@ -561,7 +561,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
     sprintf(buf, "Object Type: %s",
-            item_types[(int)ch->specials.objedit->obj_flags.type_flag]);
+            item_types[(int)ch->specials.objedit->type_flag]);
     send_to_char(buf, ch);
 
     row = 0;
@@ -599,7 +599,7 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
         if (change < 0) {
             change = 0;
         }
-        obj->obj_flags.weight = change;
+        obj->weight = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -608,7 +608,7 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    sprintf(buf, "Current Object Weight: %d", obj->obj_flags.weight);
+    sprintf(buf, "Current Object Weight: %d", obj->weight);
     send_to_char(buf, ch);
     send_to_char("\n\r\n\rNew Object Weight: ", ch);
 }
@@ -631,7 +631,7 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
         if (change < 0) {
             change = -1;
         }
-        obj->obj_flags.cost_per_day = change;
+        obj->cost_per_day = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -641,7 +641,7 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     sprintf(buf, "Current Object Rental Cost Per Day: %d",
-            obj->obj_flags.cost_per_day);
+            obj->cost_per_day);
     send_to_char(buf, ch);
     send_to_char("\n\r\n\rNew Object Rental Cost Per Day: ", ch);
 }
@@ -675,7 +675,7 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
         if (change < 0) {
             change = 0;
         }
-        obj->obj_flags.cost = change;
+        obj->cost = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -684,7 +684,7 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    sprintf(buf, "Current Object Value: %d", obj->obj_flags.cost);
+    sprintf(buf, "Current Object Value: %d", obj->cost);
     send_to_char(buf, ch);
     send_to_char("\n\r\n\rNew Object Value: ", ch);
 }
@@ -1262,13 +1262,13 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             return;
         }
 
-        if ((ch->specials.objedit->obj_flags.type_flag == ITEM_SCROLL && 
+        if ((ch->specials.objedit->type_flag == ITEM_SCROLL && 
              value != 0) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_WAND && 
+            (ch->specials.objedit->type_flag == ITEM_WAND && 
              value == 3) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_STAFF && 
+            (ch->specials.objedit->type_flag == ITEM_STAFF && 
              value == 3) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_POTION && 
+            (ch->specials.objedit->type_flag == ITEM_POTION && 
              value != 0)) {
             if (update >= 45 && update <= 52) {
                 skill = TRUE;
@@ -1292,7 +1292,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             }
         }
 
-        ch->specials.objedit->obj_flags.value[value] = update;
+        ch->specials.objedit->value[value] = update;
 
         if (skill == TRUE) {
             ch->specials.oedit = OBJ_HIT_RETURN;
@@ -1307,7 +1307,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
 
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
-    switch (ch->specials.objedit->obj_flags.type_flag) {
+    switch (ch->specials.objedit->type_flag) {
     case ITEM_LIGHT:
         if (value == 0) {
             send_to_char("\n\rValue1 is the color (Because we all know its "

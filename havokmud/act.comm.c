@@ -487,9 +487,9 @@ void do_write(struct char_data *ch, char *argument, int cmd)
     /*
      * ok.. now let's see what kind of stuff we've found
      */
-    if (pen->obj_flags.type_flag != ITEM_PEN) {
+    if (pen->type_flag != ITEM_PEN) {
         act("$p is no good for writing with.", FALSE, ch, pen, 0, TO_CHAR);
-    } else if (paper->obj_flags.type_flag != ITEM_NOTE) {
+    } else if (paper->type_flag != ITEM_NOTE) {
         act("You can't write on $p.", FALSE, ch, paper, 0, TO_CHAR);
     } else if (paper->action_description) {
         send_to_char("There's something written on it already.\n\r", ch);

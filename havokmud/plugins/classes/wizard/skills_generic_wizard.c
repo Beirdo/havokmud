@@ -200,15 +200,15 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     if (obj) {
-        if (IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE))
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
+        if (IS_SET(obj->extra_flags, ITEM_INVISIBLE))
+            REMOVE_BIT(obj->extra_flags, ITEM_INVISIBLE);
 
         if (level >= 45) {
             /*
              * if level 45> then they can do this
              */
-            if (IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
-                REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+            if (IS_SET(obj->extra_flags, ITEM_MAGIC)) {
+                REMOVE_BIT(obj->extra_flags, ITEM_MAGIC);
             }
             /*
              * strip off everything
@@ -219,11 +219,11 @@ void spell_dispel_magic(int level, struct char_data *ch,
         }
 
         if (level >= IMMORTAL) {
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_GLOW);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_HUM);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_EVIL);
-            REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_NEUTRAL);
+            REMOVE_BIT(obj->extra_flags, ITEM_GLOW);
+            REMOVE_BIT(obj->extra_flags, ITEM_HUM);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_EVIL);
+            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_NEUTRAL);
         }
         return;
     }
@@ -855,7 +855,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
     }
 
     if ((GET_ITEM_TYPE(obj) == ITEM_ARMOR) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
+        !IS_SET(obj->extra_flags, ITEM_MAGIC)) {
 
         for (i = 0; i < MAX_OBJ_AFFECT; i++) {
             if (obj->affected[i].location == APPLY_NONE) {
@@ -885,7 +885,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
          */
         i = getFreeAffSlot(obj);
 
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+        SET_BIT(obj->extra_flags, ITEM_MAGIC);
 
         obj->affected[i].location = APPLY_ARMOR;
         obj->affected[i].modifier = -1;
@@ -915,16 +915,13 @@ void spell_enchant_armor(int level, struct char_data *ch,
             obj->affected[i].modifier -= 1;
         }
         if (IS_GOOD(ch)) {
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_EVIL | ITEM_ANTI_NEUTRAL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_EVIL | ITEM_ANTI_NEUTRAL);
             act("$p glows blue.", FALSE, ch, obj, 0, TO_CHAR);
         } else if (IS_EVIL(ch)) {
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_GOOD | ITEM_ANTI_NEUTRAL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_NEUTRAL);
             act("$p glows red.", FALSE, ch, obj, 0, TO_CHAR);
         } else {
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
             act("$p glows yellow.", FALSE, ch, obj, 0, TO_CHAR);
         }
     }
@@ -960,7 +957,7 @@ void spell_enchant_weapon(int level, struct char_data *ch,
     }
 
     if (GET_ITEM_TYPE(obj) == ITEM_WEAPON &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
+        !IS_SET(obj->extra_flags, ITEM_MAGIC)) {
 
         for (i = 0; i < MAX_OBJ_AFFECT; i++) {
             if (obj->affected[i].location == APPLY_NONE) {
@@ -981,7 +978,7 @@ void spell_enchant_weapon(int level, struct char_data *ch,
          */
         i = getFreeAffSlot(obj);
 
-        SET_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+        SET_BIT(obj->extra_flags, ITEM_MAGIC);
 
         obj->affected[i].location = APPLY_HITROLL;
         obj->affected[i].modifier = 1;
@@ -1014,17 +1011,14 @@ void spell_enchant_weapon(int level, struct char_data *ch,
             obj->affected[i].modifier += 1;
         }
         if (IS_GOOD(ch)) {
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_EVIL | ITEM_ANTI_NEUTRAL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_EVIL | ITEM_ANTI_NEUTRAL);
             act("$p glows blue.", FALSE, ch, obj, 0, TO_CHAR);
         } else if (IS_EVIL(ch)) {
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_GOOD | ITEM_ANTI_NEUTRAL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_NEUTRAL);
             act("$p glows red.", FALSE, ch, obj, 0, TO_CHAR);
         } else {
             act("$p glows yellow.", FALSE, ch, obj, 0, TO_CHAR);
-            SET_BIT(obj->obj_flags.extra_flags,
-                    ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
+            SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
         }
     }
 }

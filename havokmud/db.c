@@ -2705,16 +2705,16 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
      *** numeric data ***
      */
 
-    obj->obj_flags.type_flag = osrc->obj_flags.type_flag;
-    obj->obj_flags.extra_flags = osrc->obj_flags.extra_flags;
-    obj->obj_flags.wear_flags = osrc->obj_flags.wear_flags;
-    obj->obj_flags.value[0] = osrc->obj_flags.value[0];
-    obj->obj_flags.value[1] = osrc->obj_flags.value[1];
-    obj->obj_flags.value[2] = osrc->obj_flags.value[2];
-    obj->obj_flags.value[3] = osrc->obj_flags.value[3];
-    obj->obj_flags.weight = osrc->obj_flags.weight;
-    obj->obj_flags.cost = osrc->obj_flags.cost;
-    obj->obj_flags.cost_per_day = osrc->obj_flags.cost_per_day;
+    obj->type_flag = osrc->type_flag;
+    obj->extra_flags = osrc->extra_flags;
+    obj->wear_flags = osrc->wear_flags;
+    obj->value[0] = osrc->value[0];
+    obj->value[1] = osrc->value[1];
+    obj->value[2] = osrc->value[2];
+    obj->value[3] = osrc->value[3];
+    obj->weight = osrc->weight;
+    obj->cost = osrc->cost;
+    obj->cost_per_day = osrc->cost_per_day;
 
     /*
      *** extra descriptions ***

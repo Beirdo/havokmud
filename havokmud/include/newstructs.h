@@ -438,18 +438,6 @@ struct extra_descr_data {
 
 #define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
 
-struct obj_flag_data {
-    int             value[4];       /* Values of the item (see list) */
-    ItemType_t      type_flag;      /* Type of item */
-    long            wear_flags;     /* Where you can wear it */
-    long            extra_flags;    /* If it hums,glows etc */
-    int             weight;         /* Weight what else */
-    int             cost;           /* Value when sold (gp.) */
-    int             cost_per_day;   /* Cost to keep pr. real day */
-    int             timer;          /* Timer for object */
-    long            bitvector;      /* To set chars bits */
-};
-
 struct obj_affected_type {
     short           location;   /* Which ability to change (APPLY_XXX) */
     long            modifier;   /* How much it changes by */
@@ -461,7 +449,17 @@ struct obj_affected_type {
 struct obj_data {
     int             item_number;        /* Where in data-base */
     int             in_room;            /* In what room -1 when conta/carr */
-    struct obj_flag_data obj_flags;     /* Object information */
+
+    int             value[4];       /* Values of the item (see list) */
+    ItemType_t      type_flag;      /* Type of item */
+    long            wear_flags;     /* Where you can wear it */
+    long            extra_flags;    /* If it hums,glows etc */
+    int             weight;         /* Weight what else */
+    int             cost;           /* Value when sold (gp.) */
+    int             cost_per_day;   /* Cost to keep pr. real day */
+    int             timer;          /* Timer for object */
+    long            bitvector;      /* To set chars bits */
+
     struct obj_affected_type
                     affected[MAX_OBJ_AFFECT];   /* Which abilities in PC
                                                  * to change */

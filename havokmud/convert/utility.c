@@ -75,47 +75,47 @@ int MAX(int a, int b)
 int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
 {
     if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER)) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_THIEF) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_THIEF)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_THIEF)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_WARRIOR) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_FIGHTER)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_FIGHTER)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_CLERIC) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_CLERIC)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_CLERIC)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_BARBARIAN) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARBARIAN)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_BARBARIAN)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_RANGER) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_RANGER)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_RANGER)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_PALADIN) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PALADIN)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_PALADIN)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_PSI) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PSI)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_PSI)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_MONK) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MONK)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_MONK)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_DRUID) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_DRUID)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_DRUID)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_NECROMANCER) &&
-        !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER)) {
+        !IS_SET(obj->extra_flags, ITEM_ANTI_NECROMANCER)) {
         return (FALSE);
     }
     return (TRUE);
@@ -125,51 +125,51 @@ int GetItemClassRestrictions(struct obj_data *obj)
 {
     int             total = 0;
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
         total += CLASS_SORCERER;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
         total += CLASS_MAGIC_USER;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_THIEF)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_THIEF)) {
         total += CLASS_THIEF;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_FIGHTER)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_FIGHTER)) {
         total += CLASS_WARRIOR;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_CLERIC)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_CLERIC)) {
         total += CLASS_CLERIC;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARBARIAN)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_BARBARIAN)) {
         total += CLASS_BARBARIAN;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_RANGER)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_RANGER)) {
         total += CLASS_RANGER;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PALADIN)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_PALADIN)) {
         total += CLASS_PALADIN;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PSI)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_PSI)) {
         total += CLASS_PSI;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MONK)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_MONK)) {
         total += CLASS_MONK;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_DRUID)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_DRUID)) {
         total += CLASS_DRUID;
     }
 
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER)) {
+    if (IS_SET(obj->extra_flags, ITEM_ANTI_NECROMANCER)) {
         total += CLASS_NECROMANCER;
     }
 
@@ -551,7 +551,7 @@ void CleanZone(int zone)
              * to use for small imms. -Lennya
              */
             if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TREE &&
-                !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
+                !IS_SET(obj->extra_flags, ITEM_QUEST)) {
                 extract_obj(obj);
             }
         }
@@ -3383,7 +3383,7 @@ void DarknessPulseStuff(int pulse)
                  * scrap antisun before doing the darkness check
                  */
                 if (ch->equipment[j] && ch->equipment[j]->item_number >= 0 &&
-                    IS_SET(ch->equipment[j]->obj_flags.extra_flags,
+                    IS_SET(ch->equipment[j]->extra_flags,
                            ITEM_ANTI_SUN)) {
                     AntiSunItem(ch, 0, 0, ch->equipment[j], PULSE_COMMAND);
                 }
@@ -4706,7 +4706,7 @@ int EqWBits(struct char_data *ch, int bits)
 
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i] &&
-            IS_SET(ch->equipment[i]->obj_flags.extra_flags, bits)) {
+            IS_SET(ch->equipment[i]->extra_flags, bits)) {
             return (TRUE);
         }
     }
@@ -4718,7 +4718,7 @@ int InvWBits(struct char_data *ch, int bits)
     struct obj_data *o;
 
     for (o = ch->carrying; o; o = o->next_content) {
-        if (IS_SET(o->obj_flags.extra_flags, bits)) {
+        if (IS_SET(o->extra_flags, bits)) {
             return (TRUE);
         }
     }
@@ -4837,7 +4837,7 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
                     p_ego,
                     tmp;
 
-    obj_ego = obj->obj_flags.cost_per_day;
+    obj_ego = obj->cost_per_day;
 
     if (strstr(obj->name, "scroll") || strstr(obj->name, "potion") ||
         strstr(obj->name, "bag") || strstr(obj->name, "tongue") ||

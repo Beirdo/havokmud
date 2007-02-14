@@ -2386,10 +2386,10 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
             act("You give $p to $N.", TRUE, ch, obj, latt, TO_CHAR);
             act("$n gives $p to $N.", TRUE, ch, obj, latt, TO_ROOM);
 
-            switch (obj->obj_flags.type_flag) {
+            switch (obj->type_flag) {
 
             case ITEM_FOOD:
-                if (obj->obj_flags.value[3]) {
+                if (obj->value[3]) {
                     act("$n sniffs $p, then discards it with disgust.",
                         TRUE, latt, obj, 0, TO_ROOM);
                     obj_from_char(obj);
@@ -4559,8 +4559,8 @@ int antioch_grenade(struct char_data *ch, int cmd, char *arg,
                     struct obj_data *obj, int type)
 {
 
-    if (type == PULSE_TICK && obj->obj_flags.value[0]) {
-        obj->obj_flags.value[0] -= 1;
+    if (type == PULSE_TICK && obj->value[0]) {
+        obj->value[0] -= 1;
     }
 
     if (type != PULSE_COMMAND) {
@@ -4573,18 +4573,18 @@ int antioch_grenade(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!strcmp(arg, "one")) {
-            obj->obj_flags.value[0] = 4;
-        } else if (!strcmp(arg, "two") && obj->obj_flags.value[0] >= 3 && 
-                   obj->obj_flags.value[0] <= 4) {
-            obj->obj_flags.value[0] = 15;
-        } else if (!strcmp(arg, "three") && obj->obj_flags.value[0] >= 14) {
-            obj->obj_flags.value[0] += 10;
+            obj->value[0] = 4;
+        } else if (!strcmp(arg, "two") && obj->value[0] >= 3 && 
+                   obj->value[0] <= 4) {
+            obj->value[0] = 15;
+        } else if (!strcmp(arg, "three") && obj->value[0] >= 14) {
+            obj->value[0] += 10;
         } else if (!strcmp(arg, "five")) {
-            if (obj->obj_flags.value[0] >= 14 && 
-                obj->obj_flags.value[0] <= 15) {
-                obj->obj_flags.value[0] = 35;
+            if (obj->value[0] >= 14 && 
+                obj->value[0] <= 15) {
+                obj->value[0] = 35;
             } else {
-                obj->obj_flags.value[0] = 0;
+                obj->value[0] = 0;
             }
         } else {
             return (0);
@@ -5043,7 +5043,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (IS_SET(i->obj_flags.wear_flags, ITEM_TAKE) && 
+        if (IS_SET(i->wear_flags, ITEM_TAKE) && 
             !strncmp(i->name, "corpse", 6)) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
@@ -7684,7 +7684,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
             /*
              * can only sharpen edged weapons 
              */
-            switch (obj->obj_flags.value[3]) {
+            switch (obj->value[3]) {
             case 0:
                 w_type = TYPE_SMITE;
                 break;
@@ -7739,7 +7739,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 (w_type >= TYPE_CLEAVE && w_type <= TYPE_STAB) || 
                 w_type == TYPE_IMPALE) {
 
-                if (obj->obj_flags.value[2] == 0) {
+                if (obj->value[2] == 0) {
                     Log("%s tried to sharpen a weapon with invalid value: %s, "
                         "vnum %d.", GET_NAME(ch), obj->short_description,
                         obj->item_number);
@@ -7751,7 +7751,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (cmp->obj_flags.value[2] == 0) {
+                if (cmp->value[2] == 0) {
                     Log("%s tried to sharpen a weapon with invalid value: %s, "
                         "vnum %d.", GET_NAME(ch), obj->short_description,
                         obj->item_number);
@@ -7759,14 +7759,14 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (cmp->obj_flags.value[2] == obj->obj_flags.value[2]) {
+                if (cmp->value[2] == obj->value[2]) {
                     send_to_char("That item has no need of your attention.\n\r",
                                  ch);
                     extract_obj(cmp);
                     return;
                 } 
                 
-                obj->obj_flags.value[2] = cmp->obj_flags.value[2];
+                obj->value[2] = cmp->value[2];
                 if (GET_POS(ch) > POSITION_RESTING) {
                     do_rest(ch, NULL, -1);
                 }
@@ -7920,7 +7920,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                         cond_top += 1;
                     }
                 } else {
-                    cost = (int) obj->obj_flags.cost * modifier;
+                    cost = (int) obj->cost * modifier;
                     if (cost < 0) {
                         cost = 0;
                     }
@@ -7934,7 +7934,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
 
         if (cond_top) {
             for (k = 0; k < cond_top; k++) {
-                cost = (int) cond_ptr[k]->obj_flags.cost * modifier;
+                cost = (int) cond_ptr[k]->cost * modifier;
                 if (cost < 0) {
                     cost = 0;
                 }
@@ -7970,7 +7970,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
 
         while (i <= num && stop == 0) {
             if ((obj = get_obj_in_list_vis(ch, itemname, shopkeep->carrying))) {
-                cost = (int) obj->obj_flags.cost * modifier;
+                cost = (int) obj->cost * modifier;
                 if (cost < 0) {
                     cost = 0;
                 }
@@ -7984,7 +7984,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                               obj->short_description);
                     stop = 1;
                 } else
-                    if ((IS_CARRYING_W(ch) + (obj->obj_flags.weight)) >
+                    if ((IS_CARRYING_W(ch) + (obj->weight)) >
                         CAN_CARRY_W(ch)) {
                     oldSendOutput(ch, "%s : You can't carry that much weight.\n\r",
                               obj->short_description);
@@ -8040,11 +8040,11 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         }
         
         if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
-            cost = (int) obj->obj_flags.cost / (3 * modifier);
+            cost = (int) obj->cost / (3 * modifier);
             /*
              * lets not have shops buying non-rentables
              */
-            if (obj->obj_flags.cost_per_day == -1) {
+            if (obj->cost_per_day == -1) {
                 oldSendOutput(ch, "%s doesn't buy items that cannot be rented.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
@@ -8087,7 +8087,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         }
         
         if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
-            cost = (int) obj->obj_flags.cost / (3 * modifier);
+            cost = (int) obj->cost / (3 * modifier);
             if (cost < 400) {
                 oldSendOutput(ch, "%s doesn't buy worthless junk like that.\n\r",
                           shopkeep->player.short_descr);

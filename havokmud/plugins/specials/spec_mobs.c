@@ -358,7 +358,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     for (i = real_roomp(ch->in_room)->contents; i; i = next_r_obj) {
         next_r_obj = i->next_content;
-        if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->obj_flags.value[3]) {
+        if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->value[3]) {
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
             for (temp = i->contains; temp; temp = next_obj) {
                 next_obj = temp->next_content;
@@ -600,9 +600,8 @@ int janitor(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (IS_SET(i->obj_flags.wear_flags, ITEM_TAKE) &&
-            (i->obj_flags.type_flag == ITEM_DRINKCON ||
-             i->obj_flags.cost <= 10)) {
+        if (IS_SET(i->wear_flags, ITEM_TAKE) &&
+            (i->type_flag == ITEM_DRINKCON || i->cost <= 10)) {
             act("$n picks up some trash.", FALSE, ch, 0, 0, TO_ROOM);
             obj_from_room(i);
             obj_to_char(i, ch);
@@ -2133,11 +2132,11 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                              * do the effects of the potion:
                              */
                             for (i = 1; i < 4; i++) {
-                                if (o->obj_flags.value[i] >= 1) {
-                                    index = spell_index[o->obj_flags.value[i]];
+                                if (o->value[i] >= 1) {
+                                    index = spell_index[o->value[i]];
                                     if( spell_info[index].spell_pointer ) {
                                         ((*spell_info[index].spell_pointer)
-                                         ((byte)o->obj_flags.value[0], ch,
+                                         ((byte)o->value[0], ch,
                                           "", SPELL_TYPE_POTION, ch, o));
                                     }
                                 }
@@ -4461,7 +4460,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     }
 
     for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
-        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->obj_flags.value[3] &&
+        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->value[3] &&
             !strcmp(j->name, "corpse rabbit")) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
             for (k = j->contains; k; k = next) {
@@ -4580,11 +4579,11 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
          * kosher 
          */
 
-        if (ITEM_TYPE(obj) == ITEM_ARMOR && obj->obj_flags.value[1] > 0) {
-            if (obj->obj_flags.value[1] > obj->obj_flags.value[0]) {
-                cost = obj->obj_flags.cost;
-                cost /= obj->obj_flags.value[1];
-                cost *= (obj->obj_flags.value[1] - obj->obj_flags.value[0]);
+        if (ITEM_TYPE(obj) == ITEM_ARMOR && obj->value[1] > 0) {
+            if (obj->value[1] > obj->value[0]) {
+                cost = obj->cost;
+                cost /= obj->value[1];
+                cost *= (obj->value[1] - obj->value[0]);
 
                 if (GetMaxLevel(vict) > 25) {
                     /* 
@@ -4619,13 +4618,12 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                     act("$N fiddles with $p.", TRUE, ch, obj, vict, TO_ROOM);
                     act("$N fiddles with $p.", TRUE, ch, obj, vict, TO_CHAR);
                     if (GetMaxLevel(vict) > 25) {
-                        obj->obj_flags.value[0] = obj->obj_flags.value[1];
+                        obj->value[0] = obj->value[1];
                     } else {
-                        ave = MAX(obj->obj_flags.value[0],
-                                  (obj->obj_flags.value[0] +
-                                   obj->obj_flags.value[1]) / 2);
-                        obj->obj_flags.value[0] = ave;
-                        obj->obj_flags.value[1] = ave;
+                        ave = MAX(obj->value[0],
+                                  (obj->value[0] + obj->value[1]) / 2);
+                        obj->value[0] = ave;
+                        obj->value[1] = ave;
                     }
 
                     if (check_soundproof(ch)) {
@@ -4662,13 +4660,13 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
             /*
              * weapon repair.  expensive! 
              */
-            cost = obj->obj_flags.cost;
+            cost = obj->cost;
             new = read_object(obj->item_number, REAL);
-            if (obj->obj_flags.value[2]) {
-                cost /= obj->obj_flags.value[2];
+            if (obj->value[2]) {
+                cost /= obj->value[2];
             }
 
-            cost *= (new->obj_flags.value[2] - obj->obj_flags.value[2]);
+            cost *= (new->value[2] - obj->value[2]);
 
             if (cost > GET_GOLD(ch)) {
                 if (check_soundproof(ch)) {
@@ -4694,7 +4692,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 act("$N fiddles with $p.", TRUE, ch, obj, vict, TO_ROOM);
                 act("$N fiddles with $p.", TRUE, ch, obj, vict, TO_CHAR);
 
-                obj->obj_flags.value[2] = new->obj_flags.value[2];
+                obj->value[2] = new->value[2];
                 extract_obj(new);
 
                 if (check_soundproof(ch)) {
@@ -5673,7 +5671,7 @@ int range_estimate(struct char_data *ch, struct obj_data *o, int type)
 {
     int             r,
                     sz,
-                    w = o->obj_flags.weight;
+                    w = o->weight;
 
     /*
      * Type 0 = fireweapon 1 = thrown 
@@ -5691,7 +5689,7 @@ int range_estimate(struct char_data *ch, struct obj_data *o, int type)
     r /= sz + 1;
 
     if (!type) {
-        r += ch->equipment[WIELD]->obj_flags.value[2];
+        r += ch->equipment[WIELD]->value[2];
     }
     r = r * 2 / 3;
     return r;
@@ -5776,7 +5774,7 @@ int archer_sub(struct char_data *ch)
     struct char_data *td;
 
     if (ch->equipment[WIELD] && 
-        ch->equipment[WIELD]->obj_flags.type_flag == ITEM_FIREWEAPON) {
+        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
         bow = ch->equipment[WIELD];
         if (ch->equipment[LOADED_WEAPON]) {
             missile = ch->equipment[LOADED_WEAPON];
@@ -5785,8 +5783,8 @@ int archer_sub(struct char_data *ch)
              * Search inventory for a missile 
              */
             for (spid = ch->carrying; spid; spid = spid->next_content) {
-                if (spid->obj_flags.type_flag == ITEM_MISSILE &&
-                    spid->obj_flags.value[3] == bow->obj_flags.value[2]) {
+                if (spid->type_flag == ITEM_MISSILE &&
+                    spid->value[3] == bow->value[2]) {
                     missile = spid;
                 } else {
                     /*
@@ -5798,10 +5796,8 @@ int archer_sub(struct char_data *ch)
                         for (obj_object = spid->contains;
                              obj_object && !found; obj_object = next_obj) {
                             next_obj = obj_object->next_content;
-                            if (obj_object->obj_flags.type_flag == 
-                                     ITEM_MISSILE && 
-                                obj_object->obj_flags.value[3] ==
-                                     bow->obj_flags.value[2]) {
+                            if (obj_object->type_flag == ITEM_MISSILE && 
+                                obj_object->value[3] == bow->value[2]) {
                                 /*
                                  * gets arrow out of quiver, next round
                                  * they will load it 
@@ -5843,7 +5839,7 @@ int archer_sub(struct char_data *ch)
      */
     if (!bow) {
         for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (spid->obj_flags.type_flag == ITEM_FIREWEAPON) {
+            if (spid->type_flag == ITEM_FIREWEAPON) {
                 bow = spid;
             }
 
@@ -5852,7 +5848,7 @@ int archer_sub(struct char_data *ch)
                 for (obj_object = spid->contains;
                      obj_object && !found; obj_object = next_obj) {
                     next_obj = obj_object->next_content;
-                    if (obj_object->obj_flags.type_flag == ITEM_FIREWEAPON) {
+                    if (obj_object->type_flag == ITEM_FIREWEAPON) {
                         /*
                          * gets bow out of container 
                          */
@@ -5880,7 +5876,7 @@ int archer_sub(struct char_data *ch)
      * No missile weapon or no ammo.  Try a thrown weapon 
      */
     for (spid = ch->carrying; spid; spid = spid->next_content) {
-        if (IS_SET(spid->obj_flags.wear_flags, ITEM_THROW)) {
+        if (IS_SET(spid->wear_flags, ITEM_THROW)) {
             thrown = spid;
         }
     }
@@ -5915,7 +5911,7 @@ int archer_hth(struct char_data *ch)
      * I. If you are wielding a bow ditch it 
      */
     if (ch->equipment[WIELD] && 
-        ch->equipment[WIELD]->obj_flags.type_flag == ITEM_FIREWEAPON) {
+        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
         sprintf(buf, "remove %s", ch->equipment[WIELD]->name);
         command_interpreter(ch, buf);
         return TRUE;
@@ -8970,7 +8966,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         }
         for (i = vict->carrying; i; i = i->next_content) {
             if (has_danish == 0) {
-                if (i->obj_flags.type_flag == ITEM_FOOD) {
+                if (i->type_flag == ITEM_FOOD) {
                     has_danish = 1;
                 } else {
                     has_danish = 0;
@@ -9017,7 +9013,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         }
         
         if (!IS_IMMORTAL(ch)) {
-            if (obj->obj_flags.type_flag != ITEM_FOOD) {
+            if (obj->type_flag != ITEM_FOOD) {
                 sprintf(buf, "tell %s Thank you, but that is not what I "
                              "desire.", GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -9030,7 +9026,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         } else {
             sprintf(buf, "%s %s", obj_name, vict_name);
             do_give(ch, buf, 0);
-            if (obj->obj_flags.type_flag == ITEM_FOOD) {
+            if (obj->type_flag == ITEM_FOOD) {
                 test = 1;
             }
         }
@@ -12797,80 +12793,63 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     for (i = 0; i < MAX_WEAR; i++) {
         if (mob->equipment[i]) {
 
-            total_equip_cost += mob->equipment[i]->obj_flags.cost;
-            mob->equipment[i]->obj_flags.timer = 20;
+            total_equip_cost += mob->equipment[i]->cost;
+            mob->equipment[i]->timer = 20;
             if (GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
                 while ((tempobj = mob->equipment[i]->contains)) {
                     extract_obj(tempobj);
                 }
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_GOOD)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
-                           ITEM_ANTI_GOOD);
+                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_GOOD);
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_EVIL)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
-                           ITEM_ANTI_EVIL);
+                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_EVIL);
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_NEUTRAL)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
-                           ITEM_ANTI_NEUTRAL);
+                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NEUTRAL);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_NECROMANCER)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, 
-                        ITEM_ANTI_NECROMANCER);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NECROMANCER);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_CLERIC)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_CLERIC);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_CLERIC);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MAGE)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_MAGE);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MAGE);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_THIEF)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_THIEF);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_THIEF);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_FIGHTER)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_FIGHTER);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_FIGHTER);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MEN)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_MEN);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MEN);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_WOMEN)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_WOMEN);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_WOMEN);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_SUN)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_SUN);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_SUN);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_BARBARIAN)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_BARBARIAN);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_BARBARIAN);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_RANGER)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_RANGER);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_RANGER);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PALADIN)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_PALADIN);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PALADIN);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PSI)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_PSI);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PSI);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MONK)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_MONK);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MONK);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_DRUID)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
-                        ITEM_ANTI_DRUID);
+                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_DRUID);
             }
         }
     }

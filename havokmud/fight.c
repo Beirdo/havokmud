@@ -408,14 +408,14 @@ void make_corpse(struct char_data *ch, int killedbytype)
                 }
                 cp->description = strdup(buf);
 
-                cp->obj_flags.type_flag = ITEM_CONTAINER;
-                cp->obj_flags.wear_flags = ITEM_TAKE;
+                cp->type_flag = ITEM_CONTAINER;
+                cp->wear_flags = ITEM_TAKE;
 
                 /*
                  * You can't store stuff in a corpse.
                  * Lennya: this makes corpses return a negative fullness %
                  */
-                cp->obj_flags.value[0] = 0;
+                cp->value[0] = 0;
 
                 /* race of corpse NOT USED HERE */
                 cp->affected[0].modifier = GET_RACE(ch);
@@ -424,12 +424,12 @@ void make_corpse(struct char_data *ch, int killedbytype)
                 cp->affected[1].modifier = GetMaxLevel(ch);
 
                 /* corpse identifier */
-                cp->obj_flags.value[3] = 1;
+                cp->value[3] = 1;
 
                 if (IS_NPC(ch)) {
-                    cp->obj_flags.timer = MAX_NPC_CORPSE_TIME + 2;
+                    cp->timer = MAX_NPC_CORPSE_TIME + 2;
                 } else {
-                    cp->obj_flags.timer = MAX_PC_CORPSE_TIME + 3;
+                    cp->timer = MAX_PC_CORPSE_TIME + 3;
                 }
                 obj_to_room(cp, ch->in_room);
             }
@@ -536,13 +536,13 @@ void make_corpse(struct char_data *ch, int killedbytype)
         obj_to_obj(money, corpse);
     }
 
-    corpse->obj_flags.type_flag = ITEM_CONTAINER;
-    corpse->obj_flags.wear_flags = ITEM_TAKE;
+    corpse->type_flag = ITEM_CONTAINER;
+    corpse->wear_flags = ITEM_TAKE;
 
     /*
      * You can't store stuff in a corpse
      */
-    corpse->obj_flags.value[0] = 0;
+    corpse->value[0] = 0;
 
     /*
      * race of corpse
@@ -557,19 +557,19 @@ void make_corpse(struct char_data *ch, int killedbytype)
     /*
      * corpse identifyer
      */
-    corpse->obj_flags.value[3] = 1;
+    corpse->value[3] = 1;
 
     if (ADeadBody) {
-        corpse->obj_flags.weight = GET_WEIGHT(ch) + IS_CARRYING_W(ch);
+        corpse->weight = GET_WEIGHT(ch) + IS_CARRYING_W(ch);
     } else {
-        corpse->obj_flags.weight = 1 + IS_CARRYING_W(ch);
+        corpse->weight = 1 + IS_CARRYING_W(ch);
     }
 
-    corpse->obj_flags.cost_per_day = 100000;
+    corpse->cost_per_day = 100000;
     if (IS_NPC(ch)) {
-        corpse->obj_flags.timer = MAX_NPC_CORPSE_TIME;
+        corpse->timer = MAX_NPC_CORPSE_TIME;
     } else {
-        corpse->obj_flags.timer = MAX_PC_CORPSE_TIME;
+        corpse->timer = MAX_PC_CORPSE_TIME;
     }
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
@@ -2525,7 +2525,7 @@ int Getw_type(struct obj_data *wielded)
 {
     int             w_type;
 
-    switch (wielded->obj_flags.value[3]) {
+    switch (wielded->value[3]) {
     case 0:
         w_type = TYPE_SMITE;
         break;
@@ -2860,9 +2860,8 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
             dam += number(0, 2);
         }
     } else {
-        if (wielded->obj_flags.value[2] > 0) {
-            dam += dice(wielded->obj_flags.value[1],
-                        wielded->obj_flags.value[2]);
+        if (wielded->value[2] > 0) {
+            dam += dice(wielded->value[1], wielded->value[2]);
         } else {
             act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_CHAR);
             act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_ROOM);
@@ -2872,7 +2871,7 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
             }
         }
 
-        if (wielded->obj_flags.weight >
+        if (wielded->weight >
             str_app[STRENGTH_APPLY_INDEX(ch)].wield_w && ch->equipment[HOLD]) {
             /*
              * its too heavy to wield properly
@@ -4647,7 +4646,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
         obj_to_room(t, ch->in_room);
     }
 
-    t->obj_flags.value[0] = 20;
+    t->value[0] = 20;
 
     while (obj->contains) {
         x = obj->contains;
@@ -4715,13 +4714,13 @@ int DamageItem(struct char_data *ch, struct obj_data *o, int num)
      */
 
     if (ITEM_TYPE(o) == ITEM_ARMOR) {
-        o->obj_flags.value[0] -= num;
-        if (o->obj_flags.value[0] < 0) {
+        o->value[0] -= num;
+        if (o->value[0] < 0) {
             return (TRUE);
         }
     } else if (ITEM_TYPE(o) == ITEM_WEAPON) {
-        o->obj_flags.value[2] -= num;
-        if (o->obj_flags.value[2] <= 0) {
+        o->value[2] -= num;
+        if (o->value[2] <= 0) {
             return (TRUE);
         }
     }
@@ -5300,7 +5299,7 @@ void shoot(struct char_data *ch, struct char_data *victim)
          *            value[3] = + to damage
          */
 
-        if (bow->obj_flags.value[0] != arrow->obj_flags.value[0]) {
+        if (bow->value[0] != arrow->value[0]) {
             send_to_char
                 ("That projectile does not fit in that projector.\n\r",
                  ch);
@@ -5310,8 +5309,8 @@ void shoot(struct char_data *ch, struct char_data *victim)
         /*
          * check for bonuses on the bow.
          */
-        tohit = bow->obj_flags.value[2];
-        todam = bow->obj_flags.value[3];
+        tohit = bow->value[2];
+        todam = bow->value[3];
 
         /*
          * temporarily remove other stuff and add bow bonuses.
@@ -5322,7 +5321,7 @@ void shoot(struct char_data *ch, struct char_data *victim)
          * figure range mods for this weapon
          */
         if (victim->in_room != ch->in_room)
-            switch (bow->obj_flags.value[1]) {
+            switch (bow->value[1]) {
             case 0:
                 tohit -= 4;     /* short range weapon -4 to hit */
                 break;
@@ -5858,7 +5857,7 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
             return 0;
         }
 
-        dam += dice(missile->obj_flags.value[1], missile->obj_flags.value[2]);
+        dam += dice(missile->value[1], missile->value[2]);
         dam = MAX(1, dam);
         AddHated(targ, ch);
         sprintf(buf, "$p from %s hits $n!", dir_name[opdir(tdir)]);

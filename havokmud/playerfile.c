@@ -123,14 +123,14 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
             if (IS_RARE(obj)) {
                 obj_index[obj->item_number].number--;
             }
-            obj->obj_flags.value[0] = st->objects[i].value[0];
-            obj->obj_flags.value[1] = st->objects[i].value[1];
-            obj->obj_flags.value[2] = st->objects[i].value[2];
-            obj->obj_flags.value[3] = st->objects[i].value[3];
-            obj->obj_flags.extra_flags = st->objects[i].extra_flags;
-            obj->obj_flags.weight = st->objects[i].weight;
-            obj->obj_flags.timer = st->objects[i].timer;
-            obj->obj_flags.bitvector = st->objects[i].bitvector;
+            obj->value[0] = st->objects[i].value[0];
+            obj->value[1] = st->objects[i].value[1];
+            obj->value[2] = st->objects[i].value[2];
+            obj->value[3] = st->objects[i].value[3];
+            obj->extra_flags = st->objects[i].extra_flags;
+            obj->weight = st->objects[i].weight;
+            obj->timer = st->objects[i].timer;
+            obj->bitvector = st->objects[i].bitvector;
 
             /*
              * new, saving names and descrips stuff o_s_t_c
@@ -427,15 +427,15 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
     oe = st->objects + st->number;
 
     oe->item_number = obj_index[obj->item_number].virtual;
-    oe->value[0] = obj->obj_flags.value[0];
-    oe->value[1] = obj->obj_flags.value[1];
-    oe->value[2] = obj->obj_flags.value[2];
-    oe->value[3] = obj->obj_flags.value[3];
+    oe->value[0] = obj->value[0];
+    oe->value[1] = obj->value[1];
+    oe->value[2] = obj->value[2];
+    oe->value[3] = obj->value[3];
 
-    oe->extra_flags = obj->obj_flags.extra_flags;
-    oe->weight = obj->obj_flags.weight;
-    oe->timer = obj->obj_flags.timer;
-    oe->bitvector = obj->obj_flags.bitvector;
+    oe->extra_flags = obj->extra_flags;
+    oe->weight = obj->weight;
+    oe->timer = obj->timer;
+    oe->bitvector = obj->bitvector;
 
     /*
      * new, saving names and descrips stuff 
@@ -491,13 +491,13 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
         return;
     }
 
-    if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
+    if (obj->timer < 0 && obj->timer != OBJ_NOTIMER) {
 #ifdef DUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
-    } else if (obj->obj_flags.cost_per_day < 0) {
+    } else if (obj->cost_per_day < 0) {
 
 #ifdef DUPLICATES
         if (ch != '/0') {
@@ -549,13 +549,13 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     obj_to_store(obj->contains, st, ch, delete);
     obj_to_store(obj->next_content, st, ch, delete);
 
-    if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
+    if (obj->timer < 0 && obj->timer != OBJ_NOTIMER) {
 #ifdef DUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
-    } else if (obj->obj_flags.cost_per_day < 0) {
+    } else if (obj->cost_per_day < 0) {
 
 #ifdef DUPLICATES
         if (ch != '\0') {
@@ -623,7 +623,7 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
-            if (ch->equipment[i]->obj_flags.cost_per_day != -1) {
+            if (ch->equipment[i]->cost_per_day != -1) {
                 st.objects[st.number].wearpos = i + 1;
             }
 
@@ -674,7 +674,7 @@ void save_obj_reimb(struct char_data *ch)
 
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
-            if (ch->equipment[i]->obj_flags.cost_per_day != -1) {
+            if (ch->equipment[i]->cost_per_day != -1) {
                 st.objects[st.number].wearpos = i + 1;
             }
             obj_to_store(ch->equipment[i], &st, ch, 0);
@@ -818,7 +818,7 @@ void CountLimitedItems(struct obj_file_u *st)
              * (all this just to find rent cost.)  *sigh*
              */
             obj = read_object(st->objects[i].item_number, VIRTUAL);
-            cost_per_day = obj->obj_flags.cost_per_day;
+            cost_per_day = obj->cost_per_day;
 
             /*
              * if the cost is > LIM_ITEM_COST_MIN, 
@@ -1162,14 +1162,14 @@ void obj_store_to_room(int room, struct obj_file_u *st)
             if (IS_RARE(obj)) {
                 obj_index[obj->item_number].number--;
             }
-            obj->obj_flags.value[0] = st->objects[i].value[0];
-            obj->obj_flags.value[1] = st->objects[i].value[1];
-            obj->obj_flags.value[2] = st->objects[i].value[2];
-            obj->obj_flags.value[3] = st->objects[i].value[3];
-            obj->obj_flags.extra_flags = st->objects[i].extra_flags;
-            obj->obj_flags.weight = st->objects[i].weight;
-            obj->obj_flags.timer = st->objects[i].timer;
-            obj->obj_flags.bitvector = st->objects[i].bitvector;
+            obj->value[0] = st->objects[i].value[0];
+            obj->value[1] = st->objects[i].value[1];
+            obj->value[2] = st->objects[i].value[2];
+            obj->value[3] = st->objects[i].value[3];
+            obj->extra_flags = st->objects[i].extra_flags;
+            obj->weight = st->objects[i].weight;
+            obj->timer = st->objects[i].timer;
+            obj->bitvector = st->objects[i].bitvector;
 
             /*
              * new, saving names and descrips stuff o_s_t_r 

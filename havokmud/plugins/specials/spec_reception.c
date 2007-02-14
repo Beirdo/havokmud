@@ -54,16 +54,16 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
     if (obj) {
         if (obj->item_number > -1 && cost->ok && 
             ItemEgoClash(ch, obj, 0) > -5) {
-            if (obj->obj_flags.cost_per_day > 9000) {
+            if (obj->cost_per_day > 9000) {
                 /* 
                  * 1/2 price rent 
                  */
-                temp = MAX(0, obj->obj_flags.cost_per_day);
+                temp = MAX(0, obj->cost_per_day);
             } else {
                 temp = 0;
             }
 
-            if (!IS_RARE(obj) || obj->obj_flags.cost_per_day <= 10000) {
+            if (!IS_RARE(obj) || obj->cost_per_day <= 10000) {
                 /* 
                  * Let's not charge for normal items 
                  */

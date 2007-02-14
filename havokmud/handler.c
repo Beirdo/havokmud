@@ -899,8 +899,7 @@ void affect_total(struct char_data *ch)
             for (j = 0; j < MAX_OBJ_AFFECT; j++) {
                 affect_modify(ch, ch->equipment[i]->affected[j].location,
                               ch->equipment[i]->affected[j].modifier,
-                              ch->equipment[i]->obj_flags.bitvector,
-                              FALSE);
+                              ch->equipment[i]->bitvector, FALSE);
             }
         }
     }
@@ -916,7 +915,7 @@ void affect_total(struct char_data *ch)
             for (j = 0; j < MAX_OBJ_AFFECT; j++) {
                 affect_modify(ch, ch->equipment[i]->affected[j].location,
                               ch->equipment[i]->affected[j].modifier,
-                              ch->equipment[i]->obj_flags.bitvector, TRUE);
+                              ch->equipment[i]->bitvector, TRUE);
             }
         }
     }
@@ -1132,8 +1131,8 @@ void char_from_room(struct char_data *ch)
     }
 
     if (ch->equipment[WEAR_LIGHT] &&
-        ch->equipment[WEAR_LIGHT]->obj_flags.type_flag == ITEM_LIGHT && 
-        ch->equipment[WEAR_LIGHT]->obj_flags.value[2]) {
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT && 
+        ch->equipment[WEAR_LIGHT]->value[2]) {
         /* 
          * Light is ON 
          */
@@ -1197,9 +1196,9 @@ void char_to_room(struct char_data *ch, long room)
     ch->in_room = room;
 
     if (ch->equipment[WEAR_LIGHT] && 
-        ch->equipment[WEAR_LIGHT]->obj_flags.type_flag == ITEM_LIGHT) {
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT) {
         if (rp->sector_type != SECT_UNDERWATER) {
-            if (ch->equipment[WEAR_LIGHT]->obj_flags.value[2]) {
+            if (ch->equipment[WEAR_LIGHT]->value[2]) {
                 /* 
                  * Light is ON 
                  */
@@ -1208,10 +1207,10 @@ void char_to_room(struct char_data *ch, long room)
             if (rp->light < 1) {
                 rp->light = 1;
             }
-        } else if (ch->equipment[WEAR_LIGHT]->obj_flags.value[2] > 0) {
+        } else if (ch->equipment[WEAR_LIGHT]->value[2] > 0) {
             send_to_char("Your light source is extinguished instantly!\n\r",
                          ch);
-            ch->equipment[WEAR_LIGHT]->obj_flags.value[2] = 0;
+            ch->equipment[WEAR_LIGHT]->value[2] = 0;
         } else {
             rp->light++;
             if (rp->light < 1) {
@@ -1388,28 +1387,28 @@ int apply_ac(struct char_data *ch, int eq_pos)
 
     case WEAR_BODY:
         /* 30% */
-        return (3 * ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (3 * ch->equipment[eq_pos]->value[0]);
     case WEAR_HEAD:
         /* 20% */
-        return (2 * ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (2 * ch->equipment[eq_pos]->value[0]);
     case WEAR_LEGS:
         /* 20% */
-        return (2 * ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (2 * ch->equipment[eq_pos]->value[0]);
     case WEAR_FEET:
         /* 10% */
-        return (ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (ch->equipment[eq_pos]->value[0]);
     case WEAR_HANDS:
         /* 10% */
-        return (ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (ch->equipment[eq_pos]->value[0]);
     case WEAR_ARMS:
         /* 10% */
-        return (ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (ch->equipment[eq_pos]->value[0]);
     case WEAR_SHIELD:
         /* 10% */
-        return (ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (ch->equipment[eq_pos]->value[0]);
     case WEAR_ABOUT:
         /* 10% */
-        return (ch->equipment[eq_pos]->obj_flags.value[0]);
+        return (ch->equipment[eq_pos]->value[0]);
     }
     return 0;
 }
@@ -1497,7 +1496,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
     for (j = 0; j < MAX_OBJ_AFFECT; j++) {
         affect_modify(ch, obj->affected[j].location,
                       obj->affected[j].modifier,
-                      obj->obj_flags.bitvector, TRUE);
+                      obj->bitvector, TRUE);
     }
 
     if (GET_ITEM_TYPE(obj) == ITEM_WEAPON) {
@@ -1557,7 +1556,7 @@ struct obj_data *unequip_char(struct char_data *ch, int pos)
 
     for (j = 0; j < MAX_OBJ_AFFECT; j++) {
         affect_modify(ch, obj->affected[j].location,
-                      obj->affected[j].modifier, obj->obj_flags.bitvector,
+                      obj->affected[j].modifier, obj->bitvector,
                       FALSE);
     }
     affect_total(ch);
@@ -2089,8 +2088,8 @@ void extract_obj(struct obj_data *obj)
 
 void update_object(struct obj_data *obj, int use)
 {
-    if (obj->obj_flags.timer > 0) {
-        obj->obj_flags.timer -= use;
+    if (obj->timer > 0) {
+        obj->timer -= use;
     }
     if (obj->contains) {
         update_object(obj->contains, use);
@@ -2105,9 +2104,9 @@ void update_char_objects(struct char_data *ch)
     int             i;
 
     if (ch->equipment[WEAR_LIGHT] && 
-        ch->equipment[WEAR_LIGHT]->obj_flags.type_flag == ITEM_LIGHT &&
-        ch->equipment[WEAR_LIGHT]->obj_flags.value[2] > 0) {
-        (ch->equipment[WEAR_LIGHT]->obj_flags.value[2])--;
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT &&
+        ch->equipment[WEAR_LIGHT]->value[2] > 0) {
+        (ch->equipment[WEAR_LIGHT]->value[2])--;
     }
 
     for (i = 0; i < MAX_WEAR; i++) {
@@ -2662,7 +2661,7 @@ struct obj_data *create_money(int amount)
             free(obj->short_description);
         }
         obj->short_description = (char *) strdup(buf);
-        obj->obj_flags.value[0] = amount;
+        obj->value[0] = amount;
     }
 
     return obj;
@@ -2786,7 +2785,7 @@ void AddAffects(struct char_data *ch, struct obj_data *o)
     for (i = 0; i < MAX_OBJ_AFFECT; i++) {
         if (o->affected[i].location != APPLY_NONE) {
             affect_modify(ch, o->affected[i].location, o->affected[i].modifier,
-                          o->obj_flags.bitvector, TRUE);
+                          o->bitvector, TRUE);
         } else {
             return;
         }

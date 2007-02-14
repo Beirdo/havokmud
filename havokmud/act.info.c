@@ -36,10 +36,10 @@ void do_help_common(struct char_data *ch, char *argument, int type);
 int singular(struct obj_data *o)
 {
 
-    if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_HANDS) ||
-        IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_FEET) ||
-        IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_LEGS) ||
-        IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_ARMS)){
+    if (IS_SET(o->wear_flags, ITEM_WEAR_HANDS) ||
+        IS_SET(o->wear_flags, ITEM_WEAR_FEET) ||
+        IS_SET(o->wear_flags, ITEM_WEAR_LEGS) ||
+        IS_SET(o->wear_flags, ITEM_WEAR_ARMS)){
         return (FALSE);
 	}
     return (TRUE);
@@ -108,7 +108,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
              ((mode == 1) || (mode == 2) || (mode == 3) || (mode == 4))) {
         strcpy(buffer, object->short_description);
     } else if (mode == 5) {
-        if (object->obj_flags.type_flag == ITEM_NOTE) {
+        if (object->type_flag == ITEM_NOTE) {
             if (object->action_description) {
                 strcpy(buffer, "There is something written upon it:\n\r\n\r");
                 strcat(buffer, object->action_description);
@@ -121,7 +121,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
              * mail fix, thanks brett
              */
 
-        } else if ((object->obj_flags.type_flag != ITEM_DRINKCON)) {
+        } else if ((object->type_flag != ITEM_DRINKCON)) {
             strcpy(buffer, "You see nothing special..");
         } else {
 			/*
@@ -178,20 +178,19 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
          * 20030408
          */
 #if 0
-        if (singular(object) && object->obj_flags.type_flag ==
-        	ITEM_CONTAINER) {
-        	if (!object->obj_flags.value[2] && !object->obj_flags.value[3]) {
+        if (singular(object) && object->type_flag == ITEM_CONTAINER) {
+        	if (!object->value[2] && !object->value[3]) {
 			/*
 			 * check for ShowFull, IsCorpse
 			 */
         	    for(i=object->contains;i;i=i->next_content) {
-        			weight +=(float)i->obj_flags.weight;
+        			weight +=(float)i->weight;
         		}
         	/*
         	 * calculate how much stuff is in this bag
         	 */
         		fullperc = ((float) weight / ((float)
-            	object->obj_flags.value[0] -((float)object->obj_flags.weight -
+            	object->value[0] -((float)object->weight -
             	weight)-1));
         	/*
         	 * 0% <= fullperc < 5 Empty
@@ -238,30 +237,26 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
         	}
         }
 #endif
-        if (object->obj_flags.type_flag == ITEM_ARMOR) {
-            if (object->obj_flags.value[0] <
-                (object->obj_flags.value[1] / 4)) {
+        if (object->type_flag == ITEM_ARMOR) {
+            if (object->value[0] < (object->value[1] / 4)) {
                 if (singular(object)) {
                     strcat(buffer, "..It is falling apart");
                 } else {
                     strcat(buffer, "..They are falling apart");
 				}
-            } else if (object->obj_flags.value[0] <
-                       (object->obj_flags.value[1] / 3)) {
+            } else if (object->value[0] < (object->value[1] / 3)) {
                 if (singular(object)) {
                     strcat(buffer, "..It is need of much repair.");
                 } else {
                     strcat(buffer, "..They are in need of much repair");
 				}
-            } else if (object->obj_flags.value[0] <
-                       (object->obj_flags.value[1] / 2)) {
+            } else if (object->value[0] < (object->value[1] / 2)) {
                 if (singular(object)) {
                     strcat(buffer, "..It is in fair condition");
                 } else {
                     strcat(buffer, "..They are in fair condition");
 				}
-            } else if (object->obj_flags.value[0] <
-                       object->obj_flags.value[1]) {
+            } else if (object->value[0] < object->value[1]) {
                 if (singular(object)) {
                     strcat(buffer, "..It is in good condition");
                 } else {
@@ -297,7 +292,7 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
              ((mode == 1) || (mode == 2) || (mode == 3) || (mode == 4))) {
         strcpy(buffer, object->short_description);
     } else if (mode == 5) {
-        if (object->obj_flags.type_flag == ITEM_NOTE) {
+        if (object->type_flag == ITEM_NOTE) {
             if (object->action_description) {
                 strcpy(buffer, "There is something written upon it:\n\r\n\r");
                 strcat(buffer, object->action_description);
@@ -306,7 +301,7 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
                 act("It's blank.", FALSE, ch, 0, 0, TO_CHAR);
 			}
             return;
-        } else if ((object->obj_flags.type_flag != ITEM_DRINKCON)) {
+        } else if ((object->type_flag != ITEM_DRINKCON)) {
             strcpy(buffer, "You see nothing special..");
         } else {
 			/*
@@ -1693,19 +1688,18 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                      * Found something
                      */
                     if (GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) {
-                        if (tmp_object->obj_flags.value[1] <= 0) {
+                        if (tmp_object->value[1] <= 0) {
                             act("It is empty.", FALSE, ch, 0, 0, TO_CHAR);
                         } else {
-                            temp = ((tmp_object->obj_flags.value[1] * 3) /
-                                    tmp_object->obj_flags.value[0]);
+                            temp = ((tmp_object->value[1] * 3) /
+                                    tmp_object->value[0]);
                             sprintf(buffer, "It's %sfull of a %s liquid.\n\r",
                                  fullness[temp],
-                                 color_liquid[tmp_object->obj_flags.value[2]]);
+                                 color_liquid[tmp_object->value[2]]);
                             send_to_char(buffer, ch);
                         }
                     } else if (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER) {
-                        if (!IS_SET(tmp_object->obj_flags.value[1],
-                                    CONT_CLOSED)) {
+                        if (!IS_SET(tmp_object->value[1], CONT_CLOSED)) {
                             if (!IS_CORPSE(tmp_object)) {
                                 /*
                                  * If it's not a corpse, calculate how
@@ -1713,13 +1707,12 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                  */
                                 for (i = tmp_object->contains; i;
                                      i = i->next_content) {
-                                    weight += (float) i->obj_flags.weight;
+                                    weight += (float) i->weight;
                                 }
                                 fullperc = (((float) weight /
-                                            ((float) tmp_object->obj_flags.
-                                                     value[0] -
-                                             ((float) tmp_object->obj_flags.
-                                                      weight - weight) - 1)) *
+                                            ((float) tmp_object->value[0] -
+                                             ((float) tmp_object->weight - 
+                                              weight) - 1)) *
                                             100.0);
                                 sprintf(buffer, "%s %.0f%s full",
                                         fname(tmp_object->name), fullperc, "%");
@@ -3928,8 +3921,8 @@ void do_value(struct char_data *ch, char *argument, int cmd)
     learned = ch->skills[SKILL_EVALUATE].learned;
 
     if (number(1, 101) < learned / 3) {
-        if (obj->obj_flags.bitvector) {
-            sprintbit((unsigned long) obj->obj_flags.bitvector, affected_bits,
+        if (obj->bitvector) {
+            sprintbit((unsigned long) obj->bitvector, affected_bits,
                       buf);
             oldSendOutput(ch, "Item will give you following abilities:  %s\n\r",
                           buf);
@@ -3937,23 +3930,23 @@ void do_value(struct char_data *ch, char *argument, int cmd)
     }
 
     if (number(1, 101) < learned / 2) {
-        sprintbit((unsigned long) obj->obj_flags.extra_flags, extra_bits, buf);
+        sprintbit((unsigned long) obj->extra_flags, extra_bits, buf);
         oldSendOutput(ch, "Item is: %s\n\r", buf);
     }
 
     oldSendOutput(ch, "Weight: %d, Value: %d, Rent cost: %d  %s\n\r",
-                  obj->obj_flags.weight,
-                  GetApprox(obj->obj_flags.cost, learned - 10),
-                  GetApprox(obj->obj_flags.cost_per_day, learned - 10),
+                  obj->weight,
+                  GetApprox(obj->cost, learned - 10),
+                  GetApprox(obj->cost_per_day, learned - 10),
                   IS_RARE(obj) ? "[RARE]" : " ");
 
     if (ITEM_TYPE(obj) == ITEM_WEAPON) {
         oldSendOutput(ch, "Damage Dice is '%dD%d'\n\r",
-                      GetApprox(obj->obj_flags.value[1], learned - 10),
-                      GetApprox(obj->obj_flags.value[2], learned - 10));
+                      GetApprox(obj->value[1], learned - 10),
+                      GetApprox(obj->value[2], learned - 10));
     } else if (ITEM_TYPE(obj) == ITEM_ARMOR) {
         oldSendOutput(ch, "AC-apply is %d\n\r",
-                      GetApprox(obj->obj_flags.value[0], learned - 10));
+                      GetApprox(obj->value[0], learned - 10));
     }
 }
 
