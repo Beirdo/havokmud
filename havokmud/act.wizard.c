@@ -1198,6 +1198,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     color3[10];
     struct time_info_data ma;
     char           *proc;
+    struct index_data *index;
 
     dlog("in do_stat");
 
@@ -1698,8 +1699,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
      * stat on object
      */
     if ((j = get_obj_vis_world(ch, arg1, &count)) != NULL) {
-        virtual = (j->item_number >= 0) ?
-                   obj_index[j->item_number].virtual : 0;
+        virtual = MAX( 0, j->item_number );
         sprintf(buf, "Object name: [%s]\n\r R-number: [%d], "
                      "V-number: [%d] Item type: ",
                 j->name, j->item_number, virtual);
@@ -1878,9 +1878,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
 
         strcpy(buf, "\n\rSpecial procedure : ");
-        if (j->item_number >= 0 &&
-            (proc = procGetNameByFunc( obj_index[j->item_number].func,
-                                       PROC_OBJECT )) ) {
+        if (j->item_number >= 0 && (index = objectIndex(j->item_number)) &&
+            (proc = procGetNameByFunc( index->func, PROC_OBJECT )) ) {
             strcat(buf, proc);
             strcat(buf, "\n\r");
         } else {
@@ -2030,7 +2029,7 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
      */
 
     if ((j = (struct obj_data *) get_obj_in_list_vis(ch, item, ch->carrying))) {
-        virtual = j->item_number >= 0 ?  obj_index[j->item_number].virtual : 0;
+        virtual = MAX( 0, j->item_number );
 
         if (!strcmp(field, "name")) {
             if (j->name) {
@@ -3890,6 +3889,9 @@ void show_room_zone(int rnum, struct room_data *rp,
     print_room(rnum, rp, srzs->sb);
 }
 
+/**
+ * @todo split into several routines that get called from this one
+ */
 void do_show(struct char_data *ch, char *argument, int cmd)
 {
     int             i;
@@ -3899,6 +3901,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     temp2[128];
 
     int             objn;
+    struct index_data *index;
     struct index_data *oi;
 
     int             zone;
@@ -3976,9 +3979,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             bottom = zd->top + 1;
         }
     } else if (is_abbrev(arg1, "objects")) {
-        which_i = obj_index;
-        topi = top_of_objt;
-
+        /** @todo redo objects by traversing the binary tree, this is silly */
         zonenum = skip_spaces(argument);
         if( !zonenum ) {
             send_to_char("What zone is that again?  I can't hear ya!\n\r", ch);
@@ -3997,17 +3998,21 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             zone = -1;
             /* Just so they are initialized */
             bottom = zone_table[0].top + 1;
-            top = zone_table[1].top;
+            top = zone_table[top_of_zone_table].top;
         }
 
-        append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
-        for (objn = 0; objn < topi; objn++) {
-            oi = which_i + objn;
-            if ((zone > 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
+        append_to_string_block(&sb, "VNUM  count e-value names\n\r");
+        for (objn = bottom; objn < top; objn++) {
+            index = objectIndex( objn );
+            if( !index ) {
                 continue;
             }
-            obj = read_object(oi->virtual, VIRTUAL);
+
+            if ((zone < 0 && !isname(zonenum, index->name))) {
+                continue;
+            }
+
+            obj = read_object(objn, VIRTUAL);
             if (obj) {
                 if (eval(obj) < -5) {
                     sprintf(color, "%s", "$c0008");
@@ -4017,15 +4022,17 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     sprintf(color, "%s", "$c000W");
                 }
 
-                sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
-                        oi->virtual, objn, (oi->number - 1), color,
-                        eval(obj), oi->name);
+                sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r",
+                        objn, (index->number - 1), color,
+                        eval(obj), index->name);
                 append_to_string_block(&sb, buf);
                 extract_obj(obj);
             }
         }
-    } else if (is_abbrev(arg1, "wearslot") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    } else if (is_abbrev(arg1, "wearslot")) {
+        /** @todo redo wearslot by traversing the binary tree, this is silly */
+        which_i = obj_index;
+        topi = top_of_objt;
 
         zonenum = skip_spaces(argument);
         if (!zonenum || !(isdigit((int)*zonenum))) {
@@ -4076,8 +4083,10 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
-    } else if (is_abbrev(arg1, "itemtype") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    } else if (is_abbrev(arg1, "itemtype")) {
+        /** @todo redo itemtype by traversing the binary tree, this is silly */
+        which_i = obj_index;
+        topi = top_of_objt;
         zonenum = skip_spaces(argument);
         if (!zonenum || !(isdigit((int)*zonenum))) {
             append_to_string_block(&sb, "Usage:\n\r"
@@ -4218,6 +4227,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if ((is_abbrev(arg1, "report") &&
+        /** @todo redo report by traversing the binary tree, this is silly */
              (which_i = obj_index, topi = top_of_objt)) ||
              (is_abbrev(arg1, "stats") &&
              (which_i = mob_index, topi = top_of_mobt))) {
@@ -4389,8 +4399,10 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                 extract_obj(obj);
             }
         }
-    } else if (is_abbrev(arg1, "maxxes") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    } else if (is_abbrev(arg1, "maxxes")) {
+        /** @todo redo maxxes by traversing the binary tree, this is silly */
+        which_i = obj_index;
+        topi = top_of_objt;
         zonenum = skip_spaces(argument);
         zone = -1;
         if( zonenum && isdigit((int)*zonenum) ) {

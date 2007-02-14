@@ -281,15 +281,6 @@ long MobVnum(struct char_data *c)
     }
 }
 
-long ObjVnum(struct obj_data *o)
-{
-    if (o->item_number >= 0) {
-        return (obj_index[o->item_number].virtual);
-    } else {
-        return (-1);
-    }
-}
-
 void Zwrite(FILE * fp, char cmd, int tf, int arg1, int arg2, int arg3,
             char *desc)
 {
@@ -308,11 +299,12 @@ void Zwrite(FILE * fp, char cmd, int tf, int arg1, int arg2, int arg3,
 void RecZwriteObj(FILE * fp, struct obj_data *o)
 {
     struct obj_data *t;
+    struct index_data *index;
 
     if (ITEM_TYPE(o) == ITEM_CONTAINER) {
         for (t = o->contains; t; t = t->next_content) {
-            Zwrite(fp, 'P', 1, ObjVnum(t),
-                   obj_index[t->item_number].number, ObjVnum(o),
+            index = objectIndex( t->item_number );
+            Zwrite(fp, 'P', 1, t->item_number, index->number, o->item_number,
                    t->short_description);
             RecZwriteObj(fp, t);
         }
@@ -331,6 +323,7 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                     arg1,
                     arg2,
                     arg3;
+    struct index_data *index;
 
     for (i = start_room; i <= end_room; i++) {
         room = real_roomp(i);
@@ -353,11 +346,10 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                     if (p->equipment[j] &&
                         p->equipment[j]->item_number >= 0) {
                         cmd = 'E';
-                        arg1 = ObjVnum(p->equipment[j]);
-                        if (obj_index[p->equipment[j]->item_number].
-                                MaxObjCount) {
-                            arg2 = obj_index[p->equipment[j]->item_number].
-                                MaxObjCount;
+                        arg1 = p->equipment[j]->item->number;
+                        index = objectIndex( arg1 );
+                        if (index && index->MaxObjCount) {
+                            arg2 = index->MaxObjCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -371,9 +363,10 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                 for (o = p->carrying; o; o = o->next_content) {
                     if (o->item_number >= 0) {
                         cmd = 'G';
-                        arg1 = ObjVnum(o);
-                        if (obj_index[o->item_number].MaxObjCount) {
-                            arg2 = obj_index[o->item_number].MaxObjCount;
+                        arg1 = o->item_number;
+                        index = objectIndex( arg1 );
+                        if (index && index->MaxObjCount) {
+                            arg2 = index->MaxObjCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -392,9 +385,10 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
         for (o = room->contents; o; o = o->next_content) {
             if (o->item_number >= 0) {
                 cmd = 'O';
-                arg1 = ObjVnum(o);
-                if (obj_index[o->item_number].MaxObjCount) {
-                    arg2 = obj_index[o->item_number].MaxObjCount;
+                arg1 = o->item_number;
+                index = objectIndex( arg1 );
+                if (index && index->MaxObjCount) {
+                    arg2 = index->MaxObjCount;
                 } else {
                     arg2 = 65535;
                 }
@@ -510,6 +504,7 @@ void CleanZone(int zone)
     int             start,
                     end,
                     i;
+    struct index_data *index;
 
     start = zone ? (zone_table[zone - 1].top + 1) : 0;
     end = zone_table[zone].top;
@@ -528,10 +523,12 @@ void CleanZone(int zone)
 
         for (obj = rp->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-            obj_index[obj->item_number].number--;
+            index = objectIndex( obj->item_number );
+            if( index ) {
+                index->number--;
+            }
             /*
-             * object
-             * maxxing.(GH)
+             * object maxxing.(GH)
              *
              *
              * Do not clean out corpses, druid trees or quest items. Bit
@@ -3053,7 +3050,7 @@ int RecCompObjNum(struct obj_data *o, int obj_num)
     int             total = 0;
     struct obj_data *i;
 
-    if (obj_index[o->item_number].virtual == obj_num) {
+    if (o->item_number == obj_num) {
         total = 1;
     }
     if (ITEM_TYPE(o) == ITEM_CONTAINER) {
@@ -3367,7 +3364,7 @@ struct obj_data *find_tqp(int tqp_nr)
     int             nr = 0;
 
     for (t = object_list; t; t = t->next) {
-        if (obj_index[t->item_number].virtual == TRAVELQP) {
+        if (t->item_number == TRAVELQP) {
             nr++;
             if (nr == tqp_nr) {
                 tqp = t;
@@ -3384,7 +3381,7 @@ int count_tqp(void)
     int             tqp_nr = 0;
 
     for (t = object_list; t; t = t->next) {
-        if (obj_index[t->item_number].virtual == TRAVELQP) {
+        if (t->item_number == TRAVELQP) {
             tqp_nr++;
         }
     }

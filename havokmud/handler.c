@@ -17,7 +17,6 @@ extern struct room_data *room_db;
 extern struct obj_data *object_list;
 extern struct char_data *character_list;
 extern struct index_data *mob_index;
-extern struct index_data *obj_index;
 extern struct descriptor_data *descriptor_list;
 extern struct str_app_type str_app[];
 extern struct dex_app_type dex_app[];
@@ -1416,6 +1415,7 @@ int apply_ac(struct char_data *ch, int eq_pos)
 void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
 {
     int             j;
+    struct index_data *index;
 
     if (pos < 0 || pos > MAX_WEAR) {
         Log("wear pos > MAX_WEAR or < 0 in handler.c");
@@ -1442,9 +1442,9 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         /*
          * no checks on super ego items, they do it already 
          */
-        if (obj_index[obj->item_number].func != EvilBlade &&
-            obj_index[obj->item_number].func != NeutralBlade &&
-            obj_index[obj->item_number].func != GoodBlade &&
+        index = objectIndex( obj->item_number );
+        if (index && index->func != EvilBlade &&
+            index->func != NeutralBlade && index->func != GoodBlade &&
             !CheckEgo(ch, obj)) {
             if (ch->in_room != NOWHERE) {
                 obj_to_room(obj, ch->in_room);
@@ -2003,88 +2003,6 @@ void object_list_new_owner(struct obj_data *list, struct char_data *ch)
     }
 }
 
-/*
- * Extract an object from the world 
- */
-void extract_obj(struct obj_data *obj)
-{
-    struct obj_data *temp1,
-                   *temp2;
-    extern long     obj_count;
-
-    if (obj->in_room != NOWHERE) {
-        obj_from_room(obj);
-    } else if (obj->carried_by) {
-        obj_from_char(obj);
-    } else if (obj->equipped_by) {
-        if (obj->eq_pos > -1) {
-            /*
-             * set players equipment slot to 0; that will avoid the garbage
-             * items.
-             */
-            obj->equipped_by->equipment[(int)obj->eq_pos] = 0;
-        } else {
-            Log("Extract on equipped item in slot -1 on: %s - %s",
-                obj->equipped_by->player.name, obj->name);
-            return;
-        }
-    } else if (obj->in_obj) {
-        temp1 = obj->in_obj;
-        if (temp1->contains == obj) {
-            /* head of list */
-            temp1->contains = obj->next_content;
-        } else {
-            for (temp2 = temp1->contains;
-                 temp2 && (temp2->next_content != obj);
-                 temp2 = temp2->next_content) {
-                /* 
-                 * Empty loop 
-                 */
-            }
-
-            if (temp2) {
-                temp2->next_content = obj->next_content;
-            }
-        }
-    }
-
-    /*
-     * leaves nothing ! 
-     */
-    for (; obj->contains; extract_obj(obj->contains)) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    if (object_list == obj) {
-        /* 
-         * head of list 
-         */
-        object_list = obj->next;
-    } else {
-        for (temp1 = object_list;
-             temp1 && (temp1->next != obj); temp1 = temp1->next) {
-            /* 
-             * Empty loop 
-             */
-        }
-
-        if (temp1) {
-            temp1->next = obj->next;
-        } else {
-            Log("Couldn't find object in object list.");
-            assert(0);
-        }
-    }
-
-    if (obj->item_number >= 0) {
-        obj_index[obj->item_number].number--;
-        obj_count--;
-    }
-    free_obj(obj);
-
-}
 
 void update_object(struct obj_data *obj, int use)
 {

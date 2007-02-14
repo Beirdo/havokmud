@@ -30,7 +30,6 @@
 #define AST_MOB_NUM 2715
 
 extern struct char_data *character_list;
-extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 extern struct index_data *mob_index;
 extern struct weather_data weather_info;
@@ -2232,6 +2231,9 @@ char           *quest_intro[] = {
 #define Necklace          21122
 #define Med_Chambers      21324
 
+/**
+ * @todo make quest_lines and valik_dests preloaded static arrays!
+ */
 int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
@@ -2380,7 +2382,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
              */
             obj_from_char(obj);
             obj_to_char(obj, vict);
-            if (obj_index[obj->item_number].virtual == Shield) {
+            if ( obj->item_number == Shield) {
                 if (!check_soundproof(ch)) {
                     act("$N says 'The Shield of Lorces!'", FALSE, ch, 0,
                         vict, TO_CHAR);
@@ -2421,7 +2423,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         break;
     case Valik_Qone:
         if (gave_this_click) {
-            if (obj_index[obj->item_number].virtual == Ring) {
+            if (obj->item_number == Ring) {
                 if (!check_soundproof(ch)) {
                     act("$N says 'You have brought me the ring of Tlanic.'",
                         FALSE, ch, 0, vict, TO_CHAR);
@@ -2445,7 +2447,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         break;
     case Valik_Qtwo:
         if (gave_this_click) {
-            if (obj_index[obj->item_number].virtual == Chalice) {
+            if (obj->item_number == Chalice) {
                 if (!check_soundproof(ch)) {
                     act("$N says 'You have brought me the chalice of Evistar.'",
                         FALSE, ch, 0, vict, TO_CHAR);
@@ -2469,7 +2471,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         break;
     case Valik_Qthree:
         if (gave_this_click) {
-            if (obj_index[obj->item_number].virtual == Circlet) {
+            if (obj->item_number == Circlet) {
                 if (!check_soundproof(ch)) {
                     act("$N says 'You have brought me the circlet of "
                         "C*zarnak.'", FALSE, ch, 0, vict, TO_CHAR);
@@ -2512,8 +2514,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         break;
     case Valik_Qfour:
         if (vict->equipment[WEAR_NECK_1] &&
-            obj_index[vict->equipment[WEAR_NECK_1]->item_number].virtual ==
-                Necklace) {
+            vict->equipment[WEAR_NECK_1]->item_number == Necklace) {
 
             for (i = 0; i < quest_lines[vict->generic - 2]; ++i) {
                 command_interpreter(vict, necklace[i]);
@@ -2733,7 +2734,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
          * The object is not the Ankh of Posereisn 
          */
         if (!IS_IMMORTAL(ch)) {
-            if ((obj_index[obj->item_number].virtual != 28180)) {
+            if (obj->item_number != 28180) {
                 sprintf(buf, "tell %s That is not the item I seek.",
                         GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -2742,7 +2743,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         } else {
             sprintf(buf, "give %s %s", obj_name, vict_name);
             command_interpreter(ch, buf);
-            if (obj_index[obj->item_number].virtual == 28180) {
+            if (obj->item_number == 28180) {
                 test = 1;
             }
         }
@@ -6268,7 +6269,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
          * If object is not Marbles
          */
         if (!IS_IMMORTAL(ch)) {
-            if ((obj_index[obj->item_number].virtual != MARBLES)) {
+            if (obj->item_number != MARBLES) {
                 sprintf(buf, "tell %s That is not the item I seek.", 
                         GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -6283,7 +6284,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
         } else {
             sprintf(buf, "give %s %s", obj_name, vict_name);
             command_interpreter(ch, buf);
-            if (obj_index[obj->item_number].virtual == MARBLES) {
+            if (obj->item_number == MARBLES) {
                 test = 1;
             } else {    
                 return (TRUE);
@@ -6697,7 +6698,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
 
         if (!IS_IMMORTAL(ch)) {
-            if (obj_index[obj->item_number].virtual != PEN_MIGHT) {
+            if (obj->item_number != PEN_MIGHT) {
                 sprintf(buf, "tell %s That is not the item I seek.", 
                         GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -6712,7 +6713,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         } else {
             sprintf(buf, "give %s %s", obj_name, vict_name);
             command_interpreter(ch, buf);
-            if (obj_index[obj->item_number].virtual == PEN_MIGHT) {
+            if (obj->item_number == PEN_MIGHT) {
                 test = 1;
             } else {
                 return (TRUE);
@@ -7982,7 +7983,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
         }
         universal = mob_index[vict->nr].virtual;
 
-        if (obj_index[obj->item_number].virtual != universal) {
+        if (obj->item_number != universal) {
             if (!strcmp(vict->specials.quest_no, "")) {
                 if (IS_GOOD(vict)) {
                     sprintf(buf, "tell %s Oh.. You must be mistaken, I'm not "
@@ -8190,8 +8191,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
         if (GetMaxLevel(ch) < 99) {
-            if (obj_index[obj->item_number].virtual != 
-                QuestList[questNumber2][questNumber].item) {
+            if (obj->item_number != QuestList[questNumber2][questNumber].item) {
                 sprintf(buf, "tell %s That is not the item I seek.", 
                         GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -9205,9 +9205,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
              * doing! 
              */
             if (tmp->equipment[WIELD]) {
-                virtual = obj_index[tmp->equipment[WIELD]->item_number].virtual;
-                virtual = tmp->equipment[WIELD]->item_number >= 0 ?  virtual : 
-                          0;
+                virtual = MAX( 0, tmp->equipment[WIELD]->item_number );
 
                 if (virtual == SUN_SWORD_RAVENLOFT) {
                     hasitem = TRUE;
@@ -9215,8 +9213,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
             }
 
             if (tmp->equipment[HOLD]) {
-                virtual = obj_index[tmp->equipment[HOLD]->item_number].virtual;
-                virtual = tmp->equipment[HOLD]->item_number >= 0 ? virtual : 0;
+                virtual = MAX( 0, tmp->equipment[HOLD]->item_number );
 
                 if (virtual == HOLY_ITEM_RAVENLOFT) {
                     hasitem = TRUE;
@@ -10783,13 +10780,13 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
     if ((i = gnome->carrying)) {
         for (; i; i = i->next_content) {
-            if (obj_index[i->item_number].virtual == COLLECTIBLE_1) {
+            if (i->item_number == COLLECTIBLE_1) {
                 HasCollectibles[0] = 1;
-            } else if (obj_index[i->item_number].virtual == COLLECTIBLE_2) {
+            } else if (i->item_number == COLLECTIBLE_2) {
                 HasCollectibles[1] = 1;
-            } else if (obj_index[i->item_number].virtual == COLLECTIBLE_3) {
+            } else if (i->item_number == COLLECTIBLE_3) {
                 HasCollectibles[2] = 1;
-            } else if (obj_index[i->item_number].virtual == COLLECTIBLE_4) {
+            } else if (i->item_number == COLLECTIBLE_4) {
                 HasCollectibles[3] = 1;
             }
         }
@@ -10864,7 +10861,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        obj_num = obj_index[obj->item_number].virtual;
+        obj_num = obj->item_number;
 
         arg = get_argument(arg, &vict_name);
 
@@ -10968,7 +10965,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         rp = real_roomp(WAITROOM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+                if (obj->item_number == TARANTIS_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", WAITROOM);
@@ -10980,7 +10977,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         rp = real_roomp(REAVER_RM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+                if (obj->item_number == TARANTIS_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", REAVER_RM);
@@ -10992,7 +10989,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         rp = real_roomp(DEST_ROOM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == REAVER_PORTAL) {
+                if (obj->item_number == REAVER_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", DEST_ROOM);
@@ -11025,7 +11022,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+                if (obj->item_number == TARANTIS_PORTAL) {
                     check = 1;
                 }
             }
@@ -11042,7 +11039,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+                if (obj->item_number == TARANTIS_PORTAL) {
                     check = 1;
                 }
             }
@@ -11059,7 +11056,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
-                if (obj_index[obj->item_number].virtual == REAVER_PORTAL) {
+                if (obj->item_number == REAVER_PORTAL) {
                     check = 1;
                 }
             }
@@ -11148,7 +11145,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
          * check items 
          */
         for (i = object_list; i; i = i->next) {
-            if (obj_index[i->item_number].virtual == ING_1) {
+            if (i->item_number == ING_1) {
                 obj = i;
 
                 while (obj->in_obj) {
@@ -11159,7 +11156,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }   
 
-            if (obj_index[i->item_number].virtual == ING_2) {
+            if (i->item_number == ING_2) {
                 obj = i;
 
                 while (obj->in_obj) {
@@ -11170,7 +11167,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            if (obj_index[i->item_number].virtual == ING_3) {
+            if (i->item_number == ING_3) {
                 obj = i;
                 while (obj->in_obj) {
                     obj = obj->in_obj;
@@ -11180,7 +11177,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            if (obj_index[i->item_number].virtual == ING_4) {
+            if (i->item_number == ING_4) {
                 obj = i;
                 while (obj->in_obj) {
                     obj = obj->in_obj;
@@ -11190,7 +11187,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            if (obj_index[i->item_number].virtual == ING_5) {
+            if (i->item_number == ING_5) {
                 obj = i;
                 while (obj->in_obj) {
                     obj = obj->in_obj;
@@ -11325,7 +11322,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
          */
         obj1 = obj2 = obj3 = obj4 = obj5 = 0;
         for (i = object_list; i; i = i->next) {
-            if (obj_index[i->item_number].virtual == ING_1) {
+            if (i->item_number == ING_1) {
                 obj = i;
 
                 while (obj->in_obj) {
@@ -11337,7 +11334,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            if (obj_index[i->item_number].virtual == ING_2) {
+            if (i->item_number == ING_2) {
                 obj = i;
                 
                 while (obj->in_obj) {
@@ -11349,7 +11346,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
             
-            if (obj_index[i->item_number].virtual == ING_3) {
+            if (i->item_number == ING_3) {
                 obj = i;
             
                 while (obj->in_obj) {
@@ -11361,7 +11358,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
             
-            if (obj_index[i->item_number].virtual == ING_4) {
+            if (i->item_number == ING_4) {
                 obj = i;
                 
                 while (obj->in_obj) {
@@ -11373,7 +11370,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 }
             }
             
-            if (obj_index[i->item_number].virtual == ING_5) {
+            if (i->item_number == ING_5) {
                 obj = i;
             
                 while (obj->in_obj) {
@@ -11528,7 +11525,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
      */
     if (ch->in_room && ch->in_room == WAITROOM && (rp = real_roomp(WAITROOM))) {
         for (obj = rp->contents; obj; obj = obj->next_content) {
-            if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+            if (obj->item_number == TARANTIS_PORTAL) {
                 strcpy(buf, "portal");
                 do_enter(ch, buf, 7);
                 return (FALSE);

@@ -32,7 +32,6 @@ int             druidpreproom = 500;
 #define MONK_MOB  650
 #define FLEE 151
 
-extern struct index_data *obj_index;
 extern struct index_data *mob_index;
 extern char    *dirs[];
 
@@ -1264,7 +1263,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
     if (!obj) {
         return (FALSE);
     }
-    if (obj_index[obj->item_number].virtual == ch->in_room) {
+    if (obj->item_number == ch->in_room) {
         key_room = 1 + ch->in_room;
         act("$n reads the book then disappears.", FALSE, ch, 0, 0, TO_ROOM);
         act("You read the book and feel your body being torn to another "
@@ -2216,7 +2215,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                 }
 
                 for (obj = rp->contents; obj; obj = obj->next_content) {
-                    if (obj_index[obj->item_number].virtual == chest_pointer) {
+                    if (obj->item_number == chest_pointer) {
                         if (IS_SET(obj->value[1], CONT_LOCKED)) {
                             REMOVE_BIT(obj->value[1], CONT_LOCKED);
                         }

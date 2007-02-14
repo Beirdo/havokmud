@@ -23,7 +23,6 @@
 
 extern struct room_data *world;
 extern struct index_data *mob_index;
-extern struct index_data *obj_index;
 extern int      top_of_objt;
 extern struct player_index_element *player_table;
 extern int      top_of_p_table;
@@ -112,16 +111,17 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
     int             tmp_cur_depth = 0;
     int             i,
                     j;
+    struct index_data *index;
 
     void            obj_to_char(struct obj_data *object,
                                 struct char_data *ch);
 
     for (i = 0; i < st->number; i++) {
-        if (st->objects[i].item_number > -1
-            && real_object(st->objects[i].item_number) > -1) {
+        if (st->objects[i].item_number > -1 ) {
             obj = read_object(st->objects[i].item_number, VIRTUAL);
+            index = objectIndex( obj->item_number );
             if (IS_RARE(obj)) {
-                obj_index[obj->item_number].number--;
+                index->number--;
             }
             obj->value[0] = st->objects[i].value[0];
             obj->value[1] = st->objects[i].value[1];
@@ -426,7 +426,7 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
 
     oe = st->objects + st->number;
 
-    oe->item_number = obj_index[obj->item_number].virtual;
+    oe->item_number = obj->item_number;
     oe->value[0] = obj->value[0];
     oe->value[1] = obj->value[1];
     oe->value[2] = obj->value[2];
@@ -443,7 +443,7 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
     if (obj->name) {
         strcpy(oe->name, obj->name);
     } else {
-        Log("object %ld has no name!", obj_index[obj->item_number].virtual);
+        Log("object %ld has no name!", obj->item_number);
     }
 
     if (obj->short_description) {
@@ -481,10 +481,10 @@ int contained_weight(struct obj_data *container)
 /*
  * Destroy inventory after transferring it to "store inventory" 
  */
-#if 1
 void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
                   struct char_data *ch, int delete)
 {
+    struct index_data *index;
     int             weight;
 
     if (!obj) {
@@ -530,70 +530,15 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
             obj_from_obj(obj);
         }
         if (IS_RARE(obj)) {
-            obj_index[obj->item_number].number++;
+            index = objectIndex( obj->item_number );
+            if( index ) {
+                index->.number++;
+            }
         }
         extract_obj(obj);
     }
 }
 
-#else
-void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
-                  struct char_data *ch, int delete)
-{
-    char            buf[240];
-    int             weight;
-
-    if (!obj) {
-        return;
-    }
-    obj_to_store(obj->contains, st, ch, delete);
-    obj_to_store(obj->next_content, st, ch, delete);
-
-    if (obj->timer < 0 && obj->timer != OBJ_NOTIMER) {
-#ifdef DUPLICATES
-        sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
-                     "for you.'\n\r", obj->short_description);
-        send_to_char(buf, ch);
-#endif
-    } else if (obj->cost_per_day < 0) {
-
-#ifdef DUPLICATES
-        if (ch != '\0') {
-            sprintf(buf, "You're told: '%s is just old junk, I'll throw it "
-                         "away for you.'\n\r", obj->short_description);
-            send_to_char(buf, ch);
-        }
-#endif
-
-        if (delete) {
-            if (obj->in_obj) {
-                obj_from_obj(obj);
-            }
-            extract_obj(obj);
-        }
-    } else if (obj->item_number == -1) {
-        if (delete) {
-            if (obj->in_obj) {
-                obj_from_obj(obj);
-            }
-            extract_obj(obj);
-        }
-    } else {
-        weight = contained_weight(obj);
-        GET_OBJ_WEIGHT(obj) -= weight;
-        put_obj_in_store(obj, st);
-        GET_OBJ_WEIGHT(obj) += weight;
-
-        if (delete) {
-            if (obj->in_obj) {
-                obj_from_obj(obj);
-            }
-            extract_obj(obj);
-        }
-    }
-}
-
-#endif
 
 /*
  * write the vital data of a player to the player file 
@@ -802,6 +747,7 @@ void CountLimitedItems(struct obj_file_u *st)
     int             i,
                     cost_per_day;
     struct obj_data *obj;
+    struct index_data *index;
 
     if (!st->owner[0]) {
          /* 
@@ -828,7 +774,10 @@ void CountLimitedItems(struct obj_file_u *st)
                 if (obj->item_number < 0) {
                     abort();
                 }
-                obj_index[obj->item_number].number++;
+                index = objectIndex( obj->item_number );
+                if( index ) {
+                    index->number++;
+                }
             }
             extract_obj(obj);
         }
@@ -838,10 +787,12 @@ void CountLimitedItems(struct obj_file_u *st)
 void PrintLimitedItems(void)
 {
     int             i;
+    struct index_data *index;
 
     for (i = 0; i <= top_of_objt; i++) {
-        if (obj_index[i].number > 0) {
-            Log("item> %ld [%d]", obj_index[i].virtual, obj_index[i].number);
+        index = objectIndex( i );
+        if (index && index->number > 0) {
+            Log("item> %ld [%d]", i, index->number);
         }
     }
 }
@@ -1153,6 +1104,7 @@ void obj_store_to_room(int room, struct obj_file_u *st)
     struct obj_data *obj;
     int             i,
                     j;
+    struct index_data *index;
 
     for (i = 0; i < st->number; i++) {
         if (st->objects[i].item_number > -1 &&
@@ -1160,7 +1112,10 @@ void obj_store_to_room(int room, struct obj_file_u *st)
 
             obj = read_object(st->objects[i].item_number, VIRTUAL);
             if (IS_RARE(obj)) {
-                obj_index[obj->item_number].number--;
+                index = objectIndex( obj->item_number );
+                if( index ) {
+                    index->number--;
+                }
             }
             obj->value[0] = st->objects[i].value[0];
             obj->value[1] = st->objects[i].value[1];

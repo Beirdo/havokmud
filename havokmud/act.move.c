@@ -1087,7 +1087,7 @@ int has_key(struct char_data *ch, int key)
     struct obj_data *o;
 
     for (o = ch->carrying; o; o = o->next_content) {
-        if (obj_index[o->item_number].virtual == key) {
+        if (o->item_number == key) {
             if (IS_OBJ_STAT(o, ITEM_BRITTLE)) {
                 MakeScrap(ch, NULL, o);
                 send_to_char("As you turn the key in the lock it "
@@ -1097,7 +1097,7 @@ int has_key(struct char_data *ch, int key)
         }
     }
 
-    if ((o = ch->equipment[HOLD]) && obj_index[o->item_number].virtual == key) {
+    if ((o = ch->equipment[HOLD]) && o->item_number == key) {
         if (IS_OBJ_STAT(o, ITEM_BRITTLE)) {
             MakeScrap(ch, NULL, o);
             send_to_char("The key crumbles in your hand as you turn it.\n\r",
@@ -1402,7 +1402,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
             to_room = portal->value[0];
             if (!rp) {
                 Log("Bad ObjValue1 for portal object, vnum %ld",
-                    obj_index[portal->item_number].virtual);
+                    portal->item_number);
                 Log("char sent to void (room 0)");
             }
             act("You step into $p and emerge elsewhere.\n\r", FALSE,

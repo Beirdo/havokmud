@@ -60,7 +60,6 @@ extern char    *system_flag_types[];
 extern time_t   Uptime;
 extern long     room_count;
 extern long     mob_count;
-extern long     obj_count;
 extern int      spell_status[];
 extern struct radix_list radix_head[];
 extern const char *weekdays[];
@@ -88,7 +87,6 @@ extern long     TempDis;
 extern const struct pc_race_choice race_choice[];
 extern int       race_choice_count;
 
-extern struct obj_data *object_list;
 extern struct wis_app_type wis_app[];
 extern struct con_app_type con_app[];
 
@@ -98,7 +96,6 @@ extern const struct map_coord map_coords[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
-extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 extern struct index_data *mob_index;
 extern struct weather_data weather_info;

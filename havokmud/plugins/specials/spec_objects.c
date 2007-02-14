@@ -12,7 +12,6 @@
 
 
 
-extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 
 int randomitem(void);
@@ -430,6 +429,7 @@ char            oceanmap[101][260] = {
 int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
            int type)
 {
+    struct index_data *index;
     struct char_data *t = NULL;
     struct obj_data *obj,
                    *i;
@@ -485,7 +485,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
              i = i->next_content) {
             if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
                 if (do_all || j == num) {
-                    if (obj_index[i->item_number].func == knowdrop) {
+                    index = objectIndex( i->item_number );
+                    if (index && index->func == knowdrop) {
                         obj = i;
                         break;
                     }
@@ -509,7 +510,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     for (i = ch->carrying, j = 1; i && (j <= num); i = i->next_content) {
         if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
             if (do_all || j == num) {
-                if (obj_index[i->item_number].func == knowdrop) {
+                index = objectIndex( i->item_number );
+                if (index && index->func == knowdrop) {
                     obj = i;
                     break;
                 } else if (!do_all) {
@@ -627,6 +629,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
 int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
          int type)
 {
+    struct index_data *index;
     struct char_data *t;
     struct obj_data *obj;
     char           *dummy,
@@ -647,7 +650,8 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         return (FALSE);
     }
 
-    if (obj_index[obj->item_number].func != wash) {
+    index = objectIndex( obj->item_number );
+    if (index && index->func != wash) {
         return (FALSE);
     }
 
@@ -926,8 +930,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
          * rub altar 
          */
         for (i = obj->contains; i; i = i->next_content) {
-            virtual = (i->item_number >= 0) ? 
-                      obj_index[i->item_number].virtual : 0;
+            virtual = MAX( 0, i->item_number );
 
             if (virtual < 51809 && virtual > 51801) {
                 hasStones[virtual - 51802] = 1;
@@ -1145,7 +1148,7 @@ int applepie(struct char_data *ch, int cmd, char *argument,
             return (TRUE);
         }
 
-        if (obj_index[apple->item_number].virtual == 51828) {
+        if (apple->item_number == 51828) {
             send_to_room("\n\rA small army of servants enters the anteroom "
                          "and lifts up the apple pie.\n\r", ch->in_room);
             send_to_room("The servants groan under the pie's weight, yet "
@@ -1189,7 +1192,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
     do_put(ch, argument, 67);
 
     for (i = obj->contains; i; i = i->next_content) {
-        virtual = (i->item_number >= 0) ? obj_index[i->item_number].virtual : 0;
+        virtual = MAX( 0, i->item_number );
 
         if (virtual == 51833) {
             count++;
@@ -1314,7 +1317,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg,
         /* Bash */
         if ((r_num = real_object(GRAYSWANDIR)) >= 0) {
             object = read_object(r_num, REAL);
-            v_num1 = obj_index[object->item_number].virtual;
+            v_num1 = object->item_number;
             extract_obj(object);
         }
 
@@ -1323,7 +1326,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg,
         }
         object = ch->equipment[HOLD];
 
-        v_num2 = obj_index[object->item_number].virtual;
+        v_num2 = object->item_number;
 
         if (v_num1 != v_num2) {
             return (FALSE);
@@ -1593,10 +1596,10 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         if (!arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
             return (FALSE);
         }
-        if (obj_index[obj1->item_number].virtual != EYE_DRAGON) {
+        if (obj1->item_number != EYE_DRAGON) {
             return (FALSE);
         }
-        if (obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_ONE) {
+        if (obj2->item_number != DRAGON_SCEPTRE_ONE) {
             return (FALSE);
         }
         act("The sceptre rumbles slightly as it unites with the eye of the "
@@ -1642,10 +1645,10 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (obj_index[obj1->item_number].virtual != EYE_DRAGON) {
+        if (obj1->item_number != EYE_DRAGON) {
             return (FALSE);
         }
-        if (obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_TWO) {
+        if (obj2->item_number != DRAGON_SCEPTRE_TWO) {
             return (FALSE);
         }
         act("The sceptre rumbles slightly as it unites with the eye of the "

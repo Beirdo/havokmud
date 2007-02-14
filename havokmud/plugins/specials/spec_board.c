@@ -105,15 +105,13 @@ int board(struct char_data *ch, int cmd, char *arg,
 
 struct board_def *find_board(struct obj_data *obj)
 {
-    int             vnum;
     struct board_def *board;
 
     /* Look up the board ID */
-    vnum = obj_index[obj->item_number].virtual;
-    board = db_lookup_board(vnum);
+    board = db_lookup_board(obj->item_number);
     if( board ) {
         board->obj = obj;
-        board->vnum = vnum;
+        board->vnum = obj->item_number;
     }
 
     return( board );

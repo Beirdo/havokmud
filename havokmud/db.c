@@ -2933,6 +2933,7 @@ void reset_zone(int zone, int cmd)
     char           *s;
     int             d,
                     e;
+    struct index_data *index;
 
     mob = 0;
 
@@ -3067,7 +3068,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'O':
-                /*
+                /**
+                 * @todo make the 'O' work with VIRTUAL
                  * read an object  On ground load (GH)
                  */
 
@@ -3078,7 +3080,8 @@ void reset_zone(int zone, int cmd)
                         (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
                             (-ZCMD.if_flag) + 1)) {
                         if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
-                            obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                            index = objectIndex(ZCMD.arg1);
+                            index->MaxObjCount = ZCMD.arg2;
 
                             if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                                 tweakroll = number(1, 100);
@@ -3093,7 +3096,7 @@ void reset_zone(int zone, int cmd)
                             }
 
                             if (cmd != 375) {
-                                if (does_Load((int)obj_index[ZCMD.arg1].number,
+                                if (does_Load((int)index->number,
                                               (int)obj->max) == TRUE) {
                                     obj_to_room(obj, ZCMD.arg3);
                                 } else {
@@ -3119,13 +3122,16 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'P':
-                /*
+                /**
+                 * @todo make 'P' work with VIRTUAL
+                 *
                  * object to object
                  */
                 obj = read_object(ZCMD.arg1, REAL);
                 obj_to = get_obj_num(ZCMD.arg3);
                 if (obj_to && obj) {
-                    obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                    index = objectIndex( ZCMD.arg1 );
+                    index->MaxObjCount = ZCMD.arg2;
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -3140,7 +3146,7 @@ void reset_zone(int zone, int cmd)
                     }
 
                     if (cmd != 375) {
-                        if (does_Load((int) obj_index[ZCMD.arg1].number,
+                        if (does_Load((int) index->number,
                                       (int) obj->max) == TRUE) {
                             obj_to_obj(obj, obj_to);
                         } else {
@@ -3157,11 +3163,14 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'G':
-                /*
+                /**
+                 * @todo make 'G' work with VIRTUAL
+                 *
                  * obj_to_char
                  */
                 if ((obj = read_object(ZCMD.arg1, REAL)) && mob) {
-                    obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                    index = objectIndex( ZCMD.arg1 );
+                    index->MaxObjCount = ZCMD.arg2;
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -3175,7 +3184,7 @@ void reset_zone(int zone, int cmd)
                         }
                     }
                     if (cmd != 375) {
-                        if (does_Load ((int) obj_index[ZCMD.arg1].number,
+                        if (does_Load ((int) index->number,
                                        (int) obj->max) == TRUE) {
                             obj_to_char(obj, mob);
                         } else {
@@ -3216,12 +3225,14 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'E':
-            /*
+            /**
+             * @todo make 'E' work with VIRTUAL
              * object to equipment list
              */
                 if ((obj = read_object(ZCMD.arg1, REAL))) {
                     if (!mob->equipment[ZCMD.arg3]) {
-                        obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                        index = objectIndex( ZCMD.arg1 );
+                        index->MaxObjCount = ZCMD.arg2;
 
                         if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                             tweakroll = number(1, 100);
@@ -3235,7 +3246,7 @@ void reset_zone(int zone, int cmd)
                             }
                         }
                         if (cmd != 375) {
-                            if (does_Load((int) obj_index[ZCMD.arg1].number,
+                            if (does_Load((int) index->number,
                                           (int) obj->max) == TRUE) {
                                 equip_char(mob, obj, ZCMD.arg3);
                             } else {
@@ -3248,7 +3259,7 @@ void reset_zone(int zone, int cmd)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, mob"
                                      " %d, loc %d\n",
-                                zone, cmd_no, (int)obj_index[ZCMD.arg1].virtual,
+                                zone, cmd_no, (int)ZCMD.arg1,
                                 (int)mob_index[mob->nr].virtual, ZCMD.arg3);
                         log_sev(buf, 6);
                     }
@@ -3438,8 +3449,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * read an object
                  */
-                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
-                    obj_index[ZCMD.arg1].number >= ZCMD.arg2) {
+                if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
                     if (ZCMD.arg3 >= 0 &&
                         (rp = real_roomp(ZCMD.arg3)) != NULL) {
                         if ((ZCMD.if_flag > 0 &&
@@ -3480,8 +3490,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * object to object
                  */
-                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
-                    obj_index[ZCMD.arg1].number >= ZCMD.arg2) {
+                if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
                     obj = read_object(ZCMD.arg1, REAL);
                     obj_to = get_obj_num(ZCMD.arg3);
                     if (obj_to && obj) {
@@ -3511,8 +3520,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * obj_to_char
                  */
-                if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
-                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
+                if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
                     (obj = read_object(ZCMD.arg1, REAL))) {
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -3561,8 +3569,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * object to equipment list
                  */
-                if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
-                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
+                if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
                     (obj = read_object(ZCMD.arg1, REAL))) {
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -3582,7 +3589,7 @@ void reset_zone(int zone, int cmd)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, "
                                      "mob %d, loc %d\n",
-                                zone, cmd_no, obj_index[ZCMD.arg1].virtual,
+                                zone, cmd_no, ZCMD.arg1.virtual,
                                 mob_index[mob->nr].virtual, ZCMD.arg3);
                         log_sev(buf, 6);
                     }
@@ -5332,8 +5339,7 @@ void SaveTheWorld( void )
                             p->equipment[j]->item_number >= 0) {
                             cmd = 'E';
                             arg1 = ObjVnum(p->equipment[j]);
-                            arg2 = obj_index[p->equipment[j]->item_number].
-                                   number;
+                            arg2 = p->equipment[j]->item_number;
                             arg3 = j;
                             strcpy(buf, p->equipment[j]->short_description);
                             Zwrite(fp, cmd, 1, arg1, arg2, arg3, buf);
@@ -5345,7 +5351,7 @@ void SaveTheWorld( void )
                         if (o->item_number >= 0) {
                             cmd = 'G';
                             arg1 = ObjVnum(o);
-                            arg2 = obj_index[o->item_number].number;
+                            arg2 = o->item_number;
                             arg3 = 0;
                             strcpy(buf, o->short_description);
                             Zwrite(fp, cmd, 1, arg1, arg2, arg3, buf);
@@ -5472,8 +5478,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read an object
                  */
-                i = real_object(i);
-                if (obj_index[i].number < j) {
+                if (i < j) {
                     if (j >= 0 && ((rp = real_roomp(j)) != NULL)) {
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
@@ -5499,8 +5504,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * object to object
                  */
-                i = real_object(i);
-                if (obj_index[i].number < j) {
+                if (i < j) {
                     obj = read_object(i, VIRTUAL);
                     obj_to = get_obj_num(k);
                     if (obj_to && obj) {
@@ -5518,8 +5522,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * obj_to_char
                  */
-                i = real_object(i);
-                if (obj_index[i].number < j &&
+                if (i < j &&
                     (obj = read_object(i, REAL)) && mob) {
                     obj_to_char(obj, mob);
                     last_cmd = 1;
@@ -5558,16 +5561,14 @@ void ReadTextZone(FILE * fl)
                 /*
                  * object to equipment list
                  */
-                i = real_object(i);
-                if (obj_index[i].number < j &&
+                if (i < j &&
                     (obj = read_object(i, REAL))) {
                     if (!mob->equipment[k]) {
                         equip_char(mob, obj, k);
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %ld, "
                                      "mob %ld, loc %d",
-                                zone, 1, obj_index[i].virtual,
-                                mob_index[mob->nr].virtual, k);
+                                zone, 1, i, mob_index[mob->nr].virtual, k);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;

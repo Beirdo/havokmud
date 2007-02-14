@@ -36,6 +36,7 @@
 #include <dirent.h>
 #include "structs.h"
 #include "newstructs.h"
+#include "protos.h"
 #include "utils.h"
 #include "logging.h"
 #include "interthread.h"
@@ -56,9 +57,6 @@ BalancedBTree_t *objectTree;
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
 
-struct index_data *insert_objindex(struct index_data *index, void *data,
-                                   long vnum);
-char           *fread_string(FILE * f1);
 void clear_object(struct obj_data *obj);
 
 
@@ -68,6 +66,10 @@ void initializeObjects( void )
     db_load_object_tree( objectTree );
 }
 
+/**
+ * @todo if we put the pointer to the index item into every object, we may
+ *       never need to do this search
+ */
 struct index_data *objectIndex( int vnum )
 {
     struct index_data      *index;
@@ -178,6 +180,11 @@ struct obj_data *read_object(int nr, int type)
     if( !index ) {
         return( NULL );
     }
+    
+    if( type != 1 ) {
+        LogPrint( LOG_CRIT, "read_object(%d, %d) failed", nr, type );
+        return( NULL );
+    }
 
     CREATE(obj, struct obj_data, 1);
     if (!obj) {
@@ -267,6 +274,93 @@ void clear_object(struct obj_data *obj)
     obj->eq_pos = -1;
 }
 
+/**
+ * @todo rename to objectExtract
+ * @brief Extract an object from the world 
+ */
+void extract_obj(struct obj_data *obj)
+{
+    struct obj_data *temp1,
+                   *temp2;
+    extern long     obj_count;
+    struct index_data *index;
+
+    if (obj->in_room != NOWHERE) {
+        obj_from_room(obj);
+    } else if (obj->carried_by) {
+        obj_from_char(obj);
+    } else if (obj->equipped_by) {
+        if (obj->eq_pos > -1) {
+            /*
+             * set players equipment slot to 0; that will avoid the garbage
+             * items.
+             */
+            obj->equipped_by->equipment[(int)obj->eq_pos] = 0;
+        } else {
+            Log("Extract on equipped item in slot -1 on: %s - %s",
+                obj->equipped_by->player.name, obj->name);
+            return;
+        }
+    } else if (obj->in_obj) {
+        temp1 = obj->in_obj;
+        if (temp1->contains == obj) {
+            /* head of list */
+            temp1->contains = obj->next_content;
+        } else {
+            for (temp2 = temp1->contains;
+                 temp2 && (temp2->next_content != obj);
+                 temp2 = temp2->next_content) {
+                /* 
+                 * Empty loop 
+                 */
+            }
+
+            if (temp2) {
+                temp2->next_content = obj->next_content;
+            }
+        }
+    }
+
+    /*
+     * leaves nothing ! 
+     */
+    for (; obj->contains; extract_obj(obj->contains)) {
+        /* 
+         * Empty loop 
+         */
+    }
+
+    if (object_list == obj) {
+        /* 
+         * head of list 
+         */
+        object_list = obj->next;
+    } else {
+        for (temp1 = object_list;
+             temp1 && (temp1->next != obj); temp1 = temp1->next) {
+            /* 
+             * Empty loop 
+             */
+        }
+
+        if (temp1) {
+            temp1->next = obj->next;
+        } else {
+            Log("Couldn't find object in object list.");
+            assert(0);
+        }
+    }
+
+    if (obj->item_number >= 0) {
+        index = objectIndex( obj->item_number );
+        if( index ) {
+            index->number--;
+        }
+        obj_count--;
+    }
+    free_obj(obj);
+
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

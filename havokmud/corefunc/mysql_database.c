@@ -1135,7 +1135,7 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     pthread_mutex_init( mutex, NULL );
 
 
-    vnum      = obj_index[obj->item_number].virtual;
+    vnum      = obj->item_number;
     actDesc   = obj->action_description;
 
     /* Strip trailing \n\r from the action description */

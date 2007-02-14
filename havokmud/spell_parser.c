@@ -1988,6 +1988,7 @@ void affect_update(int pulse)
     int             dead = FALSE,
                     room;
     int             regenroom = 0;
+    struct index_data *index;
 
     for (i = character_list; i; i = next_char) {
         next_char = i->next;
@@ -2257,7 +2258,7 @@ void affect_update(int pulse)
                 }
                 ObjFromCorpse(j);
             }
-        } else if (obj_index[j->item_number].virtual == EMPTY_SCROLL) {
+        } else if (j->item_number == EMPTY_SCROLL) {
             if (j->timer > 0) {
                 j->timer--;
             }
@@ -2274,7 +2275,7 @@ void affect_update(int pulse)
                 }
                 extract_obj(j);
             }
-        } else if (obj_index[j->item_number].virtual == EMPTY_POTION) {
+        } else if (j->item_number == EMPTY_POTION) {
             if (j->timer > 0) {
                 j->timer--;
             }
@@ -2317,8 +2318,9 @@ void affect_update(int pulse)
                     }
                 }
             } else {
-                if (obj_index[j->item_number].func && j->item_number >= 0) {
-                    (*obj_index[j->item_number].func) (0, 0, 0, j, PULSE_TICK);
+                if ( (index = objectIndex( j->item_number ) ) &&
+                     index->func && j->item_number >= 0) {
+                    (*index->func) (0, 0, 0, j, PULSE_TICK);
                 }
             }
         }

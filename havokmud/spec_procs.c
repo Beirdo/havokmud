@@ -70,7 +70,6 @@ int             CanSail(struct obj_data *obj, int direction);
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
-extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 extern struct index_data *mob_index;
 extern struct weather_data weather_info;
@@ -2414,7 +2413,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                 /*
                  * What he really wants
                  */
-                if (obj_index[obj->item_number].virtual == CrowBar) {
+                if (obj->item_number == CrowBar) {
                     act("$n takes $p and jumps up and down in joy.",
                         TRUE, latt, obj, 0, TO_ROOM);
                     obj_from_char(obj);
@@ -2661,7 +2660,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
             act("You give $p to $N.", TRUE, ch, obj, g, TO_CHAR);
             act("$n gives $p to $N.", TRUE, ch, obj, g, TO_ROOM);
 
-            if (obj_index[obj->item_number].virtual == Necklace) {
+            if (obj->item_number == Necklace) {
                 if (!check_soundproof(ch)) {
                     act("$n takes $p, and unlocks the gate.",
                         FALSE, g, obj, 0, TO_ROOM);
@@ -3229,8 +3228,7 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
                 act("$n utters the words 'oh golly'", 1, ch, 0, 0, TO_ROOM);
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
-            } else if (obj_index[(ch->equipment[WEAR_EYES])->item_number].
-                       virtual == TONGUE_ITEM) {
+            } else if ((ch->equipment[WEAR_EYES])->item_number == TONGUE_ITEM) {
                 act("$n utters the words 'oh golly'", 1, ch, 0, 0, TO_ROOM);
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
@@ -5087,6 +5085,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     struct char_data *lowjoe = 0;
     char           *arg1,
                     buf[250];
+    struct index_data *index;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
         (!real_roomp(ch->in_room))) {
@@ -5094,7 +5093,8 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     }
     for (obj = real_roomp(ch->in_room)->contents;
          obj; obj = obj->next_content) {
-        if (obj_index[obj->item_number].func == EvilBlade) {
+        index = objectIndex( obj->item_number );
+        if (index && index->func == EvilBlade) {
             /*
              * I am on the floor 
              */
@@ -5147,8 +5147,8 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     for (holder = real_roomp(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
-            if (obj_index[obj->item_number].func &&
-                obj_index[obj->item_number].func != board) {
+            index = objectIndex( obj->item_number );
+            if (index && index->func && index->func != board) {
                 /*
                  * held
                  */
@@ -5194,8 +5194,8 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
         }
 
         if (holder->equipment[WIELD] && 
-            obj_index[holder->equipment[WIELD]->item_number].func && 
-            obj_index[holder->equipment[WIELD]->item_number].func != board) {
+            (index = objectIndex( holder->equipment[WIELD]->item_number) ) &&
+            index->func && index->func != board) {
             /*
              * YES! I am being held!
              */
@@ -5385,6 +5385,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
     struct char_data *lowjoe = 0;
     char           *arg1,
                     buf[250];
+    struct index_data *index;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
         (!real_roomp(ch->in_room))) {
@@ -5396,7 +5397,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
      */
     for (obj = real_roomp(ch->in_room)->contents;
          obj; obj = obj->next_content) {
-        if (obj_index[obj->item_number].func == GoodBlade) {
+        index = objectIndex( obj->item_number );
+        if (index && index->func == GoodBlade) {
             /*
              * I am on the floor 
              */
@@ -5446,8 +5448,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
     for (holder = real_roomp(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
-            if (obj_index[obj->item_number].func &&
-                obj_index[obj->item_number].func != board) {
+            index = objectIndex( obj->item_number );
+            if (index && index->func && index->func != board) {
                 /*
                  * held
                  */
@@ -5495,9 +5497,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
         }
 
         if (holder->equipment[WIELD]) {
-            if (obj_index[holder->equipment[WIELD]->item_number].func && 
-                obj_index[holder->equipment[WIELD]->item_number].func != 
-                   board) {
+            index = objectIndex( holder->equipment[WIELD]->item_number );
+            if ( index && index->func && index->func != board) {
                 /*
                  * YES! I am being held!
                  */
@@ -7659,7 +7660,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
 
     if (ch->equipment && 
         (!(stone = ch->equipment[HOLD]) || 
-         obj_index[stone->item_number].virtual != SHARPENING_STONE)) {
+         stone->item_number != SHARPENING_STONE)) {
         send_to_char("How can you sharpen stuff if you're not holding a "
                      "sharpening stone?\n\r", ch);
         return;

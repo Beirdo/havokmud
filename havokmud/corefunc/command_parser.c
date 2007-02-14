@@ -459,6 +459,7 @@ int special(struct char_data *ch, int cmd, char *arg)
 {
     register struct obj_data *i;
     register struct char_data *k;
+    struct index_data *index;
     int             j;
 
     if (ch->in_room == NOWHERE) {
@@ -486,10 +487,9 @@ int special(struct char_data *ch, int cmd, char *arg)
                 AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
             }
 #endif
-            if (ch->equipment[j] &&
-                obj_index[ch->equipment[j]->item_number].func &&
-                (*obj_index[ch->equipment[j]->item_number].func)
-                      (ch, cmd, arg, ch->equipment[j], PULSE_COMMAND)) {
+            index = objectIndex( ch->equipment[j]->item_number );
+            if (ch->equipment[j] && index && index->func &&
+                (*index->func)(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND)) {
                 return (TRUE);
             }
         }
@@ -500,13 +500,12 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in inventory?
      */
     for (i = ch->carrying; i; i = i->next_content) {
-        if (i->item_number >= 0 && obj_index[i->item_number].func &&
-            (*obj_index[i->item_number].func) (ch, cmd, arg, i,
-                                               PULSE_COMMAND)) {
-            /*
-             * Crashes here when saving item twice
+        if (i->item_number >= 0 && (index = objectIndex(i->item_number)) &&
+            index->func && (*index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
+            /**
+             * @bug Crashes here when saving item twice
              */
-            return (1);
+            return(TRUE);
         }
     }
 
@@ -524,17 +523,16 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in object present?
      */
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (i->item_number >= 0 && obj_index[i->item_number].func &&
-            (*obj_index[i->item_number].func) (ch, cmd, arg, i,
-                                               PULSE_COMMAND)) {
-            /*
-             * Crash here maybe?? FROZE HERE!! loop?
+        if (i->item_number >= 0 && (index = objectIndex( i->item_number )) &&
+            index->func && (*index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
+            /**
+             * @bug Crash here maybe?? FROZE HERE!! loop?
              */
-            return (1);
+            return(TRUE);
         }
     }
 
-    return (0);
+    return(FALSE);
 }
 
 

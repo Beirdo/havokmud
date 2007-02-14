@@ -3031,7 +3031,7 @@ void HitVictim(struct char_data *ch, struct char_data *v, int dam,
         }
         if (v->equipment[WEAR_SHIELD]) {
             shield = v->equipment[WEAR_SHIELD];
-            if (obj_index[shield->item_number].virtual == SMITH_SHIELD) {
+            if (shield->item_number == SMITH_SHIELD) {
                 SmithShield(ch, v, shield, &dam);
             }
         }
@@ -5981,14 +5981,14 @@ void specdamage(struct char_data *ch, struct char_data *v)
     }
     if (ch->equipment[WEAR_BODY]) {
         object = ch->equipment[WEAR_BODY];
-        if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR) {
+        if (object->item_number == BAHAMUT_ARMOR) {
             bahamut_armor(ch, v);
         }
     }
 
     if (ch->equipment[WIELD]) {
         object = ch->equipment[WIELD];
-        if (obj_index[object->item_number].virtual == GUARDIAN_SIN) {
+        if (object->item_number == GUARDIAN_SIN) {
             guardian_sin(ch, v);
         }
     }
