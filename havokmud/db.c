@@ -21,8 +21,6 @@
                                  * month */
 
 #define MOB_DIR "mobiles"
-#define GET_OBJ_NAME(obj)  ((obj)->name)
-#define MAX_INDICES 5000
 #define ZO_DEAD  999
 #define ZCMD zone_table[zone].cmd[cmd_no]
 
@@ -56,7 +54,6 @@ struct hash_header room_db;
 struct room_data *room_db[WORLD_SIZE];
 #endif
 
-struct obj_data *object_list = 0;       /* the global linked list of obj's */
 struct char_data *character_list = 0;   /* global l-list of chars */
 
 struct zone_data *zone_table;   /* table of reset data */
@@ -64,15 +61,11 @@ int             top_of_zone_table = 0;
 struct player_index_element *player_table = 0;  /* index to player file */
 int             top_of_p_table = 0;     /* ref to top of table */
 int             top_of_p_file = 0;
-#if 0
-int HpBonus; /* used for the mob file conversion, mrebuild */
-#endif
 int             cog_sequence = 0;
 
 long            total_bc = 0;
 long            room_count = 0;
 long            mob_count = 0;
-long            obj_count = 0;
 long            total_mbc = 0;
 long            total_connections = 0;
 long            total_max_players = 0;
@@ -82,27 +75,15 @@ int             map[7][7];
  **  distributed monster stuff
  */
 int             mob_tick_count = 0;
-char           *wmotd = NULL;
-char           *credits = NULL;     /* the Credits List */
-char           *news = NULL;        /* the news */
-char           *motd = NULL;        /* the messages of today */
-char           *info = NULL;        /* the info text */
 char           wizlist[MAX_STRING_LENGTH * 2];     /* the wizlist */
 char           iwizlist[MAX_STRING_LENGTH * 2];    /* the wizlist */
-char           *login = NULL;
 
-FILE           *mob_f,          /* file containing mob prototypes */
-               *obj_f;          /* obj prototypes */
+FILE           *mob_;,          /* file containing mob prototypes */
 
 struct index_data *mob_index;   /* index table for mobile file */
-struct index_data *obj_index;   /* index table for object file */
 int             top_of_mobt = 0;        /* top of mobile index table */
-int             top_of_objt = 0;        /* top of object index table */
 int             top_of_sort_mobt = 0;
-int             top_of_sort_objt = 0;
-
 int             top_of_alloc_mobt = 99999;
-int             top_of_alloc_objt = 99999;
 
 struct time_info_data time_info;        /* the infomation about the time */
 struct weather_data weather_info;       /* the infomation about the
@@ -115,8 +96,6 @@ struct weather_data weather_info;       /* the infomation about the
 long            number_of_saved_rooms = 0;
 struct index_data *insert_index(struct index_data *index, void *data,
                                 long vnum);
-struct index_data *insert_objindex(struct index_data *index, void *data,
-                                   long vnum);
 void            clean_playerfile(void);
 int             read_mob_from_file(struct char_data *mob, FILE * mob_fi);
 int             read_mob_from_new_file(struct char_data *mob,
@@ -197,6 +176,7 @@ void boot_db(void)
     mob_index = generate_indices(mob_f, &top_of_mobt, &top_of_sort_mobt,
                                  &top_of_alloc_mobt, MOB_DIR);
 
+#if 0
     Log("Generating index table for objects.");
     obj_index = db_generate_object_index(&top_of_objt, &top_of_sort_objt,
                                          &top_of_alloc_objt);
@@ -205,6 +185,7 @@ void boot_db(void)
         Log( "No objects in the SQL Database, aborting" );
         exit( 0 );
     }
+#endif
 
     Log("Renumbering zone table.");
     renum_zone_table(0);
@@ -881,11 +862,6 @@ void build_player_index(void)
     strcat(iwizlist, buf);
 }
 
-void insert_object(struct obj_data *obj, long vnum)
-{
-    obj_index = insert_objindex(obj_index, (void *) obj, vnum);
-}
-
 void insert_mobile(struct char_data *obj, long vnum)
 {
     mob_index = insert_index(mob_index, (void *) obj, vnum);
@@ -909,26 +885,6 @@ struct index_data *insert_index(struct index_data *index, void *data,
     index[top_of_mobt].func = 0;
     index[top_of_mobt].data = data;
     top_of_mobt++;
-    return index;
-}
-
-struct index_data *insert_objindex(struct index_data *index, void *data,
-                                   long vnum)
-{
-    if (top_of_objt >= top_of_alloc_objt) {
-        if (!(index = (struct index_data *)realloc(index,
-                      (top_of_objt + 50) * sizeof(struct index_data)))) {
-            perror("load indices");
-            assert(0);
-        }
-        top_of_alloc_objt += 50;
-    }
-    index[top_of_objt].virtual = vnum;
-    index[top_of_objt].pos = -1;
-    index[top_of_objt].name = strdup(GET_OBJ_NAME((struct obj_data *) data));
-    index[top_of_objt].number = 0;
-    index[top_of_objt].func = 0;
-    top_of_objt++;
     return index;
 }
 
@@ -2681,68 +2637,6 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
 #endif
     return (bc);
 }
-
-void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
-{
-    struct extra_descr_data *new_descr,
-                   *tmp_descr;
-    int             i;
-
-    if (osrc->name) {
-        obj->name = strdup(osrc->name);
-    }
-    if (osrc->short_description) {
-        obj->short_description = strdup(osrc->short_description);
-    }
-    if (osrc->description) {
-        obj->description = strdup(osrc->description);
-    }
-    if (osrc->action_description) {
-        obj->action_description = strdup(osrc->action_description);
-    }
-
-    /*
-     *** numeric data ***
-     */
-
-    obj->type_flag = osrc->type_flag;
-    obj->extra_flags = osrc->extra_flags;
-    obj->wear_flags = osrc->wear_flags;
-    obj->value[0] = osrc->value[0];
-    obj->value[1] = osrc->value[1];
-    obj->value[2] = osrc->value[2];
-    obj->value[3] = osrc->value[3];
-    obj->weight = osrc->weight;
-    obj->cost = osrc->cost;
-    obj->cost_per_day = osrc->cost_per_day;
-
-    /*
-     *** extra descriptions ***
-     */
-
-    obj->ex_description = 0;
-
-    if (osrc->ex_description) {
-        for (tmp_descr = osrc->ex_description; tmp_descr;
-             tmp_descr = tmp_descr->next) {
-            CREATE(new_descr, struct extra_descr_data, 1);
-            if (tmp_descr->keyword) {
-                new_descr->keyword = strdup(tmp_descr->keyword);
-            }
-            if (tmp_descr->description) {
-                new_descr->description = strdup(tmp_descr->description);
-            }
-            new_descr->next = obj->ex_description;
-            obj->ex_description = new_descr;
-        }
-    }
-
-    for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-        obj->affected[i].location = osrc->affected[i].location;
-        obj->affected[i].modifier = osrc->affected[i].modifier;
-    }
-}
-
 /*
  * ---------- Start of write_mob_to_file ----------
  */
@@ -3036,57 +2930,6 @@ int weaponconvert(struct obj_data *obj)
 
     }
     return WEAPON_GENERIC;
-}
-
-
-/*
- * read an object from OBJ_FILE
- */
-struct obj_data *read_object(int nr, int type)
-{
-    struct obj_data *obj;
-    int             i;
-    char            buf[100];
-
-    i = nr;
-    if (type == VIRTUAL) {
-        nr = real_object(nr);
-    }
-    if (nr < 0 || nr > top_of_objt) {
-        sprintf(buf, "Object (V) %d does not exist in database.", i);
-        return (0);
-    }
-
-    CREATE(obj, struct obj_data, 1);
-
-    if (!obj) {
-        Log("Cannot create obj?! db.c read_obj");
-        return(NULL);
-    }
-
-    clear_object(obj);
-
-    if( !db_read_object(obj, obj_index[nr].virtual, -1, -1) ) {
-        free(obj);
-        return(NULL);
-    }
-
-    obj->in_room = NOWHERE;
-    obj->next_content = 0;
-    obj->carried_by = 0;
-    obj->equipped_by = 0;
-    obj->eq_pos = -1;
-    obj->in_obj = 0;
-    obj->contains = 0;
-    obj->item_number = nr;
-    obj->in_obj = 0;
-
-    obj->next = object_list;
-    object_list = obj;
-
-    obj_index[nr].number++;
-    obj_count++;
-    return (obj);
 }
 
 
@@ -4694,49 +4537,6 @@ void free_char(struct char_data *ch)
 }
 
 /*
- * release memory allocated for an obj struct
- */
-void free_obj(struct obj_data *obj)
-{
-    struct extra_descr_data *this,
-                   *next_one;
-
-    if (!obj) {
-        Log("!obj in free_obj, db.c");
-        return;
-    }
-    if (obj->name && *obj->name) {
-        free(obj->name);
-    }
-    if (obj->description && *obj->description) {
-        free(obj->description);
-    }
-    if (obj->short_description && *obj->short_description) {
-        free(obj->short_description);
-    }
-    if (obj->action_description && *obj->action_description) {
-        free(obj->action_description);
-    }
-    if (obj->modBy && *obj->modBy) {
-        free(obj->modBy);
-    }
-    for (this = obj->ex_description; (this != 0); this = next_one) {
-        next_one = this->next;
-        if (this->keyword) {
-            free(this->keyword);
-        }
-        if (this->description) {
-            free(this->description);
-        }
-        free(this);
-    }
-
-    if (obj) {
-        free(obj);
-    }
-}
-
-/*
  * read contents of a text file, and place in buf
  */
 char *file_to_string(char *name)
@@ -5097,14 +4897,6 @@ void clear_char(struct char_data *ch)
     ch->specials.position = POSITION_STANDING;
     ch->specials.default_pos = POSITION_STANDING;
     GET_AC(ch) = 100;
-}
-
-void clear_object(struct obj_data *obj)
-{
-    memset(obj, 0, sizeof(struct obj_data));
-    obj->item_number = -1;
-    obj->in_room = NOWHERE;
-    obj->eq_pos = -1;
 }
 
 /*
@@ -5503,45 +5295,6 @@ int real_mobile(int virtual)
             return (-1);
         }
         if ((mob_index + mid)->virtual > virtual) {
-            top = mid - 1;
-        } else {
-            bot = mid + 1;
-        }
-    }
-}
-
-/*
- * returns the real number of the object with given virtual number
- */
-int real_object(int virtual)
-{
-    long            bot,
-                    top,
-                    mid;
-
-    bot = 0;
-    top = top_of_sort_objt;
-    /*
-     * perform binary search on obj-table
-     */
-    for (;;) {
-        mid = (bot + top) / 2;
-
-        if ((obj_index + mid)->virtual == virtual) {
-            return (mid);
-        }
-        if (bot >= top) {
-            /*
-             * start unsorted search now
-             */
-            for (mid = top_of_sort_objt; mid < top_of_objt; mid++) {
-                if ((obj_index + mid)->virtual == virtual) {
-                    return (mid);
-                }
-            }
-            return (-1);
-        }
-        if ((obj_index + mid)->virtual > virtual) {
             top = mid - 1;
         } else {
             bot = mid + 1;

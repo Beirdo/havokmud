@@ -61,12 +61,12 @@ int SiteLock(char *site);
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
 
-char           *login;
-char           *credits;
-char           *motd;
-char           *wmotd;
-char           *news;
-char           *info;
+char           *login = NULL;
+char           *credits = NULL;
+char           *motd = NULL;
+char           *wmotd = NULL;
+char           *news = NULL;
+char           *info = NULL;
 
 
 /**

@@ -4083,43 +4083,8 @@ int color_strlen(struct char_data *ch, char *arg);
 
 void do_OOCemote(struct char_data *ch, char *argument, int cmd);
 
-#if 0
-void db_report_entry(int reportId, struct char_data *ch, char *report);
-struct user_report *db_get_report(int reportId, struct user_report *report);
-void db_clean_report(int reportId);
-
-void db_load_textfiles(void);
-int db_save_textfile(struct char_data *ch);
-struct board_def *db_lookup_board(int vnum);
-struct bulletin_board_message *db_get_board_message(int boardId, int msgNum);
-void db_free_board_message(struct bulletin_board_message *msg);
-int db_get_board_replies(struct board_def *board, int msgId, 
-                         struct bulletin_board_message **msg);
-void db_free_board_replies(struct bulletin_board_message *msg, int count);
-void db_delete_board_message(struct board_def *board, short message_id);
-void db_post_message(struct board_def *board, 
-                     struct bulletin_board_message *msg);
-#endif
-
 int dragon(struct char_data *ch, int cmd, char *arg, 
            struct char_data *mob, int type);
-
-#if 0
-void db_store_mail(char *to, char *from, char *message_pointer);
-int             db_has_mail(char *recipient);
-int   db_get_mail_ids(char *recipient, int *messageNum, int count);
-char *db_get_mail_message(int messageId);
-void db_delete_mail_message(int messageId);
-
-char *db_lookup_help( int type, char *keywords );
-char *db_lookup_help_similar( int type, char *keywords );
-void db_save_object(struct obj_data *obj, int owner, int ownerItem );
-struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
-                                int ownerItem );
-int db_find_object_named(char *string, int owner, int ownerItem);
-struct index_data *db_generate_object_index(int *top, int *sort_top,
-                                            int *alloc_top);
-#endif
 
 /**
  * @todo Crap to be removed

@@ -38,6 +38,7 @@
 #include "protected_data.h"
 #include "logging.h"
 #include "balanced_btree.h"
+#define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
 #include "structs.h"
 #include <mysql.h>
 
@@ -436,7 +437,9 @@ struct extra_descr_data {
     struct extra_descr_data *next;      /* Next in list */
 };
 
+#ifndef MAX_OBJ_AFFECT
 #define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
+#endif
 
 struct obj_affected_type {
     short           location;   /* Which ability to change (APPLY_XXX) */
@@ -492,6 +495,24 @@ struct obj_data {
     char           *modBy;              /**< Last modified by */
     time_t          modified;           /**< Last modification time */
 };
+
+/*
+ * element in monster and object index-tables 
+ */
+struct index_data {
+    long            virtual;    /* virtual number of this mob/obj */
+    long            pos;        /* file position of this field */
+    int             number;     /* number of existing units of this
+                                 * mob/obj */
+    int             (*func) (); /* special procedure for this mob/obj */
+    void           *data;
+    char           *name;
+    char           *short_desc;
+    char           *long_desc;
+    int             MaxObjCount;
+};
+
+#define MAX_INDICES 5000
 
 
 #endif

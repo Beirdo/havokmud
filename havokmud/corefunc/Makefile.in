@@ -22,7 +22,7 @@ LDFLAGS = @LDFLAGS@
 
 
 SRCS =	main.c signals.c login-sm.c output.c mysql_database.c command_parser.c
-SRCS += core_commands.c ansi_output.c char_data.c
+SRCS += core_commands.c ansi_output.c char_data.c obj_data.c
 ARCHIVE =	libhavokcore.a
 
 OBJS = ${SRCS:.c=.o}
