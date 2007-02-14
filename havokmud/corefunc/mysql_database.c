@@ -105,7 +105,7 @@ void chain_load_races( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_languages( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_textfiles( MYSQL_RES *res, QueryItem_t *item );
 void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item );
-void chain_generate_object_index( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item );
 
 void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
@@ -132,8 +132,7 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_generate_object_index( MYSQL_RES *res, MYSQL_BIND *input, 
-                                   void *arg );
+void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 
 
 QueryTable_t    QueryTable[] = {
@@ -344,7 +343,7 @@ QueryTable_t    QueryTable[] = {
       FALSE },
     /* 52 */
     { "SELECT `vnum` FROM `objects` WHERE `ownerId` = -1 AND "
-      "ownedItemId = -1 ORDER BY `vnum`", chain_generate_object_index, NULL,
+      "ownedItemId = -1 ORDER BY `vnum`", chain_load_object_tree, NULL,
       FALSE },
     /* 53 */
     { "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = ? AND "
@@ -1631,30 +1630,24 @@ int db_find_object_named(char *string, int owner, int ownerItem)
     return( vnum );
 }
 
-struct index_data *db_generate_object_index(int *top, int *sort_top,
-                                            int *alloc_top)
+
+void db_load_object_tree( BalancedBTree_t *tree )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
-    struct index_data *index = NULL;
 
     mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
-    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
-    bind_null_blob( &data[0], (void *)top );
-    bind_null_blob( &data[1], (void *)sort_top );
-    bind_null_blob( &data[2], (void *)alloc_top );
-    bind_null_blob( &data[3], (void *)&index );
-    db_queue_query( 52, QueryTable, data, 4, NULL, NULL, mutex );
+    bind_null_blob( &data[0], (void *)tree );
+    db_queue_query( 52, QueryTable, data, 1, NULL, NULL, mutex );
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     free( mutex );
-
-    return( index );
 }
 
 /*
@@ -2017,6 +2010,7 @@ void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
                         vnum,
                         count;
     struct room_data   *rp = NULL;
+    struct index_data  *index = NULL;
     int_func            func;
 
     MYSQL_ROW       row;
@@ -2042,9 +2036,11 @@ void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
         switch( type ) {
         case PROC_MOBILE:
             rnum = real_mobile(vnum);
+            index = &mob_index[rnum];
             break;
         case PROC_OBJECT:
-            rnum = real_object(vnum);
+            index = objectIndex(vnum);
+            rnum = ( rp ? 1 : -1 );
             break;
         case PROC_ROOM:
             rp = real_roomp(vnum);
@@ -2063,10 +2059,8 @@ void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
 
         switch( type ) {
         case PROC_MOBILE:
-            mob_index[rnum].func = func;
-            break;
         case PROC_OBJECT:
-            obj_index[rnum].func = func;
+            index->func = func;
             break;
         case PROC_ROOM:
             rp->funct = func;
@@ -2220,66 +2214,63 @@ void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item )
     }
 }
 
-void chain_generate_object_index( MYSQL_RES *res, QueryItem_t *item )
+void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
 {
-    struct index_data **retindex;
-    struct index_data  *index = NULL;
-    int                *top;
-    int                *sort_top;
-    int                *alloc_top;
-    int                 i,
-                        vnum;
-    int                 count;
+    BalancedBTree_t        *tree;
+    BalancedBTreeItem_t    *bitem;
+    struct index_data      *index;
+    int                     i,
+                            vnum;
+    int                     count;
 
-    MYSQL_ROW           row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
+    MYSQL_ROW               row;
+    MYSQL_BIND             *data;
+    pthread_mutex_t        *mutex;
 
-    top       = (int *)item->queryData[0].buffer;
-    sort_top  = (int *)item->queryData[1].buffer;
-    alloc_top = (int *)item->queryData[2].buffer;
-    retindex  = (struct index_data **)item->queryData[3].buffer;
+    tree = (BalancedBTree_t *)item->queryData[0].buffer;
 
     if( !res || !(count = mysql_num_rows(res)) ) {
-        *retindex = NULL;
-        return;
-    }
-
-    index = (struct index_data *)malloc(count * sizeof(struct index_data));
-    *retindex = index;
-    if( !index ) {
         return;
     }
 
     mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init( mutex, NULL );
 
+    BalancedBTreeLock( tree );
+
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
+        index = (struct index_data *)malloc(sizeof(struct index_data));
+        if( !index ) {
+            return;
+        }
+
         vnum = atoi(row[0]);
-        index[i].virtual = vnum;
-        index[i].pos = -1;
-        index[i].number = 0;
-        index[i].data = NULL;
-        index[i].func = NULL;
+        index->virtual = vnum;
+        index->number = 0;
+        index->data = NULL;
+        index->func = NULL;
 
         data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
-        db_queue_query( 53, QueryTable, data, 1, result_generate_object_index,
-                        (void *)&index[i], mutex );
+        db_queue_query( 53, QueryTable, data, 1, result_load_object_tree,
+                        (void *)index, mutex );
         pthread_mutex_unlock( mutex );
 
+        bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        bitem->key  = &index->virtual;
+        bitem->item = (void *)index;
+        BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
     }
 
     pthread_mutex_destroy( mutex );
     free( mutex );
 
-    *sort_top = count - 1;
-    *alloc_top = count;
-    *top = count;
+    BalancedBTreeAdd( tree, NULL, LOCKED, TRUE );
+    BalancedBTreeUnlock( tree );
 }
 
 /*
@@ -3013,8 +3004,7 @@ void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_generate_object_index( MYSQL_RES *res, MYSQL_BIND *input, 
-                                   void *arg )
+void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 {
     int                 len;
     int                 count;

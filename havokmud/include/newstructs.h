@@ -46,6 +46,11 @@
 static char newstructs_h_ident[] _UNUSED_ = 
     "$Id$";
 
+/**
+ * @file
+ * @brief New structure definitions
+ * @todo rename to structs.h after removing the old one
+ */
 
 #define BV(x) (1 << (x))
 
@@ -496,23 +501,20 @@ struct obj_data {
     time_t          modified;           /**< Last modification time */
 };
 
-/*
- * element in monster and object index-tables 
+/**
+ * @todo rename virtual to vnum
  */
 struct index_data {
     long            virtual;    /* virtual number of this mob/obj */
-    long            pos;        /* file position of this field */
     int             number;     /* number of existing units of this
                                  * mob/obj */
-    int             (*func) (); /* special procedure for this mob/obj */
+    int_func        func;       /* special procedure for this mob/obj */
     void           *data;
     char           *name;
     char           *short_desc;
     char           *long_desc;
     int             MaxObjCount;
 };
-
-#define MAX_INDICES 5000
 
 
 #endif

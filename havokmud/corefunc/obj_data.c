@@ -39,207 +39,70 @@
 #include "utils.h"
 #include "logging.h"
 #include "interthread.h"
+#include "balanced_btree.h"
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
     "$Id$";
 
-#define GET_OBJ_NAME(obj)  ((obj)->name)
+/**
+ * @file
+ * @brief Handles loading, saving of objects
+ */
 
-#define REAL 0
-#define VIRTUAL 1
+
+BalancedBTree_t *objectTree;
 
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
-FILE           *obj_f;          /* obj prototypes */
-struct index_data *obj_index;   /* index table for object file */
-int             top_of_objt = 0;        /* top of object index table */
-int             top_of_sort_objt = 0;
-int             top_of_alloc_objt = 99999;
 
 struct index_data *insert_objindex(struct index_data *index, void *data,
                                    long vnum);
 char           *fread_string(FILE * f1);
-int real_object(int virtual);
 void clear_object(struct obj_data *obj);
 
 
+void initializeObjects( void )
+{
+    objectTree = BalancedBTreeCreate( BTREE_KEY_INT );
+    db_load_object_tree( objectTree );
+}
 
+struct index_data *objectIndex( int vnum )
+{
+    struct index_data      *index;
+    BalancedBTreeItem_t    *item;
+
+    item = BalancedBTreeFind( objectTree, &vnum, UNLOCKED, FALSE );
+    if( !item ) {
+        return( NULL );
+    }
+
+    index = (struct index_data *)item->item;
+    return( index );
+}
+
+/**
+ * @todo rename to objectInsert
+ */
 void insert_object(struct obj_data *obj, long vnum)
 {
-    obj_index = insert_objindex(obj_index, (void *) obj, vnum);
+    BalancedBTreeItem_t    *item;
+    struct index_data      *index;
+
+    CREATE(index, struct index_data, 1);
+    CREATE(item, BalancedBTreeItem_t, 1);
+
+    index->virtual = vnum;
+    index->name = strdup(obj->name);
+    index->number = 0;
+    index->func = NULL;
 }
 
-struct index_data *insert_objindex(struct index_data *index, void *data,
-                                   long vnum)
-{
-    if (top_of_objt >= top_of_alloc_objt) {
-        if (!(index = (struct index_data *)realloc(index,
-                      (top_of_objt + 50) * sizeof(struct index_data)))) {
-            perror("load indices");
-            assert(0);
-        }
-        top_of_alloc_objt += 50;
-    }
-    index[top_of_objt].virtual = vnum;
-    index[top_of_objt].pos = -1;
-    index[top_of_objt].name = strdup(GET_OBJ_NAME((struct obj_data *) data));
-    index[top_of_objt].number = 0;
-    index[top_of_objt].func = 0;
-    top_of_objt++;
-    return index;
-}
 
-#if 0
-    Log("Generating index table for objects.");
-    obj_index = db_generate_object_index(&top_of_objt, &top_of_sort_objt,
-                                         &top_of_alloc_objt);
-
-    if( !obj_index ) {
-        Log( "No objects in the SQL Database, aborting" );
-        exit( 0 );
-    }
-#endif
-
-
-/*
- * generate index table for object or monster file
+/**
+ * @todo rename to objectClone
  */
-struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
-                                    int *alloc_top, char *dirname)
-{
-    FILE           *f;
-    DIR            *dir;
-    struct index_data *index = NULL;
-    struct dirent  *ent;
-    long            i = 0,
-                    di = 0,
-                    vnum,
-                    j;
-    long            bc = MAX_INDICES;
-    long            dvnums[MAX_INDICES];
-    char            buf[82],
-                    tbuf[128];
-
-    /*
-     * scan main obj file
-     */
-    rewind(fl);
-    for (;;) {
-        if (fgets(buf, sizeof(buf), fl)) {
-            if (*buf == '#') {
-                if (!i) {
-                    /*
-                     * first cell
-                     */
-                    CREATE(index, struct index_data, bc);
-                } else if (i >= bc) {
-                    if (!(index = (struct index_data *) realloc(index,
-                                      (i + 50) * sizeof(struct index_data)))) {
-                        perror("load indices");
-                        assert(0);
-                    }
-                    bc += 50;
-                }
-                sscanf(buf, "#%ld", &index[i].virtual);
-                sprintf(tbuf, "%s/%ld", dirname, index[i].virtual);
-                if ((f = fopen(tbuf, "rt")) == NULL) {
-                    index[i].pos = ftell(fl);
-                    index[i].name = (index[i].virtual < 99999) ?
-                                     fread_string(fl) : strdup("omega");
-                } else {
-                    index[i].pos = -1;
-                    fscanf(f, "#%*d\n");
-                    index[i].name = (index[i].virtual < 99999) ?
-                                     fread_string(f) : strdup("omega");
-                    dvnums[di++] = index[i].virtual;
-                    fclose(f);
-                }
-                index[i].number = 0;
-                index[i].func = 0;
-                index[i].data = NULL;
-                i++;
-            } else {
-                if (*buf == '%') {
-                    /* EOF */
-                    break;
-                }
-            }
-        } else {
-            fprintf(stderr, "generate indices");
-            assert(0);
-        }
-    }
-    *sort_top = i - 1;
-    *alloc_top = bc;
-    *top = i;
-
-    /*
-     * scan for directory entrys
-     */
-    if ((dir = opendir(dirname)) == NULL) {
-        LogPrint( LOG_CRIT, "unable to open index directory %s", dirname);
-        return (index);
-    }
-
-    while ((ent = readdir(dir)) != NULL) {
-        if (*ent->d_name == '.') {
-            continue;
-        }
-        vnum = atoi(ent->d_name);
-        if (vnum == 0) {
-            continue;
-        }
-        /*
-         * search if vnum was already sorted in main database
-         */
-        for (j = 0; j < di; j++) {
-            if (dvnums[j] == vnum) {
-                break;
-            }
-        }
-
-        if (dvnums[j] == vnum) {
-            continue;
-        }
-
-        sprintf(buf, "%s/%s", dirname, ent->d_name);
-        if ((f = fopen(buf, "rt")) == NULL) {
-            LogPrint( LOG_CRIT, "Can't open file %s for reading\n", buf);
-            continue;
-        }
-
-        if (!i) {
-            CREATE(index, struct index_data, bc);
-        } else if (i >= bc) {
-            if (!(index = (struct index_data *) realloc(index,
-                          (i + 50) * sizeof(struct index_data)))) {
-                perror("load indices");
-                assert(0);
-            }
-            bc += 50;
-        }
-
-        fscanf(f, "#%*d\n");
-        index[i].virtual = vnum;
-        index[i].pos = -1;
-        index[i].name = (index[i].virtual < 99999) ? fread_string(f) :
-                         strdup("omega");
-        index[i].number = 0;
-        index[i].func = 0;
-        index[i].data = NULL;
-        fclose(f);
-        i++;
-    }
-
-    *alloc_top = bc;
-    *top = i;
-    closedir(dir);
-
-    return (index);
-}
-
-
 void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
 {
     struct extra_descr_data *new_descr,
@@ -302,34 +165,29 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
 }
 
 
-/*
- * read an object from OBJ_FILE
+/**
+ * @todo what is object_list being used for?!
+ * @todo rename to objectRead
  */
 struct obj_data *read_object(int nr, int type)
 {
-    struct obj_data *obj;
-    int             i;
-    char            buf[100];
+    struct obj_data    *obj;
+    struct index_data  *index;
 
-    i = nr;
-    if (type == VIRTUAL) {
-        nr = real_object(nr);
-    }
-    if (nr < 0 || nr > top_of_objt) {
-        sprintf(buf, "Object (V) %d does not exist in database.", i);
-        return (0);
+    index = objectIndex( nr );
+    if( !index ) {
+        return( NULL );
     }
 
     CREATE(obj, struct obj_data, 1);
-
     if (!obj) {
-        LogPrintNoArg( LOG_CRIT, "Cannot create obj?! db.c read_obj");
+        LogPrintNoArg( LOG_CRIT, "Cannot create obj?!");
         return(NULL);
     }
 
     clear_object(obj);
 
-    if( !db_read_object(obj, obj_index[nr].virtual, -1, -1) ) {
+    if( !db_read_object(obj, nr, -1, -1) ) {
         free(obj);
         return(NULL);
     }
@@ -347,13 +205,16 @@ struct obj_data *read_object(int nr, int type)
     obj->next = object_list;
     object_list = obj;
 
-    obj_index[nr].number++;
+    index->number++;
     obj_count++;
     return (obj);
 }
 
-/*
- * release memory allocated for an obj struct
+/**
+ * @todo rename to objectFree
+ * @todo check why we are checking for *obj->name for freeing
+ * @todo does this get it out of the object_list or does the caller do that?
+ * @brief release memory allocated for an obj struct
  */
 void free_obj(struct obj_data *obj)
 {
@@ -395,51 +256,15 @@ void free_obj(struct obj_data *obj)
     }
 }
 
+/**
+ * @todo rename to objectClear
+ */
 void clear_object(struct obj_data *obj)
 {
     memset(obj, 0, sizeof(struct obj_data));
     obj->item_number = -1;
     obj->in_room = NOWHERE;
     obj->eq_pos = -1;
-}
-
-/*
- * returns the real number of the object with given virtual number
- */
-int real_object(int virtual)
-{
-    long            bot,
-                    top,
-                    mid;
-
-    bot = 0;
-    top = top_of_sort_objt;
-    /*
-     * perform binary search on obj-table
-     */
-    for (;;) {
-        mid = (bot + top) / 2;
-
-        if ((obj_index + mid)->virtual == virtual) {
-            return (mid);
-        }
-        if (bot >= top) {
-            /*
-             * start unsorted search now
-             */
-            for (mid = top_of_sort_objt; mid < top_of_objt; mid++) {
-                if ((obj_index + mid)->virtual == virtual) {
-                    return (mid);
-                }
-            }
-            return (-1);
-        }
-        if ((obj_index + mid)->virtual > virtual) {
-            top = mid - 1;
-        } else {
-            bot = mid + 1;
-        }
-    }
 }
 
 

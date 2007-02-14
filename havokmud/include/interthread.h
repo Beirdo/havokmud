@@ -223,8 +223,13 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem );
 struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
                                 int ownerItem );
 int db_find_object_named(char *string, int owner, int ownerItem);
-struct index_data *db_generate_object_index(int *top, int *sort_top,
-                                            int *alloc_top);
+void db_load_object_tree( BalancedBTree_t *tree );
+
+/*
+ * obj_data.c
+ */
+void initializeObjects( void );
+struct index_data *objectIndex( int vnum );
 
 
 /*************************************************************************

@@ -364,6 +364,230 @@ int main(int argc, char **argv)
     return (0);
 }
 
+void boot_db(void)
+{
+    int             i;
+
+    char           *s;
+    long            d,
+                    e;
+
+    LogPrintNoArg( LOG_CRIT, "Resetting the game time:");
+    reset_time();
+
+    LogPrintNoArg( LOG_CRIT, "Reading newsfile, credits, info and motd.");
+    db_load_textfiles();
+
+    LogPrintNoArg( LOG_CRIT, "Initializing Script Files.");
+
+#if 0
+    /*
+     * some machines are pre-allocation specific when dealing with realloc
+     */
+    script_data = (struct scripts *) malloc(sizeof(struct scripts));
+    CommandSetup();
+    InitScripts();
+#endif
+
+#ifdef NOTYET
+    LogPrintNoArg( LOG_CRIT, "Opening mobile files.");
+    if (!(mob_f = fopen(MOB_FILE, "r"))) {
+        perror("boot");
+        assert(0);
+    }
+#endif
+
+#ifdef CLEAN_AT_BOOT
+    LogPrintNoArg( LOG_CRIT, "Clearing inactive players");
+    clean_playerfile();
+#endif
+
+    LogPrintNoArg( LOG_CRIT, "Loading zone table.");
+    boot_zones();
+
+    LogPrintNoArg( LOG_CRIT, "Loading saved zone table.");
+    boot_saved_zones();
+
+    LogPrintNoArg( LOG_CRIT, "Loading rooms.");
+    boot_world();
+
+    LogPrintNoArg( LOG_CRIT, "Loading saved rooms.");
+    boot_saved_rooms();
+
+#ifdef NOTYET
+    LogPrintNoArg( LOG_CRIT, "Generating index table for mobiles.");
+    mob_index = generate_indices(mob_f, &top_of_mobt, &top_of_sort_mobt,
+                                 &top_of_alloc_mobt, MOB_DIR);
+#endif
+
+    LogPrintNoArg( LOG_CRIT, "Generating binary tree of objects.");
+    initializeObjects();
+
+    LogPrintNoArg( LOG_CRIT, "Renumbering zone table.");
+    renum_zone_table(0);
+
+    LogPrintNoArg( LOG_CRIT, "Generating player index.");
+    build_player_index();
+
+    LogPrintNoArg( LOG_CRIT, "Assigning function pointers:");
+    if (!no_specials) {
+        LogPrintNoArg( LOG_CRIT, "   Mobiles.");
+        assign_mobiles();
+        boot_the_shops();
+        assign_the_shopkeepers();
+
+        LogPrintNoArg( LOG_CRIT, "   Objects.");
+        assign_objects();
+
+        LogPrintNoArg( LOG_CRIT, "   Room.");
+        assign_rooms();
+    }
+
+    LogPrintNoArg( LOG_CRIT, "   Commands.");
+#ifdef MOVED
+    assign_command_pointers();
+#endif
+    LogPrintNoArg( LOG_CRIT, "   Spells.");
+    assign_spell_pointers();
+
+    LogPrintNoArg( LOG_CRIT, "Updating characters with saved items:");
+    update_obj_file();
+
+#ifdef SAVEWORLD
+    LogPrintNoArg( LOG_CRIT, "Loading saved rooms.");
+    ReloadRooms();
+#endif
+
+#ifdef LIMITED_ITEMS
+    PrintLimitedItems();
+#endif
+
+    for (i = 0; i <= top_of_zone_table; i++) {
+        s = zone_table[i].name;
+        d = (i ? (zone_table[i - 1].top + 1) : 0);
+        e = zone_table[i].top;
+        fprintf(stderr, "Performing boot-time init of %d:%s (rooms %ld-%ld).\n",
+                zone_table[i].num, s, d, e);
+        zone_table[i].start = 0;
+
+        if (i == 0) {
+            fprintf(stderr, "Performing boot-time reload of static mobs\n");
+            reset_zone(0, 0);
+        }
+
+        if (i == 1) {
+            fprintf(stderr, "Automatic initialization of  %s\n", s);
+            reset_zone(1, 0);
+        }
+    }
+
+    reset_q.head = reset_q.tail = 0;
+
+    /*
+     * cycle through pfiles to see if anyone
+     * get a statue
+     */
+#if 0
+    generate_legend_statue();
+#endif
+}
+
+/*
+ * reset the time in the game from file
+ */
+void reset_time(void)
+{
+    long            beginning_of_time = 650336715;
+
+    struct time_info_data mud_time_passed(time_t t2, time_t t1);
+
+    time_info = mud_time_passed(time(0), beginning_of_time);
+
+    moontype = time_info.day;
+
+    switch (time_info.hours) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        {
+            weather_info.sunlight = SUN_DARK;
+            switch_light(MOON_SET);
+            break;
+        }
+    case 5:
+    case 6:
+        {
+            weather_info.sunlight = SUN_RISE;
+            switch_light(SUN_RISE);
+            break;
+        }
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+        {
+            weather_info.sunlight = SUN_LIGHT;
+            break;
+        }
+    case 19:
+    case 20:
+        {
+            weather_info.sunlight = SUN_SET;
+            break;
+        }
+    case 21:
+    case 22:
+    case 23:
+    default:
+        {
+            switch_light(SUN_DARK);
+            weather_info.sunlight = SUN_DARK;
+            break;
+        }
+    }
+
+    Log("   Current Gametime: %dH %dD %dM %dY.", time_info.hours,
+        time_info.day, time_info.month, time_info.year);
+
+    weather_info.pressure = 960;
+    if ((time_info.month >= 7) && (time_info.month <= 12)) {
+        weather_info.pressure += dice(1, 50);
+    } else {
+        weather_info.pressure += dice(1, 80);
+    }
+
+    weather_info.change = 0;
+
+    if (weather_info.pressure <= 980) {
+        if ((time_info.month >= 3) && (time_info.month <= 14)) {
+            weather_info.sky = SKY_LIGHTNING;
+        } else {
+            weather_info.sky = SKY_LIGHTNING;
+        }
+    } else if (weather_info.pressure <= 1000) {
+        if ((time_info.month >= 3) && (time_info.month <= 14)) {
+            weather_info.sky = SKY_RAINING;
+        } else {
+            weather_info.sky = SKY_RAINING;
+        }
+    } else if (weather_info.pressure <= 1020) {
+        weather_info.sky = SKY_CLOUDY;
+    } else {
+        weather_info.sky = SKY_CLOUDLESS;
+    }
+}
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
