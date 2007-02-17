@@ -2472,11 +2472,8 @@ void mind_sense_object(int level, struct char_data *ch,
         return;
     } else {
         for (i = object_list; i; i = i->next) {
-            if (isname(name, i->name) &&
-                !IS_SET(i->extra_flags, ITEM_QUEST)) {
-                /* 
-                 * ITEM_QUEST flag makes item !locate -Lennya 20030602 
-                 */
+            if ( !IS_SET(i->extra_flags, ITEM_QUEST) && 
+	         isname(name, i->name) ) {
                 if (i->carried_by) {
                     target = i->carried_by;
                     if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 

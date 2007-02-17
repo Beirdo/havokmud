@@ -121,6 +121,45 @@ void remove_cr(char *output, char *input)
     *output = '\0';
 }
 
+/**
+ * @brief Extracts the number from a string like "3.elf", and changes the string
+ *        to be "elf" (in this example)
+ * @param[in,out] name Pointer to the string to mangle, the de-numbered string
+ *                    is pointed to on return (still in the same buffer)
+ * @return the number from the beginning of the string.  1 if there was no
+ *         number there, and 0 if what was before the "." was invalid
+ */
+int get_number(char **name)
+{
+    int             retval;
+    char           *ppos;
+    char           *number;
+
+
+    if ((ppos = strchr(*name, '.')) && ppos[1]) {
+        *ppos++ = '\0';
+        number = strdup( *name );
+        *name = ppos;
+
+        retval = (int)strtol( number, &ppos, 10 );
+        free( number );
+
+        if( ppos ) {
+            /*
+             * Wasn't completely numeric, invalid
+             */
+            return( 0 );
+        }
+
+        return( retval );
+    }
+
+    /*
+     * No number found, use a count of 1
+     */
+    return (1);
+}
+
 
 
 /*************************************************************************

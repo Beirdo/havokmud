@@ -164,6 +164,7 @@ void ScreenOff( PlayerStruct_t *player );
 char *skip_spaces(char *string);
 int search_block(char *arg, char **list, bool exact);
 void remove_cr(char *output, char *input);
+int get_number(char **name);
 
 /*
  * char_data.c

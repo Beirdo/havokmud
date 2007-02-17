@@ -9,7 +9,6 @@
  * Extern structures 
  */
 extern struct room_data *world;
-extern struct obj_data *object_list;
 extern struct char_data *character_list;
 
 void SwitchStuff(struct char_data *giver, struct char_data *taker)

@@ -2457,7 +2457,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
     for (i = object_list; i && !found; i = i->next) {
-        if (isname(name, i->name) && i->value[3]) {
+        if (i->value[3] && isname(name, i->name)) {
             found = 1;
             /*
              * we found a REAL corpse

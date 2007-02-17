@@ -116,15 +116,8 @@ void MakeSound(int pulse)
                     /*
                      * Make the sound 
                      */
-#if 0                    
-                    if(*ch->player.distant_snds != '\'')
-#endif                    
                     MakeNoise(ch->in_room, ch->player.sounds,
                               ch->player.distant_snds);
-#if 0                    
-                    else
-                    MakeNoise(ch->in_room, ch->player.sounds,"");
-#endif                
                 } else if (GET_POS(ch) == POSITION_SLEEPING) {
                     /*
                      * snore 
@@ -138,15 +131,8 @@ void MakeSound(int pulse)
                 /*
                  * Make the sound 
                  */
-#if 0                
-                if(*ch->player.distant_snds != '\'')
-#endif                
                 MakeNoise(ch->in_room, ch->player.sounds,
                           ch->player.distant_snds);
-#if 0                
-                else
-                    MakeNoise(ch->in_room,ch->player.sounds,"");
-#endif            
             }
         }
     }

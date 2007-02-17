@@ -2347,8 +2347,7 @@ void spell_locate_object(int level, struct char_data *ch,
     buf[0] = '\0';
 
     for (i = object_list; i && (j > 0); i = i->next) {
-        if (isname(name, i->name) &&
-            !IS_SET(i->extra_flags, ITEM_QUEST)) {
+        if ( !IS_SET(i->extra_flags, ITEM_QUEST) && isname(name, i->name) ) {
             /*
              * we found at least one item
              */

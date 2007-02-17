@@ -1552,31 +1552,6 @@ struct obj_data *unequip_char(struct char_data *ch, int pos)
     return (obj);
 }
 
-int get_number(char **name)
-{
-
-    int             i;
-    char           *ppos;
-    char            number[MAX_INPUT_LENGTH];
-
-    number[0] = 0;
-
-    if ((ppos = strchr(*name, '.')) && ppos[1]) {
-        *ppos++ = '\0';
-        strcpy(number, *name);
-        strcpy(*name, ppos);
-
-        for (i = 0; *(number + i); i++) {
-            if (!isdigit((int)*(number + i))) {
-                return (0);
-            }
-        }
-        return (atoi(number));
-    }
-
-    return (1);
-}
-
 /*
  * Search a given list for an object, and return a pointer to that object 
  */
@@ -1592,7 +1567,7 @@ struct obj_data *get_obj_in_list(char *name, struct obj_data *list)
     tmp = tmpname;
 
     if (!(number = get_number(&tmp))) {
-        return (0);
+        return (NULL);
     }
     for (i = list, j = 1; i && (j <= number); i = i->next_content) {
         if (isname(tmp, i->name)) {
@@ -1612,7 +1587,7 @@ struct obj_data *get_obj_in_list(char *name, struct obj_data *list)
         }
     }
 
-    return (0);
+    return (NULL);
 }
 
 /*
@@ -1644,8 +1619,9 @@ struct obj_data *get_obj(char *name)
     strcpy(tmpname, name);
     tmp = tmpname;
     if (!(number = get_number(&tmp))) {
-        return (0);
+        return (NULL);
     }
+
     for (i = object_list, j = 1; i && (j <= number); i = i->next) {
         if (isname(tmp, i->name)) {
             if (j == number) {
@@ -1654,6 +1630,7 @@ struct obj_data *get_obj(char *name)
             j++;
         }
     }
+
     for (i = object_list, j = 1; i && (j <= number); i = i->next) {
         if (isname2(tmp, i->name)) {
             if (j == number) {
@@ -1662,7 +1639,7 @@ struct obj_data *get_obj(char *name)
             j++;
         }
     }
-    return (0);
+    return (NULL);
 }
 
 /*
@@ -1677,7 +1654,7 @@ struct obj_data *get_obj_num(int nr)
             return (i);
         }
     }
-    return (0);
+    return (NULL);
 }
 
 /*
@@ -2432,13 +2409,11 @@ struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
      * ok.. no luck yet. scan the entire obj list 
      */
     for (i = object_list; i && (j <= number); i = i->next) {
-        if (isname(tmp, i->name)) {
-            if (CAN_SEE_OBJ(ch, i)) {
-                if (j == number) {
-                    return (i);
-                }
-                j++;
+        if ( CAN_SEE_OBJ(ch, i) && isname(tmp, i->name) ) {
+            if (j == number) {
+                return (i);
             }
+            j++;
         }
     }
 
@@ -2448,19 +2423,18 @@ struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
      * ok.. no luck yet. scan the entire obj list 
      */
     for (i = object_list; i && (j <= number); i = i->next) {
-        if (isname2(tmp, i->name)) {
-            if (CAN_SEE_OBJ(ch, i)) {
-                if (j == number) {
-                    return (i);
-                }
-                j++;
+        if (CAN_SEE_OBJ(ch, i) && isname2(tmp, i->name)) {
+            if (j == number) {
+                return (i);
             }
+            j++;
         }
     }
+
     if (count) {
         *count = j;
     }
-    return (0);
+    return (NULL);
 }
 
 /*
@@ -2506,19 +2480,18 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
         if (isname(tmp, i->name) && CAN_SEE_OBJ(ch, i)) {
             if (j == number) {
                 return (i);
-            } else {
-                j++;
-            }
+            } 
+            j++;
         }
     }
+
     for (i = real_roomp(ch->in_room)->contents; i && j <= number;
          i = i->next_content) {
         if (isname(tmp, i->name) && CAN_SEE_OBJ(ch, i)) {
             if (j == number) {
                 return (i);
-            } else {
-                j++;
             }
+            j++;
         }
     }
 
@@ -2529,23 +2502,22 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
         if (isname2(tmp, i->name) && CAN_SEE_OBJ(ch, i)) {
             if (j == number) {
                 return (i);
-            } else {
-                j++;
-            }
+            } 
+            j++;
         }
     }
+
     for (i = real_roomp(ch->in_room)->contents; i && j <= number;
          i = i->next_content) {
         if (isname2(tmp, i->name) && CAN_SEE_OBJ(ch, i)) {
             if (j == number) {
                 return (i);
-            } else {
-                j++;
             }
+            j++;
         }
     }
 
-    return 0;
+    return( NULL );
 }
 
 struct obj_data *create_money(int amount)

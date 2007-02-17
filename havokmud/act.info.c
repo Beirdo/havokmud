@@ -3385,7 +3385,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     if (GetMaxLevel(ch) >= SAINT) {
         for (k = object_list; k; k = k->next) {
-            if (isname(name, k->name) && CAN_SEE_OBJ(ch, k)) {
+            if ( CAN_SEE_OBJ(ch, k) && isname(name, k->name)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);

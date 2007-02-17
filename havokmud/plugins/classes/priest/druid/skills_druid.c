@@ -1443,7 +1443,7 @@ void spell_plant_gate(int level, struct char_data *ch,
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
+        if (ITEM_TYPE(i) == ITEM_TREE && isname(name, i->name)) {
             /*
              * we found a druid tree with the right name
              */
@@ -1897,7 +1897,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
+        if ( ITEM_TYPE(i) == ITEM_TREE && isname(name, i->name) ) {
             /*
              * we found a druid tree with the right name
              */

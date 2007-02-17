@@ -289,7 +289,6 @@ void extract_obj(struct obj_data *obj)
     struct obj_data *temp1,
                    *temp2;
     extern long     obj_count;
-    struct index_data *index;
 
     if (obj->in_room != NOWHERE) {
         obj_from_room(obj);
