@@ -71,8 +71,8 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
 
     if ((r_num = real_object(FOUND_FOOD)) >= 0) {
         food = read_object(r_num, REAL);
-        food->name = (char *) strdup("ration slice filet food");
 
+        StringToKeywords( "ration slice filet food", &food->keywords );
         sprintf(buffer, "a Ration%s", corpse->short_description + 10);
         food->short_description = (char *) strdup(buffer);
         food->action_description = (char *) strdup(buffer);

@@ -1585,6 +1585,9 @@ bool isname_iter(const char *namelist)
     return TRUE;
 }
 
+/**
+ * @todo WTF is this?  why not just call act?!
+ */
 void cact(char *s, byte boo, struct char_data *ch, struct obj_data *obj,
           struct char_data *ch2, int i, int ii)
 {

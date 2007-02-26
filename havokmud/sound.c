@@ -80,8 +80,8 @@ void MakeSound(int pulse)
 
     for (obj = object_list; obj; obj = obj->next) {
         if (ITEM_TYPE(obj) == ITEM_AUDIO && 
-            ((obj->value[0] && !(pulse % obj->value[0])) ||
-             !number(0, 5))) {
+            ((obj->value[0] && !(pulse % obj->value[0])) || !number(0, 5))) {
+
             if (obj->carried_by) {
                 room = obj->carried_by->in_room;
             } else if (obj->equipped_by) {
@@ -97,7 +97,7 @@ void MakeSound(int pulse)
              */
             if (obj->action_description) {
                 MakeNoise(room, obj->action_description,
-                          obj->action_description);
+                                obj->action_description);
             }
         }
     }

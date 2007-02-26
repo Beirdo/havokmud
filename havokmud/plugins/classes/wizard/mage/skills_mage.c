@@ -2178,8 +2178,11 @@ void spell_identify(int level, struct char_data *ch,
     char            color1[10],
                     color2[10];
     struct time_info_data ma;
+    char           *temp;
 
-    assert(ch && (obj || victim));
+    if(!ch || (!obj && !victim)) {
+        return;
+    }
 
     if (obj) {
         if (auctioneer && auctioneer->specials.auction &&
@@ -2204,8 +2207,10 @@ void spell_identify(int level, struct char_data *ch,
             send_to_char(buf, ch);
         }
 
+        temp = KeywordsToString( &obj->keywords );
         sprintf(buf, "%sObject '%s%s%s', Item type: %s", color1, color2,
-                obj->name, color1, color2);
+                temp, color1, color2);
+        free( temp );
         sprinttype(GET_ITEM_TYPE(obj), item_types, buf2);
         strcat(buf, buf2);
         if (IS_WEAPON(obj)) {
@@ -3953,6 +3958,9 @@ void cast_poly_self(int level, struct char_data *ch, char *arg, int type,
 
 #define PORTAL 31
 
+/**
+ * @todo Figure out what they are trying to accomplish with the extra descr
+ */
 void spell_portal(int level, struct char_data *ch,
                   struct char_data *tmp_ch, struct obj_data *obj)
 {
@@ -4035,8 +4043,7 @@ void spell_portal(int level, struct char_data *ch,
     CREATE(ed, struct extra_descr_data, 1);
     ed->next = tmp_obj->ex_description;
     tmp_obj->ex_description = ed;
-    CREATE(ed->keyword, char, strlen(tmp_obj->name) + 1);
-    strcpy(ed->keyword, tmp_obj->name);
+    ed->keyword = KeywordsToString(&tmp_obj->keywords);
     ed->description = strdup(buf);
 
     tmp_obj->value[0] = level / 5;
@@ -5134,9 +5141,10 @@ void cast_ventriloquate(int level, struct char_data *ch, char *arg,
     }
 
     if (tar_obj) {
-        sprintf(buf1, "The %s says '%s'\n\r", fname(tar_obj->name), arg);
+        sprintf(buf1, "The %s says '%s'\n\r", fname(tar_obj->short_description),
+                arg);
         sprintf(buf2, "Someone makes it sound like the %s says '%s'.\n\r",
-                fname(tar_obj->name), arg);
+                fname(tar_obj->short_description), arg);
     } else {
         sprintf(buf1, "%s says '%s'\n\r", GET_NAME(tar_ch), arg);
         sprintf(buf2, "Someone makes it sound like %s says '%s'\n\r",
@@ -5628,11 +5636,9 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "a potion of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
-        if (obj->name) {
-            free(obj->name);
-        }
+        FreeKeywords( &obj->keywords, FALSE );
         sprintf(buf, "potion %s", spells[sn]);
-        obj->name = (char *) strdup(buf);
+        StringToKeywords( buf, &obj->keywords );
 
         if (obj->description) {
             free(obj->description);

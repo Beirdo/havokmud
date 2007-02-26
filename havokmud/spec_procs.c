@@ -2743,8 +2743,8 @@ int guardian(struct char_data *ch, int cmd, char *arg,
          */
         while (j < gstruct->num_names) {
             if (!strcmp(gstruct->names[j], GET_NAME(ch))) {
-                if (real_roomp(ch->in_room)
-                    && (EXIT(ch, 2)->to_room != NOWHERE)) {
+                if (real_roomp(ch->in_room) && 
+                    EXIT(ch, 2)->to_room != NOWHERE) {
                     if (ch->specials.fighting) {
                         return (FALSE);
                     }
@@ -2784,7 +2784,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                     return (FALSE);
                 }
             }
-            ++j;
+            j++;
         }
         return (FALSE);
     }
@@ -5032,6 +5032,9 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
     return FALSE;
 }
 
+/**
+ * @todo change to use the corpse flag to determine that it's a corpse or not
+ */
 int AcidBlob(struct char_data *ch, int cmd, char *arg,
              struct char_data *mob, int type)
 {
@@ -5042,7 +5045,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
     }
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
         if (IS_SET(i->wear_flags, ITEM_TAKE) && 
-            !strncmp(i->name, "corpse", 6)) {
+            !strncmp(i->keywords.words[0], "corpse", 6)) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
             obj_from_room(i);
@@ -5086,6 +5089,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     char           *arg1,
                     buf[250];
     struct index_data *index;
+    Keywords_t     *key;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
         (!real_roomp(ch->in_room))) {
@@ -5284,7 +5288,10 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
                         return (FALSE);
                     }
                 } else {
-                    if (isname(arg1, obj->name)) {
+                    key = StringToKeywords( arg1, NULL );
+                    key->partial = TRUE;
+                    if (KeywordsMatch(key, &obj->keywords)) {
+                        FreeKeywords( key, TRUE );
                         if (!EgoBladeSave(ch)) {
                             sprintf(buf, "%s laughs at your attempt to remove"
                                          " it!\n\r", obj->short_description);
@@ -5317,6 +5324,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
                             return (FALSE);
                         }
                     }
+                    FreeKeywords( key, TRUE );
                 }
             }
 
@@ -5334,25 +5342,25 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
             }
 
             if (lowjoe) {
-                if (!EgoBladeSave(holder)) {
-                    if (GET_POS(holder) != POSITION_STANDING) {
-                        sprintf(buf, "%s yanks you to your feet!\n\r",
-                                obj->short_description);
-                        send_to_char(buf, ch);
-                        GET_POS(holder) = POSITION_STANDING;
-                    }
-                    sprintf(buf, "%s leaps out of control!!\n\r",
-                            obj->short_description);
-                    send_to_char(buf, holder);
-                    sprintf(buf, "%s jumps for $n's neck!",
-                            obj->short_description);
-                    act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
-                    sprintf(buf, "hit %s", GET_NAME(lowjoe));
-                    command_interpreter(holder, buf);
-                    return (TRUE);
-                } else {
+                if (EgoBladeSave(holder)) {
                     return (FALSE);
                 }
+
+                if (GET_POS(holder) != POSITION_STANDING) {
+                    sprintf(buf, "%s yanks you to your feet!\n\r",
+                            obj->short_description);
+                    send_to_char(buf, ch);
+                    GET_POS(holder) = POSITION_STANDING;
+                }
+
+                sprintf(buf, "%s leaps out of control!!\n\r",
+                        obj->short_description);
+                send_to_char(buf, holder);
+                sprintf(buf, "%s jumps for $n's neck!", obj->short_description);
+                act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
+                sprintf(buf, "hit %s", GET_NAME(lowjoe));
+                command_interpreter(holder, buf);
+                return (TRUE);
             }
 
             if (cmd == 70 && holder == ch) {
@@ -5384,6 +5392,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
     char           *arg1,
                     buf[250];
     struct index_data *index;
+    Keywords_t     *key;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
         (!real_roomp(ch->in_room))) {
@@ -5648,8 +5657,18 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                             send_to_char(buf, ch);
                             return (FALSE);
                         }
-                    } else if (isname(arg1, obj->name)) {
-                        if (!EgoBladeSave(ch)) {
+                    } else {
+                        key = StringToKeywords(arg1, NULL);
+                        if (KeywordsMatch(key, &obj->keywords)) {
+                            FreeKeywords( key, TRUE );
+                            if (EgoBladeSave(ch)) {
+                                sprintf(buf, "You can feel %s attempt to stay "
+                                             "wielded!\n\r",
+                                        obj->short_description);
+                                send_to_char(buf, ch);
+                                return (FALSE);
+                            }
+
                             sprintf(buf, "%s laughs at your attempt to remove"
                                          " it!\n\r", obj->short_description);
                             send_to_char(buf, ch);
@@ -5673,13 +5692,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                                 GET_POS(ch) = POSITION_STUNNED;
                             }
                             return (TRUE);
-                        } else {
-                            sprintf(buf, "You can feel %s attempt to stay "
-                                         "wielded!\n\r",
-                                    obj->short_description);
-                            send_to_char(buf, ch);
-                            return (FALSE);
                         }
+                        FreeKeywords( key, TRUE );
                     }
                 }
 
@@ -5742,9 +5756,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
 int NeutralBlade(struct char_data *ch, int cmd, char *arg,
                  struct obj_data *tobj, int type)
 {
-#ifdef USE_EGOS
     return (FALSE);
-#endif
 }
 
 
@@ -7480,9 +7492,9 @@ int vampiric_embrace(struct char_data *ch, struct char_data *vict)
 #define LEGEND_STATUE 52851
 #define LEGEND_PAINTING 52852
 #define LEGEND_BIOGRAPHY 52853
-#if 0 
-struct char_data *ch, char *argument, int cmd)
-#endif
+/**
+ * @todo reimplement using MySQL to do the searching...
+ */
 int generate_legend_statue(void)
 {
     struct obj_data *obj;
@@ -7581,10 +7593,8 @@ int generate_legend_statue(void)
                         obj->description = strdup(desc);
                     }
 
-                    if (obj->name) {
-                        free(obj->name);
-                        obj->name = strdup(name);
-                    }
+                    FreeKeywords(&obj->keywords, FALSE);
+                    StringToKeywords(name, &obj->keywords);
 
                     if (obj->ex_description) {
                         Log("trying to string invalid item in statue "
@@ -7743,7 +7753,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (!(cmp = read_object(obj->item_number, REAL))) {
+                if (!(cmp = read_object(obj->item_number, VIRTUAL))) {
                     Log("Could not load comparison weapon in do_sharpen");
                     return;
                 }

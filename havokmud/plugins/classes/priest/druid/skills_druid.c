@@ -1128,7 +1128,7 @@ void spell_flame_blade(int level, struct char_data *ch,
 
     CREATE(tmp_obj, struct obj_data, 1);
     clear_object(tmp_obj);
-    tmp_obj->name = strdup("blade flame");
+    StringToKeywords( "blade flame", &tmp_obj->keywords );
     tmp_obj->short_description = strdup("a flame blade");
     tmp_obj->description = strdup("A flame blade burns brightly here.");
     tmp_obj->type_flag = ITEM_WEAPON;
@@ -1421,7 +1421,8 @@ void spell_plant_gate(int level, struct char_data *ch,
     struct char_data *tch,
                    *tch2;
     int             has_companions = 0;
-    char            name[254];
+    Keywords_t     *key;
+
     /*
      * find the tree in the room
      */
@@ -1438,12 +1439,13 @@ void spell_plant_gate(int level, struct char_data *ch,
         return;
     }
 
-    sprintf(name, "%s", arg);
+    key = StringToKeywords( arg, NULL );
+
     /*
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if (ITEM_TYPE(i) == ITEM_TREE && isname(name, i->name)) {
+        if (ITEM_TYPE(i) == ITEM_TREE && KeywordsMatch(key, &i->keywords)) {
             /*
              * we found a druid tree with the right name
              */
@@ -1451,6 +1453,7 @@ void spell_plant_gate(int level, struct char_data *ch,
             break;
         }
     }
+    FreeKeywords(key, TRUE);
 
     if (!obj) {
         send_to_char("You can not sense a tree by that name.\n\r", ch);
@@ -1698,11 +1701,15 @@ void cast_reincarnate(int level, struct char_data *ch, char *arg,
     }
 }
 
+/**
+ * @todo change to use the weapon type, not keywords to find clubs
+ */
 void spell_shillelagh(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     int             i;
     int             count = 0;
+    Keywords_t     *key;
 
     if(!ch || !obj || MAX_OBJ_AFFECT < 2) {
         return;
@@ -1711,10 +1718,13 @@ void spell_shillelagh(int level, struct char_data *ch,
     if ((GET_ITEM_TYPE(obj) == ITEM_WEAPON) &&
         !IS_SET(obj->extra_flags, ITEM_MAGIC)) {
 
-        if (!isname("club", obj->name)) {
+        key = StringToKeywords( "club", NULL );
+        if (!KeywordsMatch(key, &obj->keywords)) {
             send_to_char("That isn't a club!\n\r", ch);
+            FreeKeywords(key, TRUE);
             return;
         }
+        FreeKeywords(key, TRUE);
 
         for (i = 0; i < MAX_OBJ_AFFECT; i++) {
             if (obj->affected[i].location == APPLY_NONE) {
@@ -1765,6 +1775,7 @@ void spell_speak_with_plants(int level, struct char_data *ch,
                              struct obj_data *obj)
 {
     char            buffer[128];
+    char           *temp;
 
     assert(ch && obj);
 
@@ -1773,7 +1784,10 @@ void spell_speak_with_plants(int level, struct char_data *ch,
         return;
     }
 
-    sprintf(buffer, "%s says 'Hi $n, how ya doin?'", fname(obj->name));
+    temp = KeywordsToString( &obj->keywords );
+    sprintf(buffer, "%s says 'Hi $n, how ya doin?'", temp);
+    free( temp );
+
     act(buffer, FALSE, ch, obj, 0, TO_CHAR);
     act("$p rustles slightly.", FALSE, ch, obj, 0, TO_ROOM);
 }
@@ -1873,8 +1887,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     struct obj_data *o;
     struct obj_data *i;
     struct obj_data *obj = NULL;
-    char            name[254];
     int             found = 0;
+    Keywords_t     *key;
 
     /*
      * find the tree in the room
@@ -1891,13 +1905,13 @@ void spell_transport_via_plant(int level, struct char_data *ch,
         return;
     }
 
-    sprintf(name, "%s", arg);
+    key = StringToKeywords( name, NULL );
 
     /*
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if ( ITEM_TYPE(i) == ITEM_TREE && isname(name, i->name) ) {
+        if ( ITEM_TYPE(i) == ITEM_TREE && KeywordsMatch(key, &i->keywords) ) {
             /*
              * we found a druid tree with the right name
              */
@@ -1906,6 +1920,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
             break;
         }
     }
+
+    FreeKeywords(key, TRUE);
 
     if (!found) {
         send_to_char("That tree is nowhere to be found.\n\r", ch);

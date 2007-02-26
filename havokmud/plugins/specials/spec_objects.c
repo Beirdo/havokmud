@@ -440,7 +440,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     bool            do_all;
     int             j,
                     num;
-    int             (*knowdrop) ();
+    Keywords_t     *key;
 
     switch (cmd) {
     case 10:                    /* Get */
@@ -451,8 +451,6 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     default:
         return (FALSE);
     }
-
-    knowdrop = nodrop;
 
     if (type != PULSE_COMMAND) {
         return (FALSE);
@@ -465,6 +463,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
 
     obj = NULL;
     do_all = FALSE;
+    key = NULL;
 
     if (!strncmp(obj_name, "all", 3)) {
         do_all = TRUE;
@@ -475,22 +474,27 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         if (!(num = get_number(&name))) {
             return (FALSE);
         }
+        key = StringToKeywords( name, NULL );
     }
 
     /*
      * Look in the room first, in get case
      */
     if (cmd == 10) {
-        for (i = real_roomp(ch->in_room)->contents, j = 1; i && (j <= num);
+        for (i = real_roomp(ch->in_room)->contents, j = 1; 
+             i && (j <= num);
              i = i->next_content) {
-            if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
-                if (do_all || j == num) {
-                    if (i->index->func == knowdrop) {
-                        obj = i;
-                        break;
-                    }
-                } else {
-                    ++j;
+            if (i->item_number >= 0 && 
+                (do_all || KeywordsMatch(key, &i->keywords))) {
+
+                if( !do_all && j != num ) {
+                    j++;
+                    continue;
+                }
+
+                if (i->index->func == nodrop) {
+                    obj = i;
+                    break;
                 }
             }
         }
@@ -503,23 +507,32 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         /*
          * Don't bother with get anymore
          */
+        FreeKeywords(key, TRUE);
         return (FALSE);
     }
 
     for (i = ch->carrying, j = 1; i && (j <= num); i = i->next_content) {
-        if (i->item_number >= 0 && (do_all || isname(name, i->name))) {
-            if (do_all || j == num) {
-                if (i->index->func == knowdrop) {
-                    obj = i;
-                    break;
-                } else if (!do_all) {
-                    return (FALSE);
-                }
-            } else {
-                ++j;
+        if (i->item_number >= 0 && 
+            (do_all || KeywordsMatch(key, &i->keywords))) {
+
+            if( !do_all && j != num ) {
+                j++;
+                continue;
+            }
+
+            if (i->index->func == nodrop) {
+                obj = i;
+                break;
+            } 
+            
+            if (!do_all) {
+                FreeKeywords(key, TRUE);
+                return (FALSE);
             }
         }
     }
+
+    FreeKeywords(key, TRUE);
 
     /*
      * Musta been something else
@@ -527,6 +540,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     if (!obj) {
         return (FALSE);
     }
+
     if (cmd == 72 || cmd == 156) {
         vict_name = skip_spaces(arg);
         if (!vict_name || !(t = get_char_room_vis(ch, vict_name))) {
@@ -2230,8 +2244,8 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
             act(buf, FALSE, ch, obj, NULL, TO_CHAR);
         }
 
-        Log( "%s exploded %s and took %d damage", GET_NAME(ch), obj->name,
-             dam );
+        Log( "%s exploded %s and took %d damage", GET_NAME(ch), 
+             obj->short_description, dam );
 
         if( obj->carried_by ) {
             obj_from_char(obj);

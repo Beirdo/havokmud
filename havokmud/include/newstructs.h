@@ -451,6 +451,18 @@ struct obj_affected_type {
     long            modifier;   /* How much it changes by */
 };
 
+#define KEYWORD_FULL_MATCH      BV(0)
+#define KEYWORD_PARTIAL_MATCH   BV(1)
+
+typedef struct {
+    char          **words;
+    int            *length;
+    int            *found;
+    int             count;
+    bool            exact;
+    bool            partial;
+} Keywords_t;
+
 /**
  * @todo rename virtual to vnum
  */
@@ -460,7 +472,10 @@ struct index_data {
                                  * mob/obj */
     int_func        func;       /* special procedure for this mob/obj */
     void           *data;
+    Keywords_t      keywords;
+#if 0
     char           *name;
+#endif
     char           *short_desc;
     char           *long_desc;
     int             MaxObjCount;
@@ -494,7 +509,10 @@ struct obj_data {
     sh_int          sector;             /**< for large rooms */
     int             char_vnum;          /**< for ressurection */
     long            char_f_pos;         /**< for ressurection */
+    Keywords_t      keywords;           /**< Keywords used by get, etc. */
+#if 0
     char           *name;               /**< Title of object :get etc.  */
+#endif
     char           *description;        /**< When in room */
     char           *short_description;  /**< when worn/carry/in cont.  */
     char           *action_description; /**< What to write when used */
@@ -506,7 +524,10 @@ struct obj_data {
     struct obj_data *contains;          /**< Contains objects */
     struct obj_data *next_content;      /**< For 'contains' lists */
     struct obj_data *next;              /**< For the object list */
+    Keywords_t      old_keywords;       /**< For Behead */
+#if 0
     char           *old_name;           /**< For Behead */
+#endif
     int             is_corpse;          /**< For Behead */
     int             beheaded_corpse;    /**< For Behead */
     int             level;              /**< Level ego of the item */

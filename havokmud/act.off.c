@@ -1126,6 +1126,9 @@ void kick_messages(struct char_data *ch, struct char_data *victim,
     }
 }
 
+/**
+ * @todo make the dir_name[] table a global?
+ */
 void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                   struct char_data *ch)
 {

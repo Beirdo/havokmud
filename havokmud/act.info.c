@@ -46,42 +46,6 @@ int singular(struct obj_data *o)
 }
 
 
-struct obj_data *get_object_in_equip_vis(struct char_data *ch,
-                                         char *arg,
-                                         struct obj_data *equipment[],
-                                         int *j)
-{
-    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
-        if (equipment[(*j)] && CAN_SEE_OBJ(ch, equipment[(*j)]) &&
-            isname(arg, equipment[(*j)]->name)) {
-            return (equipment[(*j)]);
-        }
-    }
-    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
-        if (equipment[(*j)] && CAN_SEE_OBJ(ch, equipment[(*j)]) &&
-            isname2(arg, equipment[(*j)]->name)) {
-            return (equipment[(*j)]);
-        }
-    }
-    return (NULL);
-}
-
-struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
-                                     struct obj_data *equipment[], int *j)
-{
-    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
-        if (equipment[(*j)] && isname(arg, equipment[(*j)]->name)) {
-            return (equipment[(*j)]);
-        }
-    }
-    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
-        if (equipment[(*j)] && isname2(arg, equipment[(*j)]->name)) {
-            return (equipment[(*j)]);
-        }
-    }
-    return (NULL);
-}
-
 char           *find_ex_description(char *word,
                                     struct extra_descr_data *list)
 {
@@ -1654,7 +1618,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                    NO_SPY)) {
                             oldSendOutput(ch, "A strange magic blurs your vision "
                                           "as you attempt to look into %s.\n\r",
-                                      rp->name);
+                                      rp->short_description);
                             /*
                              * imms should be able to see through the
                              * blur:
@@ -1715,12 +1679,14 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                               weight) - 1)) *
                                             100.0);
                                 sprintf(buffer, "%s %.0f%s full",
-                                        fname(tmp_object->name), fullperc, "%");
+                                        fname(tmp_object->short_description), 
+                                              fullperc, "%");
                             } else {
                                 /*
                                  * it's a corpse - Lennya 20030320
                                  */
-                                sprintf(buffer, "%s ", fname(tmp_object->name));
+                                sprintf(buffer, "%s ", 
+                                        fname(tmp_object->short_description));
                             }
                             send_to_char(buffer, ch);
 
@@ -3304,6 +3270,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
     int             number,
                     count;
     struct string_block sb;
+    Keywords_t     *key;
 
     dlog("in do_where");
 
@@ -3384,8 +3351,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
      */
 
     if (GetMaxLevel(ch) >= SAINT) {
+        key = StringToKeywords( name, NULL );
         for (k = object_list; k; k = k->next) {
-            if ( CAN_SEE_OBJ(ch, k) && isname(name, k->name)) {
+            if ( CAN_SEE_OBJ(ch, k) && KeywordsMatch(key, &k->keywords)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);
@@ -3399,6 +3367,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
+        FreeKeywords(key, TRUE);
     }
 
     if (!*sb.data) {

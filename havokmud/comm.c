@@ -2170,8 +2170,8 @@ void            send_to_room_except_two(char *messg, int room,
  * higher-level communication 
  */
 
-/*
- * ACT 
+/**
+ * @todo use the common ANSI stuff rather than recreating the wheel!
  */
 void act(char *str, int hide_invisible, struct char_data *ch,
          struct obj_data *obj, void *vict_obj, int type)
@@ -2184,25 +2184,18 @@ void act(char *str, int hide_invisible, struct char_data *ch,
     char            buf[MAX_STRING_LENGTH],
                     tmp[MAX_INPUT_LENGTH];
 
-    if (!str) {
+    if (!str || !*str || ch->in_room <= -1) {
         return;
     }
-    if (!*str) {
-        return;
-    }
-    if (ch->in_room <= -1) {
-        return;
-    }
+
     if (type == TO_VICT) {
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
         to = ch;
+    } else if (real_roomp(ch->in_room)) {
+        to = real_roomp(ch->in_room)->people;
     } else {
-        if (real_roomp(ch->in_room)) {
-            to = real_roomp(ch->in_room)->people;
-        } else {
-            Log("Crash in ACT");
-        }
+        Log("Crash in ACT");
     }
 
     for (; to; to = to->next_in_room) {
@@ -2304,8 +2297,9 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                         break;
                     }
 
-                    while ((*point = *(i++)))
+                    while ((*point = *(i++))) {
                         ++point;
+                    }
 
                     ++strp;
 
@@ -2339,6 +2333,10 @@ void act(char *str, int hide_invisible, struct char_data *ch,
     }
 }
 
+/**
+ * @todo how is this different from act()
+ * @todo use common ansi handling
+ */
 void act2(char *str, int hide_invisible, struct char_data *ch,
           struct obj_data *obj, void *vict_obj, struct char_data *vict,
           int type)
@@ -2351,25 +2349,18 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
     char            buf[MAX_STRING_LENGTH],
                     tmp[MAX_INPUT_LENGTH];
 
-    if (!str) {
+    if (!str || !*str || ch->in_room <= -1) {
         return;
     }
-    if (!*str) {
-        return;
-    }
-    if (ch->in_room <= -1) {
-        return;
-    }
+
     if (type == TO_VICT) {
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
         to = ch;
+    } else if (real_roomp(ch->in_room)) {
+        to = real_roomp(ch->in_room)->people;
     } else {
-        if (real_roomp(ch->in_room)) {
-            to = real_roomp(ch->in_room)->people;
-        } else {
-            Log("Crash in ACT");
-        }
+        Log("Crash in ACT");
     }
 
     for (; to; to = to->next_in_room) {

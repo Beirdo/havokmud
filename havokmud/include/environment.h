@@ -61,7 +61,9 @@ static char environment_h_ident[] _UNUSED_ =
 #undef _FILE_OFFSET_BITS
 #define _FILE_OFFSET_BITS 64
 
+#ifndef _LARGEFILE_SOURCE
 #define _LARGEFILE_SOURCE
+#endif
 
 #define O_LARGEFILE 0
 
@@ -99,6 +101,8 @@ typedef unsigned long long int uint64;
                                        (char *)((StructType *)NULL))
 #define ELEMSIZE(elem,StructType)   (sizeof(((StructType *)NULL)->elem))
 #define FORCE_UINT32(x)             (*(uint32 *)&(x))
+#define PTR_AT_OFFSET(offset,buffer)    ((void *)((char *)(buffer) + \
+                                                  (int)(offset)))
 
 #define MIN(x,y)                    ( (x) < (y) ? (x) : (y) )
 #define MAX(x,y)                    ( (x) > (y) ? (x) : (y) )

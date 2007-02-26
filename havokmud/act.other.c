@@ -685,226 +685,6 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-void do_steal(struct char_data *ch, char *argument, int cmd)
-{
-    struct char_data *victim;
-    struct obj_data *obj;
-    char           *victim_name;
-    char           *obj_name;
-    char            buf[240];
-    int             percent;
-    int             gold,
-                    eq_pos;
-    bool            ohoh = FALSE;
-
-    dlog("in do_steal");
-
-    if (!ch->skills) {
-        return;
-    }
-
-    if (check_peaceful(ch, "What if he caught you?\n\r")) {
-        return;
-    }
-
-    argument = get_argument(argument, &obj_name);
-    victim_name = argument;
-
-    if (!HasClass(ch, CLASS_THIEF)) {
-        send_to_char("You're no thief!\n\r", ch);
-        return;
-    }
-
-    if (MOUNTED(ch)) {
-        send_to_char("Yeah... right... while mounted\n\r", ch);
-        return;
-    }
-
-    if (!obj_name || !victim_name ||
-        !(victim = get_char_room_vis(ch, victim_name))) {
-        send_to_char("Steal what from who?\n\r", ch);
-        return;
-    } 
-    
-    if (victim == ch) {
-        send_to_char("Come on now, that's rather stupid!\n\r", ch);
-        return;
-    }
-
-    if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
-        send_to_char("Steal from a God?!?  Oh the thought!\n\r", ch);
-        Log("NOTE: %s tried to steal from GOD %s", GET_NAME(ch),
-            GET_NAME(victim));
-        return;
-    }
-
-    WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-
-    if ((GetMaxLevel(ch) < 2) && (!IS_NPC(victim))) {
-        send_to_char("Due to misuse of steal, you can't steal from other "
-                     "players\n\r"
-                     "unless you are at least 2nd level. \n\r", ch);
-        return;
-    }
-
-    if ((!victim->desc) && (!IS_NPC(victim))) {
-        return;
-    }
-
-    /*
-     * 101% is a complete failure
-     */
-    percent = number(1, 101) - dex_app_skill[(int)GET_DEX(ch)].p_pocket;
-
-    if (GET_POS(victim) < POSITION_SLEEPING || GetMaxLevel(ch) >= IMPLEMENTOR) {
-        /*
-         * ALWAYS SUCCESS
-         */
-        percent = -1;
-    }
-
-    percent += GET_AVE_LEVEL(victim);
-
-    if (GetMaxLevel(victim) > MAX_MORT && GetMaxLevel(ch) < IMPLEMENTOR) {
-        percent = 101;
-        /*
-         * Failure
-         */
-    }
-
-    if (strcasecmp(obj_name, "coins") && strcasecmp(obj_name, "gold")) {
-        if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
-            for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
-                if (victim->equipment[eq_pos] &&
-                    isname(obj_name, victim->equipment[eq_pos]->name) &&
-                    CAN_SEE_OBJ(ch, victim->equipment[eq_pos])) {
-                    obj = victim->equipment[eq_pos];
-                    break;
-                }
-            }
-
-            if (!obj) {
-                act("$E has not got that item.", FALSE, ch, 0, victim, TO_CHAR);
-                return;
-            } 
-            
-            /*
-             * It is equipment
-             */
-            if ((GET_POS(victim) > POSITION_STUNNED)) {
-                send_to_char("Steal the equipment now? Impossible!\n\r", ch);
-                return;
-            } 
-            
-            act("You unequip $p and steal it.", FALSE, ch, obj, 0, TO_CHAR);
-            act("$n steals $p from $N.", FALSE, ch, obj, victim, TO_NOTVICT);
-            obj_to_char(unequip_char(victim, eq_pos), ch);
-#ifndef DUPLICATES
-            do_save(ch, "", 0);
-            do_save(victim, "", 0);
-#endif
-            if (IS_PC(ch) && IS_PC(victim)) {
-                GET_ALIGNMENT(ch) -= 20;
-            }
-        } else {
-            /*
-             * obj found in inventory
-             */
-            if (IS_OBJ_STAT(obj, ITEM_NODROP)) {
-                send_to_char("You can't steal it, it must be CURSED!\n\r", ch);
-                return;
-            }
-
-            percent += GET_OBJ_WEIGHT(obj);
-            /*
-             * Make heavy harder
-             */
-            if (AWAKE(victim) && percent > ch->skills[SKILL_STEAL].learned) {
-                ohoh = TRUE;
-                act("Yikes, you fumbled!", FALSE, ch, 0, 0, TO_CHAR);
-                LearnFromMistake(ch, SKILL_STEAL, 0, 90);
-                SET_BIT(ch->player.user_flags, STOLE_1);
-                act("$n tried to steal something from you!", FALSE, ch, 0,
-                    victim, TO_VICT);
-                act("$n tries to steal something from $N.", TRUE, ch, 0,
-                    victim, TO_NOTVICT);
-            } else {
-                /*
-                 * Steal the item
-                 */
-                if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                    if (IS_CARRYING_W(ch) + GET_OBJ_WEIGHT(obj) <
-                        CAN_CARRY_W(ch)) {
-                        obj_from_char(obj);
-                        obj_to_char(obj, ch);
-                        send_to_char("Got it!\n\r", ch);
-#ifndef DUPLICATES
-                        do_save(ch, "", 0);
-                        do_save(victim, "", 0);
-#endif
-                        if (IS_PC(ch) && IS_PC(victim)) {
-                            GET_ALIGNMENT(ch) -= 20;
-                        }
-                    } else {
-                        send_to_char("You cannot carry that much.\n\r", ch);
-                    }
-                } else
-                    send_to_char("You cannot carry that much.\n\r", ch);
-            }
-        }
-    } else {
-        /*
-         * Steal some coins
-         */
-        if (AWAKE(victim) && (percent > ch->skills[SKILL_STEAL].learned)) {
-            ohoh = TRUE;
-            act("Oops..", FALSE, ch, 0, 0, TO_CHAR);
-            if (ch->skills[SKILL_STEAL].learned < 90) {
-                act("Even though you were caught, you realize your mistake "
-                    "and promise to remember.", FALSE, ch, 0, 0, TO_CHAR);
-                ch->skills[SKILL_STEAL].learned++;
-                if (ch->skills[SKILL_STEAL].learned >= 90) {
-                    send_to_char("You are now learned in this skill!\n\r", ch);
-                }
-            }
-            act("You discover that $n has $s hands in your wallet.", FALSE,
-                ch, 0, victim, TO_VICT);
-            act("$n tries to steal gold from $N.", TRUE, ch, 0, victim,
-                TO_NOTVICT);
-        } else {
-            /*
-             * Steal some gold coins
-             */
-            gold = (int) ((GET_GOLD(victim) * number(1, 10)) / 100);
-            gold = MIN(number(1000, 2000), gold);
-            if (gold > 0) {
-                GET_GOLD(ch) += gold;
-                GET_GOLD(victim) -= gold;
-                oldSendOutput(ch, "Bingo! You got %d gold coins.\n\r", gold);
-                if (IS_PC(ch) && IS_PC(victim)) {
-                    GET_ALIGNMENT(ch) -= 20;
-                }
-            } else {
-                send_to_char("You couldn't get any gold...\n\r", ch);
-            }
-        }
-    }
-
-    if (ohoh && IS_NPC(victim) && AWAKE(victim)) {
-        if (IS_SET(victim->specials.act, ACT_NICE_THIEF)) {
-            sprintf(buf, "%s is a bloody thief.", GET_NAME(ch));
-            do_shout(victim, buf, 0);
-            do_say(victim, "Don't you ever do that again!", 0);
-        } else {
-            if (CAN_SEE(victim, ch)) {
-                hit(victim, ch, TYPE_UNDEFINED);
-            } else if (number(0, 1)) {
-                hit(victim, ch, TYPE_UNDEFINED);
-            }
-        }
-    }
-}
-
 void do_practice(struct char_data *ch, char *arg, int cmd)
 {
     send_to_char("You can only practice at your guildmaster, use \"skills "
@@ -1358,6 +1138,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     int             i,
                     index;
     bool            equipped;
+    Keywords_t     *key;
 
     equipped = FALSE;
 
@@ -1372,10 +1153,13 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     if (!(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
         temp = ch->equipment[HOLD];
         equipped = TRUE;
-        if ((temp == 0) || !isname(buf, temp->name)) {
+        key = StringToKeywords( buf, NULL );
+        if (!temp || !KeywordsMatch(key, &temp->keywords)) {
+            FreeKeywords(key, TRUE);
             act("You do not have that item.", FALSE, ch, 0, 0, TO_CHAR);
             return;
         }
+        FreeKeywords(key, TRUE);
     }
 
     if (!IS_IMMORTAL(ch) && GET_COND(ch, FULL) > 23) {
@@ -1399,9 +1183,6 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    /*
-     * my stuff
-     */
     if (ch->specials.fighting &&
         number(1, 20) > ch->abilities.dex - ( equipped ? 0 : 4 ) ) {
         act("$n is jolted and drops $p!  It shatters!",
@@ -1454,6 +1235,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     bool            equipped;
     bool            target_ok;
     int             target = 0;
+    Keywords_t     *key;
 
     target_ok = FALSE;
     equipped = FALSE;
@@ -1481,10 +1263,13 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     if (!(scroll = get_obj_in_list_vis(ch, buf, ch->carrying))) {
         scroll = ch->equipment[HOLD];
         equipped = TRUE;
-        if ((scroll == 0) || !isname(buf, scroll->name)) {
+        key = StringToKeywords(buf, NULL);
+        if (!scroll || !KeywordsMatch(key, &scroll->keywords)) {
+            FreeKeywords(key, TRUE);
             act("You do not have that item.", FALSE, ch, 0, 0, TO_CHAR);
             return;
         }
+        FreeKeywords(key, TRUE);
     }
 
     if (scroll->type_flag != ITEM_SCROLL) {
@@ -1773,6 +1558,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
     int             bits,
                     index;
     struct spell_info_type *spellp;
+    Keywords_t     *key;
 
     dlog("in do_use");
 
@@ -1785,8 +1571,14 @@ void do_use(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &buf2);
     argument = get_argument(argument, &buf3);
 
-    if (!buf || ch->equipment[HOLD] == 0 || 
-        !isname(buf, ch->equipment[HOLD]->name)) {
+    if( !buf ) {
+        send_to_char("Use what?\n\r", ch);
+        return;
+    }
+
+    key = StringToKeywords(buf, NULL);
+    if (!ch->equipment[HOLD] ||
+        !KeywordsMatch(key, &ch->equipment[HOLD]->keywords)) {
         act("You do not hold that item in your hand.", FALSE, ch, 0, 0,
             TO_CHAR);
         return;
@@ -3418,12 +3210,10 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
                     buf[MAX_STRING_LENGTH];
     int             r_num = 0;
 
-    if (IS_NPC(ch)) {
+    if (IS_NPC(ch) || !ch->skills) {
         return;
     }
-    if (!ch->skills) {
-        return;
-    }
+
     if (MOUNTED(ch)) {
         send_to_char("Not from this mount you cannot!\n\r", ch);
         return;
@@ -3489,26 +3279,23 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
         /*
          * load up the head object
          */
-        if ((r_num = real_object(SEVERED_HEAD)) >= 0) {
-            head = read_object(r_num, REAL);
-            if (!head) {
-                Log("ERROR IN BEhead.. make head object");
-                return;
-
-            }
-            obj_to_room(head, ch->in_room);
-            /*
-             * to room perhaps?
-             */
+        head = read_object(SEVERED_HEAD, VIRTUAL);
+        if (!head) {
+            Log("ERROR IN BEhead.. make head object");
+            return;
         }
+
+        /*
+         * to room perhaps?
+         */
+        obj_to_room(head, ch->in_room);
+
         /*
          * CHange name of head
          */
-        if (head->name) {
-            free(head->name);
-        }
+        FreeKeywords(&head->keywords, FALSE);
         sprintf(temp, "head %s", buf);
-        head->name = strdup(temp);
+        StringToKeywords(temp, &head->keywords);
 
         if (head->short_description) {
             free(head->short_description);

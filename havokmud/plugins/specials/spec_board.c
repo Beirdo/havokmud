@@ -33,6 +33,8 @@ int board(struct char_data *ch, int cmd, char *arg,
     char           *arg1;
     int             ret = FALSE;
     struct board_def *board = NULL;
+    Keywords_t     *key;
+    Keywords_t     *key2;
 
     if (type != PULSE_COMMAND || !ch || !ch->desc || !obj) {
         return( FALSE );
@@ -51,9 +53,16 @@ int board(struct char_data *ch, int cmd, char *arg,
     switch( cmd ) {
     case CMD_LOOK:
         arg = get_argument(arg, &arg1);
-        if (!arg1 || !isname(arg1, "board bulletin")) {
+        key = StringToKeywords(arg1, NULL);
+        key2 = StringToKeywords("board bulletin", NULL);
+        if (!arg1 || !KeywordsMatch(key, key2)) {
+            FreeKeywords(key, TRUE);
+            FreeKeywords(key2, TRUE);
             return( FALSE );
         }
+
+        FreeKeywords(key, TRUE);
+        FreeKeywords(key2, TRUE);
 
         board = find_board(obj);
         if( board ) {

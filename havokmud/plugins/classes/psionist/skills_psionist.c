@@ -2436,20 +2436,18 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
 void mind_sense_object(int level, struct char_data *ch,
                        struct char_data *victim, char *arg)
 {
-    char            name[256];
     char            buf[MAX_STRING_LENGTH];
     int             room = 0;
     int             old_location;
     struct obj_data *i;
     struct char_data *target = NULL;
 
-    assert(ch);
-    sprintf(name, "%s", arg);
-    buf[0] = '\0';
-
-    if (!ch->skills) {
+    if( !ch || !ch->skills ) {
         return;
     }
+
+    buf[0] = '\0';
+
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this\n\r", ch);
@@ -2470,67 +2468,70 @@ void mind_sense_object(int level, struct char_data *ch,
         send_to_char("Some powerful magic interference provide you from "
                      "finding this object\n", ch);
         return;
-    } else {
-        for (i = object_list; i; i = i->next) {
-            if ( !IS_SET(i->extra_flags, ITEM_QUEST) && 
-	         isname(name, i->name) ) {
-                if (i->carried_by) {
-                    target = i->carried_by;
-                    if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                         real_roomp(ch->in_room)->zone ==
-                         real_roomp(target->in_room)->zone) || 
-                        (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
-                        !IS_IMMORTAL(target) && 
-                        !(IS_SET(target->specials.act, ACT_PSI) && 
-                          GetMaxLevel(target) > GetMaxLevel(ch))) {
-                        room = target->in_room;
-                    }
-                } else if (i->equipped_by) {
-                    target = i->equipped_by;
-                    if (!IS_IMMORTAL(target) && 
-                        !(IS_SET(target->specials.act, ACT_PSI) && 
-                          GetMaxLevel(target) > GetMaxLevel(ch)) && 
-                        ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                         real_roomp(ch->in_room)->zone ==
-                         real_roomp(target->in_room)->zone) ||
-                         (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
-                        room = target->in_room;
-                    }
-                } else if (i->in_obj) {
-                    if ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                         real_roomp(ch->in_room)->zone ==
-                         real_roomp(i->in_obj->in_room)->zone) ||
-                        (!IS_SET(SystemFlags, SYS_ZONELOCATE))) {
-                        room = (i->in_obj->in_room);
-                    }
-                } else if (i->in_room && 
-                           ((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
-                            real_roomp(ch->in_room)->zone ==
-                            real_roomp(target->in_room)->zone) || 
-                            (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
-                    room = (i->in_room);
-                }
+    } 
+
+    key = StringToKeywords( arg, NULL );
+    
+    for (i = object_list; i; i = i->next) {
+        if ( IS_SET(i->extra_flags, ITEM_QUEST) ||
+             !KeywordsMatch(key, &i->keywords) ) {
+            continue;
+        }
+
+        if (i->carried_by) {
+            target = i->carried_by;
+            if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                 real_roomp(ch->in_room)->zone ==
+                 real_roomp(target->in_room)->zone) || 
+                (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
+                !IS_IMMORTAL(target) && 
+                !(IS_SET(target->specials.act, ACT_PSI) && 
+                  GetMaxLevel(target) > GetMaxLevel(ch))) {
+                room = target->in_room;
             }
+        } else if (i->equipped_by) {
+            target = i->equipped_by;
+            if (!IS_IMMORTAL(target) && 
+                !(IS_SET(target->specials.act, ACT_PSI) && 
+                  GetMaxLevel(target) > GetMaxLevel(ch)) && 
+                ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                 real_roomp(ch->in_room)->zone ==
+                 real_roomp(target->in_room)->zone) ||
+                 (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
+                room = target->in_room;
+            }
+        } else if (i->in_obj) {
+            if ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                 real_roomp(ch->in_room)->zone ==
+                 real_roomp(i->in_obj->in_room)->zone) ||
+                (!IS_SET(SystemFlags, SYS_ZONELOCATE))) {
+                room = (i->in_obj->in_room);
+            }
+        } else if (i->in_room && 
+                   ((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
+                    real_roomp(ch->in_room)->zone ==
+                    real_roomp(target->in_room)->zone) || 
+                    (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
+            room = (i->in_room);
         }
     }
 
     if (room == 0 || room == NOWHERE) {
         send_to_char("You cannot sense that item.\n\r", ch);
         return;
-    } else {
-        /* 
-         * a valid room check
-         */
-        if (real_roomp(room)) {
-            send_to_char("You close your eyes and envision your target.\n\r",
-                         ch);
-            old_location = ch->in_room;
-            char_from_room(ch);
-            char_to_room(ch, room);
-            do_look(ch, NULL, 15);
-            char_from_room(ch);
-            char_to_room(ch, old_location);
-        }
+    } 
+    
+    /* 
+     * a valid room check
+     */
+    if (real_roomp(room)) {
+        send_to_char("You close your eyes and envision your target.\n\r", ch);
+        old_location = ch->in_room;
+        char_from_room(ch);
+        char_to_room(ch, room);
+        do_look(ch, NULL, 15);
+        char_from_room(ch);
+        char_to_room(ch, old_location);
     }
 }
 
@@ -2860,13 +2861,3 @@ void mind_use_wall_of_thought(int level, struct char_data *ch, char *arg,
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
-
-
-
-
-
-
-
-
-
-

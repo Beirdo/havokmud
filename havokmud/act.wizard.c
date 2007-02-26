@@ -1175,6 +1175,10 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
     do_look(ch, NULL, 15);
 }
 
+/**
+ * @todo split this monstrosity into separate functions for each type of stat
+ *       to show
+ */
 void do_stat(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type *aff;
@@ -1199,6 +1203,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
     struct time_info_data ma;
     char           *proc;
     struct index_data *index;
+    char           *objname;
 
     dlog("in do_stat");
 
@@ -1700,9 +1705,11 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
      */
     if ((j = get_obj_vis_world(ch, arg1, &count)) != NULL) {
         virtual = MAX( 0, j->item_number );
+        objname = KeywordsToString( &j->keywords );
         sprintf(buf, "Object name: [%s]\n\r R-number: [%d], "
                      "V-number: [%d] Item type: ",
-                j->name, j->item_number, virtual);
+                objname, j->item_number, virtual);
+        free( objname );
         sprinttype(GET_ITEM_TYPE(j), item_types, buf2);
 
         strcat(buf, buf2);
@@ -1892,12 +1899,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         for (j2 = j->contains; j2; j2 = j2->next_content) {
             strcat(buf, fname(j2->name));
             strcat(buf, "\n\r");
-#if 0
             found == TRUE;
-            /*
-             * The point of this??(GH'04)
-             */
-#endif
         }
         if (!found) {
             strcpy(buf, "Contains : Nothing\n\r");
@@ -2032,10 +2034,8 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         virtual = MAX( 0, j->item_number );
 
         if (!strcmp(field, "name")) {
-            if (j->name) {
-                free(j->name);
-            }
-            j->name = strdup(argument);
+            FreeKeywords( &j->keywords, FALSE );
+            StringToKeywords( argument, &j->keywords );
             return;
         }
 
@@ -3058,7 +3058,8 @@ void do_load(struct char_data *ch, char *argument, int cmd)
         obj_to_char(obj, ch);
 
         if (GetMaxLevel(ch) < MAX_IMMORT) {
-            sprintf(buf, "%s loaded %s", GET_NAME(ch), obj->name);
+            sprintf(buf, "%s loaded %s (%d)", GET_NAME(ch), 
+                          obj->short_description, obj->item_number);
             log_sev(buf, 0);
         }
 
@@ -3304,41 +3305,30 @@ void do_start(struct char_data *ch)
      * outfit char with valueless items
      */
 
-    if ((r_num = real_object(12)) >= 0) {
-        obj = read_object(r_num, REAL);
-        obj_to_char(obj, ch);
-        /*
-         * bread
-         */
-        obj = read_object(r_num, REAL);
-        obj_to_char(obj, ch);
-        /*
-         * bread
-         */
-    }
+    /*
+     * bread
+     */
+    obj = read_object(12, VIRTUAL);
+    obj_to_char(obj, ch);
+    obj = read_object(12, VIRTUAL);
+    obj_to_char(obj, ch);
 
-    if ((r_num = real_object(13)) >= 0) {
-        obj = read_object(r_num, REAL);
-        obj_to_char(obj, ch);
-        /*
-         * water
-         */
-        obj = read_object(r_num, REAL);
-        obj_to_char(obj, ch);
-        /*
-         * water
-         */
-    }
+    /*
+     * water
+     */
+    obj = read_object(13, VIRTUAL);
+    obj_to_char(obj, ch);
+    obj = read_object(13, VIRTUAL);
+    obj_to_char(obj, ch);
 
     ch->skills[STYLE_STANDARD].learned = 95;
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         command_interpreter(ch, "group all");
     }
 
-    if (HasClass(ch,
-                 CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
-                 CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
-                 CLASS_NECROMANCER)) {
+    if (HasClass(ch, CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
+                     CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
+                     CLASS_NECROMANCER)) {
         ch->skills[SKILL_READ_MAGIC].learned = 95;
     }
 
@@ -3450,13 +3440,13 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &name);
-    if (name) {
-        if (!(victim = get_char_room_vis(ch, name))) {
-            send_to_char("That player is not here.\n\r", ch);
-            return;
-        }
-    } else {
+    if (!name) {
         send_to_char("Advance who?\n\r", ch);
+        return;
+    }
+
+    if (!(victim = get_char_room_vis(ch, name))) {
+        send_to_char("That player is not here.\n\r", ch);
         return;
     }
 
@@ -3533,10 +3523,12 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
 
     if (level == 0) {
         adv = 1;
-    } else if (!levelarg) {
-        send_to_char("You must supply a level number.\n\r", ch);
-        return;
     } else {
+        if (!levelarg) {
+            send_to_char("You must supply a level number.\n\r", ch);
+            return;
+        }
+
         if (!isdigit((int)*levelarg)) {
             send_to_char("Third argument must be a positive integer.\n\r", ch);
             return;
@@ -3595,6 +3587,9 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+/**
+ * @todo remove this POS
+ */
 void do_reroll(struct char_data *ch, char *argument, int cmd)
 {
     dlog("in do_reroll");
@@ -3715,8 +3710,7 @@ void do_noshout(struct char_data *ch, char *argument, int cmd)
     } else if (IS_NPC(vict)) {
         send_to_char("Can't do that to a beast.\n\r", ch);
     } else if (GetMaxLevel(vict) >= GetMaxLevel(ch)) {
-        act("$E might object to that.. better not.", 0, ch, 0, vict,
-            TO_CHAR);
+        act("$E might object to that.. better not.", 0, ch, 0, vict, TO_CHAR);
     } else if (IS_SET(vict->specials.act, PLR_NOSHOUT) && 
                GetMaxLevel(ch) >= SAINT) {
         send_to_char("You can shout again.\n\r", vict);
@@ -3830,6 +3824,9 @@ void print_room(int rnum, struct room_data *rp, struct string_block *sb)
     append_to_string_block(sb, buf);
 }
 
+/**
+ * @todo replace with macro
+ */
 void print_death_room(int rnum, struct room_data *rp,
                       struct string_block *sb)
 {
@@ -3838,6 +3835,9 @@ void print_death_room(int rnum, struct room_data *rp,
     }
 }
 
+/**
+ * @todo replace with macro
+ */
 void print_private_room(int rnum, struct room_data *rp,
                         struct string_block *sb)
 {
@@ -3866,12 +3866,14 @@ void show_room_zone(int rnum, struct room_data *rp,
     if (!rp || rp->number < srzs->bottom || rp->number > srzs->top) {
         return;
     }
+
     if (srzs->blank && (srzs->lastblank + 1 != rp->number)) {
         sprintf(buf, "rooms %d-%d are blank\n\r", srzs->startblank,
                 srzs->lastblank);
         append_to_string_block(srzs->sb, buf);
         srzs->blank = 0;
     }
+
     if (sscanf(rp->name, "%d", &srzs->lastblank) == 1 &&
         srzs->lastblank == rp->number) {
         if (!srzs->blank) {
@@ -3879,7 +3881,9 @@ void show_room_zone(int rnum, struct room_data *rp,
             srzs->blank = 1;
         }
         return;
-    } else if (srzs->blank) {
+    } 
+    
+    if (srzs->blank) {
         sprintf(buf, "rooms %d-%d are blank\n\r", srzs->startblank,
                 srzs->lastblank);
         append_to_string_block(srzs->sb, buf);
@@ -3918,6 +3922,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
     int             wearslot = 0;
     struct show_room_zone_struct srzs;
     char           *arg1;
+    char           *objname;
 
     dlog("in do_show");
 
@@ -4022,9 +4027,11 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     sprintf(color, "%s", "$c000W");
                 }
 
+                objname = KeywordsToString( index->keywords );
                 sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r",
                         objn, (index->number - 1), color,
-                        eval(obj), index->name);
+                        eval(obj), objname);
+                free( objname );
                 append_to_string_block(&sb, buf);
                 extract_obj(obj);
             }
@@ -4074,9 +4081,11 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                         } else {
                             sprintf(color, "%s", "$c000W");
                         }
+                        objname = KeywordsToString( oi->keywords );
                         sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
                                 oi->virtual, objn, (oi->number - 1), color,
-                                eval(obj), oi->name);
+                                eval(obj), objname);
+                        free( objname );
                         append_to_string_block(&sb, buf);
                     }
                     extract_obj(obj);
@@ -4138,9 +4147,11 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                         } else {
                             sprintf(color, "%s", "$c000W");
                         }
+                        objname = KeywordsToString( oi->keywords );
                         sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
                                 oi->virtual, objn, (oi->number - 1), color,
-                                eval(obj), oi->name);
+                                eval(obj), objname);
+                        free(objname);
                         append_to_string_block(&sb, buf);
                     }
                     extract_obj(obj);
@@ -4272,11 +4283,13 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                      * VNUM; NAME; TYPE; FLAGS; Affect1; Affect2; Affect3;
                      * Affect4
                      */
+                    objname = KeywordsToString( oi->keywords );
                     sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;",
                             zone, oi->virtual,
                             ((oi->number - 1 == 0) ? 0 : 1),
                             obj->cost_per_day,
-                            oi->name, temp1, temp2);
+                            objname, temp1, temp2);
+                    free( objname );
                     append_to_string_block(&sb, buf);
 
                     switch (GET_ITEM_TYPE(obj)) {
@@ -4430,8 +4443,10 @@ void do_show(struct char_data *ch, char *argument, int cmd)
              */
             obj = read_object(oi->virtual, VIRTUAL);
             if (obj && obj->max != 0) {
+                objname = KeywordsToString( oi->keywords );
                 sprintf(buf, "%5ld %4d %3d/%3d  %s \n\r", oi->virtual,
-                        objn, oi->number - 1, obj->max, oi->name);
+                        objn, oi->number - 1, obj->max, objname);
+                free(objname);
                 append_to_string_block(&sb, buf);
             }
             extract_obj(obj);
@@ -4455,30 +4470,6 @@ void do_show(struct char_data *ch, char *argument, int cmd)
     destroy_string_block(&sb);
 }
 
-void do_debug(struct char_data *ch, char *argument, int cmd)
-{
-    char           *arg;
-    int             i;
-
-    dlog("in do_debug");
-
-    i = -1;
-
-    argument = get_argument(argument, &arg);
-    if( arg ) {
-        i = atoi(arg);
-    }
-
-    if (!arg || i < 0 || i > 2) {
-        send_to_char("Valid values are 0, 1 and 2\n\r", ch);
-    } else {
-        /*
-         * malloc_debug(i);
-         */
-
-        oldSendOutput(ch, "Malloc debug level set to %d\n\r", i);
-    }
-}
 
 void do_invis(struct char_data *ch, char *argument, int cmd)
 {
@@ -4491,6 +4482,7 @@ void do_invis(struct char_data *ch, char *argument, int cmd)
     if (cmd == 242 && !IS_IMMORTAL(ch)) {
         return;
     }
+
     if (cmd != 242) {
         if (affected_by_spell(ch, SPELL_INVISIBLE)) {
             affect_from_char(ch, SPELL_INVISIBLE);
@@ -4558,6 +4550,7 @@ void do_create(struct char_data *ch, char *argument, int cmd)
     if (cmd != 0) {
         send_to_char("You form much order out of Chaos\n\r", ch);
     }
+
     for (i = start; i <= end; i++) {
         if (!real_roomp(i)) {
             CreateOneRoom(i);
@@ -4576,18 +4569,13 @@ void CreateOneRoom(int loc_nr)
 
     allocate_room(loc_nr);
     rp = real_roomp(loc_nr);
-    bzero(rp, sizeof(*rp));
-    /*
-     * changed this to below (GH) may242002
-     */
-#if 0
-    bzero(rp, sizeof(struct room_data));
-#endif
+    memset(rp, 0, sizeof(struct room_data));
+
     rp->number = loc_nr;
     if (top_of_zone_table >= 0) {
         for (zone = 0;
-             rp->number > zone_table[zone].top
-             && zone <= top_of_zone_table; zone++) {
+             rp->number > zone_table[zone].top && zone <= top_of_zone_table;
+             zone++) {
             /*
              * Empty loop
              */
@@ -4733,7 +4721,6 @@ void do_cset(struct char_data *ch, char *arg, int cmd)
                      "| \"position\"> <level>\n\r", ch);
         return;
     }
-
 
     if (!strcmp(buf1, "show") && buf2) {
         radix = HashTable[(int) *buf2];
@@ -5486,10 +5473,13 @@ void do_mforce(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+/**
+ * @todo how is this different than clone_obj_to_obj?
+ */
 struct obj_data *clone_obj(struct obj_data *obj)
 {
     struct obj_data *ocopy;
-    ocopy = read_object(obj->item_number, REAL);
+    ocopy = read_object(obj->item_number, VIRTUAL);
     /*
      * clear
      */
@@ -5699,6 +5689,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+/**
+ * @todo db_get_report now returns ALL the results.  rewrite
+ */
 char *view_newhelp(void)
 {
     struct user_report *report;
@@ -5739,6 +5732,9 @@ char *view_newhelp(void)
     return( buf );
 }
 
+/**
+ * @todo db_get_report now returns ALL the results.  rewrite
+ */
 char *view_report(int reportId)
 {
     struct user_report *report;
@@ -6194,7 +6190,6 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd)
                      vict);
         send_to_char("WIZNOOOC removed.\n\r", ch);
         REMOVE_BIT(vict->specials.act, PLR_WIZNOOOC);
-
     } else if (GetMaxLevel(ch) >= 55) {
         send_to_char("The gods take away your ability to use the OOC "
                      "channel!\n\r", vict);

@@ -693,7 +693,6 @@ void            WeaponSpell(struct char_data *c, struct char_data *v,
                             struct obj_data *obj, int type);
 
 struct char_data *FindAnAttacker(struct char_data *ch);
-void            shoot(struct char_data *ch, struct char_data *victim);
 struct char_data *FindMetaVictim(struct char_data *ch);
 void            NailThisSucker(struct char_data *ch);
 int             GetFormType(struct char_data *ch);

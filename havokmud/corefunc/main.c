@@ -556,8 +556,8 @@ void reset_time(void)
         }
     }
 
-    Log("   Current Gametime: %dH %dD %dM %dY.", time_info.hours,
-        time_info.day, time_info.month, time_info.year);
+    LogPrint(LOG_CRIT, "   Current Gametime: %dH %dD %dM %dY.", time_info.hours,
+             time_info.day, time_info.month, time_info.year);
 
     weather_info.pressure = 960;
     if ((time_info.month >= 7) && (time_info.month <= 12)) {

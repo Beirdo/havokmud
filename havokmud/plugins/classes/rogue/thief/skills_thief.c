@@ -397,6 +397,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
     int             gold,
                     eq_pos;
     bool            ohoh = FALSE;
+    Keywords_t     *key;
 
     dlog("in do_steal");
 
@@ -474,10 +475,11 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
     }
 
     if (strcasecmp(obj_name, "coins") && strcasecmp(obj_name, "gold")) {
+        key = StringToKeywords( obj_name, NULL );
         if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
             for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
                 if (victim->equipment[eq_pos] &&
-                    isname(obj_name, victim->equipment[eq_pos]->name) &&
+                    KeywordsMatch(key, &victim->equipment[eq_pos]->keywords) &&
                     CAN_SEE_OBJ(ch, victim->equipment[eq_pos])) {
                     obj = victim->equipment[eq_pos];
                     break;
@@ -486,6 +488,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
 
             if (!obj) {
                 act("$E has not got that item.", FALSE, ch, 0, victim, TO_CHAR);
+                FreeKeywords(key, TRUE);
                 return;
             } 
             
@@ -494,6 +497,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
              */
             if ((GET_POS(victim) > POSITION_STUNNED)) {
                 send_to_char("Steal the equipment now? Impossible!\n\r", ch);
+                FreeKeywords(key, TRUE);
                 return;
             } 
             
@@ -513,6 +517,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
              */
             if (IS_OBJ_STAT(obj, ITEM_NODROP)) {
                 send_to_char("You can't steal it, it must be CURSED!\n\r", ch);
+                FreeKeywords(key, TRUE);
                 return;
             }
 
@@ -553,6 +558,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                     send_to_char("You cannot carry that much.\n\r", ch);
             }
         }
+        FreeKeywords(key, TRUE);
     } else {
         /*
          * Steal some coins

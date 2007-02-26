@@ -11,7 +11,7 @@ ROOT = .
 INCDIRS = -I${ROOT} -I${ROOT}/include -I${ROOT}/util @INCLUDES@
 
 ##  these are architecture dependent flags
-CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
+CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
 	 ${INCDIRS}
 
 ##  Libraries

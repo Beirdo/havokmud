@@ -265,13 +265,16 @@ void UpdateObjMenu(struct char_data *ch)
 {
     char            buf[255];
     struct obj_data *obj;
+    char           *objname;
 
     obj = ch->specials.objedit;
 
     send_to_char(VT_HOMECLR, ch);
     sprintf(buf, VT_CURSPOS, 1, 1);
     send_to_char(buf, ch);
-    sprintf(buf, "Object Name: %s", obj->name);
+    objname = KeywordsToString( &obj->keywords );
+    sprintf(buf, "Object Name: %s", objname);
+    free( objname );
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 3, 1);
     send_to_char(buf, ch);
@@ -441,6 +444,7 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
 {
     char            buf[255];
     struct obj_data *obj;
+    char           *objname;
 
     if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
@@ -450,10 +454,8 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
 
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
-        if (obj->name) {
-            free(obj->name);
-        }
-        obj->name = (char *) strdup(arg);
+        FreeKeywords(&obj->keywords, FALSE);
+        StringToKeywords( arg, &obj->keywords );
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -462,7 +464,9 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    sprintf(buf, "Current Object Name: %s", obj->name);
+    objname = KeywordsToString( obj->name );
+    sprintf(buf, "Current Object Name: %s", objname);
+    free(objname);
     send_to_char(buf, ch);
     send_to_char("\n\r\n\rNew Object Name: ", ch);
 }

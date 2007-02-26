@@ -202,7 +202,9 @@ void MobScavenge(struct char_data *ch)
         Log("No room data in MobScavenge ??Crash???");
 #endif        
         return;
-    } else if ((real_roomp(ch->in_room))->contents && number(0, 4)) {
+    } 
+    
+    if ((real_roomp(ch->in_room))->contents && number(0, 4)) {
         for (max = 1, best_obj = 0, obj = (real_roomp(ch->in_room))->contents;
              obj; obj = obj->next_content) {
             if (IS_CORPSE(obj)) {
@@ -567,15 +569,7 @@ int UseViolentHeldItem(struct char_data *ch)
              * item has charges 
              */
 
-            objname = strdup(obj->name);
-            if( !objname ) {
-                Log( "Error in UseViolentHeldItem" );
-                return( FALSE );
-            }
-
-            tmp2 = objname;
-            tmp = strsep( &tmp2, " " );
-            tmp = skip_spaces(tmp);
+            objname = KeywordsToString( obj->keywords );
 
             if (isname(GET_NAME(ch), GET_NAME(ch->specials.fighting))) {
                 i = 0;
@@ -590,17 +584,11 @@ int UseViolentHeldItem(struct char_data *ch)
                 }
             }
 
-#if 0
-            Log("%s attempting to use %s on %d.%s", GET_NAME(ch), tmp, 
-                tokillnum, GET_NAME(ch->specials.fighting));
-#endif
-
             if (tokillnum > 0) {
-                sprintf(buf, "%s %d.%s", tmp, tokillnum,
+                sprintf(buf, "%s %d.%s", objname, tokillnum,
                         GET_NAME(ch->specials.fighting));
             } else {
-                sprintf(buf, "%s %s", tmp,
-                        GET_NAME(ch->specials.fighting));
+                sprintf(buf, "%s %s", objname, GET_NAME(ch->specials.fighting));
             }
             do_use(ch, buf, 0);
             free( objname );
@@ -714,6 +702,7 @@ int FindABetterWeapon(struct char_data * mob)
     struct obj_data *o,
                    *best;
     char            buf[MAX_STRING_LENGTH];
+    char           *objname;
 
     /*
      * pick up and wield weapons Similar code for armor, etc. 
@@ -782,21 +771,29 @@ int FindABetterWeapon(struct char_data * mob)
          */
         if (best->carried_by == mob) {
             if (mob->equipment[WIELD]) {
-                sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+                objname = KeywordsToString(mob->equipment[WIELD]->keywords);
+                sprintf(buf, "remove %s", objname);
+                free(objname);
                 command_interpreter(mob, buf);
             }
-            do_wield(mob, best->name, 0);
+            objname = KeywordsToString(best->keywords);
+            do_wield(mob, objname, 0);
+            free( objname );
         } else if (best->equipped_by == mob) {
             /*
              * do nothing 
              */
             return (TRUE);
         } else {
-            sprintf( buf, "get %s", best->name );
+            objname = KeywordsToString(best->keywords);
+            sprintf( buf, "get %s", objname );
+            free( objname );
             command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
-        sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+        objname = KeywordsToString(mob->equipment[WIELD]->keywords);
+        sprintf(buf, "remove %s", objname);
+        free(objname);
         command_interpreter(mob, buf);
     }
     return (FALSE);
@@ -1159,39 +1156,36 @@ void MobHit(struct char_data *ch, struct char_data *v, int type)
      */
     if (ch->equipment[WIELD]) {
         o = ch->equipment[WIELD];
-        if (o->value[3] != 11 && o->value[3] != 1 &&
-            o->value[3] != 10) {
+
+        if (o->value[3] != 11 && o->value[3] != 1 && o->value[3] != 10) {
             hit(ch, v, 0);
-        } else {
-            if (ch->specials.fighting) {
-                return;
-            }
+            return;
+        } 
+        
+        if (ch->specials.fighting) {
+            return;
+        }
 
-            if (v->specials.fighting) {
-                base = 0;
-            } else {
-                base = 4;
-            }
+        base = ( v->specials.fighting ? 0 : 4 );
 
-            learned = 50 + GetMaxLevel(ch);
-            percent = number(1, 100);
-            if (percent > learned) {
-                if (AWAKE(v)) {
-                    AddHated(v, ch);
-                    damage(ch, v, 0, SKILL_BACKSTAB);
-                } else {
-                    base += 2;
-                    GET_HITROLL(ch) += base;
-                    AddHated(v, ch);
-                    hit(ch, v, SKILL_BACKSTAB);
-                    GET_HITROLL(ch) -= base;
-                }
+        learned = 50 + GetMaxLevel(ch);
+        percent = number(1, 100);
+        if (percent > learned) {
+            if (AWAKE(v)) {
+                AddHated(v, ch);
+                damage(ch, v, 0, SKILL_BACKSTAB);
             } else {
+                base += 2;
                 GET_HITROLL(ch) += base;
                 AddHated(v, ch);
                 hit(ch, v, SKILL_BACKSTAB);
                 GET_HITROLL(ch) -= base;
             }
+        } else {
+            GET_HITROLL(ch) += base;
+            AddHated(v, ch);
+            hit(ch, v, SKILL_BACKSTAB);
+            GET_HITROLL(ch) -= base;
         }
     } else {
         hit(ch, v, 0);

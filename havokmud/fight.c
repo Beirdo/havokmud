@@ -76,6 +76,8 @@ void            raw_kill_arena(struct char_data *ch);
 void            DeleteHatreds(struct char_data *ch);
 int             IsMagicSpell(int spell_num);
 int             clearpath(struct char_data *ch, long room, int direc);
+struct obj_data *create_money(int amount);
+
  /*
   * Weapon attack texts
   */
@@ -368,8 +370,6 @@ void make_corpse(struct char_data *ch, int killedbytype)
                     i,
                     ADeadBody = FALSE;
 
-    struct obj_data *create_money(int amount);
-
     CREATE(corpse, struct obj_data, 1);
     clear_object(corpse);
 
@@ -384,55 +384,56 @@ void make_corpse(struct char_data *ch, int killedbytype)
          */
         if ((GET_HIT(ch) < -50) && (killedbytype == TYPE_SLASH ||
                                     killedbytype == TYPE_CLEAVE)) {
-            if ((r_num = real_object(SEVERED_HEAD)) >= 0) {
-                cp = read_object(r_num, REAL);
-                sprintf(buf, "head severed %s", corpse->name);
-                corpse->beheaded_corpse = TRUE;
-                if (cp->name) {
-                    free(cp->name);
-                }
-                cp->name = strdup(buf);
-                sprintf(buf, "the severed head of %s",
-                        (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
-                if (cp->short_description) {
-                    free(cp->short_description);
-                }
-                cp->short_description = strdup(buf);
-                if (cp->action_description) {
-                    free(cp->action_description);
-                }
-                cp->action_description = strdup(buf);
-                sprintf(buf, "%s is lying on the ground.", buf);
-                if (cp->description) {
-                    free(cp->description);
-                }
-                cp->description = strdup(buf);
+            cp = read_object(SEVERED_HEAD, VIRTUAL);
+            corpse->beheaded_corpse = TRUE;
 
-                cp->type_flag = ITEM_CONTAINER;
-                cp->wear_flags = ITEM_TAKE;
+            sprintf(buf, "head severed %s", 
+                    (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+            FreeKeywords( &cp->keywords, FALSE );
+            StringToKeywords( buf, &cp->keywords );
 
-                /*
-                 * You can't store stuff in a corpse.
-                 * Lennya: this makes corpses return a negative fullness %
-                 */
-                cp->value[0] = 0;
-
-                /* race of corpse NOT USED HERE */
-                cp->affected[0].modifier = GET_RACE(ch);
-
-                /* level of corpse NOT USED HERE */
-                cp->affected[1].modifier = GetMaxLevel(ch);
-
-                /* corpse identifier */
-                cp->value[3] = 1;
-
-                if (IS_NPC(ch)) {
-                    cp->timer = MAX_NPC_CORPSE_TIME + 2;
-                } else {
-                    cp->timer = MAX_PC_CORPSE_TIME + 3;
-                }
-                obj_to_room(cp, ch->in_room);
+            sprintf(buf, "the severed head of %s",
+                    (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+            if (cp->short_description) {
+                free(cp->short_description);
             }
+            cp->short_description = strdup(buf);
+
+            if (cp->action_description) {
+                free(cp->action_description);
+            }
+            cp->action_description = strdup(buf);
+
+            sprintf(buf, "%s is lying on the ground.", cp->short_description);
+            if (cp->description) {
+                free(cp->description);
+            }
+            cp->description = strdup(buf);
+
+            cp->type_flag = ITEM_CONTAINER;
+            cp->wear_flags = ITEM_TAKE;
+
+            /*
+             * You can't store stuff in a head.
+             * Lennya: this makes corpses return a negative fullness %
+             */
+            cp->value[0] = 0;
+
+            /* race of corpse NOT USED HERE */
+            cp->affected[0].modifier = GET_RACE(ch);
+
+            /* level of corpse NOT USED HERE */
+            cp->affected[1].modifier = GetMaxLevel(ch);
+
+            /* corpse identifier */
+            cp->value[3] = 1;
+
+            if (IS_NPC(ch)) {
+                cp->timer = MAX_NPC_CORPSE_TIME + 2;
+            } else {
+                cp->timer = MAX_PC_CORPSE_TIME + 3;
+            }
+            obj_to_room(cp, ch->in_room);
         }
 
         /*
@@ -487,16 +488,17 @@ void make_corpse(struct char_data *ch, int killedbytype)
             break;
         }
 
-        sprintf(buf, "corpse %s", spec_desc);
-        if (corpse->name) {
-            free(corpse->name);
-        }
-        corpse->name = strdup(buf);
+        sprintf(buf, "corpse %s", 
+                    (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+        FreeKeywords( &corpse->keywords, FALSE );
+        StringToKeywords( buf, &corpse->keywords );
+
         if (IS_AFFECTED(ch, AFF_FLYING)) {
             sprintf(buf, "The %s floating in the air here.", spec_desc);
         } else {
             sprintf(buf, "The %s lying here.", spec_desc);
         }
+
         if (corpse->description) {
             free(corpse->description);
         }
@@ -514,16 +516,17 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
         ADeadBody = TRUE;
     } else if (IsUndead(ch)) {
-        if (corpse->name) {
-            free(corpse->name);
-        }
+        FreeKeywords( &corpse->keywords, FALSE );
+        
         if (corpse->description) {
             free(corpse->description);
         }
+
         if (corpse->short_description) {
             free(corpse->short_description);
         }
-        corpse->name = strdup("dust pile bones corpse");
+
+        StringToKeywords( "dust pile bones corpse", &corpse->keywords );
         corpse->description = strdup("A pile of dust and bones is here.");
         corpse->short_description = strdup("a pile of dust and bones");
     }
@@ -1330,6 +1333,10 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
     return (buf);
 }
 
+/**
+ * @todo move dam_weapons[] into SQL
+ * @todo make the snum case statement into a table-driven piece of code
+ */
 void dam_message(int dam, struct char_data *ch, struct char_data *victim,
                  int w_type)
 {
@@ -1447,8 +1454,9 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
                          location_hit_text[hitloc].singular);
 
     /*
-     * @Desc Says how much damage your hitting after 200milxp @Author Greg
-     * Hovey (GH) @Date April 2002
+     * @Desc Says how much damage your hitting after 200milxp 
+     * @Author Greg Hovey (GH) 
+     * @Date April 2002
      */
     if (GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) ||
         IS_SET(ch->specials.act, PLR_LEGEND)) {
@@ -1470,10 +1478,6 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
 {
     struct room_data *rp;
 
-    /*
-     * assert(GET_POS(victim) > POSITION_DEAD);
-     */
-
     if (!GET_POS(victim) > POSITION_DEAD) {
         Log("!GET_POS(victim) > POSITION_DEAD in fight.c");
         return (TRUE);
@@ -1483,11 +1487,8 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
     if (rp && (rp->room_flags & PEACEFUL) && type != SPELL_POISON &&
         type != SPELL_DISEASE && type != SPELL_DECAY &&
         type != SPELL_HEAT_STUFF && type != TYPE_SUFFERING) {
-        Log("damage(,,,%d) called in PEACEFUL room", type);
+        Log("damage(,,%d) called in PEACEFUL room", type);
         return (TRUE);
-        /*
-         * true, they are denied from fighting
-         */
     }
     return (FALSE);
 }
@@ -1547,6 +1548,9 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
     return (TRUE);
 }
 
+/**
+ * @todo rewrite this fugly code!
+ */
 void WeaponSkillCheck(struct char_data *ch)
 {
     struct obj_data *obj;
@@ -2521,6 +2525,9 @@ int GetWeaponType(struct char_data *ch, struct obj_data **wielded)
     return (w_type);
 }
 
+/**
+ * @todo make this table driven, this is retarded
+ */
 int Getw_type(struct obj_data *wielded)
 {
     int             w_type;
@@ -2907,16 +2914,16 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
     }
 
     if (GET_POS(v) < POSITION_FIGHTING) {
+        /*
+         * Position sitting x 1.33
+         * Position resting x 1.66
+         * Position sleeping x 2.00
+         * Position stunned x 2.33
+         * Position incap x 2.66
+         * Position mortally x 3.00
+         */
         dam *= 1 + (POSITION_FIGHTING - GET_POS(v)) / 3;
     }
-    /*
-     * Position sitting x 1.33
-     * Position resting x 1.66
-     * Position sleeping x 2.00
-     * Position stunned x 2.33
-     * Position incap x 2.66
-     * Position mortally x 3.00
-     */
 
     if (ch->style == FIGHTING_STYLE_AGGRESSIVE) {
         if (FSkillCheck(ch, FIGHTING_STYLE_AGGRESSIVE)) {
@@ -3162,13 +3169,12 @@ void perform_violence(int pulse)
         combat_next_dude = ch->next_fighting;
         rp = real_roomp(ch->in_room);
 
-        /*
-         * assert(ch->specials.fighting);
-         */
         if (!ch->specials.fighting) {
             Log("!ch->specials.fighting in perform violence fight.c");
-            return;
-        } else if (rp && rp->room_flags & PEACEFUL) {
+            continue;
+        } 
+        
+        if (rp && rp->room_flags & PEACEFUL) {
             Log("perform_violence() found %s fighting in a PEACEFUL room.",
                 ch->player.name);
             stop_fighting(ch);
@@ -3277,9 +3283,6 @@ void perform_violence(int pulse)
                     }
 
                     if (ch->equipment[WIELD]) {
-#if 0
-                        send_to_char("Wielding a weapon",ch);
-#endif
                         x += (float) ch->equipment[WIELD]->speed / 100;
                     } else if (HasClass(ch, CLASS_MONK)) {
                             x += 0.55;
@@ -3367,9 +3370,9 @@ void perform_violence(int pulse)
 
                     if (ch->style == FIGHTING_STYLE_EVASIVE) {
                         if (FSkillCheck(ch, FIGHTING_STYLE_EVASIVE)) {
-                            x = x - x * 0.20;
+                            x *= 0.80;
                         } else {
-                            x = x - x * 0.40;
+                            x *= 0.60;
                         }
                     }
 
@@ -3416,75 +3419,74 @@ void perform_violence(int pulse)
                             if (IS_SET(ch->specials.affected_by2, AFF2_HASTE) &&
                                 (ch->specials.remortclass ==
                                  RANGER_LEVEL_IND + 1)) {
-                                x = x + 0.75;
+                                x += 0.75;
                             }
                             if (IS_SET(ch->specials.affected_by2, AFF2_SLOW)) {
-                                x = x / 2;
+                                x /= 2;
                             }
                         }
 
                         while (x > 0.999) {
-                            if (ch->specials.fighting) {
-                                if ((perc = number(1, 101)) <
-                                    ch->skills[SKILL_DUAL_WIELD].learned) {
-                                    weapon = unequip_char(ch, WIELD);
+                            if (!ch->specials.fighting) {
+                                x = 0.0;
+                                break;
+                            } 
+
+                            if ((perc = number(1, 101)) <
+                                ch->skills[SKILL_DUAL_WIELD].learned) {
+                                weapon = unequip_char(ch, WIELD);
+                                tmp = unequip_char(ch, HOLD);
+                                equip_char(ch, tmp, WIELD);
+
+                                if (ch->specials.fighting) {
+                                    hit(ch, ch->specials.fighting,
+                                        TYPE_UNDEFINED);
+                                }
+
+                                if (ch->equipment[WIELD]) {
+                                    tmp = unequip_char(ch, WIELD);
+                                    equip_char(ch, tmp, HOLD);
+
+                                }
+                                equip_char(ch, weapon, WIELD);
+                            } else {
+                                /*
+                                 * we failed, gotta stop attacking after
+                                 * the fumble messages and learnage
+                                 */
+                                if (!HasClass(ch, CLASS_RANGER) ||
+                                    number(1, 20) > GET_DEX(ch)) {
                                     tmp = unequip_char(ch, HOLD);
-                                    equip_char(ch, tmp, WIELD);
+                                    obj_to_room(tmp, ch->in_room);
+                                    act("$c0014You fumble and drop $p",
+                                        0, ch, tmp, tmp, TO_CHAR);
+                                    act("$c0014$n fumbles and drops $p", 0,
+                                        ch, tmp, tmp, TO_ROOM);
 
-                                    if (ch->specials.fighting) {
-                                        hit(ch, ch->specials.fighting,
-                                            TYPE_UNDEFINED);
+                                    if (HasClass(ch, CLASS_RANGER)) {
+                                        LearnFromMistake(ch, SKILL_DUAL_WIELD,
+                                                         FALSE, 95);
                                     }
 
-                                    if (ch->equipment[WIELD]) {
+                                    if (number(1, 20) > GET_DEX(ch)) {
                                         tmp = unequip_char(ch, WIELD);
-                                        equip_char(ch, tmp, HOLD);
-
-                                    }
-                                    equip_char(ch, weapon, WIELD);
-                                } else {
-                                    /*
-                                     * we failed, gotta stop attacking after
-                                     * the fumble messages and learnage
-                                     */
-                                    if (!HasClass(ch, CLASS_RANGER) ||
-                                        number(1, 20) > GET_DEX(ch)) {
-                                        tmp = unequip_char(ch, HOLD);
                                         obj_to_room(tmp, ch->in_room);
-                                        act("$c0014You fumble and drop $p",
-                                            0, ch, tmp, tmp, TO_CHAR);
-                                        act("$c0014$n fumbles and drops $p", 0,
-                                            ch, tmp, tmp, TO_ROOM);
+                                        act("$c0015and you fumble and drop"
+                                            " $p too!", 0, ch, tmp, tmp,
+                                            TO_CHAR);
+                                        act("$c0015and then fumbles and "
+                                            "drops $p as well!", 0, ch,
+                                            tmp, tmp, TO_ROOM);
 
                                         if (HasClass(ch, CLASS_RANGER)) {
                                             LearnFromMistake(ch,
-                                                             SKILL_DUAL_WIELD,
-                                                             FALSE, 95);
+                                                         SKILL_DUAL_WIELD,
+                                                         FALSE, 95);
                                         }
 
-                                        if (number(1, 20) > GET_DEX(ch)) {
-                                            tmp = unequip_char(ch, WIELD);
-                                            obj_to_room(tmp, ch->in_room);
-                                            act("$c0015and you fumble and drop"
-                                                " $p too!", 0, ch, tmp, tmp,
-                                                TO_CHAR);
-                                            act("$c0015and then fumbles and "
-                                                "drops $p as well!", 0, ch,
-                                                tmp, tmp, TO_ROOM);
-
-                                            if (HasClass(ch, CLASS_RANGER)) {
-                                                LearnFromMistake(ch,
-                                                             SKILL_DUAL_WIELD,
-                                                             FALSE, 95);
-                                            }
-
-                                        }
-                                        x = 0.0;
                                     }
+                                    x = 0.0;
                                 }
-                            } else {
-                                x = 0.0;
-                                break;
                             }
                             x -= 1.0;
                         }
@@ -3680,9 +3682,8 @@ void perform_violence(int pulse)
     }
 }
 
-#if 1
-/*
- * This crashes the mud too
+/**
+ * @bug This crashes the mud too
  */
 struct char_data *FindVictim(struct char_data *ch)
 {
@@ -3706,24 +3707,21 @@ struct char_data *FindVictim(struct char_data *ch)
                     kjump = 0,
                     djump = 0;
 
-    if (!ch) {
-        return (0);
+    if (!ch || ch->in_room < 0) {
+        return (NULL);
     }
 
-    if (ch->in_room < 0) {
-        return (0);
-    }
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0
         Log("/* No room??? Crash??? */");
 #endif
-        return (0);
+        return (NULL);
     }
 
     tmp_ch = rp->people;
     if (!tmp_ch) {
-        return (0);
+        return (NULL);
     }
 
     while (tmp_ch) {
@@ -3777,7 +3775,7 @@ struct char_data *FindVictim(struct char_data *ch)
      */
 
     if (!found) {
-        return (0);
+        return (NULL);
     }
 
     /*
@@ -3876,206 +3874,8 @@ struct char_data *FindVictim(struct char_data *ch)
         return (ch->specials.fighting);
     }
 
-    return (0);
+    return (NULL);
 }
-#else
-/*
- * Stockmuds version
- */
-struct char_data *FindVictim(struct char_data *ch)
-{
-    struct char_data *vict;
-    struct room_data *rp = ch->in_room;
-    unsigned char   found = FALSE;
-    unsigned short  ftot = 0,
-                    ttot = 0,
-                    ctot = 0,
-                    ntot = 0,
-                    mtot = 0,
-                    ktot = 0,
-                    dtot = 0;
-    unsigned short  total;
-    unsigned short  fjump = 0,
-                    njump = 0,
-                    cjump = 0,
-                    mjump = 0,
-                    tjump = 0,
-                    kjump = 0,
-                    djump = 0;
-    struct room_data *rp;
-
-    rp = real_roomp(ch->in_room);
-    if (!rp) {
-#if 0
-        Log("No room data in FindVictim ??Crash???");
-#endif
-        return (0);
-    }
-
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
-         tmp_ch = tmp_ch->next_in_room) {
-        if (CAN_SEE(ch, tmp_ch) &&
-            !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
-            !IS_AFFECTED(tmp_ch, AFF_SNEAK) && ch != tmp_ch &&
-            (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) &&
-            ((tmp_ch->specials.zone != ch->specials.zone &&
-              !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
-             IS_SET(tmp_ch->specials.act, ACT_ANNOYING)))  {
-            for (vict = rp->people; vict; vict = vict->next_in_room) {
-                if (CAN_SEE(ch, vict) &&
-                    !IS_SET(vict->specials.act, PLR_NOHASSLE) &&
-                    !IS_AFFECTED(vict, AFF_SNEAK) && ch != vict &&
-                    (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) &&
-                    ((vict->specials.zone != ch->specials.zone &&
-                      !strchr(zone_table[ch->specials.zone].races,
-                              GET_RACE(vict))) ||
-                     IS_SET(vict->specials.act, ACT_ANNOYING)) &&
-                    !in_group(ch, vict)) {
-                    /*
-                     * a potential victim has been found
-                     */
-                    found = TRUE;
-                    if (!IS_NPC(vict)) {
-                        if (affected_by_spell(vict, SKILL_DISGUISE) ||
-                            affected_by_spell(vict,
-                                              SKILL_PSYCHIC_IMPERSONATION) &&
-                            number(1, 101) > 50) {
-                            /*
-                             * 50/50 chance to not attack disguised person
-                             */
-                            return NULL;
-                        }
-
-                        if (HasClass(vict, CLASS_WARRIOR | CLASS_BARBARIAN |
-                                           CLASS_PALADIN | CLASS_RANGER)) {
-                            ftot++;
-                        } else if (HasClass(vict, CLASS_CLERIC)) {
-                            ctot++;
-                        } else if (HasClass(vict, CLASS_MAGIC_USER) ||
-                                   HasClass(vict, CLASS_SORCERER)) {
-                            mtot++;
-                        } else if (HasClass(vict, CLASS_THIEF | CLASS_PSI)) {
-                            ttot++;
-                        } else if (HasClass(vict, CLASS_DRUID)) {
-                            dtot++;
-                        } else if (HasClass(vict, CLASS_MONK)) {
-                            ktot++;
-                        }
-                    } else {
-                        ntot++;
-                    }
-                }
-
-                /*
-                 * if no legal enemies have been found, return 0
-                 */
-                if (!found)
-                    return NULL;
-
-                /*
-                 * give higher priority to fighters, clerics, thieves,magic
-                 * users if int <= 12
-                 * give higher priority to fighters, clerics, magic users
-                 * thieves is int > 12
-                 * give higher priority to magic users, fighters, clerics,
-                 * thieves if int > 15
-                 */
-
-                if (ch->abilities.intel <= 3) {
-                    fjump = 2;
-                    cjump = 2;
-                    tjump = 2;
-                    njump = 2;
-                    mjump = 2;
-                    kjump = 2;
-                    djump = 0;
-                } else if (ch->abilities.intel <= 9) {
-                    fjump = 4;
-                    cjump = 3;
-                    tjump = 2;
-                    njump = 2;
-                    mjump = 1;
-                    kjump = 2;
-                    djump = 2;
-                } else if (ch->abilities.intel <= 12) {
-                    fjump = 3;
-                    cjump = 3;
-                    tjump = 2;
-                    njump = 2;
-                    mjump = 2;
-                    kjump = 3;
-                    djump = 2;
-                } else if (ch->abilities.intel <= 15) {
-                    fjump = 3;
-                    cjump = 3;
-                    tjump = 2;
-                    njump = 2;
-                    mjump = 3;
-                    kjump = 2;
-                    djump = 2;
-                } else {
-                    fjump = 3;
-                    cjump = 3;
-                    tjump = 2;
-                    njump = 1;
-                    mjump = 3;
-                    kjump = 3;
-                    djump = 2;
-                }
-
-                total = (fjump * ftot) + (cjump * ctot) + (tjump * ttot) +
-                        (njump * ntot) + (mjump * mtot) + (djump * dtot) +
-                        (kjump * ktot);
-
-                total = (int) number(1, (int) total);
-
-                for (vict = rp->people; vict; vict = vict->next_in_room) {
-                    if (CAN_SEE(ch, vict) &&
-                        !IS_SET(vict->specials.act, PLR_NOHASSLE) &&
-                        !IS_AFFECTED(vict, AFF_SNEAK) && ch != vict &&
-                        (!IS_SET(ch->specials.act, ACT_WIMPY) ||
-                         !AWAKE(vict)) &&
-                        ((vict->specials.zone != ch->specials.zone &&
-                          !strchr(zone_table[ch->specials.zone].races,
-                                  GET_RACE(vict))) ||
-                         IS_SET(vict->specials.act, ACT_ANNOYING)) &&
-                        !in_group(ch, vict)) {
-
-                        if (IS_NPC(vict)) {
-                            total -= njump;
-                        } else if (HasClass(vict, CLASS_WARRIOR |
-                                                  CLASS_BARBARIAN |
-                                                  CLASS_PALADIN |
-                                                  CLASS_RANGER)) {
-                            total -= fjump;
-                        } else if (HasClass(vict, CLASS_CLERIC)) {
-                            total -= cjump;
-                        } else if (HasClass(vict, CLASS_MAGIC_USER) ||
-                                   HasClass(vict, CLASS_SORCERER)) {
-                            total -= mjump;
-                        } else if (HasClass(vict, CLASS_THIEF | CLASS_PSI)) {
-                            total -= tjump;
-                        } else if (HasClass(vict, CLASS_DRUID)) {
-                            total -= djump;
-                        } else if (HasClass(vict, CLASS_MONK)) {
-                            total -= kjump;
-                        }
-                        if (total <= 0) {
-                            return vict;
-                        }
-                    }
-                }
-
-                return ch->specials.fighting;
-            }
-
-            /*
-             * THIS IS FUBAR!  Beirdo 02292004
-             */
-        }
-    }
-}
-#endif
 
 struct char_data *FindAnyVictim(struct char_data *ch)
 {
@@ -4104,10 +3904,10 @@ struct char_data *FindAnyVictim(struct char_data *ch)
 #if 0
         Log("No room data in FindMetaVictim ??Crash???");
 #endif
-        return (0);
+        return (NULL);
     }
     if (ch->in_room < 0) {
-        return (0);
+        return (NULL);
     }
     for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
@@ -4146,7 +3946,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
      */
 
     if (!found) {
-        return (0);
+        return (NULL);
     }
 
     /*
@@ -4240,7 +4040,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
         return (ch->specials.fighting);
     }
 
-    return (0);
+    return (NULL);
 }
 
 /*
@@ -4416,9 +4216,6 @@ void BreakLifeSaverObj(struct char_data *ch)
 
 }
 
-/*
- * Its void.. why does it return FALSE or TRUE???
- */
 void BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
 {
     char            buf[200];
@@ -4602,6 +4399,9 @@ int DamageOneItem(struct char_data *ch, int dam_type, struct obj_data *obj)
     return (FALSE);
 }
 
+/**
+ * @todo make a #define for SCRAPS = 30
+ */
 void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
 {
     char            buf[200];
@@ -4733,7 +4533,7 @@ int ItemSave(struct obj_data *i, int dam_type)
                     j;
 
     /*
-     * obj fails save automatically it brittle
+     * obj fails save automatically if brittle
      */
     if (IS_OBJ_STAT(i, ITEM_BRITTLE)) {
         return (FALSE);
@@ -5025,6 +4825,9 @@ int GetItemDamageType(int type)
 
 }
 
+/**
+ * @todo change first if to use IS_IMMORTAL()?
+ */
 int SkipImmortals(struct char_data *v, int amnt, int attacktype)
 {
     /*
@@ -5051,7 +4854,6 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
     }
 
     return (amnt);
-
 }
 
 void WeaponSpell(struct char_data *c,
@@ -5111,25 +4913,18 @@ struct char_data *FindAnAttacker(struct char_data *ch)
                     kjump = 0,
                     djump = 0;
 
-    if (ch->in_room < 0) {
-        return (0);
-    }
-    if (!ch) {
-        Log("Findanattacker!!!");
-        return (0);
+    if (!ch || ch->in_room < 0) {
+        return (NULL);
     }
 
-    if (ch->in_room < 0) {
-        return (0);
-    }
     rp = real_roomp(ch->in_room);
     if (!rp) {
-        return (0);
+        return (NULL);
     }
 
     tmp_ch = rp->people;
     if (!tmp_ch) {
-        return (0);
+        return (NULL);
     }
 
     while (tmp_ch) {
@@ -5168,7 +4963,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
      */
 
     if (!found) {
-        return (0);
+        return (NULL);
     }
 
     /*
@@ -5259,113 +5054,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
     if (ch->specials.fighting) {
         return (ch->specials.fighting);
     }
-    return (0);
-}
-
-void shoot(struct char_data *ch, struct char_data *victim)
-{
-#if 0
-    struct obj_data *bow,
-                   *arrow;
-    int             oldth,
-                    oldtd;
-    int             tohit = 0,
-                    todam = 0;
-
-    /*
-     * check for bow and arrow.
-     */
-
-    bow = ch->equipment[HOLD];
-    arrow = ch->equipment[WIELD];
-
-    /*
-     * this is checked in do_shoot now
-     */
-    if (!bow) {
-        send_to_char("You need a missile weapon (like a bow)\n\r", ch);
-        return;
-    } else if (!arrow) {
-        send_to_char("You need a projectile to shoot!\n\r", ch);
-    } else if (!bow && !arrow) {
-        send_to_char
-            ("You need a bow-like item, and a projectile to shoot!\n\r",
-             ch);
-    } else {
-        /*
-         * for bows:  value[0] = arror type
-         *            value[1] = type 0=short,1=med,2=longranged
-         *            value[2] = + to hit
-         *            value[3] = + to damage
-         */
-
-        if (bow->value[0] != arrow->value[0]) {
-            send_to_char
-                ("That projectile does not fit in that projector.\n\r",
-                 ch);
-            return;
-        }
-
-        /*
-         * check for bonuses on the bow.
-         */
-        tohit = bow->value[2];
-        todam = bow->value[3];
-
-        /*
-         * temporarily remove other stuff and add bow bonuses.
-         */
-        oldth = GET_HITROLL(ch);
-        oldtd = GET_DAMROLL(ch);
-        /*
-         * figure range mods for this weapon
-         */
-        if (victim->in_room != ch->in_room)
-            switch (bow->value[1]) {
-            case 0:
-                tohit -= 4;     /* short range weapon -4 to hit */
-                break;
-            case 1:
-                tohit -= 3;     /* med range weapon -3 to hit */
-                break;
-            case 2:
-                tohit -= 2;     /* long range weapon -2 to hit */
-                break;
-            default:
-                tohit -= 1;     /* unknown, default to -1 tohit */
-                break;
-            }
-
-        /*
-         * end switch
-         */
-        /*
-         * set tohit and dam to bows only, lets not use
-         * cumalitive of what
-         */
-        /*
-         * they already have
-         */
-        GET_HITROLL(ch) = tohit;
-        GET_DAMROLL(ch) = todam;
-
-        act("$n shoots $p at $N!", FALSE, ch, arrow, victim, TO_NOTVICT);
-        act("$n launches $p at you", FALSE, ch, arrow, victim, TO_VICT);
-        act("You shoot at $N with $p", FALSE, ch, arrow, victim, TO_CHAR);
-
-        /*
-         * fire the weapon.
-         */
-        MissileHit(ch, victim, TYPE_UNDEFINED);
-
-        GET_HITROLL(ch) = oldth;
-        GET_DAMROLL(ch) = oldtd;
-
-    }
-
-    slog("end shoot, fight.c");
-
-#endif
+    return (NULL);
 }
 
 struct char_data *FindMetaVictim(struct char_data *ch)
@@ -5376,16 +5065,17 @@ struct char_data *FindMetaVictim(struct char_data *ch)
 
     struct room_data *rp;
 
+    if (!ch || ch->in_room < 0) {
+        return (NULL);
+    }
+
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0
         Log("No room data in FindMetaVictim ??Crash???");
 #endif
-        return (0);
+        return (NULL);
     }
-
-    if (ch->in_room < 0)
-        return (0);
 
     for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
@@ -5404,7 +5094,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
      */
 
     if (!found) {
-        return (0);
+        return (NULL);
     }
 
     total = number(1, (int) total);
@@ -5425,8 +5115,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
     if (ch->specials.fighting) {
         return (ch->specials.fighting);
     }
-    return (0);
-
+    return (NULL);
 }
 
 /*
@@ -5434,7 +5123,6 @@ struct char_data *FindMetaVictim(struct char_data *ch)
  */
 void NailThisSucker(struct char_data *ch)
 {
-
     struct char_data *pers;
     long            room_num;
     char            buf[256];
@@ -5630,16 +5318,19 @@ int GetFormType(struct char_data *ch)
 
 int MonkDodge(struct char_data *ch, struct char_data *v, int *dam)
 {
-    int             x = 0;
-    if (v->style == FIGHTING_STYLE_DEFENSIVE
-        && (v->specials.remortclass == MONK_LEVEL_IND + 1)) {
-        if (FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) {
-            x = v->skills[SKILL_DODGE].learned * 2.5;
-        }
+    int             num;
+
+    num = v->skills[SKILL_DODGE].learned;
+
+    if (v->style == FIGHTING_STYLE_DEFENSIVE && 
+        v->specials.remortclass == MONK_LEVEL_IND + 1 &&
+        FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) {
+
+        num *= 2.5;
     }
 
-    if (number(1, 20000) < (x == 0 ? v->skills[SKILL_DODGE].learned : x) *
-                           GET_LEVEL(v, MONK_LEVEL_IND)) {
+    num *= GET_LEVEL(v, MONK_LEVEL_IND);
+    if( number(1, 20000) < num ) {
         *dam = -3;
         act("You dodge the attack.", FALSE, ch, 0, v, TO_VICT);
         act("$N dodges $n's attack.", FALSE, ch, 0, v, TO_NOTVICT);
@@ -5657,10 +5348,14 @@ int MonkDodge(struct char_data *ch, struct char_data *v, int *dam)
     return (0);
 }
 
+/**
+ * @todo this should be a special proc of some sorts, but we have no
+ *       generalized method of doing this yet
+ * @todo why does this return a value if it's never used?
+ */
 int SmithShield(struct char_data *ch,
                 struct char_data *v, struct obj_data *obj, int *dam)
 {
-
     if (number(1, 180) <= GET_DEX(v)) {
         *dam = -2;
         act("$c000WYour shield seems to have a mind of its own and shifts to "
@@ -5798,10 +5493,11 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
     if (AWAKE(targ)) {
         victim_ac += dex_app[(int) GET_DEX(targ)].defensive;
     }
-    victim_ac = MAX(-10, victim_ac);
+
     /*
      * -10 is lowest
      */
+    victim_ac = MAX(-10, victim_ac);
 
     if (diceroll < 20 &&
         (diceroll == 1 || calc_thaco - diceroll > victim_ac)) {
@@ -5816,73 +5512,31 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
         } else {
             act("$p narrowly misses $n!", FALSE, targ, missile, 0, TO_ROOM);
         }
-        if (AWAKE(targ)) {
-            if (rng > 0) {
-                sprintf(buf, "$p whizzes past from %s, narrowly missing you!",
-                        dir_name[opdir(tdir)]);
-                act(buf, TRUE, targ, missile, 0, TO_CHAR);
-            } else {
-                act("$n fires $p at you, narrowly missing!",
-                    TRUE, ch, missile, targ, TO_VICT);
-            }
-            if (IS_NPC(targ)) {
-                if (rng == 0) {
-                    hit(targ, ch, TYPE_UNDEFINED);
-                } else {
-                    cdir = can_see_linear(targ, ch, &rang, &cdr);
-                    if (!(targ->specials.charging) && number(1, 10) < 4 &&
-                        cdir != -1 && GET_POS(targ) == POSITION_STANDING) {
-                        /*
-                         * Ain't gonna take any more of this missile crap!
-                         */
-                        AddHated(targ, ch);
-                        act("$n roars angrily and charges!", TRUE, targ, 0, 0,
-                            TO_ROOM);
-                        targ->specials.charging = ch;
-                        targ->specials.charge_dir = cdr;
-                    }
-                }
-            }
-        }
-        return 0;
-    } else {
 
-        if (affected_by_spell(targ, SKILL_WALL_OF_THOUGHT)) {
-            act("$p released by $n is deflected by some barrier "
-                "surrounding $N.", FALSE, ch, missile, targ, TO_NOTVICT);
-            act("Something prevents your missile from hitting $N.", FALSE,
-                ch, 0, targ, TO_CHAR);
-            act("Your wall of thought protects you from $p, released by $n.",
-                FALSE, ch, missile, targ, TO_VICT);
-            return 0;
+        if (!AWAKE(targ)) {
+            return( 0 );
         }
 
-        dam += dice(missile->value[1], missile->value[2]);
-        dam = MAX(1, dam);
-        AddHated(targ, ch);
-        sprintf(buf, "$p from %s hits $n!", dir_name[opdir(tdir)]);
-        act("$p hits $N!", TRUE, ch, missile, targ, TO_CHAR);
-        act(buf, TRUE, targ, missile, 0, TO_ROOM);
-        sprintf(buf, "$p from %s hits you!", dir_name[opdir(tdir)]);
-        act(buf, TRUE, targ, missile, 0, TO_CHAR);
-        damage(ch, targ, dam, TYPE_RANGE_WEAPON);
-
-        if ((!targ) || (GET_HIT(targ) < 1)) {
-            return 1;
-        } else if (ch->in_room != targ->in_room) {
-            WeaponSpell(ch, targ, missile, TYPE_RANGE_WEAPON);
+        if (rng > 0) {
+            sprintf(buf, "$p whizzes past from %s, narrowly missing you!",
+                    dir_name[opdir(tdir)]);
+            act(buf, TRUE, targ, missile, 0, TO_CHAR);
+        } else {
+            act("$n fires $p at you, narrowly missing!", TRUE, ch, missile, 
+                targ, TO_VICT);
         }
 
-        if (GET_POS(targ) != POSITION_FIGHTING &&
-            GET_POS(targ) > POSITION_STUNNED && IS_NPC(targ) &&
-            !targ->specials.charging) {
-
-            GET_POS(targ) = POSITION_STANDING;
+        if (IS_NPC(targ)) {
             if (rng == 0) {
                 hit(targ, ch, TYPE_UNDEFINED);
             } else {
                 cdir = can_see_linear(targ, ch, &rang, &cdr);
-                if (cdir != -1) {
+                if (!(targ->specials.charging) && number(1, 10) < 4 &&
+                    cdir != -1 && GET_POS(targ) == POSITION_STANDING) {
+                    /*
+                     * Ain't gonna take any more of this missile crap!
+                     */
+                    AddHated(targ, ch);
                     act("$n roars angrily and charges!", TRUE, targ, 0, 0,
                         TO_ROOM);
                     targ->specials.charging = ch;
@@ -5890,9 +5544,54 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                 }
             }
         }
-        return 1;
+        return 0;
+    } 
+    
+    if (affected_by_spell(targ, SKILL_WALL_OF_THOUGHT)) {
+        act("$p released by $n is deflected by some barrier "
+            "surrounding $N.", FALSE, ch, missile, targ, TO_NOTVICT);
+        act("Something prevents your missile from hitting $N.", FALSE,
+            ch, 0, targ, TO_CHAR);
+        act("Your wall of thought protects you from $p, released by $n.",
+            FALSE, ch, missile, targ, TO_VICT);
+        return 0;
     }
-    return 0;
+
+    dam += dice(missile->value[1], missile->value[2]);
+    dam = MAX(1, dam);
+    AddHated(targ, ch);
+    sprintf(buf, "$p from %s hits $n!", dir_name[opdir(tdir)]);
+    act("$p hits $N!", TRUE, ch, missile, targ, TO_CHAR);
+    act(buf, TRUE, targ, missile, 0, TO_ROOM);
+    sprintf(buf, "$p from %s hits you!", dir_name[opdir(tdir)]);
+    act(buf, TRUE, targ, missile, 0, TO_CHAR);
+    damage(ch, targ, dam, TYPE_RANGE_WEAPON);
+
+    if (!targ || GET_HIT(targ) < 1) {
+        return 1;
+    } 
+    
+    if (ch->in_room != targ->in_room) {
+        WeaponSpell(ch, targ, missile, TYPE_RANGE_WEAPON);
+    }
+
+    if (GET_POS(targ) != POSITION_FIGHTING &&
+        GET_POS(targ) > POSITION_STUNNED && IS_NPC(targ) &&
+        !targ->specials.charging) {
+
+        GET_POS(targ) = POSITION_STANDING;
+        if (rng == 0) {
+            hit(targ, ch, TYPE_UNDEFINED);
+        } else {
+            cdir = can_see_linear(targ, ch, &rang, &cdr);
+            if (cdir != -1) {
+                act("$n roars angrily and charges!", TRUE, targ, 0, 0, TO_ROOM);
+                targ->specials.charging = ch;
+                targ->specials.charge_dir = cdr;
+            }
+        }
+    }
+    return 1;
 }
 
 void raw_kill_arena(struct char_data *ch)
@@ -5913,52 +5612,56 @@ void raw_kill_arena(struct char_data *ch)
     GET_HIT(ch) = GET_MAX_HIT(ch);
     GET_MOVE(ch) = GET_MAX_MOVE(ch);
     GET_POS(ch) = POSITION_SLEEPING;
-    return;
 }
 
+/**
+ * @todo this should be in the plugin/class/avariel dir, and we need a general
+ *       way to call such functions
+ */
 void BurnWings(struct char_data *ch)
 {
     struct affected_type af;
 
-    if (IS_SET(ch->immune, IMM_FIRE)) {
+    if (GET_RACE(ch) != RACE_AVARIEL ||
+        IS_SET(ch->immune, IMM_FIRE) || 
+        (IS_SET(ch->M_immune, IMM_FIRE) && dice(1, 2) > 1)) {
         return;
     }
 
-    if (IS_SET(ch->M_immune, IMM_FIRE) && dice(1, 2) > 1) {
-            return;
+    /*
+     * Races with fire prone wings
+     */
+    if (IS_AFFECTED2(ch, AFF2_WINGSBURNED)) {
+        affect_from_char(ch, COND_WINGS_BURNED);
     }
 
-    if (GET_RACE(ch) == RACE_AVARIEL) {
-        /*
-         * Races with fire prone wings
-         */
-        if (IS_AFFECTED2(ch, AFF2_WINGSBURNED)) {
-            affect_from_char(ch, COND_WINGS_BURNED);
-        }
+    send_to_char("The flames burn a swath of feathers from your wings!\n\r",
+                 ch);
+    act("$n has the feathers seared from $ss wings!\n\r", FALSE, ch, 0, 0,
+        TO_ROOM);
 
-        send_to_char("The flames burn a swath of feathers from your wings!\n\r",
-                     ch);
-        act("$n has the feathers seared from $ss wings!\n\r", FALSE, ch, 0, 0,
-            TO_ROOM);
-        af.type = COND_WINGS_BURNED;
-        af.location = APPLY_BV2;
-        af.modifier = 0;
-        af.duration = 536;
-        af.bitvector = AFF2_WINGSBURNED;
-        affect_to_char(ch, &af);
-        if (affected_by_spell(ch, COND_WINGS_FLY)) {
-            affect_from_char(ch, COND_WINGS_FLY);
-            if (!IS_AFFECTED(ch, AFF_FLYING)) {
-                send_to_char("Your wings can't support you and you plummet "
-                             "towards the ground!", ch);
-                act("$n's wings can't support him and he plummets towards the "
-                    "ground!", FALSE, ch, 0, 0, TO_ROOM);
-            }
-            check_falling(ch);
+    af.type = COND_WINGS_BURNED;
+    af.location = APPLY_BV2;
+    af.modifier = 0;
+    af.duration = 536;
+    af.bitvector = AFF2_WINGSBURNED;
+    affect_to_char(ch, &af);
+
+    if (affected_by_spell(ch, COND_WINGS_FLY)) {
+        affect_from_char(ch, COND_WINGS_FLY);
+        if (!IS_AFFECTED(ch, AFF_FLYING)) {
+            send_to_char("Your wings can't support you and you plummet "
+                         "towards the ground!", ch);
+            act("$n's wings can't support him and he plummets towards the "
+                "ground!", FALSE, ch, 0, 0, TO_ROOM);
         }
+        check_falling(ch);
     }
 }
 
+/**
+ * @todo generalize the special cases.  I don't want special cases in here!
+ */
 void specdamage(struct char_data *ch, struct char_data *v)
 {
     struct obj_data *object;
@@ -5979,6 +5682,7 @@ void specdamage(struct char_data *ch, struct char_data *v)
     if (mob_index[ch->nr].virtual == BAHAMUT) {
         bahamut_prayer(ch, v);
     }
+
     if (ch->equipment[WEAR_BODY]) {
         object = ch->equipment[WEAR_BODY];
         if (object->item_number == BAHAMUT_ARMOR) {
@@ -6000,12 +5704,10 @@ int FSkillCheck(struct char_data *ch, int fskill)
                     tmp = 0,
                     max = 95;
 
-    if (!ch) {
+    if (!ch || !fskill) {
         return (FALSE);
     }
-    if (!fskill) {
-        return (FALSE);
-    }
+
     /*
      * convert from bit to skill def
      */
@@ -6023,35 +5725,31 @@ int FSkillCheck(struct char_data *ch, int fskill)
      * add some class modifiers to perc here
      */
     switch (fskill) {
-    case FIGHTING_STYLE_BERSERKED:{
-            perc += 50;
-            if (HasClass(ch, CLASS_BARBARIAN)) {
-                perc -= GetMaxLevel(ch);
+    case FIGHTING_STYLE_BERSERKED:
+        perc += 50;
+        if (HasClass(ch, CLASS_BARBARIAN)) {
+            perc -= GetMaxLevel(ch);
+        }
+        break;
+    case FIGHTING_STYLE_EVASIVE:
+        if (HasClass(ch, CLASS_THIEF)) {
+            tmp = GetMaxLevel(ch) - 25;
+            if (tmp > 0) {
+                perc -= tmp;
             }
         }
         break;
-    case FIGHTING_STYLE_EVASIVE:{
-            if (HasClass(ch, CLASS_THIEF)) {
-                tmp = GetMaxLevel(ch) - 25;
-                if (!tmp < 0) {
-                    perc -= tmp;
-                }
+    case FIGHTING_STYLE_DEFENSIVE:
+        if (HasClass(ch, CLASS_MONK)) {
+            tmp = GetMaxLevel(ch) - 25;
+            if (tmp > 0) {
+                perc -= tmp;
             }
         }
         break;
-    case FIGHTING_STYLE_DEFENSIVE:{
-            if (HasClass(ch, CLASS_MONK)) {
-                tmp = GetMaxLevel(ch) - 25;
-                if (!tmp < 0) {
-                    perc -= tmp;
-                }
-            }
-        }
-        break;
-    case FIGHTING_STYLE_AGGRESSIVE:{
-            if (HasClass(ch, CLASS_THIEF)) {
-                perc += 20;
-            }
+    case FIGHTING_STYLE_AGGRESSIVE:
+        if (HasClass(ch, CLASS_THIEF)) {
+            perc += 20;
         }
         break;
     }
@@ -6059,31 +5757,26 @@ int FSkillCheck(struct char_data *ch, int fskill)
     if (perc > ch->skills[fskill].learned) {
         /* fail */
         if (ch->skills[fskill].learned > 75 &&
-            ch->skills[fskill].learned < max) {
+            ch->skills[fskill].learned < max && number(1, 10) == 1) {
             /*
              * only learn if skill is high enough
              */
-            if (number(1, 10) == 1) {
-                /*
-                 * number(1, 96) >  ch->skills[fskill].learned &&
-                 */
-                send_to_char("You notice improvement with fighting in your "
-                             "current style.\n\r", ch);
-                ch->skills[fskill].learned += 1;
+            send_to_char("You notice improvement with fighting in your "
+                         "current style.\n\r", ch);
+            ch->skills[fskill].learned += 1;
 
-                if (ch->skills[fskill].learned >= max) {
-                    send_to_char("You are now a master of fighting in your "
-                                 "current style!\n\r", ch);
-                }
+            if (ch->skills[fskill].learned >= max) {
+                send_to_char("You are now a master of fighting in your "
+                             "current style!\n\r", ch);
             }
         }
         return (FALSE);
-    } else {
-        /*
-         * skill successful
-         */
-        return (TRUE);
-    }
+    } 
+    
+    /*
+     * skill successful
+     */
+    return (TRUE);
 }
 
 /*

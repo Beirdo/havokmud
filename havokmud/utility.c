@@ -219,45 +219,6 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
     return (TRUE);
 }
 
-int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
-{
-    int             num = 0;
-
-    if (IS_IMMORTAL(ch)) {
-        return (1);
-    }
-    /*
-     * changed the act.info.c, hope this works on traps INSIDE chests
-     * etc..
-     */
-
-    if (ITEM_TYPE(obj) == ITEM_TRAP && GET_TRAP_CHARGES(obj) > 0) {
-        num = number(1, 101);
-        if (CanSeeTrap(num, ch)) {
-            return (TRUE);
-        } else {
-            return (FALSE);
-        }
-    }
-
-    if (IS_AFFECTED(ch, AFF_BLIND)) {
-        return (0);
-    }
-    if (IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
-        return (1);
-    }
-    if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, ITEM_GLOW)) {
-        return (0);
-    }
-    if (IS_AFFECTED(ch, AFF_DETECT_INVISIBLE)) {
-        return (1);
-    }
-    if (IS_OBJ_STAT(obj, ITEM_INVISIBLE)) {
-        return (0);
-    }
-    return (1);
-}
-
 int exit_ok(struct room_direction_data *exit, struct room_data **rpp)
 {
     struct room_data *rp;
@@ -4772,6 +4733,9 @@ int ItemAlignClash(struct char_data *ch, struct obj_data *obj)
     return (FALSE);
 }
 
+/**
+ * @todo remove the ugly kludge Lennya put in
+ */
 int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 {
 #ifndef USE_EGOS
@@ -4780,16 +4744,22 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
     int             obj_ego,
                     p_ego,
                     tmp;
+    static char    *check[] = { "scroll", "potion", "bag", "tongue", "key" };
+    int             i;
+    Keywords_t     *key;
 
     obj_ego = obj->cost_per_day;
 
-    if (strstr(obj->name, "scroll") || strstr(obj->name, "potion") ||
-        strstr(obj->name, "bag") || strstr(obj->name, "tongue") ||
-        strstr(obj->name, "key")) {
-        /*
-         * dark lord tongue fix kludge, should pretty this up -Lennya
-         */
-        return (FALSE);
+    /*
+     * dark lord tongue fix kludge, should pretty this up -Lennya
+     */
+    for( i = 0; i < NELEMENTS(check); i++ ) {
+        key = StringToKeywords( check[i], NULL );
+        if( KeywordsMatch( key, &obj->keywords ) ) {
+            FreeKeywords(key, TRUE);
+            return( FALSE );
+        }
+        FreeKeywords(key, TRUE);
     }
 
     if (obj_ego >= MAX(LIM_ITEM_COST_MIN, 14000) || obj_ego < 0) {

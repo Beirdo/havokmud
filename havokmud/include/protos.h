@@ -132,9 +132,6 @@ void            do_show_skill(struct char_data *ch, char *arg, int cmd);
 void            do_resize(struct char_data *ch, char *arg, int cmd);
 void            do_display(struct char_data *ch, char *arg, int cmd);
 int             singular(struct obj_data *o);
-struct obj_data *get_object_in_equip_vis(struct char_data *ch, char *arg,
-                                         struct obj_data *equipment[],
-                                         int *j);
 char           *find_ex_description(char *word,
                                     struct extra_descr_data *list);
 void            show_obj_to_char(struct obj_data *object,
@@ -421,7 +418,6 @@ void            print_death_room(int rnum, struct room_data *rp,
 void            print_private_room(int r, struct room_data *rp,
                                    struct string_block *sb);
 void            do_show(struct char_data *ch, char *argument, int cmd);
-void            do_debug(struct char_data *ch, char *argument, int cmd);
 void            do_invis(struct char_data *ch, char *argument, int cmd);
 void            do_create(struct char_data *ch, char *argument, int cmd);
 void            CreateOneRoom(int loc_nr);
@@ -676,7 +672,6 @@ void            WeaponSpell(struct char_data *c, struct char_data *v,
                             struct obj_data *obj, int type);
 
 struct char_data *FindAnAttacker(struct char_data *ch);
-void            shoot(struct char_data *ch, struct char_data *victim);
 struct char_data *FindMetaVictim(struct char_data *ch);
 void            NailThisSucker(struct char_data *ch);
 int             GetFormType(struct char_data *ch);
@@ -719,10 +714,6 @@ void            equip_char(struct char_data *ch, struct obj_data *obj,
 int             GiveMinStrToWield(struct obj_data *obj,
                                   struct char_data *ch);
 struct obj_data *unequip_char(struct char_data *ch, int pos);
-struct obj_data *get_obj_in_list(char *name, struct obj_data *list);
-struct obj_data *get_obj_in_list_num(int num, struct obj_data *list);
-struct obj_data *get_obj(char *name);
-struct obj_data *get_obj_num(int nr);
 struct char_data *get_char_room(char *name, int room);
 struct char_data *get_char(char *name);
 struct char_data *get_char_num(int nr);
@@ -742,12 +733,6 @@ struct char_data *get_char_room_vis(struct char_data *ch, char *name);
 struct char_data *get_char_vis_world(struct char_data *ch, char *name,
                                      int *count);
 struct char_data *get_char_vis(struct char_data *ch, char *name);
-struct obj_data *get_obj_in_list_vis(struct char_data *ch, char *name,
-                                     struct obj_data *list);
-struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
-                                   int *count);
-struct obj_data *get_obj_vis(struct char_data *ch, char *name);
-struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name);
 struct obj_data *create_money(int amount);
 int             generic_find(char *arg, int bitvector,
                              struct char_data *ch,
@@ -3503,7 +3488,6 @@ int             ships_helm(struct char_data *ch, int cmd, char *argument,
 int             embark_ship(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
 char           *formatNum(int foo);
-int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
 int MoveOne(struct char_data *ch, int dir);
 int clearpath(struct char_data *ch, long room, int direc);
 long            CalcPowerLevel(struct char_data *ch);
@@ -4067,8 +4051,6 @@ void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 void ShowHates(struct char_data *ch, char *buffer);
 void ShowFears(struct char_data *ch, char *buffer);
 void sprintclasses(unsigned long vektor, char *result);
-struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
-                                     struct obj_data *equipment[], int *j);
 
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir);
 int find_direction(char *arg);

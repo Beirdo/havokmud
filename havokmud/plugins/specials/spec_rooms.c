@@ -138,7 +138,8 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     return (FALSE);
 }
 
-/*
+/**
+ * @bug Should allow an immort to get all
  * donation room
  */
 int Donation(struct char_data *ch, int cmd, char *arg,
@@ -156,7 +157,6 @@ int Donation(struct char_data *ch, int cmd, char *arg,
     arg = get_argument(arg, &arg2);
 
     if (arg1 && !strncmp(arg1, "all", 3) && !arg2) {
-       
         /* removed check for immortal to test */
         send_to_char("Now now, that would be greedy!\n\r", ch);
         return (TRUE);
@@ -189,7 +189,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     for (k = real_roomp(ch->in_room)->contents; k;
          k = real_roomp(ch->in_room)->contents) {
         sprintf(buf, "The %s vanish in a puff of smoke.\n\r",
-                fname(k->name));
+                fname(k->short_description));
         for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (CAN_SEE_OBJ(tmp_char, k)) {
@@ -208,7 +208,8 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
     for (k = real_roomp(ch->in_room)->contents; k;
          k = real_roomp(ch->in_room)->contents) {
-        sprintf(buf, "The %s vanish in a puff of smoke.\n\r", fname(k->name));
+        sprintf(buf, "The %s vanish in a puff of smoke.\n\r", 
+                fname(k->short_description));
         for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (CAN_SEE_OBJ(tmp_char, k)) {

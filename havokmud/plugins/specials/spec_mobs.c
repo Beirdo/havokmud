@@ -2679,19 +2679,18 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
                                     "is rightfully mine?  You shall be "
                                     "generously rewarded!");
             return (TRUE);
-        } else {
-            time_diff = time(NULL) - last_time;
-        }
+        } 
+        
+        time_diff = time(NULL) - last_time;
     }
 
     if (!AWAKE(ch)) {
         return (FALSE);
     }
+
     if (cmd == 72) {
         /* 
          * give 
-         *
-         *
          * determine the correct obj 
          */
         arg = get_argument(arg, &obj_name);
@@ -2724,12 +2723,14 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         if (IS_PC(vict)) {
             return (FALSE);
         }
+        
         /*
          * the target is not the Avatar of Posereisn or is a PC 
          */
         if (mob_index[vict->nr].virtual != 28042) {
             return (FALSE);
         }
+        
         /*
          * The object is not the Ankh of Posereisn 
          */
@@ -2770,23 +2771,27 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
                          "token of my appreciation.", GET_NAME(ch));
             command_interpreter(vict, buf);
-            sprintf(buf, "remove %s", vict->equipment[WIELD]->name);
+
+            temp = KeywordsToString( &vict->equipment[WIELD]->keywords );
+            sprintf(buf, "remove %s", temp);
+            free( temp );
+
             command_interpreter(vict, buf);
             sprintf(buf, "give Hellreaper %s", GET_NAME(ch));
             command_interpreter(vict, buf);
             return (TRUE);
-        } else {
-            /* 
-             * This is done if he is not wielding hellreaper 
-             */
-            sprintf(buf, "tell %s You are indeed a mighty hero, but I cannot "
-                         "take this, for I have nothing to offer you in "
-                         "return.", GET_NAME(ch));
-            command_interpreter(vict, buf);
-            sprintf(buf, "give Ankh-Posereisn %s", GET_NAME(ch));
-            command_interpreter(vict, buf);
-            return (TRUE);
-        }
+        } 
+        
+        /* 
+         * This is done if he is not wielding hellreaper 
+         */
+        sprintf(buf, "tell %s You are indeed a mighty hero, but I cannot "
+                     "take this, for I have nothing to offer you in "
+                     "return.", GET_NAME(ch));
+        command_interpreter(vict, buf);
+        sprintf(buf, "give Ankh-Posereisn %s", GET_NAME(ch));
+        command_interpreter(vict, buf);
+        return (TRUE);
     }
     return( FALSE );
 }
@@ -4451,6 +4456,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     struct obj_data *j,
                    *k,
                    *next;
+    Keywords_t     *key;
 
     if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
@@ -4460,9 +4466,11 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
         return TRUE;
     }
 
+    key = StringToKeywords( "corpse rabbit", NULL );
+
     for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
         if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->value[3] &&
-            !strcmp(j->name, "corpse rabbit")) {
+            KeywordsMatch(key, &j->keywords)) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
             for (k = j->contains; k; k = next) {
                 next = k->next_content;
@@ -4471,9 +4479,12 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
             }
             extract_obj(j);
             ch->generic = 10;
+            FreeKeywords(key, TRUE);
             return (TRUE);
         }
     }
+
+    FreeKeywords(key, TRUE);
 
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].virtual == 6001 && !number(0, 3)) {
@@ -5773,6 +5784,7 @@ int archer_sub(struct char_data *ch)
                     found;
     char            buf[MAX_STRING_LENGTH];
     struct char_data *td;
+    char           *temp;
 
     if (ch->equipment[WIELD] && 
         ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
@@ -5787,25 +5799,26 @@ int archer_sub(struct char_data *ch)
                 if (spid->type_flag == ITEM_MISSILE &&
                     spid->value[3] == bow->value[2]) {
                     missile = spid;
-                } else {
-                    /*
-                     * see if they are carrying a quiver full of arrows,
-                     * if so get an arrow 
-                     */
-                    if (GET_ITEM_TYPE(spid) == ITEM_CONTAINER) {
-                        found = FALSE;
-                        for (obj_object = spid->contains;
-                             obj_object && !found; obj_object = next_obj) {
-                            next_obj = obj_object->next_content;
-                            if (obj_object->type_flag == ITEM_MISSILE && 
-                                obj_object->value[3] == bow->value[2]) {
-                                /*
-                                 * gets arrow out of quiver, next round
-                                 * they will load it 
-                                 */
-                                get(ch, obj_object, spid);
-                                found = TRUE;
-                            }
+                    continue;
+                } 
+
+                /*
+                 * see if they are carrying a quiver full of arrows,
+                 * if so get an arrow 
+                 */
+                if (GET_ITEM_TYPE(spid) == ITEM_CONTAINER) {
+                    found = FALSE;
+                    for (obj_object = spid->contains;
+                         obj_object && !found; obj_object = next_obj) {
+                        next_obj = obj_object->next_content;
+                        if (obj_object->type_flag == ITEM_MISSILE && 
+                            obj_object->value[3] == bow->value[2]) {
+                            /*
+                             * gets arrow out of quiver, next round
+                             * they will load it 
+                             */
+                            get(ch, obj_object, spid);
+                            found = TRUE;
                         }
                     }
                 }
@@ -5815,7 +5828,9 @@ int archer_sub(struct char_data *ch)
              * If you found a missile, load it and return 
              */
             if (missile) {
-                do_weapon_load(ch, missile->name, 0);
+                temp = KeywordsToString( &missile->keywords );
+                do_weapon_load(ch, temp, 0);
+                free( temp );
                 return TRUE;
             }
         }
@@ -5828,10 +5843,10 @@ int archer_sub(struct char_data *ch)
             if (pick_archer_target(ch, r, &td, &a, &b)) {
                 sprintf( buf, "fire %s", td->player.name );
                 command_interpreter(ch, buf);
-                return TRUE;
-            } else {
-                return FALSE;
-            }
+                return( TRUE );
+            } 
+
+            return( FALSE );
         }
     }
 
@@ -5863,13 +5878,17 @@ int archer_sub(struct char_data *ch)
 
         if (bow) {
             if (ch->equipment[WIELD]) {
-                sprintf(buf, "remove %s", ch->equipment[WIELD]->name);
+                temp = KeywordsToString( &ch->equipment[WIELD]->keywords );
+                sprintf(buf, "remove %s", temp);
+                free( temp );
                 command_interpreter(ch, buf);
-                return TRUE;
-            } else {
-                do_wield(ch, bow->name, 0);
-                return TRUE;
+                return( TRUE );
             }
+
+            temp = KeywordsToString( &bow->keywords );
+            do_wield(ch, temp, 0);
+            free(temp);
+            return( TRUE );
         }
     }
 
@@ -5886,7 +5905,7 @@ int archer_sub(struct char_data *ch)
         /*
          * Just can't do nothing. 
          */
-        return FALSE;
+        return( FALSE );
     }
 
     /*
@@ -5894,12 +5913,14 @@ int archer_sub(struct char_data *ch)
      */
     r = range_estimate(ch, thrown, 1);
     if (pick_archer_target(ch, r, &td, &a, &b)) {
-        sprintf(buf, "throw %s %s", thrown->name, td->player.name);
+        temp = KeywordsToString( &thrown->keywords );
+        sprintf(buf, "throw %s %s", temp, td->player.name);
+        free( temp );
         command_interpreter(ch, buf);
-        return TRUE;
-    } else {
-        return FALSE;
-    }
+        return( TRUE );
+    } 
+
+    return( FALSE );
 }
 
 int archer_hth(struct char_data *ch)
@@ -5907,31 +5928,37 @@ int archer_hth(struct char_data *ch)
     struct  obj_data    *spid,
                         *hth = NULL;
     char    buf[MAX_STRING_LENGTH];
+    char   *temp;
+
     /*
      * What to do if you are an archer and find yourself in HTH combat 
      * I. If you are wielding a bow ditch it 
      */
     if (ch->equipment[WIELD] && 
         ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
-        sprintf(buf, "remove %s", ch->equipment[WIELD]->name);
+        temp = KeywordsToString( &ch->equipment[WIELD]->keywords );
+        sprintf(buf, "remove %s", temp);
+        free( temp );
         command_interpreter(ch, buf);
-        return TRUE;
-    } else {
-        if (ch->equipment[WIELD]) {
-            return FALSE;
-        }
-        for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (IS_WEAPON(spid)) {
-                hth = spid;
-            }
-        }
-
-        if (hth) {
-            do_wield(ch, hth->name, 14);
-            return TRUE;
-        }
-        return FALSE;
+        return( TRUE );
+    } 
+    
+    if (ch->equipment[WIELD]) {
+        return( FALSE );
     }
+    for (spid = ch->carrying; spid; spid = spid->next_content) {
+        if (IS_WEAPON(spid)) {
+            hth = spid;
+        }
+    }
+
+    if (hth) {
+        temp = KeywordsToString( &hth->keywords );
+        do_wield(ch, temp, 14);
+        free( temp );
+        return( TRUE );
+    }
+    return( FALSE );
 }
 
 int archer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -7072,6 +7099,7 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
                     buf[MAX_INPUT_LENGTH];
     struct char_data *tgt;
     struct obj_data *obj;
+    char           *temp;
 
     if (cmd == 72) {
         /* 
@@ -7140,43 +7168,45 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
                          "addition to my collection of rarities.");
             do_say(tgt, buf, 19);
             return (TRUE);
-        } else {
-            /*
-             * if object IS the head of Matron Singh 
-             */
-            sprintf(buf, "give %s %s", obj_name, tgt_name);
-            command_interpreter(ch, buf);
+        } 
+        
+        /*
+         * if object IS the head of Matron Singh 
+         */
+        sprintf(buf, "give %s %s", obj_name, tgt_name);
+        command_interpreter(ch, buf);
 
-            /*
-             * if Jessep has the Laurel of Leaves, give it to the pc 
-             */
-            if (tgt->equipment[WEAR_HEAD]) {
-                sprintf(buf, "Ah, she's dead, is she? Serves her right. "
-                             "Though she's shown me that I'm not fit to lead "
-                             "my people. Perhaps you would be a better "
-                             "choice.");
-                do_say(tgt, buf, 19);
-                sprintf(buf, "remove %s", tgt->equipment[WEAR_HEAD]->name);
-                command_interpreter(tgt, buf);
+        /*
+         * if Jessep has the Laurel of Leaves, give it to the pc 
+         */
+        if (tgt->equipment[WEAR_HEAD]) {
+            sprintf(buf, "Ah, she's dead, is she? Serves her right. "
+                         "Though she's shown me that I'm not fit to lead "
+                         "my people. Perhaps you would be a better "
+                         "choice.");
+            do_say(tgt, buf, 19);
+            temp = KeywordsToString( &tgt->equipment[WEAR_HEAD]->keywords );
+            sprintf(buf, "remove %s", temp);
+            free( temp );
+            command_interpreter(tgt, buf);
 
-                sprintf(buf, "give laurel-leaves-myrrhal %s", GET_NAME(ch));
-                command_interpreter(tgt, buf);
+            sprintf(buf, "give laurel-leaves-myrrhal %s", GET_NAME(ch));
+            command_interpreter(tgt, buf);
 
-                sprintf(buf, "I wish you well.");
-                do_say(tgt, buf, 19);
-                return (TRUE);
-            } else {
-                /*
-                 * if he doesn't, then give no prize and keep the head anyway. 
-                 * that bastard! 
-                 */
-                sprintf(buf, "Hrm, you killed her, eh? Well, I don't lead "
-                             "this village anymore. Go find the current "
-                             "leader, and leave me alone.");
-                do_say(tgt, buf, 19);
-                return (TRUE);
-            }
-        }
+            sprintf(buf, "I wish you well.");
+            do_say(tgt, buf, 19);
+            return (TRUE);
+        } 
+        
+        /*
+         * if he doesn't, then give no prize and keep the head anyway. 
+         * that bastard! 
+         */
+        sprintf(buf, "Hrm, you killed her, eh? Well, I don't lead "
+                     "this village anymore. Go find the current "
+                     "leader, and leave me alone.");
+        do_say(tgt, buf, 19);
+        return (TRUE);
     }
     return (FALSE);
 }
@@ -7549,15 +7579,11 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg,
     if (type == EVENT_DEATH) {
         sprintf(buf, "nadia thunder mountain");
         if ((tmp_ch = get_char_vis_world(ch, buf, 0))) {
-            if ((r_num = real_object(NADIA_KEY)) >= 0) {
-                target_obj = read_object(r_num, REAL);
-                obj_to_char(target_obj, tmp_ch);
-            }
+            target_obj = read_object(NADIA_KEY, VIRTUAL);
+            obj_to_char(target_obj, tmp_ch);
 
-            if ((r_num = real_object(NADIA_PILL)) >= 0) {
-                target_obj = read_object(r_num, REAL);
-                obj_to_char(target_obj, tmp_ch);
-            }
+            target_obj = read_object(NADIA_PILL, VIRTUAL);
+            obj_to_char(target_obj, tmp_ch);
         }
     }
 
@@ -7701,9 +7727,6 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (!AWAKE(ch)) {
         return (FALSE);
     }
-    /*
-     * TALK TO ME!!!
-     */
 
     if (cmd == 531) {
         /* Talk */
@@ -7764,7 +7787,9 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     " see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
 
                 if (vict->equipment[HOLD]) {
-                    sprintf(buf, "remove %s", vict->equipment[HOLD]->name);
+                    temp = KeywordsToString( &vict->equipment[HOLD]->keywords );
+                    sprintf(buf, "remove %s", temp);
+                    free( temp );
                     command_interpreter(vict, buf);
                     sprintf(buf, "give green-key %s", GET_NAME(ch));
                     command_interpreter(vict, buf);
@@ -7821,8 +7846,8 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
     return (FALSE);
 }
 
-/*
- * (GH)2001STill under Construction...
+/**
+ * @bug (GH)2001 Still under Construction...
  */
 int QPSalesman(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
@@ -7832,7 +7857,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
     int             x = 0,
                     temp = 0;
     char            mobname[128];
-    int             questitems[14][3] = {
+    static int      questitems[14][3] = {
         {871, CLASS_CLERIC, 1},
         {872, CLASS_MAGIC_USER, 1},
         {873, CLASS_DRUID, 1},
@@ -7843,8 +7868,8 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
         {878, CLASS_DRUID, 1},
         {879, CLASS_WARRIOR, 1},
         {-1, -1, -1}
-
     };
+    Keywords_t     *key;
 
     sprintf(mobname, "%s", GET_NAME(mob));
 
@@ -7871,10 +7896,13 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
         oldSendOutput(ch, "\n\r Available commands 'List', 'ID <ITEM>', 'Buy "
                       "<ITEM>'\n\r");
         return (TRUE);
-    } else if (cmd == 26) {
+    } 
+    
+    if (cmd == 26) {
         /* 
          * lets ID that mofo 
          */
+        key = StringToKeywords( arg, NULL );
         while (questitems[x][0] != -1) {
             /* 
              * loop through all the items in the shop..  
@@ -7882,14 +7910,17 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
              */
             obj = read_object(questitems[x][0], VIRTUAL);
             if (obj) {
-                if (isname(arg, obj->name)) {
+                if (KeywordsMatch(key, &obj->keywords)) {
+                    FreeKeywords(key, TRUE);
                     spell_identify(50, ch, 0, obj);
                     return (TRUE);
                 }
             }
             x++;
         }
-    } else if (cmd == 56) {
+    }
+    
+    if (cmd == 56) {
         /* 
          * buy? 
          */
@@ -7903,8 +7934,9 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
              * if someone wants to buy one.
              */
             if ((obj = read_object(questitems[x][0], VIRTUAL)) &&
-                isname(arg, obj->name)) {
+                KeywordsMatch(key, &obj->keywords)) {
                 temp = questitems[x][2];
+
                 if (temp <= ch->player.q_points) {
                     ch->player.q_points = ch->player.q_points - temp;
                     oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I hope "
@@ -7919,19 +7951,19 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
                                   " have enought QPoints for that item'\n\r",
                               mobname);
                 }
-                return TRUE;
+                FreeKeywords(key, TRUE);
+                return( TRUE );
             }
             x++;
         }
         oldSendOutput(ch, "$c0013[$c0015%s$c0013] tells you 'I don't have that "
                       "item.'\n\r", mobname);
+        FreeKeywords(key, TRUE);
         return (TRUE);
     }
 
-    /*
-     * Guess this function didn't get called 
-     */
-    return FALSE;
+    FreeKeywords(key, TRUE);
+    return( FALSE );
 }
 
 int QuestMobProc(struct char_data *ch, int cmd, char *arg,
@@ -8348,7 +8380,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 if (itemgranted == 1002 || itemgranted == 1003 || 
                     itemgranted == 1004) {
                     ch->specials.questwon = 0;
-                    sprintf(buf, "won a token.. Received item %s", obj2->name);
+                    sprintf(buf, "won a token.. Received item %s", 
+                            obj2->short_description);
                     qlog(ch, buf);
                 }
                 obj_to_char(obj2, ch);
@@ -8934,6 +8967,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
     int             test = 0;
     int             has_danish = 0;
     struct obj_data *i;
+    char           *temp;
 
     if (!AWAKE(ch)) {
         return (FALSE);
@@ -8981,12 +9015,14 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             act("$n says, 'Pardon me sire, might you spare a poor man some "
                 "food?'", FALSE, vict, 0, 0, TO_ROOM);
             return (TRUE);
-        } else {
-            act("$n says, 'I'm too busy eating to talk!  Go Away!'", FALSE,
-                vict, 0, 0, TO_ROOM);
-            return (TRUE);
-        }
-    } else if (cmd == 72) {
+        } 
+        
+        act("$n says, 'I'm too busy eating to talk!  Go Away!'", FALSE,
+            vict, 0, 0, TO_ROOM);
+        return (TRUE);
+    } 
+    
+    if (cmd == 72) {
         /* give */
         arg = get_argument(arg, &obj_name);
 
@@ -9018,9 +9054,9 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
                              "desire.", GET_NAME(ch));
                 command_interpreter(vict, buf);
                 return (TRUE);
-            } else {
-                test = 1;
-            }
+            } 
+            
+            test = 1;
             sprintf(buf, "%s %s", obj_name, vict_name);
             do_give(ch, buf, 0);
         } else {
@@ -9039,7 +9075,10 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
                          "token of my appreciation.", GET_NAME(ch));
             command_interpreter(vict, buf);
-            sprintf(buf, "remove %s", vict->equipment[WIELD]->name);
+            temp = KeywordsToString( &vict->equipment[WIELD]->keywords );
+            sprintf(buf, "remove %s", temp);
+            free( temp );
+
             command_interpreter(vict, buf);
             sprintf(buf, "give Staff %s", GET_NAME(ch));
             command_interpreter(vict, buf);

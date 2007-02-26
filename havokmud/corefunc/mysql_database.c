@@ -1121,9 +1121,7 @@ char *db_lookup_help_similar( int type, char *keywords )
 
 void db_save_object(struct obj_data *obj, int owner, int ownerItem )
 {
-    char           *name,
-                   *actDesc,
-                   *keyword;
+    char           *actDesc;
     int             i,
                     j;
     struct extra_descr_data *descr;
@@ -1180,10 +1178,7 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     db_queue_query( 39, QueryTable, data, 21, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
 
-    /* Make a copy of the name as strsep is destructive */
-    name = strdup(obj->name);
-    i = 0;
-    while( (keyword = strsep(&name, " \t\n\r")) ) {
+    for( i = 0; i < obj->keywords.count; i++ ) {
         /* Update the keywords */
         data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
         memset( data, 0, 5 * sizeof(MYSQL_BIND) );
@@ -1192,13 +1187,10 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
         bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
         bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
-        bind_string( &data[4], keyword, MYSQL_TYPE_VAR_STRING );
+        bind_string( &data[4], obj->keywords.words[i], MYSQL_TYPE_VAR_STRING );
         db_queue_query( 40, QueryTable, data, 5, NULL, NULL, mutex );
         pthread_mutex_unlock( mutex );
-
-        i++;
     }
-    free(name);
 
     /* Remove any unused keywords */
     data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
@@ -2854,7 +2846,6 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     struct obj_data            *obj;
     int                         count;
     int                         i;
-    int                         len;
 
     MYSQL_ROW                   row;
 
@@ -2867,20 +2858,16 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         return;
     }
 
-    obj->name = NULL;
-    len = 0;
+    obj->keywords.count = count;
+    obj->keywords.words = (char **)malloc(count * sizeof(char *));
+    obj->keywords.length = (int *)malloc(count * sizeof(int));
+    obj->keywords.found = (int *)malloc(count * sizeof(int));
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        obj->name = (char *)realloc(obj->name, len + strlen(row[0]) + 2);
-        if( !len ) {
-            strcpy( obj->name, row[0] );
-        } else {
-            strcat( obj->name, " " );
-            strcat( obj->name, row[0] );
-        }
-        len = strlen(obj->name);
+        obj->keywords.words[i] = strdup(row[0]);
+        obj->keywords.length[i] = strlen(row[0]);
     }
 }
 
@@ -3006,31 +2993,27 @@ void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
 void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 {
-    int                 len;
     int                 count;
     int                 i;
     struct index_data  *index;
     MYSQL_ROW           row;
 
     index = (struct index_data *)arg;
-    index->name = NULL;
-    len = 0;
 
     if( !res || !(count = mysql_num_rows(res)) ) {
         return;
     }
 
+    index->keywords.count  = count;
+    index->keywords.words  = (char **)malloc( count * sizeof(char *) );
+    index->keywords.length = (int *)malloc( count * sizeof(int) );
+    index->keywords.found  = (int *)malloc( count * sizeof(int) );
+
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        index->name = (char *)realloc(index->name, len + strlen(row[0]) + 2);
-        if( !len ) {
-            strcpy( index->name, row[0] );
-        } else {
-            strcat( index->name, " " );
-            strcat( index->name, row[0] );
-        }
-        len = strlen(index->name);
+        index->keywords.words[i] = strdup(row[0]);
+        index->keywords.length[i] = strlen(row[0]);
     }
 }
 

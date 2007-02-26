@@ -2388,7 +2388,7 @@ void spell_goodberry(int level, struct char_data *ch,
 
     CREATE(tmp_obj, struct obj_data, 1);
     clear_object(tmp_obj);
-    tmp_obj->name = strdup("berry blue blueberry");
+    StringToKeywords( "berry blue blueberry", &tmp_obj->keywords );
     tmp_obj->short_description = strdup("a plump blueberry");
     tmp_obj->description = strdup("A scrumptions blueberry lies here.");
     tmp_obj->type_flag = ITEM_FOOD;

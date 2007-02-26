@@ -2680,22 +2680,6 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     }
 }
 
-int weaponconvert(struct obj_data *obj)
-{
-    int             i = 0;
-
-    return 0;
-    if (!obj)
-        return WEAPON_GENERIC;
-    while (weaponskills[i].level != -1) {
-        if (strstr(obj->name, weaponskills[i].name)) {
-            return 350 + i;
-        }
-
-    }
-    return WEAPON_GENERIC;
-}
-
 
 /*
  * counts the number of inited zones

@@ -890,7 +890,7 @@ void spell_create_food(int level, struct char_data *ch,
     CREATE(tmp_obj, struct obj_data, 1);
     clear_object(tmp_obj);
 
-    tmp_obj->name = (char *) strdup("mushroom");
+    StringToKeywords("mushroom", &tmp_obj->keywords);
     tmp_obj->short_description = (char *) strdup("A Magic Mushroom");
     tmp_obj->description = (char *)strdup("A really delicious looking magic"
                                           " mushroom lies here.");
@@ -2319,15 +2319,16 @@ void spell_locate_object(int level, struct char_data *ch,
                          struct char_data *victim, char *arg)
 {
     struct obj_data *i;
-    char            name[256];
     char            buf[MAX_STRING_LENGTH],
                     buf2[256];
     int             j,
                     found = 0;
     struct char_data *target;
+    Keywords_t     *key;
 
-    assert(ch);
-    sprintf(name, "%s", arg);
+    if( !ch ) {
+        return;
+    }
 
     /*
      * when starting out, no object has been found yet
@@ -2340,6 +2341,8 @@ void spell_locate_object(int level, struct char_data *ch,
         return;
     }
 
+    key = StringToKeywords( arg, NULL );
+
     j = level >> 2;
     if (j < 2) {
         j = 2;
@@ -2347,7 +2350,8 @@ void spell_locate_object(int level, struct char_data *ch,
     buf[0] = '\0';
 
     for (i = object_list; i && (j > 0); i = i->next) {
-        if ( !IS_SET(i->extra_flags, ITEM_QUEST) && isname(name, i->name) ) {
+        if ( !IS_SET(i->extra_flags, ITEM_QUEST) && 
+             KeywordsMatch(key, &i->keywords) ) {
             /*
              * we found at least one item
              */
@@ -2407,6 +2411,7 @@ void spell_locate_object(int level, struct char_data *ch,
             }
         }
     }
+    FreeKeywords(key, TRUE);
     page_string(ch->desc, buf, 0);
 
     if (j == 0) {
@@ -2416,6 +2421,7 @@ void spell_locate_object(int level, struct char_data *ch,
         send_to_char("Nothing at all by that name.\n\r", ch);
     }
 }
+
 void cast_locate_object(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
@@ -3128,6 +3134,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument_delim(argument, &spellnm, '\'');
+
     /*
      * Check for beginning quote 
      */
@@ -3225,11 +3232,9 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "a scroll of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
-        if (obj->name) {
-            free(obj->name);
-        }
+        FreeKeywords( &obj->keywords, FALSE );
         sprintf(buf, "scroll %s", spells[sn]);
-        obj->name = (char *) strdup(buf);
+        StringToKeywords( buf, &obj->keywords );
 
         if (obj->description) {
             free(obj->description);

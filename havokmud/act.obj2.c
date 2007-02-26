@@ -38,10 +38,12 @@ void weight_change_object(struct obj_data *obj, int weight)
     if (GET_OBJ_WEIGHT(obj) + weight < 1) {
         weight = 0 - (GET_OBJ_WEIGHT(obj) - 1);
         if (obj->carried_by) {
-            Log("Bad weight change on %s, carried by %s.", obj->name, 
+            Log("Bad weight change on %s (%d), carried by %s.", 
+                obj->short_description, obj->item_number,
                 obj->carried_by->player.name);
         } else {
-            Log("Bad weight change on %s.", obj->name);
+            Log("Bad weight change on %s (%d).", obj->short_description,
+                obj->item_number);
         }
     }
 
@@ -62,31 +64,26 @@ void weight_change_object(struct obj_data *obj, int weight)
 
 void name_from_drinkcon(struct obj_data *obj)
 {
-    int             i;
-    char           *new_name;
+    /* 
+     * Always assume the drink type is the first keyword
+     */
 
-    for (i = 0;
-         (*((obj->name) + i) != ' ') && (*((obj->name) + i) != '\0'); i++);
-
-    if (*((obj->name) + i) == ' ') {
-        new_name = strdup((obj->name) + i + 1);
-        if (obj->name) {
-            free(obj->name);
-        }
-        obj->name = new_name;
-    }
+    free( obj->keywords.words[0] );
+    obj->keywords.words[0] = NULL;
+    obj->keywords.length[0] = 0;
 }
 
 void name_to_drinkcon(struct obj_data *obj, int type)
 {
-    char           *new_name;
+    /*
+     * Always assume the drink type is the first keyword
+     */
 
-    CREATE(new_name, char, strlen(obj->name) + strlen(drinknames[type]) + 2);
-    sprintf(new_name, "%s %s", drinknames[type], obj->name);
-    if (obj->name) {
-        free(obj->name);
+    if( obj->keywords.words[0] ) {
+        name_from_drinkcon(obj);
     }
-    obj->name = new_name;
+    obj->keywords.words[0] = strdup(drinknames[type]);
+    obj->keywords.length[0] = strlen(drinknames[type]);
 }
 
 void do_drink(struct char_data *ch, char *argument, int cmd)

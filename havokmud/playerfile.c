@@ -31,6 +31,7 @@ int             cur_depth = 0;
 
 void WriteObjs(FILE * fl, struct obj_file_u *st);
 int ReadObjs(FILE * fl, struct obj_file_u *st);
+int             find_name(char *name);
 
 
 /*
@@ -641,7 +642,6 @@ void update_obj_file(void)
                     secs_lost;
     char            buf[200];
 
-    int             find_name(char *name);
 
     if (!(char_file = fopen(PLAYER_FILE, "r+"))) {
         perror("Opening player file for reading. (reception.c, "

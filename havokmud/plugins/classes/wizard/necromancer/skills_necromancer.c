@@ -2439,16 +2439,18 @@ void spell_trace_corpse(int level, struct char_data *ch,
 {
     struct obj_data *i,
                    *corpse = NULL;
-    char            name[255];
     char            buf[255];
     int             j = 0,
                     found = 0,
                     player_loc = 0,
                     corpse_loc = 0;
 
-    assert(ch);
-    sprintf(name, "%s", arg);
+    if(!ch) {
+        return;
+    }
+
     buf[0] = '\0';
+    key = StringToKeywords( arg, NULL );
 
     /*
      * when starting out, no corpse has been found yet
@@ -2457,7 +2459,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
     for (i = object_list; i && !found; i = i->next) {
-        if (i->value[3] && isname(name, i->name)) {
+        if (i->value[3] && KeywordsMatch(key, &i->keywords)) {
             found = 1;
             /*
              * we found a REAL corpse
@@ -2487,6 +2489,8 @@ void spell_trace_corpse(int level, struct char_data *ch,
         }
     }
     send_to_char(buf, ch);
+
+    FreeKeywords(key, TRUE);
 
     if (!found) {
         send_to_char("Your senses could not pick up traces of this specific "

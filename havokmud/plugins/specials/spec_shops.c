@@ -133,6 +133,7 @@ void shopping_buy(char *arg, struct char_data *ch,
     int             i;
     float           mult = 0;
     int             cost;
+    char           *temp;
 
     if (!(is_ok(keeper, ch, shop_nr))) {
         return;
@@ -178,7 +179,9 @@ void shopping_buy(char *arg, struct char_data *ch,
         return;
     }
 
-    strcpy(newarg, temp1->name);
+    temp = KeywordsToString( &temp1->keywords );
+    strcpy(newarg, temp);
+    free(temp);
 
     if (temp1->cost <= 0) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
@@ -226,7 +229,7 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     for( count = 0; num > 0; num--, count++ ) {
         if (shop_producing(temp1, shop_nr)) {
-            temp1 = read_object(temp1->item_number, REAL);
+            temp1 = read_object(temp1->item_number, VIRTUAL);
         } else {
             if (!(temp1 = get_obj_in_list_vis(ch, newarg, keeper->carrying))) {
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);

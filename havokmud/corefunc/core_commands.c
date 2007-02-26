@@ -331,7 +331,9 @@ CommandDef_t coreCommands[] = {
     { "allspells", do_spells, 238, POSITION_DEAD, 0 },
     { "breath", do_breath, 239, POSITION_FIGHTING, 1 },
     { "show", do_show, 240, POSITION_DEAD, 52 },
+#if 0
     { "debug", do_debug, 241, POSITION_DEAD, 60 },
+#endif
     { "invisible", do_invis, 242, POSITION_DEAD, IMMORTAL },
     { "gain", do_gain, 243, POSITION_DEAD, 1 },
 #if 0
