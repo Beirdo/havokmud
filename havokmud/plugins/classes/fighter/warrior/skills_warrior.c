@@ -19,7 +19,6 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
     char            buf[254],
                    *arg;
     int             perc = 0;
-    extern struct index_data *obj_index;
 
     dlog("in do_mend");
 
@@ -52,8 +51,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s tried to mend an invalid armor value: %s, "
                              "vnum %ld.",
                         GET_NAME(ch), obj->short_description,
-                        (obj->item_number >= 0) ?
-                         obj_index[obj->item_number].virtual : 0);
+                        (obj->item_number >= 0) ? obj->item_number : 0);
                 Log(buf);
                 return;
             }

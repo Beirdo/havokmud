@@ -55,6 +55,7 @@ typedef struct _BalancedBTreeItem_t
     void                        *item;
     void                        *key;
     struct _BalancedBTree_t     *btree;
+    int                          visited;
 } BalancedBTreeItem_t;
 
 typedef struct _BalancedBTree_t
@@ -84,6 +85,17 @@ void *BalancedBTreeFind( BalancedBTree_t *btree, void *key,
                          Locked_t locked, bool alternate );
 BalancedBTreeItem_t *BalancedBTreeFindGreatest( BalancedBTreeItem_t *root );
 BalancedBTreeItem_t *BalancedBTreeFindLeast( BalancedBTreeItem_t *root );
+void BalancedBTreeClearVisited( BalancedBTree_t *btree, Locked_t locked );
+BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
+                                                    Locked_t locked,
+                                                    void *begin, void *end );
+BalancedBTreeItem_t *BalancedBTreeFindNextInRange( BalancedBTree_t *btree, 
+                                                   BalancedBTreeItem_t *item, 
+                                                   Locked_t locked, 
+                                                   void *begin, void *end);
+BalancedBTreeItem_t *BalancedBTreeFindNext( BalancedBTree_t *btree, 
+                                            BalancedBTreeItem_t *item, 
+                                            Locked_t locked);
 
 #ifdef __cplusplus
 }

@@ -404,22 +404,24 @@ typedef enum {
 /*
  * Some different kind of liquids
  */
-#define LIQ_WATER      0
-#define LIQ_BEER       1
-#define LIQ_WINE       2
-#define LIQ_ALE        3
-#define LIQ_DARKALE    4
-#define LIQ_WHISKY     5
-#define LIQ_LEMONADE   6
-#define LIQ_FIREBRT    7
-#define LIQ_LOCALSPC   8
-#define LIQ_SLIME      9
-#define LIQ_MILK       10
-#define LIQ_TEA        11
-#define LIQ_COFFE      12
-#define LIQ_BLOOD      13
-#define LIQ_SALTWATER  14
-#define LIQ_COKE       15
+typedef enum {
+    LIQ_WATER = 0,
+    LIQ_BEER,
+    LIQ_WINE,
+    LIQ_ALE,
+    LIQ_DARKALE,
+    LIQ_WHISKY,
+    LIQ_LEMONADE,
+    LIQ_FIREBRT,
+    LIQ_LOCALSPC,
+    LIQ_SLIME,
+    LIQ_MILK,
+    LIQ_TEA,
+    LIQ_COFFEE,
+    LIQ_BLOOD,
+    LIQ_SALTWATER,
+    LIQ_COKE
+} LiquidTypes_t;
 
 /*
  * special addition for drinks

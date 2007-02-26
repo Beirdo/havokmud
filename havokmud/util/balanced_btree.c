@@ -53,6 +53,7 @@ void BalancedBTreeReplace( BalancedBTree_t *btree, BalancedBTreeItem_t *item,
 void BalancedBTreeRebalance( BalancedBTree_t *btree, 
                              BalancedBTreeItem_t *root );
 void BalancedBTreePrune( BalancedBTreeItem_t *item );
+void BalancedBTreeUnvisit( BalancedBTreeItem_t *item );
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
@@ -325,6 +326,7 @@ void *BalancedBTreeFind( BalancedBTree_t *btree, void *key,
 
     return( item );
 }
+
 
 int KeyCompareInt( void *left, void *right )
 {
@@ -661,6 +663,193 @@ void BalancedBTreeRebalance( BalancedBTree_t *btree,
     BalancedBTreeRebalance( btree, root->left );
     BalancedBTreeRebalance( btree, root->right );
 }
+
+void BalancedBTreeClearVisited( BalancedBTree_t *btree, Locked_t locked )
+{
+    if( btree == NULL ) {
+        return;
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeLock( btree );
+    }
+
+    BalancedBTreeUnvisit( btree->root );
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeUnlock( btree );
+    }
+}
+
+void BalancedBTreeUnvisit( BalancedBTreeItem_t *item )
+{
+    if( !item ) {
+        return;
+    }
+
+    item->visited = 0;
+    BalancedBTreeUnvisit( item->left );
+    BalancedBTreeUnvisit( item->right );
+}
+
+BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
+                                                    Locked_t locked,
+                                                    void *begin, void *end )
+{
+    BalancedBTreeItem_t    *find;
+    BalancedBTreeItem_t    *item;
+    BalancedBTreeItem_t    *retitem;
+    int                     res;
+
+    if( btree == NULL ) {
+        return( NULL );
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeLock( btree );
+    }
+
+    retitem = NULL;
+
+    BalancedBTreeClearVisited( btree, LOCKED );
+
+    find = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+    find->key = begin;
+
+    item = BalancedBTreeFindParent( btree, find );
+    free( find );
+
+    if( !item ) {
+        item = btree->root;
+    }
+
+    /* Check the item */
+    res = btree->keyCompare( item->key, begin );
+    if( res == 0 ) {
+        /* Found exactly */
+        retitem = item;
+    } else if( res > 0 ) {
+        /* item is greater, do a range check against end */
+        res = btree->keyCompare( item->key, end );
+        if( res <= 0 ) {
+            /* item <= end */
+            retitem = item;
+        }
+    } else {
+        /* We have a problem..   gotta search the tree iteratively until we
+         * find one in range (or until > range)
+         */
+        retitem = BalancedBTreeFindNextInRange(btree, item, LOCKED, begin, end);
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeUnlock( btree );
+    }
+
+    return( retitem );
+}
+
+BalancedBTreeItem_t *BalancedBTreeFindNextInRange( BalancedBTree_t *btree, 
+                                                   BalancedBTreeItem_t *item, 
+                                                   Locked_t locked, 
+                                                   void *begin, void *end)
+{
+    BalancedBTreeItem_t    *retitem;
+    int                     res;
+    int                     found;
+
+    if( btree == NULL || item == NULL ) {
+        return( NULL );
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeLock( btree );
+    }
+
+    retitem = NULL;
+    found = 0;
+
+    while( item && !found ) {
+        item->visited++;
+
+        if( item->right && !item->right->visited ) {
+            item = BalancedBTreeFindLeast( item->right );
+        } else {
+            item = item->parent;
+        }
+
+        if( !item->visited ) {
+            res = btree->keyCompare( item->key, begin );
+            if( res >= 0 ) {
+                /* item->key >= begin */
+                res = btree->keyCompare( item->key, end );
+                if( res <= 0 ) {
+                    /* item->key <= end */
+                    retitem = item;
+                } else {
+                    /* item->key > end */
+                    retitem = NULL;
+                }
+                found = 1;
+            }
+        }
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeUnlock( btree );
+    }
+
+    return( retitem );
+}
+
+BalancedBTreeItem_t *BalancedBTreeFindNext( BalancedBTree_t *btree, 
+                                            BalancedBTreeItem_t *item, 
+                                            Locked_t locked)
+{
+    BalancedBTreeItem_t    *retitem;
+    int                     found;
+
+    if( btree == NULL || item == NULL ) {
+        return( NULL );
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeLock( btree );
+    }
+
+    retitem = NULL;
+    found = 0;
+
+    while( item && !found ) {
+        item->visited++;
+
+        if( item->right && !item->right->visited ) {
+            item = BalancedBTreeFindLeast( item->right );
+        } else {
+            item = item->parent;
+        }
+
+        if( !item->visited ) {
+            retitem = item;
+            found = 1;
+        }
+    }
+
+    if( locked == UNLOCKED )
+    {
+        BalancedBTreeUnlock( btree );
+    }
+
+    return( retitem );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

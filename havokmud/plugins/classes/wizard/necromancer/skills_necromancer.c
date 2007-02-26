@@ -1971,7 +1971,7 @@ void spell_scourge_warlock(int level, struct char_data *ch,
 
     if (ch->equipment[WEAR_EYES]) {
         obj = ch->equipment[WEAR_EYES];
-        if (obj && obj_index[obj->item_number].virtual != TONGUE_ITEM) {
+        if (obj && obj->item_number != TONGUE_ITEM) {
             act("Your cannot perform the Warlock's Scourge wearing $p.",
                 FALSE, ch, obj, 0, TO_CHAR);
             return;

@@ -645,13 +645,11 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
         return;
     }
 
-    if (ch->equipment[WIELD] &&
-        obj_index[ch->equipment[WIELD]->item_number].virtual == obj) {
+    if (ch->equipment[WIELD] && ch->equipment[WIELD]->item_number == obj) {
         wielded = TRUE;
     }
 
-    if (ch->equipment[HOLD] &&
-        obj_index[ch->equipment[HOLD]->item_number].virtual == obj) {
+    if (ch->equipment[HOLD] && ch->equipment[HOLD]->item_number == obj) {
         held = TRUE;
     }
 
@@ -1990,8 +1988,7 @@ void spell_identify(int level, struct char_data *ch,
         if (IS_IMMORTAL(ch)) {
             sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%ld%s]",
                     color1, color2, obj->item_number, color1, color2,
-                    (obj->item_number >= 0) ?
-                     obj_index[obj->item_number].virtual : 0, color1);
+                    (obj->item_number >= 0) ? obj->item_number : 0, color1);
 
             if (obj->max == 0) {
                 sprintf(buf2, "%s", "unlimited");
