@@ -1124,10 +1124,11 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     char           *actDesc;
     int             i,
                     j;
-    struct extra_descr_data *descr;
+    Keywords_t     *descr;
     int             vnum;
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
+    char               *temp;
 
     mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init( mutex, NULL );
@@ -1294,7 +1295,7 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     db_queue_query( 42, QueryTable, data, 67, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
 
-    for (descr = obj->ex_description, i = 0; descr; descr = descr->next, i++) {
+    for (descr = obj->ex_description, i = 0; descr; descr++, i++) {
         /* Update extra descriptions */
         data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
         memset( data, 0, 6 * sizeof(MYSQL_BIND) );
@@ -1303,9 +1304,11 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
         bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
         bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
-        bind_string( &data[4], descr->keyword, MYSQL_TYPE_VAR_STRING );
+        temp = KeywordsToString( descr, " " );
+        bind_string( &data[4], temp, MYSQL_TYPE_VAR_STRING );
         bind_string( &data[5], descr->description, MYSQL_TYPE_VAR_STRING );
         db_queue_query( 43, QueryTable, data, 6, NULL, NULL, mutex );
+        free( temp );
         pthread_mutex_unlock( mutex );
     }
 
@@ -2916,8 +2919,7 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 {
     struct obj_data           **retobj;
     struct obj_data            *obj;
-    struct extra_descr_data    *descr;
-    struct extra_descr_data    *prev;
+    Keywords_t                 *descr;
     int                         count;
     int                         i;
 
@@ -2927,27 +2929,18 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     obj = *retobj;
 
     obj->ex_description = NULL;
+    obj->ex_description_count = 0;
 
     if( res && (count = mysql_num_rows(res)) ) {
-        descr = NULL;
-        prev = NULL;
+        CREATE(obj->ex_description, Keywords_t, count);
+        obj->ex_description_count = count;
 
         for( i = 0; i < count; i++ ) {
             row = mysql_fetch_row(res);
+            descr = &obj->ex_description[i];
 
-            descr = (struct extra_descr_data *)
-                                malloc(sizeof(struct extra_descr_data));
-            if( !prev ) {
-                obj->ex_description = descr;
-            } else {
-                prev->next = descr;
-            }
-
-            descr->next = NULL;
-            descr->keyword = strdup(row[0]);
+            StringToKeywords( row[0], descr );
             descr->description = strdup(row[1]);
-
-            prev = descr;
         }
     }
 }

@@ -272,7 +272,7 @@ void UpdateObjMenu(struct char_data *ch)
     send_to_char(VT_HOMECLR, ch);
     sprintf(buf, VT_CURSPOS, 1, 1);
     send_to_char(buf, ch);
-    objname = KeywordsToString( &obj->keywords );
+    objname = KeywordsToString( &obj->keywords, " " );
     sprintf(buf, "Object Name: %s", objname);
     free( objname );
     send_to_char(buf, ch);
@@ -464,7 +464,7 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    objname = KeywordsToString( obj->name );
+    objname = KeywordsToString( &obj->keywords, " " );
     sprintf(buf, "Current Object Name: %s", objname);
     free(objname);
     send_to_char(buf, ch);

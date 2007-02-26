@@ -1726,7 +1726,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
      */
     if ((j = get_obj_vis_world(ch, arg1, &count)) != NULL) {
         virtual = MAX( 0, j->item_number );
-        objname = KeywordsToString( &j->keywords );
+        objname = KeywordsToString( &j->keywords, " " );
         sprintf(buf, "Object name: [%s]\n\r R-number: [%d], "
                      "V-number: [%d] Item type: ",
                 objname, j->item_number, virtual);
@@ -1748,10 +1748,13 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                   ((j->short_description) ? j->short_description : "None"),
                   ((j->description) ? j->description : "None"));
 
-        if (j->ex_description) {
+        if (j->ex_description && j->ex_description_count) {
             strcpy(buf, "Extra description keyword(s):\n\r----------\n\r");
-            for (desc = j->ex_description; desc; desc = desc->next) {
-                strcat(buf, desc->keyword);
+            for (desc = j->ex_description, i = 0; 
+                 i < j->ex_description_count; desc++) {
+                objname = KeywordsToString( desc, " " );
+                strcat(buf, objname);
+                free(objname);
                 strcat(buf, "\n\r");
             }
             strcat(buf, "----------\n\r");
@@ -2079,9 +2082,6 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         if (!strcmp(field, "extra")) {
             send_to_char("Not able modify extra descriptions (yet).\n\r", ch);
             return;
-            /*
-             * j->ex_description
-             */
         }
 
         argument = get_argument(argument, &parmstr);
@@ -4044,7 +4044,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
                 sprintf(color, "%s", "$c000W");
             }
 
-            objname = KeywordsToString( &index->keywords );
+            objname = KeywordsToString( &index->keywords, " " );
             sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual, 
                     (index->number - 1), color, eval(obj), objname);
             free( objname );
@@ -4118,7 +4118,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
                 } else {
                     sprintf(color, "%s", "$c000W");
                 }
-                objname = KeywordsToString( &index->keywords );
+                objname = KeywordsToString( &index->keywords, " " );
                 sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual, 
                         (index->number - 1), color, eval(obj), objname);
                 free( objname );
@@ -4207,7 +4207,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
                 } else {
                     sprintf(color, "%s", "$c000W");
                 }
-                objname = KeywordsToString( &index->keywords );
+                objname = KeywordsToString( &index->keywords, " " );
                 sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual,
                         (index->number - 1), color, eval(obj), objname);
                 free(objname);
@@ -4386,7 +4386,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                  * VNUM; NAME; TYPE; FLAGS; Affect1; Affect2; Affect3;
                  * Affect4
                  */
-                objname = KeywordsToString( &index->keywords );
+                objname = KeywordsToString( &index->keywords, " " );
                 sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;", zone, index->virtual, 
                         ((index->number - 1 == 0) ? 0 : 1),
                         index->cost_per_day, objname, temp1, temp2);
@@ -4542,7 +4542,7 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
 
         obj = read_object(index->virtual, VIRTUAL);
         if (obj && obj->max != 0) {
-            objname = KeywordsToString( &index->keywords );
+            objname = KeywordsToString( &index->keywords, " " );
             sprintf(buf, "%5ld  %3d/%3d  %s \n\r", index->virtual, 
                     index->number - 1, index->max, objname);
             free(objname);

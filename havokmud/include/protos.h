@@ -132,8 +132,6 @@ void            do_show_skill(struct char_data *ch, char *arg, int cmd);
 void            do_resize(struct char_data *ch, char *arg, int cmd);
 void            do_display(struct char_data *ch, char *arg, int cmd);
 int             singular(struct obj_data *o);
-char           *find_ex_description(char *word,
-                                    struct extra_descr_data *list);
 void            show_obj_to_char(struct obj_data *object,
                                  struct char_data *ch, int mode);
 void            show_mult_obj_to_char(struct obj_data *o,

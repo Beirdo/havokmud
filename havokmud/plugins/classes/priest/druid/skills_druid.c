@@ -1784,7 +1784,7 @@ void spell_speak_with_plants(int level, struct char_data *ch,
         return;
     }
 
-    temp = KeywordsToString( &obj->keywords );
+    temp = KeywordsToString( &obj->keywords, " " );
     sprintf(buffer, "%s says 'Hi $n, how ya doin?'", temp);
     free( temp );
 

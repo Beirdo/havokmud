@@ -179,7 +179,7 @@ void shopping_buy(char *arg, struct char_data *ch,
         return;
     }
 
-    temp = KeywordsToString( &temp1->keywords );
+    temp = KeywordsToString( &temp1->keywords, " " );
     strcpy(newarg, temp);
     free(temp);
 
@@ -212,7 +212,7 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     if ((IS_CARRYING_N(ch) + num) > (CAN_CARRY_N(ch))) {
         sprintf(buf, "%s : You can't carry that many items.\n\r",
-                fname(temp1->name));
+                fname(newarg));
         send_to_char(buf, ch);
         return;
     }

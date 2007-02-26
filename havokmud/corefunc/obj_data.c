@@ -59,8 +59,6 @@ long            obj_count = 0;
 
 void clear_object(struct obj_data *obj);
 
-char *KeywordsToString( Keywords_t *key );
-Keywords_t *StringToKeywords( char *string, Keywords_t *key );
 void FreeKeywords( Keywords_t *key, bool freeRoot );
 bool KeywordsMatch(Keywords_t *tofind, Keywords_t *keywords);
 struct obj_data *GetObjectInEquip(struct char_data *ch, char *arg,
@@ -130,16 +128,21 @@ void insert_object(struct obj_data *obj, long vnum)
  */
 void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
 {
-    struct extra_descr_data *new_descr,
-                   *tmp_descr;
-    int             i;
+    Keywords_t     *new_descr,
+                   *old_descr;
+    int             i,
+                    j;
 
     obj->index = osrc->index;
 
     obj->keywords.count = osrc->keywords.count;
     CREATE(obj->keywords.words, char *, osrc->keywords.count);
     for( i = 0; i < osrc->keywords.count; i++ ) {
-        obj->keywords.words[i] = strdup( osrc->keywords.words[i] );
+        if( osrc->keywords.words[i] ) {
+            obj->keywords.words[i] = strdup( osrc->keywords.words[i] );
+        } else {
+            obj->keywords.words[i] = NULL;
+        }
     }
 
     if (osrc->short_description) {
@@ -166,25 +169,29 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     obj->weight = osrc->weight;
     obj->cost = osrc->cost;
     obj->cost_per_day = osrc->cost_per_day;
+    obj->ex_description_count = osrc->ex_description_count;
 
     /*
      *** extra descriptions ***
      */
 
-    obj->ex_description = 0;
+    obj->ex_description = NULL;
 
     if (osrc->ex_description) {
-        for (tmp_descr = osrc->ex_description; tmp_descr;
-             tmp_descr = tmp_descr->next) {
-            CREATE(new_descr, struct extra_descr_data, 1);
-            if (tmp_descr->keyword) {
-                new_descr->keyword = strdup(tmp_descr->keyword);
+        CREATE( obj->ex_description, Keywords_t, obj->ex_description_count );
+        for( i = 0; i < osrc->ex_description_count; i++ ) {
+            old_descr = &osrc->ex_description[i];
+            new_descr = &obj->ex_description[i];
+            new_descr->count = old_descr->count;
+            CREATE(new_descr->words, char *, old_descr->count);
+            for( j = 0; j < old_descr->count; j++ ) {
+                if( old_descr->words[j] ) {
+                    new_descr->words[j] = strdup( old_descr->words[j] );
+                } else {
+                    new_descr->words[j] = NULL;
+                }
             }
-            if (tmp_descr->description) {
-                new_descr->description = strdup(tmp_descr->description);
-            }
-            new_descr->next = obj->ex_description;
-            obj->ex_description = new_descr;
+            new_descr->description = strdup( old_descr->description );
         }
     }
 
@@ -253,9 +260,8 @@ struct obj_data *read_object(int nr, int type)
  */
 void free_obj(struct obj_data *obj)
 {
-    struct extra_descr_data    *this,
-                               *next_one;
-    int                         i;
+    int                         i,
+                                j;
 
     if (!obj) {
         LogPrintNoArg(LOG_CRIT, "!obj in free_obj, db.c");
@@ -263,9 +269,13 @@ void free_obj(struct obj_data *obj)
     }
 
     for( i = 0; i < obj->keywords.count; i++ ) {
-        free( obj->keywords.words[i] );
+        if( obj->keywords.words[i] ) {
+            free( obj->keywords.words[i] );
+        }
     }
     free( obj->keywords.words );
+    free( obj->keywords.length );
+    free( obj->keywords.found );
 
     if (obj->description && *obj->description) {
         free(obj->description);
@@ -279,20 +289,24 @@ void free_obj(struct obj_data *obj)
     if (obj->modBy && *obj->modBy) {
         free(obj->modBy);
     }
-    for (this = obj->ex_description; (this != 0); this = next_one) {
-        next_one = this->next;
-        if (this->keyword) {
-            free(this->keyword);
-        }
-        if (this->description) {
-            free(this->description);
-        }
-        free(this);
-    }
 
-    if (obj) {
-        free(obj);
+    for( i = 0; i < obj->ex_description_count; i++ ) {
+        if( obj->ex_description[i].description ) {
+            free( obj->ex_description[i].description );
+        }
+
+        for( j = 0; j < obj->ex_description[i].count; j++ ) {
+            if( obj->ex_description[i].words[j] ) {
+                free( obj->ex_description[i].words[j] );
+            }
+        }
+        free( obj->ex_description[i].words );
+        free( obj->ex_description[i].length );
+        free( obj->ex_description[i].length );
     }
+    free( obj->ex_description );
+
+    free(obj);
 }
 
 /**
@@ -392,20 +406,27 @@ void extract_obj(struct obj_data *obj)
 
 }
 
-char *KeywordsToString( Keywords_t *key )
+char *KeywordsToString( Keywords_t *key, char *separator )
 {
     char       *string;
     int         i;
     int         len;
+    int         seplen;
+    static char *defSeparator = "-";
 
     if( !key ) {
         return( NULL );
     }
 
+    if( !separator ) {
+        separator = defSeparator;
+    }
+
     len = 0;
+    seplen = strlen(separator);
     for( i = 0; i < key->count; i++ ) {
         if( key->words[i] ) {
-            len += key->length[i] + 1;
+            len += key->length[i] + seplen;
         }
     }
 
@@ -415,7 +436,7 @@ char *KeywordsToString( Keywords_t *key )
     for( i = 0; i < key->count; i++ ) {
         if( key->words[i] ) {
             if( string[0] != '\0' ) {
-                strcat( string, "-" );
+                strcat( string, separator );
             }
             strcat( string, key->words[i] );
         }
@@ -495,6 +516,11 @@ void FreeKeywords( Keywords_t *key, bool freeRoot )
     if( key->found ) {
         free( key->found );
     }
+
+    if( key->description ) {
+        free( key->description );
+    }
+    
     if( freeRoot ) {
         free( key );
     }
@@ -814,6 +840,28 @@ int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
         return (0);
     }
     return (1);
+}
+
+char *find_ex_description(char *word, Keywords_t *list, int count)
+{
+    int             i;
+    Keywords_t     *key;
+
+    if( !word || !list || !count ) {
+        return( NULL );
+    }
+
+    key = StringToKeywords( word, NULL );
+
+    for (i = 0; i < count; i++, list++) {
+        if (KeywordsMatch(key, list)) {
+            FreeKeywords( key, TRUE );
+            return (list->description);
+        }
+    }
+
+    FreeKeywords( key, TRUE );
+    return (NULL);
 }
 
 

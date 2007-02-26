@@ -289,7 +289,7 @@
 
 #define IS_CORPSE(obj) (GET_ITEM_TYPE((obj))==ITEM_CONTAINER && \
                         (obj)->value[3] && \
-                        isname("corpse", (obj)->name))
+                        KeywordsMatch(&keyCorpse, &(obj)->keywords))
 
 #define EXIT(ch, door)  (real_roomp((ch)->in_room)->dir_option[door])
 

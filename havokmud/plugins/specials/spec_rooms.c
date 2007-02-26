@@ -435,7 +435,8 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
     bool            found;
     struct obj_data *tmp_obj,
                    *obj;
-    struct extra_descr_data *ext;
+    int             i;
+    char           *descr;
 
     if (cmd != 176) {
         /*
@@ -454,24 +455,24 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
 
     for (tmp_obj = real_roomp(key_room)->contents; tmp_obj;
          tmp_obj = tmp_obj->next_content) {
-        for (ext = tmp_obj->ex_description; ext; ext = ext->next) {
-            if (strcasecmp(buf, ext->keyword) == 0) {
-                if (gold == 0) {
-                    gold = 1;
-                    act("$n kneels and at the altar and chants a prayer to "
-                        "Odin.", FALSE, ch, 0, 0, TO_ROOM);
-                    act("You notice a faint light in Odin's eye.",
-                        FALSE, ch, 0, 0, TO_CHAR);
-                }
-                obj = read_object(tmp_obj->item_number, REAL);
-                obj_to_room(obj, ch->in_room);
-                act("$p slowly fades into existence.", FALSE, ch, obj, 0,
-                    TO_ROOM);
-                act("$p slowly fades into existence.", FALSE, ch, obj, 0,
-                    TO_CHAR);
-                gold += obj->cost;
-                found = TRUE;
+        descr = find_ex_descr(buf, tmp_obj->ex_description,
+                              tmp_obj->ex_description_count);
+        if (descr) {
+            if (gold == 0) {
+                gold = 1;
+                act("$n kneels and at the altar and chants a prayer to "
+                    "Odin.", FALSE, ch, 0, 0, TO_ROOM);
+                act("You notice a faint light in Odin's eye.",
+                    FALSE, ch, 0, 0, TO_CHAR);
             }
+            obj = read_object(tmp_obj->item_number, REAL);
+            obj_to_room(obj, ch->in_room);
+            act("$p slowly fades into existence.", FALSE, ch, obj, 0,
+                TO_ROOM);
+            act("$p slowly fades into existence.", FALSE, ch, obj, 0,
+                TO_CHAR);
+            gold += obj->cost;
+            found = TRUE;
         }
     }
 

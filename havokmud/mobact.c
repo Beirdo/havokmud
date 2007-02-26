@@ -569,7 +569,7 @@ int UseViolentHeldItem(struct char_data *ch)
              * item has charges 
              */
 
-            objname = KeywordsToString( obj->keywords );
+            objname = KeywordsToString( &obj->keywords, NULL );
 
             if (isname(GET_NAME(ch), GET_NAME(ch->specials.fighting))) {
                 i = 0;
@@ -771,12 +771,13 @@ int FindABetterWeapon(struct char_data * mob)
          */
         if (best->carried_by == mob) {
             if (mob->equipment[WIELD]) {
-                objname = KeywordsToString(mob->equipment[WIELD]->keywords);
+                objname = KeywordsToString(&mob->equipment[WIELD]->keywords, 
+                                           NULL);
                 sprintf(buf, "remove %s", objname);
                 free(objname);
                 command_interpreter(mob, buf);
             }
-            objname = KeywordsToString(best->keywords);
+            objname = KeywordsToString(&best->keywords, NULL);
             do_wield(mob, objname, 0);
             free( objname );
         } else if (best->equipped_by == mob) {
@@ -785,13 +786,13 @@ int FindABetterWeapon(struct char_data * mob)
              */
             return (TRUE);
         } else {
-            objname = KeywordsToString(best->keywords);
+            objname = KeywordsToString(&best->keywords, NULL);
             sprintf( buf, "get %s", objname );
             free( objname );
             command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
-        objname = KeywordsToString(mob->equipment[WIELD]->keywords);
+        objname = KeywordsToString(&mob->equipment[WIELD]->keywords, NULL);
         sprintf(buf, "remove %s", objname);
         free(objname);
         command_interpreter(mob, buf);

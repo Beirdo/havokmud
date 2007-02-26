@@ -460,6 +460,7 @@ typedef struct {
     char          **words;
     int            *length;
     int            *found;
+    char           *description;
     int             count;
     bool            exact;
     bool            partial;
@@ -518,7 +519,10 @@ struct obj_data {
     char           *description;        /**< When in room */
     char           *short_description;  /**< when worn/carry/in cont.  */
     char           *action_description; /**< What to write when used */
-    struct extra_descr_data *ex_description;    /**< extra descriptions */
+
+    Keywords_t     *ex_description;     /**< extra descriptions */
+    int             ex_description_count;   /**< count of extra descriptions */
+
     struct char_data *carried_by;       /**< Carried by :NULL in room/conta */
     byte            eq_pos;             /**< what is the equip. pos? */
     struct char_data *equipped_by;      /**< equipped by :NULL in room/conta */

@@ -7600,26 +7600,14 @@ int generate_legend_statue(void)
                         Log("trying to string invalid item in statue "
                             "generation");
                         return (TRUE);
-                    } else {
-                        /*
-                         * create an extra desc structure for the object 
-                         */
-                        CREATE(ed, struct extra_descr_data, 1);
-                        ed->next = obj->ex_description;
-                        obj->ex_description = ed;
-
-                        /*
-                         * define the keywords 
-                         */
-                        CREATE(ed->keyword, char, strlen(name) + 1);
-                        strcpy(ed->keyword, name);
-
-                        /*
-                         * define the description 
-                         */
-                        CREATE(ed->description, char, strlen(exdesc) + 1);
-                        strcpy(ed->description, exdesc);
-                    }
+                    } 
+                    
+                    /*
+                     * create an extra desc structure for the object 
+                     */
+                    CREATE(obj->description, Keywords_t, 1);
+                    StringToKeywords( name, obj->description );
+                    obj->description->description = strdup(exdesc);
 
                     /*
                      * and finally place it in a room 

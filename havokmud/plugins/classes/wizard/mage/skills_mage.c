@@ -2205,7 +2205,7 @@ void spell_identify(int level, struct char_data *ch,
             send_to_char(buf, ch);
         }
 
-        temp = KeywordsToString( &obj->keywords );
+        temp = KeywordsToString( &obj->keywords, NULL );
         sprintf(buf, "%sObject '%s%s%s', Item type: %s", color1, color2,
                 temp, color1, color2);
         free( temp );
@@ -3967,6 +3967,8 @@ void spell_portal(int level, struct char_data *ch,
                    *nrp;
     char            buf[512];
     char            str[180];
+    int             i;
+    char           *temp;
 
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
@@ -4037,11 +4039,11 @@ void spell_portal(int level, struct char_data *ch,
     sprintf(buf, "Through the mists of the portal, you can faintly see %s",
             nrp->name);
 
-    CREATE(ed, struct extra_descr_data, 1);
-    ed->next = tmp_obj->ex_description;
-    tmp_obj->ex_description = ed;
-    ed->keyword = KeywordsToString(&tmp_obj->keywords);
-    ed->description = strdup(buf);
+    CREATE(tmp_obj->ex_description, Keywords_t, 1);
+    temp = KeywordsToString(&tmp_obj->keywords, " ");
+    StringToKeywords( temp, tmp_obj->ex_description );
+    free( temp );
+    tmp_obj->ex_description->description = strdup(buf);
 
     tmp_obj->value[0] = level / 5;
     tmp_obj->value[1] = tmp_ch->in_room;

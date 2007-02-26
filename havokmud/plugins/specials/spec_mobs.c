@@ -2772,7 +2772,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
                          "token of my appreciation.", GET_NAME(ch));
             command_interpreter(vict, buf);
 
-            temp = KeywordsToString( &vict->equipment[WIELD]->keywords );
+            temp = KeywordsToString( &vict->equipment[WIELD]->keywords, NULL );
             sprintf(buf, "remove %s", temp);
             free( temp );
 
@@ -5828,7 +5828,7 @@ int archer_sub(struct char_data *ch)
              * If you found a missile, load it and return 
              */
             if (missile) {
-                temp = KeywordsToString( &missile->keywords );
+                temp = KeywordsToString( &missile->keywords, NULL );
                 do_weapon_load(ch, temp, 0);
                 free( temp );
                 return TRUE;
@@ -5878,14 +5878,15 @@ int archer_sub(struct char_data *ch)
 
         if (bow) {
             if (ch->equipment[WIELD]) {
-                temp = KeywordsToString( &ch->equipment[WIELD]->keywords );
+                temp = KeywordsToString( &ch->equipment[WIELD]->keywords, 
+                                         NULL );
                 sprintf(buf, "remove %s", temp);
                 free( temp );
                 command_interpreter(ch, buf);
                 return( TRUE );
             }
 
-            temp = KeywordsToString( &bow->keywords );
+            temp = KeywordsToString( &bow->keywords, NULL );
             do_wield(ch, temp, 0);
             free(temp);
             return( TRUE );
@@ -5913,7 +5914,7 @@ int archer_sub(struct char_data *ch)
      */
     r = range_estimate(ch, thrown, 1);
     if (pick_archer_target(ch, r, &td, &a, &b)) {
-        temp = KeywordsToString( &thrown->keywords );
+        temp = KeywordsToString( &thrown->keywords, NULL );
         sprintf(buf, "throw %s %s", temp, td->player.name);
         free( temp );
         command_interpreter(ch, buf);
@@ -5936,7 +5937,7 @@ int archer_hth(struct char_data *ch)
      */
     if (ch->equipment[WIELD] && 
         ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
-        temp = KeywordsToString( &ch->equipment[WIELD]->keywords );
+        temp = KeywordsToString( &ch->equipment[WIELD]->keywords, NULL );
         sprintf(buf, "remove %s", temp);
         free( temp );
         command_interpreter(ch, buf);
@@ -5953,7 +5954,7 @@ int archer_hth(struct char_data *ch)
     }
 
     if (hth) {
-        temp = KeywordsToString( &hth->keywords );
+        temp = KeywordsToString( &hth->keywords, NULL );
         do_wield(ch, temp, 14);
         free( temp );
         return( TRUE );
@@ -7185,7 +7186,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
                          "my people. Perhaps you would be a better "
                          "choice.");
             do_say(tgt, buf, 19);
-            temp = KeywordsToString( &tgt->equipment[WEAR_HEAD]->keywords );
+            temp = KeywordsToString( &tgt->equipment[WEAR_HEAD]->keywords, u
+                                     NULL );
             sprintf(buf, "remove %s", temp);
             free( temp );
             command_interpreter(tgt, buf);
@@ -7787,7 +7789,8 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     " see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
 
                 if (vict->equipment[HOLD]) {
-                    temp = KeywordsToString( &vict->equipment[HOLD]->keywords );
+                    temp = KeywordsToString( &vict->equipment[HOLD]->keywords,
+                                             NULL );
                     sprintf(buf, "remove %s", temp);
                     free( temp );
                     command_interpreter(vict, buf);
@@ -9075,7 +9078,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
                          "token of my appreciation.", GET_NAME(ch));
             command_interpreter(vict, buf);
-            temp = KeywordsToString( &vict->equipment[WIELD]->keywords );
+            temp = KeywordsToString( &vict->equipment[WIELD]->keywords, NULL );
             sprintf(buf, "remove %s", temp);
             free( temp );
 

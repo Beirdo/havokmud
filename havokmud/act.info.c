@@ -46,19 +46,6 @@ int singular(struct obj_data *o)
 }
 
 
-char           *find_ex_description(char *word,
-                                    struct extra_descr_data *list)
-{
-    struct extra_descr_data *i;
-
-    for (i = list; i; i = i->next) {
-        if (*word && i->keyword && isname(word, i->keyword)) {
-            return (i->description);
-        }
-    }
-
-    return (NULL);
-}
 
 void show_obj_to_char(struct obj_data *object, struct char_data *ch,
                       int mode)
@@ -1748,7 +1735,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                  */
                 if (!found) {
                     tmp_desc = find_ex_description(arg2,
-                                      real_roomp(ch->in_room)->ex_description);
+                                  real_roomp(ch->in_room)->ex_description,
+                                  real_roomp(ch->in_room)->ex_description_count);
                     if (tmp_desc) {
                         page_string(ch->desc, tmp_desc, 0);
                         return;
@@ -1763,7 +1751,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                         if (ch->equipment[j] &&
                             CAN_SEE_OBJ(ch, ch->equipment[j])) {
                             tmp_desc = find_ex_description(arg2,
-                                        ch->equipment[j]->ex_description);
+                                        ch->equipment[j]->ex_description,
+                                        ch->equipment[j]->ex_description_count);
 
                             if (tmp_desc) {
                                 page_string(ch->desc, tmp_desc, 1);
@@ -1781,7 +1770,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                          tmp_object = tmp_object->next_content) {
                         if (CAN_SEE_OBJ(ch, tmp_object)) {
                             tmp_desc = find_ex_description(arg2,
-                                               tmp_object->ex_description);
+                                           tmp_object->ex_description,
+                                           tmp_object->ex_description_count);
                             if (tmp_desc) {
                                 page_string(ch->desc, tmp_desc, 1);
                                 found = TRUE;
@@ -1799,7 +1789,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                          tmp_object = tmp_object->next_content) {
                         if (CAN_SEE_OBJ(ch, tmp_object)) {
                             tmp_desc = find_ex_description(arg2,
-                                               tmp_object->ex_description);
+                                           tmp_object->ex_description,
+                                           tmp_object->ex_description_count);
                             if (tmp_desc) {
                                 page_string(ch->desc, tmp_desc, 1);
                                 found = TRUE;
