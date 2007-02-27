@@ -1195,6 +1195,7 @@ struct char_special_data {
     long            affected_by2;       /* Other special things */
 
     long            act;        /* flags for NPC behavior */
+    long            act_class;  /* flags for NPCs to act like a class */
 
     sh_int          apply_saving_throw[MAX_SAVES];      /* Saving throw
                                                          * (Bonuses) */

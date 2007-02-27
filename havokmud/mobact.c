@@ -334,47 +334,47 @@ void mobile_activity(struct char_data *ch)
         /* 
          * do not run these if disabled 
          */
-        if (IS_SET(ch->specials.act, ACT_NECROMANCER) &&
+        if (IS_SET(ch->specials.act_class, ACT_NECROMANCER) &&
             necromancer(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_MAGIC_USER) &&
+        if (IS_SET(ch->specials.act_class, ACT_MAGIC_USER) &&
             magic_user(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_CLERIC) && 
+        if (IS_SET(ch->specials.act_class, ACT_CLERIC) && 
             cleric(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_WARRIOR) &&
+        if (IS_SET(ch->specials.act_class, ACT_WARRIOR) &&
             fighter(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_THIEF) &&
+        if (IS_SET(ch->specials.act_class, ACT_THIEF) &&
             thief(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_DRUID) &&
+        if (IS_SET(ch->specials.act_class, ACT_DRUID) &&
             druid(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_MONK) &&
+        if (IS_SET(ch->specials.act_class, ACT_MONK) &&
             monk(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_BARBARIAN) &&
+        if (IS_SET(ch->specials.act_class, ACT_BARBARIAN) &&
             Barbarian(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_PALADIN) &&
+        if (IS_SET(ch->specials.act_class, ACT_PALADIN) &&
 #if 0
         /* 
          * Paladin special proc not completed 
@@ -386,12 +386,12 @@ void mobile_activity(struct char_data *ch)
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_RANGER) &&
+        if (IS_SET(ch->specials.act_class, ACT_RANGER) &&
             Ranger(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
 
-        if (IS_SET(ch->specials.act, ACT_PSI) && 
+        if (IS_SET(ch->specials.act_class, ACT_PSI) && 
             Psionist(ch, 0, "", ch, PULSE_TICK)) {
             return;
         }

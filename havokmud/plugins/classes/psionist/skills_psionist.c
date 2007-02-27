@@ -2485,14 +2485,14 @@ void mind_sense_object(int level, struct char_data *ch,
                  real_roomp(target->in_room)->zone) || 
                 (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
                 !IS_IMMORTAL(target) && 
-                !(IS_SET(target->specials.act, ACT_PSI) && 
+                !(IS_SET(target->specials.act_class, ACT_PSI) && 
                   GetMaxLevel(target) > GetMaxLevel(ch))) {
                 room = target->in_room;
             }
         } else if (i->equipped_by) {
             target = i->equipped_by;
             if (!IS_IMMORTAL(target) && 
-                !(IS_SET(target->specials.act, ACT_PSI) && 
+                !(IS_SET(target->specials.act_class, ACT_PSI) && 
                   GetMaxLevel(target) > GetMaxLevel(ch)) && 
                 ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
                  real_roomp(ch->in_room)->zone ==

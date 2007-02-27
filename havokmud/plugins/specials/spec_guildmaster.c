@@ -1299,32 +1299,32 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
     /*
      * let's see which GM we got here
      */
-    if (IS_SET(guildmaster->specials.act, ACT_MAGIC_USER)) {
+    if (IS_SET(guildmaster->specials.act_class, ACT_MAGIC_USER)) {
         MageGuildMaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_CLERIC)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_CLERIC)) {
         ClericGuildMaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_WARRIOR)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_WARRIOR)) {
         WarriorGuildMaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_THIEF)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_THIEF)) {
         ThiefGuildMaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_DRUID)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_DRUID)) {
         DruidGuildMaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_MONK)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_MONK)) {
         monk_master(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_BARBARIAN)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_BARBARIAN)) {
         barbarian_guildmaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_PALADIN)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_PALADIN)) {
         PaladinGuildmaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_RANGER)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_RANGER)) {
         RangerGuildmaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_PSI)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_PSI)) {
         PsiGuildmaster(ch, cmd, 0, guildmaster, 0);
-    } else if (IS_SET(guildmaster->specials.act, ACT_NECROMANCER)) {
+    } else if (IS_SET(guildmaster->specials.act_class, ACT_NECROMANCER)) {
         NecromancerGuildMaster(ch, cmd, 0, guildmaster, 0);
     } else {
         Log("guildmaster proc attached to mobile without a class, autoset to"
             " warrior");
-        SET_BIT(guildmaster->specials.act, ACT_WARRIOR);
+        SET_BIT(guildmaster->specials.act_class, ACT_WARRIOR);
     }
     return (TRUE);
 }

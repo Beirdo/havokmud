@@ -1995,47 +1995,47 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
      * Make him act like class he is if possible:
      */
     if (IS_SET(mob->player.class, CLASS_NECROMANCER)) {
-        SET_BIT(mob->specials.act, ACT_NECROMANCER);
+        SET_BIT(mob->specials.act_class, ACT_NECROMANCER);
     }
 
     if (IS_SET(mob->player.class, CLASS_MAGIC_USER)) {
-        SET_BIT(mob->specials.act, ACT_MAGIC_USER);
+        SET_BIT(mob->specials.act_class, ACT_MAGIC_USER);
     }
 
     if (IS_SET(mob->player.class, CLASS_CLERIC)) {
-        SET_BIT(mob->specials.act, ACT_CLERIC);
+        SET_BIT(mob->specials.act_class, ACT_CLERIC);
     }
 
     if (IS_SET(mob->player.class, CLASS_WARRIOR)) {
-        SET_BIT(mob->specials.act, ACT_WARRIOR);
+        SET_BIT(mob->specials.act_class, ACT_WARRIOR);
     }
 
     if (IS_SET(mob->player.class, CLASS_THIEF)) {
-        SET_BIT(mob->specials.act, ACT_THIEF);
+        SET_BIT(mob->specials.act_class, ACT_THIEF);
     }
 
     if (IS_SET(mob->player.class, CLASS_DRUID)) {
-        SET_BIT(mob->specials.act, ACT_DRUID);
+        SET_BIT(mob->specials.act_class, ACT_DRUID);
     }
 
     if (IS_SET(mob->player.class, CLASS_MONK)) {
-        SET_BIT(mob->specials.act, ACT_MONK);
+        SET_BIT(mob->specials.act_class, ACT_MONK);
     }
 
     if (IS_SET(mob->player.class, CLASS_BARBARIAN)) {
-        SET_BIT(mob->specials.act, ACT_BARBARIAN);
+        SET_BIT(mob->specials.act_class, ACT_BARBARIAN);
     }
 
     if (IS_SET(mob->player.class, CLASS_PALADIN)) {
-        SET_BIT(mob->specials.act, ACT_PALADIN);
+        SET_BIT(mob->specials.act_class, ACT_PALADIN);
     }
 
     if (IS_SET(mob->player.class, CLASS_RANGER)) {
-        SET_BIT(mob->specials.act, ACT_RANGER);
+        SET_BIT(mob->specials.act_class, ACT_RANGER);
     }
 
     if (IS_SET(mob->player.class, CLASS_PSI)) {
-        SET_BIT(mob->specials.act, ACT_PSI);
+        SET_BIT(mob->specials.act_class, ACT_PSI);
     }
 
     if (IsGiant(mob)) {
