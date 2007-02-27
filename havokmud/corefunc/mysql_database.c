@@ -276,23 +276,8 @@ QueryTable_t    QueryTable[] = {
       "AND `ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
     /* 42 */
     { "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, `ownedItemId`, "
-      "`takeable`, `wearFinger`, `wearNeck`, `wearBody`, `wearHead`, "
-      "`wearLegs`, `wearFeet`, `wearHands`, `wearArms`, `wearShield`, "
-      "`wearAbout`, `wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
-      "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
-      "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, `magic`, "
-      "`cursed`, `brittle`, `resistant`, `immune`, `rare`, `uberRare`, "
-      "`quest`, `antiSun`, `antiGood`, `antiEvil`, `antiNeutral`, `antiMale`, "
-      "`antiFemale`, `onlyMage`, `onlyCleric`, `onlyWarrior`, `onlyThief`, "
-      "`onlyDruid`, `onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
-      "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
-      "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, `antiDruid`, "
-      "`antiMonk`, `antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
-      "`antiRanger`, `antiPsionicist`, `antiNecromancer`) "
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      NULL, NULL, FALSE },
+      "`flagTypeId`, `index`, `value`) "
+      "VALUES (?, ?, ?, ?, ?, ?)", NULL, NULL, FALSE },
     /* 43 */
     { "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, `ownedItemId`, "
       "`seqNum`, `keyword`, `description`) VALUES ( ?, ?, ?, ?, ?, ? )", NULL, 
@@ -318,19 +303,7 @@ QueryTable_t    QueryTable[] = {
       "`ownerId` = ? AND `ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL,
       FALSE },
     /* 49 */
-    { "SELECT `takeable`, `wearFinger`, `wearNeck`, `wearBody`, `wearHead`, "
-      "`wearLegs`, `wearFeet`, `wearHands`, `wearArms`, `wearShield`, "
-      "`wearAbout`, `wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
-      "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
-      "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, `magic`, "
-      "`cursed`, `brittle`, `resistant`, `immune`, `rare`, `uberRare`, "
-      "`quest`, `antiSun`, `antiGood`, `antiEvil`, `antiNeutral`, `antiMale`, "
-      "`antiFemale`, `onlyMage`, `onlyCleric`, `onlyWarrior`, `onlyThief`, "
-      "`onlyDruid`, `onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
-      "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
-      "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, `antiDruid`, "
-      "`antiMonk`, `antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
-      "`antiRanger`, `antiPsionicist`, `antiNecromancer` FROM `objectFlags` " 
+    { "SELECT `flagTypeId`, `index`, `value` FROM `objectFlags` " 
       "WHERE `vnum` = ? AND `ownerId` = ? AND `ownedItemId` = ?", NULL, NULL,
       FALSE },
     /* 50 */
@@ -349,82 +322,118 @@ QueryTable_t    QueryTable[] = {
     { "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = ? AND "
       "`ownerId` = -1 AND `ownedItemId` = -1 ORDER BY `seqNum`", NULL, NULL,
       FALSE },
+    /* 54 */
+    { "DELETE FROM `objectFlags` WHERE `vnum` = ? AND `ownerId` = ? AND "
+      "`ownedItemId` = ? AND `flagTypeId` = ? AND `index` = ?", NULL, NULL,
+      FALSE },
     { NULL, NULL, NULL, FALSE }
 
 
 };
 
 struct obj_flag_bits {
-    int var;
     unsigned int set;
     unsigned int clear;
 };
 
-static struct obj_flag_bits obj_flags[] = {
-    { 0, ITEM_TAKE, 0 },
-    { 0, ITEM_WEAR_FINGER, 0 },
-    { 0, ITEM_WEAR_NECK, 0 },
-    { 0, ITEM_WEAR_BODY, 0 },
-    { 0, ITEM_WEAR_HEAD, 0 },
-    { 0, ITEM_WEAR_LEGS, 0 },
-    { 0, ITEM_WEAR_FEET, 0 },
-    { 0, ITEM_WEAR_HANDS, 0 },
-    { 0, ITEM_WEAR_ARMS, 0 },
-    { 0, ITEM_WEAR_SHIELD, 0 },
-    { 0, ITEM_WEAR_ABOUT, 0 },
-    { 0, ITEM_WEAR_WAIST, 0 },
-    { 0, ITEM_WEAR_WRIST, 0 },
-    { 0, ITEM_WEAR_BACK, 0 },
-    { 0, ITEM_WEAR_EAR, 0 },
-    { 0, ITEM_WEAR_EYE, 0 },
-    { 0, ITEM_LIGHT_SOURCE, 0 },
-    { 0, ITEM_HOLD, 0 },
-    { 0, ITEM_WIELD, 0 },
-    { 0, ITEM_THROW, 0 },
-    { 1, ITEM_GLOW, 0 },
-    { 1, ITEM_HUM, 0 },
-    { 1, ITEM_METAL, 0 },
-    { 1, ITEM_MINERAL, 0 },
-    { 1, ITEM_ORGANIC, 0 },
-    { 1, ITEM_INVISIBLE, 0 },
-    { 1, ITEM_MAGIC, 0 },
-    { 1, ITEM_NODROP, 0 },
-    { 1, ITEM_BRITTLE, 0 },
-    { 1, ITEM_RESISTANT, 0 },
-    { 1, ITEM_IMMUNE, 0 },
-    { 1, ITEM_RARE, 0 },
-    { 1, ITEM_UBERRARE, 0 },
-    { 1, ITEM_QUEST, 0 },
-    { 2, ITEM_ANTI_SUN, 0 },
-    { 2, ITEM_ANTI_GOOD, 0 },
-    { 2, ITEM_ANTI_EVIL, 0 },
-    { 2, ITEM_ANTI_NEUTRAL, 0 },
-    { 2, ITEM_ANTI_MEN, 0 },
-    { 2, ITEM_ANTI_WOMEN, 0 },
-    { 3, ITEM_ANTI_MAGE | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_CLERIC | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_FIGHTER | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_THIEF | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_DRUID | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_MONK | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_BARBARIAN | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_SORCERER | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_PALADIN | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_RANGER | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_PSI | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_NECROMANCER | ITEM_ONLY_CLASS, 0 },
-    { 3, ITEM_ANTI_MAGE, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_CLERIC, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_FIGHTER, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_THIEF, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_DRUID, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_MONK, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_BARBARIAN, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_SORCERER, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_PALADIN, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_RANGER, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_PSI, ITEM_ONLY_CLASS },
-    { 3, ITEM_ANTI_NECROMANCER, ITEM_ONLY_CLASS }
+
+static struct obj_flag_bits obj_wear_flags[] = {
+    { ITEM_TAKE, 0 },
+    { ITEM_WEAR_FINGER, 0 },
+    { ITEM_WEAR_NECK, 0 },
+    { ITEM_WEAR_BODY, 0 },
+    { ITEM_WEAR_HEAD, 0 },
+    { ITEM_WEAR_LEGS, 0 },
+    { ITEM_WEAR_FEET, 0 },
+    { ITEM_WEAR_HANDS, 0 },
+    { ITEM_WEAR_ARMS, 0 },
+    { ITEM_WEAR_SHIELD, 0 },
+    { ITEM_WEAR_ABOUT, 0 },
+    { ITEM_WEAR_WAIST, 0 },
+    { ITEM_WEAR_WRIST, 0 },
+    { ITEM_WEAR_BACK, 0 },
+    { ITEM_WEAR_EAR, 0 },
+    { ITEM_WEAR_EYE, 0 },
+    { ITEM_LIGHT_SOURCE, 0 },
+    { ITEM_HOLD, 0 },
+    { ITEM_WIELD, 0 },
+    { ITEM_THROW, 0 }
+};
+
+static struct obj_flag_bits obj_extra_flags[] = {
+    { ITEM_GLOW, 0 },
+    { ITEM_HUM, 0 },
+    { ITEM_METAL, 0 },
+    { ITEM_MINERAL, 0 },
+    { ITEM_ORGANIC, 0 },
+    { ITEM_INVISIBLE, 0 },
+    { ITEM_MAGIC, 0 },
+    { ITEM_NODROP, 0 },
+    { ITEM_BRITTLE, 0 },
+    { ITEM_RESISTANT, 0 },
+    { ITEM_IMMUNE, 0 },
+    { ITEM_RARE, 0 },
+    { ITEM_UBERRARE, 0 },
+    { ITEM_QUEST, 0 }
+};
+
+static struct obj_flag_bits obj_anti_flags[] = {
+    { ITEM_ANTI_SUN, 0 },
+    { ITEM_ANTI_GOOD, 0 },
+    { ITEM_ANTI_EVIL, 0 },
+    { ITEM_ANTI_NEUTRAL, 0 },
+    { ITEM_ANTI_MEN, 0 },
+    { ITEM_ANTI_WOMEN, 0 }
+};
+
+static struct obj_flag_bits obj_only_class_flags[] = {
+    { ITEM_ANTI_MAGE | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_CLERIC | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_FIGHTER | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_THIEF | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_DRUID | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_MONK | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_BARBARIAN | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_SORCERER | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_PALADIN | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_RANGER | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_PSI | ITEM_ONLY_CLASS, 0 },
+    { ITEM_ANTI_NECROMANCER | ITEM_ONLY_CLASS, 0 }
+};
+
+static struct obj_flag_bits obj_anti_class_flags[] = {
+    { ITEM_ANTI_MAGE, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_CLERIC, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_FIGHTER, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_THIEF, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_DRUID, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_MONK, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_BARBARIAN, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_SORCERER, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_PALADIN, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_RANGER, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_PSI, ITEM_ONLY_CLASS },
+    { ITEM_ANTI_NECROMANCER, ITEM_ONLY_CLASS }
+};
+
+struct obj_flags_t {
+    struct obj_flag_bits   *bits;
+    int                     count;
+    int                     offset;
+};
+
+static struct obj_flags_t obj_flags[] = {
+    { NULL, 0 },
+    { obj_wear_flags,       NELEMENTS(obj_wear_flags), 
+      OFFSETOF(wear_flags, struct obj_data) },
+    { obj_extra_flags,      NELEMENTS(obj_extra_flags),
+      OFFSETOF(extra_flags, struct obj_data) },
+    { obj_anti_flags,       NELEMENTS(obj_anti_flags),
+      OFFSETOF(anti_flags, struct obj_data) },
+    { obj_only_class_flags, NELEMENTS(obj_only_class_flags),
+      OFFSETOF(anti_class, struct obj_data) },
+    { obj_anti_class_flags, NELEMENTS(obj_anti_class_flags),
+      OFFSETOF(anti_class, struct obj_data) }
 };
 static int obj_flag_count = NELEMENTS(obj_flags);
 
@@ -1280,37 +1289,47 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     db_queue_query( 41, QueryTable, data, 4, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
 
-    /* Update the object's flags */
-    data = (MYSQL_BIND *)malloc(67 * sizeof(MYSQL_BIND));
-    memset( data, 0, 67 * sizeof(MYSQL_BIND) );
-
-    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
-    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
-    bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
 
     for( i = 0; i < obj_flag_count; i++ ) {
-        switch( obj_flags[i].var ) {
-        case 0:
-            var = (unsigned int *)&(obj->wear_flags);
-            break;
-        case 2:
-            var = (unsigned int *)&(obj->anti_flags);
-            break;
-        case 3:
-            var = (unsigned int *)&(obj->anti_class);
-            break;
-        default:
-        case 1:
-            var = (unsigned int *)&(obj->extra_flags);
-            break;
+        if( obj_flags[i].count == 0 ) {
+            continue;
         }
 
-        value = (IS_SET(*var, obj_flags[i].set) && 
-                 !IS_SET(*var, obj_flags[i].clear)) ? 1 : 0;
-        bind_numeric( &data[i+3], value, MYSQL_TYPE_LONG );
+        var = (unsigned int *)PTR_AT_OFFSET(obj_flags[i].offset, obj);
+
+        for( j = 0; j < obj_flags[i].count; j++ ) {
+            value = (IS_SET(*var, obj_flags[i].bits[j].set) && 
+                     !IS_SET(*var, obj_flags[i].bits[j].clear)) ? 1 : 0;
+
+            if( !value ) {
+                /* Remove this flag from the db */
+                data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+                memset( data, 0, 5 * sizeof(MYSQL_BIND) );
+
+                bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+                bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+                bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+                bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+                bind_numeric( &data[4], j, MYSQL_TYPE_LONG );
+
+                db_queue_query( 54, QueryTable, data, 5, NULL, NULL, NULL );
+            } else {
+                /* Update this flag */
+                data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+                memset( data, 0, 6 * sizeof(MYSQL_BIND) );
+
+                bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
+                bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
+                bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
+                bind_numeric( &data[3], i, MYSQL_TYPE_LONG );
+                bind_numeric( &data[4], j, MYSQL_TYPE_LONG );
+                bind_numeric( &data[5], value, MYSQL_TYPE_LONG );
+
+                db_queue_query( 42, QueryTable, data, 6, NULL, NULL, mutex );
+                pthread_mutex_unlock( mutex );
+            }
+        }
     }
-    db_queue_query( 42, QueryTable, data, 67, NULL, NULL, mutex );
-    pthread_mutex_unlock( mutex );
 
     for (descr = obj->ex_description, i = 0; descr; descr++, i++) {
         /* Update extra descriptions */
@@ -2821,50 +2840,51 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
 void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 {
-    struct obj_data           **retobj;
-    struct obj_data            *obj;
-    unsigned int               *var;
-    int                         i;
+    struct obj_data   **retobj;
+    struct obj_data    *obj;
+    unsigned int       *var;
+    int                 i;
+    int                 count;
+    int                 type;
+    int                 index;
+    int                 value;
+    struct obj_flags_t *flags;
 
-    MYSQL_ROW                   row;
+    MYSQL_ROW           row;
 
     retobj = (struct obj_data **)arg;
     obj = *retobj;
-
-    if( !res || !mysql_num_rows(res) ) {
-        *retobj = NULL;
-        free_obj(obj);
-        return;
-    }
 
     obj->wear_flags = 0;
     obj->extra_flags = 0;
     obj->anti_flags = 0;
     obj->anti_class = 0;
 
-    row = mysql_fetch_row(res);
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
 
-    for( i = 0; i < obj_flag_count; i++ ) {
-        if( *row[i] == '1' ) {
-            switch( obj_flags[i].var ) {
-            case 0:
-                var = (unsigned int *)&(obj->wear_flags);
-                break;
-            case 2:
-                var = (unsigned int *)&(obj->anti_flags);
-                break;
-            case 3:
-                var = (unsigned int *)&(obj->anti_class);
-                break;
-            default:
-            case 1:
-                var = (unsigned int *)&(obj->extra_flags);
-                break;
-            }
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
 
-            SET_BIT(*var, obj_flags[i].set);
-            REMOVE_BIT(*var, obj_flags[i].clear);
+        type = atoi(row[0]);
+        index = atoi(row[1]);
+        value = atoi(row[2]);
+
+        if( !value || type < 0 || type >= obj_flag_count ) {
+            continue;
         }
+
+        flags = &obj_flags[type];
+
+        if( index < 0 || index >= flags->count ) {
+            continue;
+        }
+
+        var = (unsigned int *)PTR_AT_OFFSET(flags->offset, obj);
+
+        SET_BIT(*var, flags->bits[index].set);
+        REMOVE_BIT(*var, flags->bits[index].clear);
     }
 }
 

@@ -357,13 +357,13 @@ typedef enum {
 #define ITEM_WEAR_ABOUT         BV(10)
 #define ITEM_WEAR_WAIST         BV(11)
 #define ITEM_WEAR_WRIST         BV(12)
-#define ITEM_WIELD              BV(13)
-#define ITEM_HOLD               BV(14)
-#define ITEM_THROW              BV(15)
+#define ITEM_WEAR_BACK          BV(13)
+#define ITEM_WEAR_EAR           BV(14)
+#define ITEM_WEAR_EYE           BV(15)
 #define ITEM_LIGHT_SOURCE       BV(16)
-#define ITEM_WEAR_BACK          BV(17)
-#define ITEM_WEAR_EAR           BV(18)
-#define ITEM_WEAR_EYE           BV(19)
+#define ITEM_HOLD               BV(17)
+#define ITEM_WIELD              BV(18)
+#define ITEM_THROW              BV(19)
 
 /*
  * Bitvector for 'extra_flags'
@@ -386,12 +386,12 @@ typedef enum {
 /*
  * Bitvector for 'anti_flags'
  */
-#define ITEM_ANTI_GOOD          BV(0)
-#define ITEM_ANTI_EVIL          BV(1)
-#define ITEM_ANTI_NEUTRAL       BV(2)
-#define ITEM_ANTI_MEN           BV(3)
-#define ITEM_ANTI_WOMEN         BV(4)
-#define ITEM_ANTI_SUN           BV(5)
+#define ITEM_ANTI_SUN           BV(0)
+#define ITEM_ANTI_GOOD          BV(1)
+#define ITEM_ANTI_EVIL          BV(2)
+#define ITEM_ANTI_NEUTRAL       BV(3)
+#define ITEM_ANTI_MEN           BV(4)
+#define ITEM_ANTI_WOMEN         BV(5)
 
 /*
  * Bitvector for 'anti_class'
