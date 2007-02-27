@@ -355,7 +355,7 @@ typedef enum {
 #define ITEM_WEAR_ARMS          BV(8)
 #define ITEM_WEAR_SHIELD        BV(9)
 #define ITEM_WEAR_ABOUT         BV(10)
-#define ITEM_WEAR_WAISTE        BV(11)
+#define ITEM_WEAR_WAIST         BV(11)
 #define ITEM_WEAR_WRIST         BV(12)
 #define ITEM_WIELD              BV(13)
 #define ITEM_HOLD               BV(14)

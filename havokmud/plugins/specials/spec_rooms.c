@@ -1765,9 +1765,9 @@ int pride_remover_seven(struct char_data *ch, int cmd, char *arg,
         /*
          * remove waistwear 
          */
-        if (ch->equipment[WEAR_WAISTE]) {
-            obj = ch->equipment[WEAR_WAISTE];
-            if ((obj = unequip_char(ch, WEAR_WAISTE)) != NULL) {
+        if (ch->equipment[WEAR_WAIST]) {
+            obj = ch->equipment[WEAR_WAIST];
+            if ((obj = unequip_char(ch, WEAR_WAIST)) != NULL) {
                 obj_to_char(obj, ch);
             }
         }

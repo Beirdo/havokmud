@@ -656,7 +656,7 @@ struct room_data {
 #define WEAR_ARMS      10
 #define WEAR_SHIELD    11
 #define WEAR_ABOUT     12
-#define WEAR_WAISTE    13
+#define WEAR_WAIST     13
 #define WEAR_WRIST_R   14
 #define WEAR_WRIST_L   15
 #define WIELD          16

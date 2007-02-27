@@ -372,7 +372,7 @@ static struct obj_flag_bits obj_flags[] = {
     { 0, ITEM_WEAR_ARMS, 0 },
     { 0, ITEM_WEAR_SHIELD, 0 },
     { 0, ITEM_WEAR_ABOUT, 0 },
-    { 0, ITEM_WEAR_WAISTE, 0 },
+    { 0, ITEM_WEAR_WAIST, 0 },
     { 0, ITEM_WEAR_WRIST, 0 },
     { 0, ITEM_WEAR_BACK, 0 },
     { 0, ITEM_WEAR_EAR, 0 },
