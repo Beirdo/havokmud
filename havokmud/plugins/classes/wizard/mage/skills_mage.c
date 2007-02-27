@@ -1243,7 +1243,7 @@ void spell_curse(int level, struct char_data *ch,
         return;
     }
     if (obj) {
-        SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
+        SET_BIT(obj->anti_flags, ITEM_ANTI_GOOD);
         SET_BIT(obj->extra_flags, ITEM_NODROP);
 
         /*
@@ -2078,7 +2078,7 @@ void cast_haste(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_POTION:
-        if (tar_obj && tar_obj->type_flag != ITEM_POTION) {
+        if (tar_obj && tar_obj->type_flag != ITEM_TYPE_POTION) {
             return;
         }
         if (!tar_ch) {
@@ -2209,7 +2209,7 @@ void spell_identify(int level, struct char_data *ch,
         sprintf(buf, "%sObject '%s%s%s', Item type: %s", color1, color2,
                 temp, color1, color2);
         free( temp );
-        sprinttype(GET_ITEM_TYPE(obj), item_types, buf2);
+        sprinttype(ITEM_TYPE(obj), item_types, buf2);
         strcat(buf, buf2);
         if (IS_WEAPON(obj)) {
             if (IS_IMMORTAL(ch)) {
@@ -2293,10 +2293,10 @@ void spell_identify(int level, struct char_data *ch,
         strcat(buf2, "\n\r");
         send_to_char(buf2, ch);
 
-        switch (GET_ITEM_TYPE(obj)) {
+        switch (ITEM_TYPE(obj)) {
 
-        case ITEM_SCROLL:
-        case ITEM_POTION:
+        case ITEM_TYPE_SCROLL:
+        case ITEM_TYPE_POTION:
             sprintf(buf, "%sLevel %s%d%s spells of:\n\r", color1, color2,
                     obj->value[0], color1);
             send_to_char(buf, ch);
@@ -2311,8 +2311,8 @@ void spell_identify(int level, struct char_data *ch,
             }
             break;
 
-        case ITEM_WAND:
-        case ITEM_STAFF:
+        case ITEM_TYPE_WAND:
+        case ITEM_TYPE_STAFF:
             sprintf(buf, "%sCosts %s%d%s mana to use, with %s%d%s charges "
                          "left.\n\r",
                     color1, color2, obj->value[1], color1,
@@ -2330,7 +2330,7 @@ void spell_identify(int level, struct char_data *ch,
             }
             break;
 
-        case ITEM_WEAPON:
+        case ITEM_TYPE_WEAPON:
             sprintf(buf, "%sDamage Dice is '%s%dD%d%s' [%s%s%s] [%s%s%s]\n\r",
                     color1, color2, obj->value[1],
                     obj->value[2], color1, color2,
@@ -2339,7 +2339,7 @@ void spell_identify(int level, struct char_data *ch,
             send_to_char(buf, ch);
             break;
 
-        case ITEM_ARMOR:
+        case ITEM_TYPE_ARMOR:
             sprintf(buf, "%sAC-apply is: %s%d%s,   Size of armor is: %s%s\n\r",
                     color1, color2, obj->value[0], color1,
                     color2, ArmorSize(obj->value[2]));
@@ -2635,7 +2635,7 @@ void spell_invisibility(int level, struct char_data *ch,
     assert((ch && obj) || victim);
 
     if (obj) {
-        if (!IS_SET(obj->extra_flags, ITEM_INVISIBLE)) {
+        if (!IS_OBJ_STAT(obj, extra_flags, ITEM_INVISIBLE)) {
             act("$p turns invisible.", FALSE, ch, obj, 0, TO_CHAR);
             act("$p turns invisible.", TRUE, ch, obj, 0, TO_ROOM);
             SET_BIT(obj->extra_flags, ITEM_INVISIBLE);
@@ -2666,7 +2666,7 @@ void cast_invisibility(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SPELL:
         if (tar_obj) {
-            if (IS_SET(tar_obj->extra_flags, ITEM_INVISIBLE)) {
+            if (IS_OBJ_STAT(tar_obj, extra_flags, ITEM_INVISIBLE)) {
                 send_to_char("Nothing new seems to happen.\n\r", ch);
             } else {
                 spell_invisibility(level, ch, 0, tar_obj);
@@ -2687,7 +2687,7 @@ void cast_invisibility(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_SCROLL:
         if (tar_obj) {
-            if (!(IS_SET(tar_obj->extra_flags, ITEM_INVISIBLE))) {
+            if (!(IS_OBJ_STAT(tar_obj, extra_flags, ITEM_INVISIBLE))) {
                 spell_invisibility(level, ch, 0, tar_obj);
             }
         } else {
@@ -2702,7 +2702,7 @@ void cast_invisibility(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_WAND:
         if (tar_obj) {
-            if (!(IS_SET(tar_obj->extra_flags, ITEM_INVISIBLE)))
+            if (!(IS_OBJ_STAT(tar_obj, extra_flags, ITEM_INVISIBLE)))
                 spell_invisibility(level, ch, 0, tar_obj);
         } else {
             /* tar_ch */

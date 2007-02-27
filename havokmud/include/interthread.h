@@ -231,6 +231,11 @@ void db_load_object_tree( BalancedBTree_t *tree );
  */
 void initializeObjects( void );
 struct index_data *objectIndex( int vnum );
+bool HasAntiBitsEquipment(struct char_data *ch, int bits);
+bool HasBitsEquipment(struct char_data *ch, int bits, int offset);
+bool HasBitsInventory(struct char_data *ch, int bits, int offset);
+bool HasBits(struct char_data *ch, int bits, int offset);
+bool HasExtraBits(struct char_data *ch, int bits);
 
 /*
  * keywords.c

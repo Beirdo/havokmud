@@ -1266,13 +1266,13 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             return;
         }
 
-        if ((ch->specials.objedit->type_flag == ITEM_SCROLL && 
+        if ((ch->specials.objedit->type_flag == ITEM_TYPE_SCROLL && 
              value != 0) || 
-            (ch->specials.objedit->type_flag == ITEM_WAND && 
+            (ch->specials.objedit->type_flag == ITEM_TYPE_WAND && 
              value == 3) || 
-            (ch->specials.objedit->type_flag == ITEM_STAFF && 
+            (ch->specials.objedit->type_flag == ITEM_TYPE_STAFF && 
              value == 3) || 
-            (ch->specials.objedit->type_flag == ITEM_POTION && 
+            (ch->specials.objedit->type_flag == ITEM_TYPE_POTION && 
              value != 0)) {
             if (update >= 45 && update <= 52) {
                 skill = TRUE;
@@ -1312,7 +1312,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
     switch (ch->specials.objedit->type_flag) {
-    case ITEM_LIGHT:
+    case ITEM_TYPE_LIGHT:
         if (value == 0) {
             send_to_char("\n\rValue1 is the color (Because we all know its "
                          "spelled without a 'u').", ch);
@@ -1325,7 +1325,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue is not used for this item type.", ch);
         }
         break;
-    case ITEM_SCROLL:
+    case ITEM_TYPE_SCROLL:
         if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this scroll "
                          "casts.", ch);
@@ -1340,7 +1340,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
                          ch);
         }
         break;
-    case ITEM_WAND:
+    case ITEM_TYPE_WAND:
         if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this wand casts.",
                          ch);
@@ -1354,7 +1354,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue4 is the spell the wand casts.", ch);
         }
         break;
-    case ITEM_STAFF:
+    case ITEM_TYPE_STAFF:
         if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this staff "
                          "casts.", ch);
@@ -1368,7 +1368,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue4 is the spell the staff casts.", ch);
         }
         break;
-    case ITEM_WEAPON:
+    case ITEM_TYPE_WEAPON:
         if (value == 0) {
             send_to_char("\n\rValue1 is the plus to hit.", ch);
         } else if (value == 1) {
@@ -1393,7 +1393,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("13 - impale     14 - ranged weapon\n\r", ch);
         }
         break;
-    case ITEM_FIREWEAPON:
+    case ITEM_TYPE_FIREWEAPON:
         if (value == 0) {
             send_to_char("\n\rValue1 is the strength required to draw.", ch);
         } else if (value == 1) {
@@ -1414,7 +1414,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("13 - fire wpn   14 - impale weapon\n\r", ch);
         }
         break;
-    case ITEM_MISSILE:
+    case ITEM_TYPE_MISSILE:
         if (value == 0) {
             send_to_char("\n\rValue1 is the % chance that the missile will "
                          "break.", ch);
@@ -1436,7 +1436,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("13 - smite      14 - impale\n\r", ch);
         }
         break;
-    case ITEM_ARMOR:
+    case ITEM_TYPE_ARMOR:
         if (value == 0) {
             send_to_char("\n\rValue1 is the Armor Class Apply.", ch);
         } else if (value == 1) {
@@ -1449,7 +1449,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue is not used for this item type.", ch);
         }
         break;
-    case ITEM_POTION:
+    case ITEM_TYPE_POTION:
         if (value == 0) {
             send_to_char("\n\rValue1 is the level of the spells this potion "
                          "casts.", ch);
@@ -1464,7 +1464,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
                          ch);
         }
         break;
-    case ITEM_TRAP:
+    case ITEM_TYPE_TRAP:
         if (value == 0) {
             send_to_char("\n\rValue1 is the trap damage level.", ch);
         } else if (value == 1) {
@@ -1481,7 +1481,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
                     "left.", ch);
         }
         break;
-    case ITEM_CONTAINER:
+    case ITEM_TYPE_CONTAINER:
         if (value == 0) {
             send_to_char("\n\rValue1 is the max number of items that can fit.",
                          ch);
@@ -1495,7 +1495,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
                          "corpse (1=yes, 0=no).", ch);
         }
         break;
-    case ITEM_DRINKCON:
+    case ITEM_TYPE_DRINKCON:
         if (value == 0) {
             send_to_char("\n\rValue1 is the amount of fluid the container can "
                          "hold.", ch);
@@ -1517,17 +1517,17 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
                          " (1=yes, 0=no).", ch);
         }
         break;
-    case ITEM_NOTE:
+    case ITEM_TYPE_NOTE:
         send_to_char("\n\rValue not used for this item type.\n\r", ch);
         break;
-    case ITEM_KEY:
+    case ITEM_TYPE_KEY:
         if (value == 0) {
             send_to_char("\n\rValue1 is the keytype.", ch);
         } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_FOOD:
+    case ITEM_TYPE_FOOD:
         if (value == 0) {
             send_to_char("\n\rValue1 is how full you get from eating the food.",
                          ch);
@@ -1538,7 +1538,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_AUDIO:
+    case ITEM_TYPE_AUDIO:
         if (value == 0) {
             send_to_char("\n\rTo set the sound on the item, use the setsound "
                          "command.", ch);
@@ -1546,7 +1546,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_ROCK:
+    case ITEM_TYPE_ROCK:
         if (value == 0) {
             send_to_char("\n\rRock Mobs are determined by weight, not obj "
                          "value.", ch);
@@ -1554,14 +1554,14 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_PORTAL:
+    case ITEM_TYPE_PORTAL:
         if (value == 0) {
             send_to_char("\n\rValue1 is the room to portal to.", ch);
         } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_TREE:
+    case ITEM_TYPE_TREE:
         if (value == 0) {
             send_to_char("\n\rTrees are found by name search, make sure to set"
                          " name before tree keyword.\n\r", ch);
@@ -1572,7 +1572,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_INSTRUMENT:
+    case ITEM_TYPE_INSTRUMENT:
         if (value == 0) {
             send_to_char("\n\rThis value determines the mana reduction of song"
                          " weaving (1-50%).", ch);
@@ -1580,7 +1580,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
-    case ITEM_SHIPS_HELM:
+    case ITEM_TYPE_SHIPS_HELM:
         if (value == 0) {
             send_to_char("\n\rX coordinate of ship.", ch);
         } else if (value == 1) {

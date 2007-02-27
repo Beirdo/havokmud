@@ -107,7 +107,23 @@ typedef unsigned long long int uint64;
 #define MIN(x,y)                    ( (x) < (y) ? (x) : (y) )
 #define MAX(x,y)                    ( (x) > (y) ? (x) : (y) )
 
-#define IS_SET(flag, bit)           ( (flag) & (bit) )
+#define IS_SET(flag, bit)           ( ((flag) & (bit)) != 0 )
+
+#define IS_SET_FLAG(buffer, offset, bit)    \
+                IS_SET( (*(long *)PTR_AT_OFFSET((offset),(buffer))), bit )
+
+#define IS_OBJ_STAT(obj,elem,stat) (IS_SET((obj)->elem,stat))
+
+#define WEAR_FLAG(o,f)  IS_SET(o->wear_flags, f)
+#define EXTRA_FLAG(o,f) IS_SET(o->extra_flags, f)
+#define CLASS_FLAG(o,f) IS_SET(o->anti_class, f)
+#define ANTI_FLAG(o,f)  IS_SET(o->anti_flags, f)
+#define ONLY_CLASS_FLAG(o,f)  (CLASS_FLAG(o, f) && \
+                               CLASS_FLAG(o, ITEM_ONLY_CLASS))
+#define ANTI_CLASS_FLAG(o,f)  (CLASS_FLAG(o, f) && \
+                               !CLASS_FLAG(o, ITEM_ONLY_CLASS))
+
+
 
 #endif
 

@@ -115,7 +115,7 @@ void do_stalk(struct char_data *ch, char *argument, int cmd)
     }
     
     if (!IS_AFFECTED(ch, AFF_SILENCE)) {
-        if (HasWBits(ch, ITEM_HUM)) {
+        if (HasExtraBits(ch, ITEM_HUM)) {
             send_to_char("Gonna be hard to stalk anyone with that thing "
                          "humming\n\r", ch);
             return;

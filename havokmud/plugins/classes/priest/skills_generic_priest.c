@@ -1358,8 +1358,8 @@ void spell_detect_poison(int level, struct char_data *ch,
         /*
          * It's an object
          */
-        if (obj->type_flag == ITEM_DRINKCON ||
-            obj->type_flag == ITEM_FOOD) {
+        if (obj->type_flag == ITEM_TYPE_DRINKCON ||
+            obj->type_flag == ITEM_TYPE_FOOD) {
             if (obj->value[3]) {
                 act("Poisonous fumes are revealed.", FALSE, ch, 0, 0, TO_CHAR);
             } else {
@@ -1411,14 +1411,14 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     if (obj) {
-        if (IS_SET(obj->extra_flags, ITEM_INVISIBLE))
+        if (IS_OBJ_STAT(obj, extra_flags, ITEM_INVISIBLE))
             REMOVE_BIT(obj->extra_flags, ITEM_INVISIBLE);
 
         if (level >= 45) {
             /*
              * if level 45> then they can do this
              */
-            if (IS_SET(obj->extra_flags, ITEM_MAGIC)) {
+            if (IS_OBJ_STAT(obj, extra_flags, ITEM_MAGIC)) {
                 REMOVE_BIT(obj->extra_flags, ITEM_MAGIC);
             }
             /*
@@ -1432,9 +1432,9 @@ void spell_dispel_magic(int level, struct char_data *ch,
         if (level >= IMMORTAL) {
             REMOVE_BIT(obj->extra_flags, ITEM_GLOW);
             REMOVE_BIT(obj->extra_flags, ITEM_HUM);
-            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
-            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_EVIL);
-            REMOVE_BIT(obj->extra_flags, ITEM_ANTI_NEUTRAL);
+            REMOVE_BIT(obj->anti_flags, ITEM_ANTI_GOOD);
+            REMOVE_BIT(obj->anti_flags, ITEM_ANTI_EVIL);
+            REMOVE_BIT(obj->anti_flags, ITEM_ANTI_NEUTRAL);
         }
         return;
     }

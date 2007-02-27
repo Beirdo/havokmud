@@ -1731,7 +1731,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                      "V-number: [%d] Item type: ",
                 objname, j->item_number, virtual);
         free( objname );
-        sprinttype(GET_ITEM_TYPE(j), item_types, buf2);
+        sprinttype(ITEM_TYPE(j), item_types, buf2);
 
         strcat(buf, buf2);
 
@@ -1802,83 +1802,82 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         strcat(buf, (!j->in_obj ? "None" : fname(j->in_obj->name)));
 
         switch (j->type_flag) {
-        case ITEM_LIGHT:
+        case ITEM_TYPE_LIGHT:
             sprintf(buf, "Colour : [%d]\n\rType : [%d]\n\rHours : [%d]",
                     j->value[0], j->value[1],
                     j->value[2]);
             break;
-        case ITEM_SCROLL:
-        case ITEM_POTION:
+        case ITEM_TYPE_SCROLL:
+        case ITEM_TYPE_POTION:
             sprintf(buf, "Spells (level %d): %d, %d, %d",
                     j->value[0], j->value[1],
                     j->value[2], j->value[3]);
             break;
-        case ITEM_WAND:
-        case ITEM_STAFF:
+        case ITEM_TYPE_WAND:
+        case ITEM_TYPE_STAFF:
             sprintf(buf, "Level: %d Spell : %d\n\rCharges : %d",
                     j->value[0], j->value[3],
                     j->value[2]);
             break;
-        case ITEM_WEAPON:
+        case ITEM_TYPE_WEAPON:
             sprintf(buf, "Tohit : %d\n\rTodam : %dD%d\n\rType : %d",
                     j->value[0], j->value[1],
                     j->value[2], j->value[3]);
             break;
-        case ITEM_FIREWEAPON:
-            sprintf(buf,
-                    "Tohit: %d\n\rDam: %d\n\rType: %d Min Weight: %d\n\r",
+        case ITEM_TYPE_FIREWEAPON:
+            sprintf(buf, "Tohit: %d\n\rDam: %d\n\rType: %d Min Weight: %d\n\r",
                     j->value[2], j->value[3],
                     j->value[0], j->value[1]);
             break;
-        case ITEM_MISSILE:
+        case ITEM_TYPE_MISSILE:
             sprintf(buf, "Tohit : %d\n\rTodam : %d\n\rType : %d",
                     j->value[0], j->value[1],
                     j->value[3]);
             break;
-        case ITEM_ARMOR:
+        case ITEM_TYPE_ARMOR:
             sprintf(buf, "AC-apply : [%d]\n\rFull Strength : [%d]",
                     j->value[0], j->value[1]);
 
             break;
-        case ITEM_TRAP:
+        case ITEM_TYPE_TRAP:
             sprintf(buf,
                     "Eff type: %d, Dam type: %d, level: %d, charges: %d",
                     j->value[0], j->value[1],
                     j->value[2], j->value[3]);
             break;
-        case ITEM_CONTAINER:
+        case ITEM_TYPE_CONTAINER:
             sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\r"
                          "Key to unlock: %d\n\rCorpse : %s\n\r",
                     j->value[0], j->value[1],
                     j->value[2],
                     (j->value[3] ? "Yes" : "No"));
             break;
-        case ITEM_DRINKCON:
+        case ITEM_TYPE_DRINKCON:
             sprinttype(j->value[2], drinks, buf2);
             sprintf(buf, "Max-contains : %d\n\rContains : %d\n\r"
                          "Poisoned : %d\n\rLiquid : %s",
                     j->value[0], j->value[1],
                     j->value[3], buf2);
             break;
-        case ITEM_NOTE:
+        case ITEM_TYPE_NOTE:
             sprintf(buf, "Tongue : %d", j->value[0]);
             break;
-        case ITEM_KEY:
+        case ITEM_TYPE_KEY:
             sprintf(buf, "Keytype : %d", j->value[0]);
             break;
-        case ITEM_FOOD:
+        case ITEM_TYPE_FOOD:
             sprintf(buf, "Makes full : %d\n\rPoisoned : %d",
                     j->value[0], j->value[3]);
             break;
-        case ITEM_PORTAL:
+        case ITEM_TYPE_PORTAL:
             sprintf(buf, "Portals to room : %d", j->value[0]);
             break;
-        case ITEM_AUDIO:
+        case ITEM_TYPE_AUDIO:
             sprintf(buf, "Sound : %s\n\r", (j->action_description ?
                                             j->action_description :
                                             "None"));
             break;
-        case ITEM_INSTRUMENT:
+        case ITEM_TYPE_INSTRUMENT:
             sprintf(buf, "Mana reduction : %d\n\r",
                     (j->value[0]));
             break;
@@ -4393,9 +4392,9 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                 free( objname );
                 append_to_string_block(sb, buf);
 
-                switch (GET_ITEM_TYPE(obj)) {
-                case ITEM_SCROLL:
-                case ITEM_POTION:
+                switch (ITEM_TYPE(obj)) {
+                case ITEM_TYPE_SCROLL:
+                case ITEM_TYPE_POTION:
                     sprintf(buf, "Level %d:", obj->value[0]);
                     append_to_string_block(sb, buf);
                     if (obj->value[1] >= 1) {
@@ -4414,8 +4413,8 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                         append_to_string_block(sb, buf2);
                     }
                     break;
-                case ITEM_WAND:
-                case ITEM_STAFF:
+                case ITEM_TYPE_WAND:
+                case ITEM_TYPE_STAFF:
                     sprintf(buf, "L:%d spell of:", obj->value[0]);
                     append_to_string_block(sb, buf);
                     if (obj->value[3] >= 1) {
@@ -4424,12 +4423,12 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                         append_to_string_block(sb, buf2);
                     }
                     break;
-                case ITEM_WEAPON:
+                case ITEM_TYPE_WEAPON:
                     sprintf(buf, "damage:'%dD%d'[%s]", obj->value[1],
                             obj->value[2], AttackType[obj->value[3] /*-1*/ ]);
                     append_to_string_block(sb, buf);
                     break;
-                case ITEM_ARMOR:
+                case ITEM_TYPE_ARMOR:
                     sprintf(buf, "AC-apply: %d,", obj->value[0]);
                     append_to_string_block(sb, buf);
                     sprintf(buf, "Size:%d", obj->value[2]);
@@ -6971,7 +6970,7 @@ void do_setsound(struct char_data *ch, char *argument, int cmd)
     }
 
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
-        if (ITEM_TYPE(obj) == ITEM_AUDIO) {
+        if (ITEM_TYPE(obj) == ITEM_TYPE_AUDIO) {
             if (!sound) {
                 oldSendOutput(ch, "Setting sound for %s to none.\n\r",
                               obj->short_description);
@@ -7231,7 +7230,7 @@ void do_tweak(struct char_data *ch, char *arg, int cmd)
 
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
         if (obj) {
-            if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) {
+            if (IS_OBJ_STAT(obj, extra_flags, ITEM_IMMUNE)) {
                 send_to_char("You cannot tweak artifacts.\n\r", ch);
                 return;
             }
@@ -7359,76 +7358,76 @@ int eval(struct obj_data *object)
     /*
      * anti stuff
      */
-    if (IS_OBJ_STAT(object, ITEM_BRITTLE)) {
+    if (IS_OBJ_STAT(object, extra_flags, ITEM_BRITTLE)) {
         total += -15;
     }
-    if (IS_OBJ_STAT(object, ITEM_RESISTANT)) {
+    if (IS_OBJ_STAT(object, extra_flags, ITEM_RESISTANT)) {
         total += 7;
     }
-    if (IS_OBJ_STAT(object, ITEM_IMMUNE)) {
+    if (IS_OBJ_STAT(object, extra_flags, ITEM_IMMUNE)) {
         total += 15;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_GOOD)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_EVIL)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_NEUTRAL)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_NEUTRAL)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_WOMEN)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_WOMEN)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_MEN)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_MEN)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ONLY_CLASS)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ONLY_CLASS)) {
         total += -7;
     }
-    if (IS_OBJ_STAT(object, ITEM_RARE)) {
+    if (IS_OBJ_STAT(object, extra_flags, ITEM_RARE)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_SUN)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_SUN)) {
         total += -3;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_GOOD)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_GOOD)) {
+    if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)) {
         total += -5;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_BARBARIAN)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_BARBARIAN)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_PALADIN)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_PALADIN)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_MONK)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_MONK)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_FIGHTER)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_FIGHTER)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_CLERIC)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_CLERIC)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_MAGE)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_MAGE)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_NECROMANCER)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_NECROMANCER)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_PSI)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_PSI)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_RANGER)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_RANGER)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_DRUID)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_DRUID)) {
         total += -1;
     }
-    if (IS_OBJ_STAT(object, ITEM_ANTI_THIEF)) {
+    if (IS_OBJ_STAT(object, anti_class, ITEM_ANTI_THIEF)) {
         total += -1;
     }
 
@@ -7441,28 +7440,28 @@ int eval(struct obj_data *object)
         total -= 20;
     }
 
-    switch (GET_ITEM_TYPE(object)) {
-    case ITEM_SCROLL:
-    case ITEM_POTION:
-    case ITEM_STAFF:
-    case ITEM_FOOD:
-    case ITEM_DRINKCON:
-    case ITEM_TRAP:
-    case ITEM_NOTE:
-    case ITEM_PEN:
-    case ITEM_TRASH:
-    case ITEM_MONEY:
-    case ITEM_KEY:
+    switch (ITEM_TYPE(object)) {
+    case ITEM_TYPE_SCROLL:
+    case ITEM_TYPE_POTION:
+    case ITEM_TYPE_STAFF:
+    case ITEM_TYPE_FOOD:
+    case ITEM_TYPE_DRINKCON:
+    case ITEM_TYPE_TRAP:
+    case ITEM_TYPE_NOTE:
+    case ITEM_TYPE_PEN:
+    case ITEM_TYPE_TRASH:
+    case ITEM_TYPE_MONEY:
+    case ITEM_TYPE_KEY:
         total -= 20;
         break;
-    case ITEM_CONTAINER:
-    case ITEM_LIGHT:
+    case ITEM_TYPE_CONTAINER:
+    case ITEM_TYPE_LIGHT:
         total += 5;
         break;
-    case ITEM_ARMOR: /* armor class */
+    case ITEM_TYPE_ARMOR: /* armor class */
         total += object->value[0];
         break;
-    case ITEM_WEAPON: /* damage of sword */
+    case ITEM_TYPE_WEAPON: /* damage of sword */
         total -= 43;
         total += object->value[1] * 2;
         total += object->value[2] * 2;
@@ -7539,7 +7538,7 @@ int eval(struct obj_data *object)
             total -= object->affected[i].modifier;
             break;
         case APPLY_HITROLL:
-            if (GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+            if (ITEM_TYPE(object) == ITEM_TYPE_WEAPON) {
                 if (object->affected[i].modifier > 4) {
                     total += 26;
                 } else if (object->affected[i].modifier > 3) {
@@ -7552,7 +7551,7 @@ int eval(struct obj_data *object)
             }
             break;
         case APPLY_DAMROLL:
-            if (GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+            if (ITEM_TYPE(object) == ITEM_TYPE_WEAPON) {
                 if (object->affected[i].modifier > 4) {
                     total += 36;
                 } else if (object->affected[i].modifier > 3) {
@@ -7822,7 +7821,7 @@ int eval(struct obj_data *object)
             total += 1;
             break;
         case APPLY_HITNDAM:
-            if (GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+            if (ITEM_TYPE(object) == ITEM_TYPE_WEAPON) {
                 if (object->affected[i].modifier > 4) {
                     total += 62;
                 } else if (object->affected[i].modifier > 3) {
@@ -7889,7 +7888,7 @@ int eval(struct obj_data *object)
             break;
         }
     }
-    if (!IS_SET(object->wear_flags, ITEM_TAKE)) {
+    if (!IS_OBJ_STAT(object, wear_flags, ITEM_TAKE)) {
         total = -100;
     }
     return total;

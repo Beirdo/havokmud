@@ -103,7 +103,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag != ITEM_DRINKCON) {
+    if (temp->type_flag != ITEM_TYPE_DRINKCON) {
         act("You can't drink from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -120,7 +120,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag == ITEM_DRINKCON) {
+    if (temp->type_flag == ITEM_TYPE_DRINKCON) {
         if (temp->value[1] > 0) {
             sprintf(buf, "$n drinks %s from $p",
                     drinks[temp->value[2]]);
@@ -236,7 +236,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag != ITEM_FOOD && GetMaxLevel(ch) < DEMIGOD) {
+    if (temp->type_flag != ITEM_TYPE_FOOD && GetMaxLevel(ch) < DEMIGOD) {
         act("Your stomach refuses to eat that!?!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -316,7 +316,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (from_obj->type_flag != ITEM_DRINKCON) {
+    if (from_obj->type_flag != ITEM_TYPE_DRINKCON) {
         act("You can't pour from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -350,7 +350,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (to_obj->type_flag != ITEM_DRINKCON) {
+    if (to_obj->type_flag != ITEM_TYPE_DRINKCON) {
         act("You can't pour anything into that.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -422,7 +422,7 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag != ITEM_DRINKCON) {
+    if (temp->type_flag != ITEM_TYPE_DRINKCON) {
         act("You can't sip from that!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -510,12 +510,12 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag == ITEM_DRINKCON) {
+    if (temp->type_flag == ITEM_TYPE_DRINKCON) {
         do_sip(ch, argument, 0);
         return;
     }
 
-    if (!(temp->type_flag == ITEM_FOOD)) {
+    if (!(temp->type_flag == ITEM_TYPE_FOOD)) {
         act("Taste that?!? Your stomach refuses!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -639,7 +639,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
     if (!IS_IMMORTAL(ch)) {
         BitMask = GetItemClassRestrictions(obj_object);
-        if (IS_SET(obj_object->extra_flags, ITEM_ONLY_CLASS)) {
+        if (IS_OBJ_STAT(obj_object, anti_class, ITEM_ONLY_CLASS)) {
             if (!OnlyClassItemValid(ch, obj_object)) {
                 send_to_char("You are not the proper person for this.\n\r", ch);
                 return;
@@ -663,7 +663,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
      * large  - ogre, troll
      * huge   - giants
      */
-    if (GET_ITEM_TYPE(obj_object) == ITEM_ARMOR &&
+    if (ITEM_TYPE(obj_object) == ITEM_TYPE_ARMOR &&
         obj_object->value[2] != 0 &&
         obj_object->value[2] != races[ch->race].size &&
         obj_object->value[2] != races[ch->race].size + 1 &&
@@ -683,13 +683,13 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         return;
     }
 
-    if (IS_SET(obj_object->extra_flags, ITEM_ANTI_MEN) &&
+    if (IS_OBJ_STAT(obj_object, anti_flags, ITEM_ANTI_MEN) &&
         GET_SEX(ch) != SEX_FEMALE) {
         send_to_char("Only women can do that.\n\r", ch);
         return;
     }
 
-    if (IS_SET(obj_object->extra_flags, ITEM_ANTI_WOMEN) &&
+    if (IS_OBJ_STAT(obj_object, anti_flags, ITEM_ANTI_WOMEN) &&
         GET_SEX(ch) != SEX_MALE) {
         send_to_char("Only men can do that.\n\r", ch);
         return;
@@ -894,8 +894,8 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         break;
 
     case 10:
-        if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
-            if (ch->equipment[WEAR_WAISTE]) {
+        if (CAN_WEAR(obj_object, ITEM_WEAR_WAIST)) {
+            if (ch->equipment[WEAR_WAIST]) {
                 send_to_char("You already wear something about your "
                              "waist.\n\r", ch);
             } else {
@@ -903,7 +903,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
-                equip_char(ch, obj_object, WEAR_WAISTE);
+                equip_char(ch, obj_object, WEAR_WAIST);
             }
         } else {
             send_to_char("You can't wear that about your waist.\n\r", ch);
@@ -1047,7 +1047,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
     case 15:
         if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) && 
-            obj_object->type_flag == ITEM_CONTAINER) {
+            obj_object->type_flag == ITEM_TYPE_CONTAINER) {
             if (ch->equipment[WEAR_BACK]) {
                 send_to_char("You already wear something on your back.\n\r", 
                              ch);
@@ -1169,7 +1169,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                 if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
                     keyword = 11;
                 }
-                if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
+                if (CAN_WEAR(obj_object, ITEM_WEAR_WAIST)) {
                     keyword = 10;
                 }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
@@ -1197,7 +1197,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                     keyword = 12;
                 }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                    obj_object->type_flag == ITEM_CONTAINER) {
+                    obj_object->type_flag == ITEM_TYPE_CONTAINER) {
                     keyword = 15;
                 }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {                    
@@ -1243,7 +1243,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                     if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
                         keyword = 11;
                     }
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_WAIST)) {
                         keyword = 10;
                     }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
@@ -1268,7 +1268,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                         keyword = 3;
                     }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                        obj_object->type_flag == ITEM_CONTAINER) {
+                        obj_object->type_flag == ITEM_TYPE_CONTAINER) {
                         keyword = 15;
                     }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {
@@ -1331,7 +1331,8 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
         obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
         if (obj_object) {
             if (ch->equipment[WIELD]) {
-                if (IS_OBJ_STAT(ch->equipment[WIELD], ITEM_NODROP)) {
+                if (IS_OBJ_STAT(ch->equipment[WIELD], extra_flags, 
+                                ITEM_NODROP)) {
                     send_to_char("You can't draw your weapon.. Your existing "
                                  "one must be cursed!!.", ch);
                     return;
@@ -1368,7 +1369,7 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
     if (arg1) {
         obj_object = get_obj_in_list(arg1, ch->carrying);
         if (obj_object) {
-            if (obj_object->type_flag == ITEM_LIGHT) {
+            if (obj_object->type_flag == ITEM_TYPE_LIGHT) {
                 wear(ch, obj_object, WEAR_LIGHT);
             } else {
                 wear(ch, obj_object, 13);
@@ -1381,6 +1382,9 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+/**
+ * @todo clean up the if() indented mess
+ */
 void do_remove(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg1,
@@ -1400,12 +1404,13 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
             for (j = 0; j < MAX_WEAR; j++) {
                 if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
                     if (ch->equipment[j]) {
-                        if (!IS_OBJ_STAT(ch->equipment[j], ITEM_NODROP)) {
+                        if (!IS_OBJ_STAT(ch->equipment[j], extra_flags,
+                                         ITEM_NODROP)) {
                             if ((obj_object = unequip_char(ch, j)) != NULL) {
                                 obj_to_char(obj_object, ch);
                                 act("You stop using $p.", FALSE, ch,
                                     obj_object, 0, TO_CHAR);
-                                if (obj_object->type_flag == ITEM_LIGHT && 
+                                if (obj_object->type_flag == ITEM_TYPE_LIGHT && 
                                     obj_object->value[2]) {
                                     real_roomp(ch->in_room)->light--;
                                 }
@@ -1460,7 +1465,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                             act("$n stops using $p.", TRUE, ch, obj_object, 0,
                                 TO_ROOM);
 
-                            if (obj_object->type_flag == ITEM_LIGHT &&
+                            if (obj_object->type_flag == ITEM_TYPE_LIGHT &&
                                 obj_object->value[2]) {
                                 real_roomp(ch->in_room)->light--;
                             }
@@ -1482,7 +1487,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
         } else {
             obj_object = get_object_in_equip_vis(ch, arg1, ch->equipment, &j);
             if (obj_object) {
-                if (IS_OBJ_STAT(obj_object, ITEM_NODROP)) {
+                if (IS_OBJ_STAT(obj_object, extra_flags, ITEM_NODROP)) {
                     send_to_char("You can't let go of it, it must be "
                                  "CURSED!\n\r", ch);
                     return;
@@ -1490,7 +1495,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                 if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
                     obj_to_char(unequip_char(ch, j), ch);
 
-                    if (obj_object->type_flag == ITEM_LIGHT &&
+                    if (obj_object->type_flag == ITEM_TYPE_LIGHT &&
                         obj_object->value[2]) {
                         real_roomp(ch->in_room)->light--;
                     }
@@ -1656,7 +1661,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (IS_SET(auctionobj->extra_flags, ITEM_MAGIC) && 
+    if (IS_OBJ_STAT(auctionobj, extra_flags, ITEM_MAGIC) && 
         HasClass(ch, CLASS_BARBARIAN) && !IS_IMMORTAL(ch)) {
         send_to_char("You sense magic on the item, and refrain from placing "
                      "a bid.\n\r", ch);

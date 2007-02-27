@@ -567,7 +567,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         }
         break;
     case 60:
-        if (!IS_SET(obj->extra_flags, ITEM_NODROP)) {
+        if (!IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
             act("You drop $p to the ground, and it shatters!",
                 FALSE, ch, obj, 0, TO_CHAR);
             act("$n drops $p, and it shatters!", FALSE, ch, obj, 0, TO_ROOM);
@@ -591,7 +591,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         break;
 
     case 72:
-        if (!IS_SET(obj->extra_flags, ITEM_NODROP)) {
+        if (!IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
             if (GetMaxLevel(ch) <= MAX_MORT) {
                 act("You try to give $p to $N, but it vanishes!",
                     FALSE, ch, obj, t, TO_CHAR);
@@ -617,7 +617,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         /*
          * Steal
          */
-        if (!IS_SET(obj->extra_flags, ITEM_NODROP)) {
+        if (!IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
             act("You cannot seem to steal $p from $N.",
                 FALSE, ch, obj, t, TO_CHAR);
             act("$N tried to steal something from you!", FALSE, t, obj, ch,
@@ -1864,61 +1864,80 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
 
             total_equip_cost += mob->equipment[i]->cost;
             mob->equipment[i]->timer = 20;
-            if (GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
+            if (ITEM_TYPE(mob->equipment[i]) == ITEM_TYPE_CONTAINER) {
                 while ((tempobj = mob->equipment[i]->contains)) {
                     extract_obj(tempobj);
                 }
             }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_GOOD)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_GOOD);
+
+            if(IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_GOOD)) {
+                REMOVE_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_GOOD);
             }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_EVIL)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_EVIL);
+
+            if(IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_EVIL)) {
+                REMOVE_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_EVIL);
             }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_NEUTRAL)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NEUTRAL);
+
+            if(IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_NEUTRAL)) {
+                REMOVE_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_NEUTRAL);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_NECROMANCER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NECROMANCER);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, 
+                            ITEM_ANTI_NECROMANCER)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_NECROMANCER);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_CLERIC)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_CLERIC);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_CLERIC)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_CLERIC);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MAGE)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MAGE);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_MAGE)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_MAGE);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_THIEF)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_THIEF);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_THIEF)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_THIEF);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_FIGHTER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_FIGHTER);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_FIGHTER)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_FIGHTER);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MEN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MEN);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_MEN)) {
+                SET_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_MEN);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_WOMEN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_WOMEN);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_WOMEN)) {
+                SET_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_WOMEN);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_SUN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_SUN);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_SUN)) {
+                SET_BIT(mob->equipment[i]->anti_flags, ITEM_ANTI_SUN);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_BARBARIAN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_BARBARIAN);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, 
+                            ITEM_ANTI_BARBARIAN)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_BARBARIAN);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_RANGER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_RANGER);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_RANGER)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_RANGER);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PALADIN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PALADIN);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_PALADIN)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_PALADIN);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PSI)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PSI);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_PSI)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_PSI);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MONK)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MONK);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_MONK)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_MONK);
             }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_DRUID)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_DRUID);
+
+            if(!IS_OBJ_STAT(mob->equipment[i], anti_class, ITEM_ANTI_DRUID)) {
+                SET_BIT(mob->equipment[i]->anti_class, ITEM_ANTI_DRUID);
             }
         }
     }
@@ -1929,7 +1948,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
      */
     if (IS_SET(mob->player.class, CLASS_NECROMANCER) &&
         !affected_by_spell(mob, SPELL_CHILLSHIELD) &&
-        GET_LEVEL(ch,NECROMANCER_LEVEL_IND) > 39) {
+        GET_LEVEL(ch, NECROMANCER_LEVEL_IND) > 39) {
         af2.type = SPELL_CHILLSHIELD;
         af2.duration = 3;
         af2.modifier = 0;

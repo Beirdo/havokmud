@@ -2473,7 +2473,7 @@ void mind_sense_object(int level, struct char_data *ch,
     key = StringToKeywords( arg, NULL );
     
     for (i = object_list; i; i = i->next) {
-        if ( IS_SET(i->extra_flags, ITEM_QUEST) ||
+        if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ||
              !KeywordsMatch(key, &i->keywords) ) {
             continue;
         }

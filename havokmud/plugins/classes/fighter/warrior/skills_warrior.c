@@ -45,7 +45,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
     obj = get_obj_in_list_vis(ch, arg, ch->carrying);
     perc = number(1, 101);
     if (obj) {
-        if (ITEM_TYPE(obj) == ITEM_ARMOR) {
+        if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR) {
             if (obj->value[0] == 0 ||
                 obj->value[1] == 0) {
                 sprintf(buf, "%s tried to mend an invalid armor value: %s, "
@@ -92,7 +92,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             return;
         } 
         
-        if (ITEM_TYPE(obj) == ITEM_WEAPON) {
+        if (ITEM_TYPE(obj) == ITEM_TYPE_WEAPON) {
             if (obj->value[2] == 0) {
                 sprintf(buf, "%s tried to mend an weapon with invalid "
                              "value: %s, vnum %d.",

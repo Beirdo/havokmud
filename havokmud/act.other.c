@@ -120,7 +120,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
     while (num != 0) {
         tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
         if (tmp_object) {
-            if (IS_OBJ_STAT(tmp_object, ITEM_NODROP)) {
+            if (IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 send_to_char("You can't let go of it, it must be CURSED!\n\r",
                              ch);
                 return;
@@ -529,160 +529,6 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
     do_look(victim, NULL, 15);
     GET_MOVE(victim) = 0;
     send_to_char("\n\rYou feel rather tired now!\n\r", victim);
-}
-
-void do_sneak(struct char_data *ch, char *argument, int cmd)
-{
-    byte            percent;
-
-    dlog("in do_sneak");
-
-    if (IS_AFFECTED2(ch, AFF2_SKILL_SNEAK)) {
-#if 0
-        affect_from_char(ch, SKILL_SNEAK);
-#endif
-        if (IS_AFFECTED(ch, AFF_HIDE)) {
-            REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
-        }
-        REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
-        send_to_char("You are no longer sneaky.\n\r", ch);
-        return;
-    }
-
-    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
-        send_to_char("You're not trained to walk silently!\n\r", ch);
-        return;
-    }
-
-    if (HasClass(ch, CLASS_RANGER) && !OUTSIDE(ch) && !IS_IMMORTAL(ch)) {
-        send_to_char("You must do this outdoors!\n\r", ch);
-        return;
-    }
-
-    if (MOUNTED(ch)) {
-        send_to_char("Yeah... right... while mounted\n\r", ch);
-        return;
-    }
-
-    if (!IS_AFFECTED(ch, AFF_SILENCE)) {
-        /*
-         * removed this to balance with to many sneak items.. (GH)
-         */
-#if 0
-        if (EqWBits(ch, ITEM_ANTI_THIEF)) {
-            send_to_char("Gonna be hard to "
-                    "sneak around in that!\n\r", ch); return;
-        }
-#endif
-        if (HasWBits(ch, ITEM_HUM)) {
-            send_to_char("Gonna be hard to sneak around with that thing "
-                         "humming\n\r", ch);
-            return;
-        }
-    }
-
-    send_to_char("Ok, you'll try to move silently for a while.\n\r", ch);
-
-    /*
-     * 101% is a complete failure
-     */
-    percent = number(1, 101);
-    if (!ch->skills) {
-        return;
-    }
-#if 0
-    if (percent > ch->skills[SKILL_SNEAK].learned +
-            dex_app_skill[GET_DEX(ch)].sneak) {
-        LearnFromMistake(ch, SKILL_SNEAK, 1, 90);
-        WAIT_STATE(ch, PULSE_VIOLENCE); return;
-    }
-#endif
-    if (IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
-        send_to_char("You stop being sneaky!", ch);
-#if 0
-        affect_from_char(ch, SKILL_SNEAK);
-#endif
-        REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
-    } else {
-        send_to_char("You start jumping from shadow to shadow.", ch);
-        SET_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
-        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
-    }
-
-#if 0
-    af.type = SKILL_SNEAK;
-    af.duration = GET_LEVEL(ch, BestThiefClass(ch));
-    af.modifier = 0;
-    af.location = APPLY_NONE;
-    af.bitvector = AFF_SNEAK;
-    affect_to_char(ch, &af);
-    WAIT_STATE(ch, PULSE_VIOLENCE);
-#endif
-}
-
-void do_hide(struct char_data *ch, char *argument, int cmd)
-{
-    byte            percent;
-
-    dlog("in do_hide");
-
-    if (cmd == 334 && !HasClass(ch, CLASS_BARBARIAN)) {
-        send_to_char("Hey, you can't do that!\n\r", ch);
-        return;
-    }
-
-    if (cmd == 153 && !HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
-        send_to_char("Hey, you can't do that!\n\r", ch);
-        return;
-    }
-
-    if (IS_AFFECTED(ch, AFF_HIDE)) {
-        REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
-    }
-
-    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_BARBARIAN |
-                      CLASS_RANGER)) {
-        send_to_char("You're not trained to hide!\n\r", ch);
-        return;
-    }
-
-    if (!HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER)) {
-        send_to_char("You attempt to hide in the shadows.\n\r", ch);
-    } else {
-        send_to_char("You attempt to camouflage yourself.\n\r", ch);
-    }
-
-    if (HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER) && !OUTSIDE(ch)) {
-        send_to_char("You must do this outdoors.\n\r", ch);
-        return;
-    }
-
-    if (MOUNTED(ch)) {
-        send_to_char("Yeah... right... while mounted\n\r", ch);
-        return;
-    }
-
-    /*
-     * 101% is a complete failure
-     */
-    percent = number(1, 101);
-    if (!ch->skills) {
-        return;
-    }
-
-    if (percent > ch->skills[SKILL_HIDE].learned +
-        dex_app_skill[(int)GET_DEX(ch)].hide) {
-        LearnFromMistake(ch, SKILL_HIDE, 1, 90);
-        if (cmd) {
-            WAIT_STATE(ch, PULSE_VIOLENCE * 1);
-        }
-        return;
-    }
-
-    SET_BIT(ch->specials.affected_by, AFF_HIDE);
-    if (cmd) {
-        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
-    }
 }
 
 void do_practice(struct char_data *ch, char *arg, int cmd)
@@ -1167,7 +1013,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (temp->type_flag != ITEM_POTION) {
+    if (temp->type_flag != ITEM_TYPE_POTION) {
         act("You can only quaff potions.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -1272,7 +1118,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         FreeKeywords(key, TRUE);
     }
 
-    if (scroll->type_flag != ITEM_SCROLL) {
+    if (scroll->type_flag != ITEM_TYPE_SCROLL) {
         act("Recite is normally used for scrolls.", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -1590,7 +1436,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 
     stick = ch->equipment[HOLD];
 
-    if (stick->type_flag == ITEM_STAFF) {
+    if (stick->type_flag == ITEM_TYPE_STAFF) {
         act("$n taps $p three times on the ground.", TRUE, ch, stick, 0,
             TO_ROOM);
         act("You tap $p three times on the ground.", FALSE, ch, stick, 0,
@@ -1614,7 +1460,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         } else {
             send_to_char("The staff seems powerless.\n\r", ch);
         }
-    } else if (buf2 && stick->type_flag == ITEM_WAND) {
+    } else if (buf2 && stick->type_flag == ITEM_TYPE_WAND) {
         if (!strcmp(buf2, "self")) {
             tempname = strdup(GET_NAME(ch));
             buf2 = tempname;
@@ -2348,36 +2194,44 @@ void check_memorize(struct char_data *ch, struct affected_type *af)
          */
         switch (BestMagicClass(ch)) {
         case MAGE_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_MAGE))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_MAGE)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case SORCERER_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_MAGE))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_SORCERER)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case CLERIC_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_CLERIC))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_CLERIC)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case DRUID_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_DRUID))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_DRUID)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case PALADIN_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_PALADIN))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_PALADIN)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case PSI_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_PSI))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_PSI)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         case RANGER_LEVEL_IND:
-            if (EqWBits(ch, ITEM_ANTI_RANGER))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_RANGER)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         default:
-            if (EqWBits(ch, ITEM_ANTI_MAGE))
+            if (HasAntiBitsEquipment(ch, ITEM_ANTI_MAGE)) {
                 max += 10;      /* 20% harder to cast spells */
+            }
             break;
         }
 
@@ -3240,96 +3094,94 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * affect[0] == race of corpse, affect[1] == level of corpse
      */
-    if (j->affected[0].modifier != 0 && j->affected[1].modifier != 0) {
-        /*
-         * item not a corpse if v3 = 0
-         */
-        if (!IS_CORPSE(j)) {
-            send_to_char("Sorry, this is not a carcass.\n\r", ch);
-            return;
-        }
-
-        if (!ch->equipment[WIELD]) {
-            send_to_char("You need to wield a weapon, to make it a "
-                         "success.\n\r", ch);
-            return;
-        }
-
-        /*
-         * need to do weapon check..
-         */
-        /*
-         * value[value]
-         */
-        if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
-              Getw_type(ch->equipment[WIELD]) == TYPE_CLEAVE)) {
-            send_to_char("Your weapon isn't really good for that type of "
-                         "thing.\n\r", ch);
-            return;
-        }
-
-        /* Take the "corpse of the blah" and remove the corpse part */
-        argument = strdup( j->short_description );
-        arg1 = argument;
-        strsep( &argument, " " );
-        strsep( &argument, " " );
-        sprintf(buf, "%s", argument);
-        free( arg1 );
-
-        /*
-         * load up the head object
-         */
-        head = read_object(SEVERED_HEAD, VIRTUAL);
-        if (!head) {
-            Log("ERROR IN BEhead.. make head object");
-            return;
-        }
-
-        /*
-         * to room perhaps?
-         */
-        obj_to_room(head, ch->in_room);
-
-        /*
-         * CHange name of head
-         */
-        FreeKeywords(&head->keywords, FALSE);
-        sprintf(temp, "head %s", buf);
-        StringToKeywords(temp, &head->keywords);
-
-        if (head->short_description) {
-            free(head->short_description);
-        }
-        sprintf(temp, "The head %s", buf);
-        head->short_description = strdup(temp);
-
-        if (head->description) {
-            free(head->description);
-        }
-        sprintf(temp, "The head %s lies here.", buf);
-        head->description = strdup(temp);
-
-        /*
-         * make corpse unusable for another behead
-         */
-        j->affected[1].modifier = 0;
-
-        if (j->description) {
-            arg1 = j->description;
-            strsep( &arg1, " " );
-            sprintf(buf, "The beheaded %s", arg1);
-            free(j->description);
-        }
-        j->description = strdup(buf);
-
-        oldSendOutput(ch, "You behead %s.\n\r", j->short_description);
-
-        sprintf(buf, "%s beheads %s.", GET_NAME(ch), j->short_description);
-        act(buf, TRUE, ch, 0, 0, TO_ROOM);
-        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
-    } else {
+    if (j->affected[0].modifier == 0 || j->affected[1].modifier == 0) {
         send_to_char("Sorry, the corpse is too mangled up to behead.\n\r", ch);
+        return;
     }
+
+    /*
+     * item not a corpse if v3 = 0
+     */
+    if (!IS_CORPSE(j)) {
+        send_to_char("Sorry, this is not a carcass.\n\r", ch);
+        return;
+    }
+
+    if (!ch->equipment[WIELD]) {
+        send_to_char("You need to wield a weapon, to make it a "
+                     "success.\n\r", ch);
+        return;
+    }
+
+    /*
+     * need to do weapon check..
+     */
+    if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
+          Getw_type(ch->equipment[WIELD]) == TYPE_CLEAVE)) {
+        send_to_char("Your weapon isn't really good for that type of "
+                     "thing.\n\r", ch);
+        return;
+    }
+
+    /* Take the "corpse of the blah" and remove the corpse part */
+    argument = strdup( j->short_description );
+    arg1 = argument;
+    strsep( &arg1, " " );
+    strsep( &arg1, " " );
+    sprintf(buf, "%s", arg1);
+    free( argument );
+
+    /*
+     * load up the head object
+     */
+    head = read_object(SEVERED_HEAD, VIRTUAL);
+    if (!head) {
+        Log("ERROR IN Behead.. make head object");
+        return;
+    }
+
+    /*
+     * to room perhaps?
+     */
+    obj_to_room(head, ch->in_room);
+
+    /*
+     * CHange name of head
+     */
+    FreeKeywords(&head->keywords, FALSE);
+    sprintf(temp, "head %s", buf);
+    StringToKeywords(temp, &head->keywords);
+
+    if (head->short_description) {
+        free(head->short_description);
+    }
+    sprintf(temp, "The head %s", buf);
+    head->short_description = strdup(temp);
+
+    if (head->description) {
+        free(head->description);
+    }
+    sprintf(temp, "The head %s lies here.", buf);
+    head->description = strdup(temp);
+
+    /*
+     * make corpse unusable for another behead
+     */
+    j->affected[1].modifier = 0;
+
+    if (j->description) {
+        arg1 = j->description;
+        strsep( &arg1, " " );
+        sprintf(buf, "The beheaded %s", arg1);
+        free(j->description);
+    }
+    j->description = strdup(buf);
+
+    oldSendOutput(ch, "You behead %s.\n\r", j->short_description);
+
+    sprintf(buf, "%s beheads %s.", GET_NAME(ch), j->short_description);
+    act(buf, TRUE, ch, 0, 0, TO_ROOM);
+    WAIT_STATE(ch, PULSE_VIOLENCE * 1);
 }
 
 void do_top10(struct char_data *ch, char *arg, int cmd)

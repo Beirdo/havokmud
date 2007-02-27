@@ -146,7 +146,7 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Silly - it ain't even closed!\n\r", ch);
@@ -211,7 +211,7 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (!IS_AFFECTED(ch, AFF_SILENCE)) {
-        if (HasWBits(ch, ITEM_HUM)) {
+        if (HasExtraBits(ch, ITEM_HUM)) {
             send_to_char("Gonna be hard to sneak around with that thing "
                          "humming\n\r", ch);
             return;

@@ -9,9 +9,9 @@
 #include "protos.h"
 #include "externs.h"
 
-#define DUAL_WIELD(ch) (ch->equipment[WIELD] && ch->equipment[HOLD]&&\
-                        ITEM_TYPE(ch->equipment[WIELD])==ITEM_WEAPON && \
-                        ITEM_TYPE(ch->equipment[HOLD])==ITEM_WEAPON)
+#define DUAL_WIELD(ch) (ch->equipment[WIELD] && ch->equipment[HOLD] && \
+                        ITEM_TYPE(ch->equipment[WIELD]) == ITEM_TYPE_WEAPON && \
+                        ITEM_TYPE(ch->equipment[HOLD]) == ITEM_TYPE_WEAPON)
 
 #define MAX_NPC_CORPSE_TIME 5
 #define MAX_PC_CORPSE_TIME 10
@@ -410,7 +410,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
             }
             cp->description = strdup(buf);
 
-            cp->type_flag = ITEM_CONTAINER;
+            cp->type_flag = ITEM_TYPE_CONTAINER;
             cp->wear_flags = ITEM_TAKE;
 
             /*
@@ -539,7 +539,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
         obj_to_obj(money, corpse);
     }
 
-    corpse->type_flag = ITEM_CONTAINER;
+    corpse->type_flag = ITEM_TYPE_CONTAINER;
     corpse->wear_flags = ITEM_TAKE;
 
     /*
@@ -3304,7 +3304,7 @@ void perform_violence(int pulse)
                      * have to check for monks holding things.
                      */
                     if (ch->equipment[HOLD] && !(ch->equipment[WIELD]) &&
-                        ITEM_TYPE(ch->equipment[HOLD]) == ITEM_WEAPON &&
+                        ITEM_TYPE(ch->equipment[HOLD]) == ITEM_TYPE_WEAPON &&
                         HasClass(ch, CLASS_MONK)) {
                         tmp2 = unequip_char(ch, HOLD);
                     }
@@ -4225,7 +4225,7 @@ void BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
         return;
     }
     if (ch->equipment[WIELD] &&
-        IS_OBJ_STAT(ch->equipment[WIELD], ITEM_BRITTLE) &&
+        IS_OBJ_STAT(ch->equipment[WIELD], extra_flags, ITEM_BRITTLE) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM) &&
         ((obj = unequip_char(ch, WIELD)) != NULL)) {
         sprintf(buf, "%s shatters.\n\r", obj->short_description);
@@ -4513,12 +4513,12 @@ int DamageItem(struct char_data *ch, struct obj_data *o, int num)
      * damage weaons or armor
      */
 
-    if (ITEM_TYPE(o) == ITEM_ARMOR) {
+    if (ITEM_TYPE(o) == ITEM_TYPE_ARMOR) {
         o->value[0] -= num;
         if (o->value[0] < 0) {
             return (TRUE);
         }
-    } else if (ITEM_TYPE(o) == ITEM_WEAPON) {
+    } else if (ITEM_TYPE(o) == ITEM_TYPE_WEAPON) {
         o->value[2] -= num;
         if (o->value[2] <= 0) {
             return (TRUE);
@@ -4535,14 +4535,14 @@ int ItemSave(struct obj_data *i, int dam_type)
     /*
      * obj fails save automatically if brittle
      */
-    if (IS_OBJ_STAT(i, ITEM_BRITTLE)) {
+    if (IS_OBJ_STAT(i, extra_flags, ITEM_BRITTLE)) {
         return (FALSE);
     }
 
     /*
      * this is to keep immune objects from getting dammaged
      */
-    if (IS_OBJ_STAT(i, ITEM_IMMUNE)) {
+    if (IS_OBJ_STAT(i, extra_flags, ITEM_IMMUNE)) {
         return (TRUE);
     }
 
@@ -4550,7 +4550,7 @@ int ItemSave(struct obj_data *i, int dam_type)
      * this is to give resistant magic items a better chance
      * to save
      */
-    if (IS_OBJ_STAT(i, ITEM_RESISTANT) && number(1, 100) >= 50) {
+    if (IS_OBJ_STAT(i, extra_flags, ITEM_RESISTANT) && number(1, 100) >= 50) {
             return (TRUE);
     }
 
@@ -4576,7 +4576,7 @@ int ItemSave(struct obj_data *i, int dam_type)
         num += i->affected[j].modifier;
     }
 
-    if (ITEM_TYPE(i) != ITEM_ARMOR) {
+    if (ITEM_TYPE(i) != ITEM_TYPE_ARMOR) {
         num += 1;
     }
     if (num <= 1) {
@@ -4585,7 +4585,7 @@ int ItemSave(struct obj_data *i, int dam_type)
     if (num >= 20) {
         return (TRUE);
     }
-    if (num >= ItemSaveThrows[(int) GET_ITEM_TYPE(i) - 1][dam_type - 1]) {
+    if (num >= ItemSaveThrows[ITEM_TYPE(i) - 1][dam_type - 1]) {
         return (TRUE);
     } else {
         return (FALSE);
@@ -4601,7 +4601,8 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
         /*
          * shields should scrap less
          */
-        if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
+        if ((ITEM_TYPE(i) == ITEM_TYPE_ARMOR) || 
+            (ITEM_TYPE(i) == ITEM_TYPE_WEAPON)) {
             while (!ItemSave(i, dam_type)) {
                 /*
                  * missed its save, give it another chance
@@ -4630,7 +4631,8 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
         } else {
             return (-1);
         }
-    } else if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
+    } else if ((ITEM_TYPE(i) == ITEM_TYPE_ARMOR) || 
+               (ITEM_TYPE(i) == ITEM_TYPE_WEAPON)) {
         /*
          * not fireshield
          */

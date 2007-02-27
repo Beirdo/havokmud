@@ -357,7 +357,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     for (i = real_roomp(ch->in_room)->contents; i; i = next_r_obj) {
         next_r_obj = i->next_content;
-        if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->value[3]) {
+        if (IS_CORPSE(i)) {
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
             for (temp = i->contains; temp; temp = next_obj) {
                 next_obj = temp->next_content;
@@ -599,8 +599,8 @@ int janitor(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (IS_SET(i->wear_flags, ITEM_TAKE) &&
-            (i->type_flag == ITEM_DRINKCON || i->cost <= 10)) {
+        if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) &&
+            (i->type_flag == ITEM_TYPE_DRINKCON || i->cost <= 10)) {
             act("$n picks up some trash.", FALSE, ch, 0, 0, TO_ROOM);
             obj_from_room(i);
             obj_to_char(i, ch);
@@ -2126,7 +2126,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                         obj_from_obj(o);
                         obj_to_char(o, ch);
 
-                        if (ITEM_TYPE(o) == ITEM_POTION) {
+                        if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
                             /*
                              * do the effects of the potion:
                              */
@@ -4469,8 +4469,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     key = StringToKeywords( "corpse rabbit", NULL );
 
     for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
-        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->value[3] &&
-            KeywordsMatch(key, &j->keywords)) {
+        if (IS_CORPSE(i) && KeywordsMatch(key, &j->keywords)) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
             for (k = j->contains; k; k = next) {
                 next = k->next_content;
@@ -4591,7 +4590,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
          * kosher 
          */
 
-        if (ITEM_TYPE(obj) == ITEM_ARMOR && obj->value[1] > 0) {
+        if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR && obj->value[1] > 0) {
             if (obj->value[1] > obj->value[0]) {
                 cost = obj->cost;
                 cost /= obj->value[1];
@@ -4655,11 +4654,12 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 act("$N says 'Your armor looks fine to me.'",
                     TRUE, ch, 0, vict, TO_CHAR);
             }
-        } else if (GetMaxLevel(vict) < 25 || ITEM_TYPE(obj) != ITEM_WEAPON) {
+        } else if (GetMaxLevel(vict) < 25 || 
+                   ITEM_TYPE(obj) != ITEM_TYPE_WEAPON) {
             if (check_soundproof(ch)) {
                 act("$N shakes $S head.\n\r", TRUE, ch, 0, vict, TO_ROOM);
                 act("$N shakes $S head.\n\r", TRUE, ch, 0, vict, TO_CHAR);
-            } else if (ITEM_TYPE(obj) != ITEM_ARMOR) {
+            } else if (ITEM_TYPE(obj) != ITEM_TYPE_ARMOR) {
                 act("$N says 'That isn't armor.'", TRUE, ch, 0, vict, TO_ROOM);
                 act("$N says 'That isn't armor.'", TRUE, ch, 0, vict, TO_CHAR);
             } else {
@@ -5787,7 +5787,7 @@ int archer_sub(struct char_data *ch)
     char           *temp;
 
     if (ch->equipment[WIELD] && 
-        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
+        ch->equipment[WIELD]->type_flag == ITEM_TYPE_FIREWEAPON) {
         bow = ch->equipment[WIELD];
         if (ch->equipment[LOADED_WEAPON]) {
             missile = ch->equipment[LOADED_WEAPON];
@@ -5796,7 +5796,7 @@ int archer_sub(struct char_data *ch)
              * Search inventory for a missile 
              */
             for (spid = ch->carrying; spid; spid = spid->next_content) {
-                if (spid->type_flag == ITEM_MISSILE &&
+                if (spid->type_flag == ITEM_TYPE_MISSILE &&
                     spid->value[3] == bow->value[2]) {
                     missile = spid;
                     continue;
@@ -5806,12 +5806,12 @@ int archer_sub(struct char_data *ch)
                  * see if they are carrying a quiver full of arrows,
                  * if so get an arrow 
                  */
-                if (GET_ITEM_TYPE(spid) == ITEM_CONTAINER) {
+                if (ITEM_TYPE(spid) == ITEM_TYPE_CONTAINER) {
                     found = FALSE;
                     for (obj_object = spid->contains;
                          obj_object && !found; obj_object = next_obj) {
                         next_obj = obj_object->next_content;
-                        if (obj_object->type_flag == ITEM_MISSILE && 
+                        if (obj_object->type_flag == ITEM_TYPE_MISSILE && 
                             obj_object->value[3] == bow->value[2]) {
                             /*
                              * gets arrow out of quiver, next round
@@ -5855,16 +5855,16 @@ int archer_sub(struct char_data *ch)
      */
     if (!bow) {
         for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (spid->type_flag == ITEM_FIREWEAPON) {
+            if (spid->type_flag == ITEM_TYPE_FIREWEAPON) {
                 bow = spid;
             }
 
-            if (GET_ITEM_TYPE(spid) == ITEM_CONTAINER) {
+            if (ITEM_TYPE(spid) == ITEM_TYPE_CONTAINER) {
                 found = FALSE;
                 for (obj_object = spid->contains;
                      obj_object && !found; obj_object = next_obj) {
                     next_obj = obj_object->next_content;
-                    if (obj_object->type_flag == ITEM_FIREWEAPON) {
+                    if (obj_object->type_flag == ITEM_TYPE_FIREWEAPON) {
                         /*
                          * gets bow out of container 
                          */
@@ -5897,7 +5897,7 @@ int archer_sub(struct char_data *ch)
      * No missile weapon or no ammo.  Try a thrown weapon 
      */
     for (spid = ch->carrying; spid; spid = spid->next_content) {
-        if (IS_SET(spid->wear_flags, ITEM_THROW)) {
+        if (IS_OBJ_STAT(spid, wear_flags, ITEM_THROW)) {
             thrown = spid;
         }
     }
@@ -5936,7 +5936,7 @@ int archer_hth(struct char_data *ch)
      * I. If you are wielding a bow ditch it 
      */
     if (ch->equipment[WIELD] && 
-        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
+        ch->equipment[WIELD]->type_flag == ITEM_TYPE_FIREWEAPON) {
         temp = KeywordsToString( &ch->equipment[WIELD]->keywords, NULL );
         sprintf(buf, "remove %s", temp);
         free( temp );
@@ -9003,7 +9003,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         }
         for (i = vict->carrying; i; i = i->next_content) {
             if (has_danish == 0) {
-                if (i->type_flag == ITEM_FOOD) {
+                if (i->type_flag == ITEM_TYPE_FOOD) {
                     has_danish = 1;
                 } else {
                     has_danish = 0;
@@ -9052,7 +9052,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         }
         
         if (!IS_IMMORTAL(ch)) {
-            if (obj->type_flag != ITEM_FOOD) {
+            if (obj->type_flag != ITEM_TYPE_FOOD) {
                 sprintf(buf, "tell %s Thank you, but that is not what I "
                              "desire.", GET_NAME(ch));
                 command_interpreter(vict, buf);
@@ -9065,7 +9065,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         } else {
             sprintf(buf, "%s %s", obj_name, vict_name);
             do_give(ch, buf, 0);
-            if (obj->type_flag == ITEM_FOOD) {
+            if (obj->type_flag == ITEM_TYPE_FOOD) {
                 test = 1;
             }
         }
@@ -12703,310 +12703,6 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
     return (FALSE);
 }
 
-/*
- * @Name:           mirrorofopposition 
- * @description:    An obj proc which will dopplegang a PC.  
- *                  Copies just about everything I could think 
- *                  of, makes mob hate him, and attack him using 
- *                  his own equipment.  Players will probably really 
- *                  hate being on the receiving end of their +30 hasted
- *                  damrolls. 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    obj(37821) 
- */
-int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
-                       struct obj_data *obj, int type)
-{
-    struct affected_type af2;
-    struct char_data *mob;
-    int             i;
-    int             maxlevel;
-    struct affected_type *af;
-    struct obj_file_u st;
-    struct obj_data *tempobj;
-    int             total_equip_cost;
-    char           *buf1;
-    char           *buf2;
-    FILE           *fl;
-
-    if (obj->in_room == -1 || cmd != 15 || IS_IMMORTAL(ch)) {
-        return (FALSE);
-    }
-
-    arg = get_argument(arg, &buf1);
-    arg = get_argument(arg, &buf2);
-
-    if (!buf1 || !buf2 || (strcmp(buf1, "mirror") && strcmp(buf2, "mirror"))) {
-        return (FALSE);
-    }
-
-    /* 
-     * CreateAMob -> generic mob (naked) -> no follower, no random attack
-     */
-    mob = CreateAMob(ch, GENERICMOBVNUM, 0,
-                     "A figure suddenly steps out of the mirror.");
-
-    /* 
-     * start doing pc info:
-     * name, title, classes, hitroll = MAX (1,20 - biggestlevel*.5), armor 
-     * will be done by what's being worn
-     */
-    sprintf(buf1, "%s Bizarro", GET_NAME(ch));
-    mob->player.name = (char *) strdup(buf1);
-    mob->player.short_descr = (char *) strdup(GET_NAME(ch));
-    sprintf(buf1, "%s is standing here.", ch->player.title);
-    mob->player.long_descr = (char *) strdup(buf1);
-    mob->player.class = ch->player.class;
-
-    for (i = 0; i < 12; i++) {
-        mob->player.level[i] = ch->player.level[i];
-    }
-
-    maxlevel = GetMaxLevel(mob);
-    GET_HITROLL(mob) = MAX(1, 20 - (maxlevel >> 1));
-    /*
-     * max (hp, mana, move) current (stats, race, spell affects)
-     */
-    mob->points.max_hit = GET_MAX_HIT(ch);
-    mob->points.max_mana = GET_MAX_MANA(ch);
-    mob->points.max_move = GET_MAX_MOVE(ch);
-    mob->points.hit = GET_MAX_HIT(ch);
-    mob->points.mana = GET_MAX_MANA(ch);
-    mob->points.move = GET_MAX_MOVE(ch);
-    mob->mult_att = ch->mult_att;
-    GET_ALIGNMENT(mob) = GET_ALIGNMENT(ch);
-
-    for (af = ch->affected; af; af = af->next) {
-        affect_to_char(mob, af);
-    }
-
-    GET_RACE(mob) = GET_RACE(ch);
-    GET_RSTR(mob) = GET_RSTR(ch);
-    GET_RADD(mob) = GET_RADD(ch);
-    GET_RCON(mob) = GET_RCON(ch);
-    GET_RDEX(mob) = GET_RDEX(ch);
-    GET_RWIS(mob) = GET_RWIS(ch);
-    GET_RINT(mob) = GET_RINT(ch);
-    GET_RCHR(mob) = GET_RCHR(ch);
-
-    sprintf(buf1, "reimb/%s", lower(ch->player.name));
-    if (!(fl = fopen(buf1, "r+b"))) {
-        act("The figure looks around, and promptly disappears!", TRUE, mob,
-            0, 0, TO_ROOM);
-        char_from_room(mob);
-        extract_char(mob);
-        return (TRUE);
-    }
-
-    rewind(fl);
-
-    if (!ReadObjs(fl, &st)) {
-        act("The figure looks around, and promptly disappears!", TRUE, mob,
-            0, 0, TO_ROOM);
-        char_from_room(mob);
-        extract_char(mob);
-        return (TRUE);
-    }
-
-    for (i = 0; i < MAX_WEAR; i++) {
-        if (mob->equipment[i])
-            extract_obj(unequip_char(mob, i));
-    }
-    while (mob->carrying) {
-        extract_obj(mob->carrying);
-    }
-
-    obj_store_to_char(mob, &st);
-
-    while (mob->carrying) {
-        extract_obj(mob->carrying);
-    }
-
-    /*
-     * set all equipment to useless somehow (anti_everything? anti_gne?
-     * norent? anti_sun? Organic_decay?)
-     * lennya said maybe that timer could be used for any equipment, not
-     * just specific equipment
-     */
-    total_equip_cost = 0;
-    for (i = 0; i < MAX_WEAR; i++) {
-        if (mob->equipment[i]) {
-
-            total_equip_cost += mob->equipment[i]->cost;
-            mob->equipment[i]->timer = 20;
-            if (GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
-                while ((tempobj = mob->equipment[i]->contains)) {
-                    extract_obj(tempobj);
-                }
-            }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_GOOD)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_GOOD);
-            }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_EVIL)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_EVIL);
-            }
-            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_NEUTRAL)) {
-                REMOVE_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NEUTRAL);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_NECROMANCER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_NECROMANCER);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_CLERIC)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_CLERIC);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MAGE)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MAGE);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_THIEF)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_THIEF);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_FIGHTER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_FIGHTER);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MEN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MEN);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_WOMEN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_WOMEN);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_SUN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_SUN);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_BARBARIAN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_BARBARIAN);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_RANGER)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_RANGER);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PALADIN)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PALADIN);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PSI)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_PSI);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MONK)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_MONK);
-            }
-            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_DRUID)) {
-                SET_BIT(mob->equipment[i]->extra_flags, ITEM_ANTI_DRUID);
-            }
-        }
-    }
-
-    /* 
-     * if has class to have 'normal' spells (sanc, fs, bb), add the affect 
-     * (like casting, not by setting perma-flag)
-     */
-    if (IS_SET(mob->player.class, CLASS_NECROMANCER) &&
-        !affected_by_spell(mob, SPELL_CHILLSHIELD) &&
-        GET_LEVEL(ch,NECROMANCER_LEVEL_IND) > 39) {
-        af2.type = SPELL_CHILLSHIELD;
-        af2.duration = 3;
-        af2.modifier = 0;
-        af2.location = 0;
-        af2.bitvector = AFF_CHILLSHIELD;
-        affect_to_char(mob, &af2);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_MAGIC_USER | CLASS_PSI) && 
-        !IS_SET(mob->player.class, CLASS_CLERIC) &&
-        !affected_by_spell(mob, SPELL_FIRESHIELD) &&
-        (GET_LEVEL(ch,PSI_LEVEL_IND) > 14 ||
-        GET_LEVEL(ch,MAGE_LEVEL_IND) > 39)) {
-        af2.type = SPELL_FIRESHIELD;
-        af2.duration = 3;
-        af2.modifier = 0;
-        af2.location = 0;
-        af2.bitvector = AFF_FIRESHIELD;
-        affect_to_char(mob, &af2);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_CLERIC)) {
-        if (!affected_by_spell(mob, SPELL_SANCTUARY)) {
-            af2.type = SPELL_SANCTUARY;
-            af2.duration = 3;
-            af2.modifier = 0;
-            af2.location = APPLY_NONE;
-            af2.bitvector = AFF_SANCTUARY;
-            affect_to_char(mob, &af2);
-        }
-
-        if (!affected_by_spell(mob, SPELL_BLADE_BARRIER) &&
-            GET_LEVEL(ch,CLERIC_LEVEL_IND) > 44) {
-            af2.type = SPELL_BLADE_BARRIER;
-            af2.duration = 3;
-            af2.modifier = 0;
-            af2.location = APPLY_NONE;
-            af2.bitvector = AFF_BLADE_BARRIER;
-            affect_to_char(mob, &af2);
-        }
-    }
-    
-    /* 
-     * Make him act like class he is if possible:
-     */
-    if (IS_SET(mob->player.class, CLASS_NECROMANCER)) {
-        SET_BIT(mob->specials.act, ACT_NECROMANCER);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_MAGIC_USER)) {
-        SET_BIT(mob->specials.act, ACT_MAGIC_USER);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_CLERIC)) {
-        SET_BIT(mob->specials.act, ACT_CLERIC);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_WARRIOR)) {
-        SET_BIT(mob->specials.act, ACT_WARRIOR);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_THIEF)) {
-        SET_BIT(mob->specials.act, ACT_THIEF);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_DRUID)) {
-        SET_BIT(mob->specials.act, ACT_DRUID);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_MONK)) {
-        SET_BIT(mob->specials.act, ACT_MONK);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_BARBARIAN)) {
-        SET_BIT(mob->specials.act, ACT_BARBARIAN);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_PALADIN)) {
-        SET_BIT(mob->specials.act, ACT_PALADIN);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_RANGER)) {
-        SET_BIT(mob->specials.act, ACT_RANGER);
-    }
-
-    if (IS_SET(mob->player.class, CLASS_PSI)) {
-        SET_BIT(mob->specials.act, ACT_PSI);
-    }
-
-    if (IsGiant(mob)) {
-        SET_BIT(mob->specials.act, ACT_HUGE);
-    }
-
-    /* 
-     * set experience, figure .005 of players total exp + equipment cost?
-     */
-    mob->points.exp = GET_EXP(ch) * .005 + total_equip_cost;
-    GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
-
-    /* 
-     * have him go to town on character
-     */
-
-    MobHit(mob, ch, 0);
-
-    return (TRUE);
-}
 
 /*
  * @Name:           skillfixer

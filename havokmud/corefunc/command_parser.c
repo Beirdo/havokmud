@@ -483,7 +483,7 @@ int special(struct char_data *ch, int cmd, char *arg)
     for (j = 0; j <= (MAX_WEAR - 1); j++) {
         if (ch->equipment[j] && ch->equipment[j]->item_number >= 0) {
 #ifdef TODO
-            if (IS_SET(ch->equipment[j]->extra_flags, ITEM_ANTI_SUN)) {
+            if (IS_OBJ_STAT(ch->equipment[j], anti_flags, ITEM_ANTI_SUN)) {
                 AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
             }
 #endif

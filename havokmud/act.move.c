@@ -258,7 +258,7 @@ int RawMove(struct char_data *ch, int dir)
                  * See if char is carrying a boat 
                  */
                 for (obj = ch->carrying; obj; obj = obj->next_content)
-                    if (obj->type_flag == ITEM_BOAT) {
+                    if (obj->type_flag == ITEM_TYPE_BOAT) {
                         has_boat = TRUE;
                     }
                 if (IS_IMMORTAL(ch) && 
@@ -968,7 +968,7 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("But it's already open!\n\r", ch);
@@ -1029,7 +1029,7 @@ void do_close(struct char_data *ch, char *argument, int cmd)
          * this is an object 
          */
 
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("But it's already closed!\n\r", ch);
@@ -1088,7 +1088,7 @@ int has_key(struct char_data *ch, int key)
 
     for (o = ch->carrying; o; o = o->next_content) {
         if (o->item_number == key) {
-            if (IS_OBJ_STAT(o, ITEM_BRITTLE)) {
+            if (IS_OBJ_STAT(o, extra_flags, ITEM_BRITTLE)) {
                 MakeScrap(ch, NULL, o);
                 send_to_char("As you turn the key in the lock it "
                              "crumbles.\n\r", ch);
@@ -1098,7 +1098,7 @@ int has_key(struct char_data *ch, int key)
     }
 
     if ((o = ch->equipment[HOLD]) && o->item_number == key) {
-        if (IS_OBJ_STAT(o, ITEM_BRITTLE)) {
+        if (IS_OBJ_STAT(o, extra_flags, ITEM_BRITTLE)) {
             MakeScrap(ch, NULL, o);
             send_to_char("The key crumbles in your hand as you turn it.\n\r",
                          ch);
@@ -1173,7 +1173,7 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
          * this is an object 
          */
 
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Maybe you should close it first...\n\r", ch);
@@ -1240,7 +1240,7 @@ void do_unlock(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (obj->value[2] < 0) {
             send_to_char("Odd - you can't seem to find a keyhole.\n\r", ch);
@@ -1328,7 +1328,7 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
         /*
          * this is an object 
          */
-        if (obj->type_flag != ITEM_CONTAINER) {
+        if (obj->type_flag != ITEM_TYPE_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (!IS_SET(obj->value[1], CONT_CLOSED)) {
             send_to_char("Silly - it ain't even closed!\n\r", ch);
@@ -1394,7 +1394,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
          */
         if (generic_find(buf, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
                          &portal)) {
-            if (ITEM_TYPE(portal) != ITEM_PORTAL) {
+            if (ITEM_TYPE(portal) != ITEM_TYPE_PORTAL) {
                 send_to_char("You can't enter that!", ch);
                 return;
             } 

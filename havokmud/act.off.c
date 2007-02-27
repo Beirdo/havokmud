@@ -1162,8 +1162,8 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
     }
     max_range = (((GET_STR(ch) + GET_ADD(ch) / 30) - 3) / 8) + 2;
     max_range = max_range / (sz + 1);
-    if (o->type_flag == ITEM_MISSILE && ch->equipment[WIELD] &&
-        ch->equipment[WIELD]->type_flag == ITEM_FIREWEAPON) {
+    if (o->type_flag == ITEM_TYPE_MISSILE && ch->equipment[WIELD] &&
+        ch->equipment[WIELD]->type_flag == ITEM_TYPE_FIREWEAPON) {
         /*
          * Add bow's range bonus
          */
@@ -1380,7 +1380,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
     dlog("in do_weapon_load");
 
     fw = ch->equipment[WIELD];
-    if (!fw || fw->type_flag != ITEM_FIREWEAPON) {
+    if (!fw || fw->type_flag != ITEM_TYPE_FIREWEAPON) {
         send_to_char("You must be wielding the projectile weapon you want to "
                      "load.\n\r", ch);
         return;
@@ -1418,7 +1418,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (ms->type_flag != ITEM_MISSILE) {
+    if (ms->type_flag != ITEM_TYPE_MISSILE) {
         act("$p is not a valid missile.", TRUE, ch, ms, 0, TO_CHAR);
         return;
     }
@@ -1449,7 +1449,7 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
     dlog("in do_fire");
 
     fw = ch->equipment[WIELD];
-    if ((!fw) || (fw->type_flag != ITEM_FIREWEAPON)) {
+    if ((!fw) || (fw->type_flag != ITEM_TYPE_FIREWEAPON)) {
         send_to_char("You must be using a projectile weapon to fire "
                      "things!\n\r", ch);
         return;
@@ -1566,12 +1566,12 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_SET(throw->wear_flags, ITEM_THROW)) {
+    if (!IS_OBJ_STAT(throw, wear_flags, ITEM_THROW)) {
         send_to_char("You cant throw that!\n\r", ch);
         return;
     }
 
-    if (throw->type_flag != ITEM_WEAPON) {
+    if (throw->type_flag != ITEM_TYPE_WEAPON) {
         /*
          * Friendly throw
          */
@@ -1939,7 +1939,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
         return;
     }
 
-    if(ITEM_TYPE(o) != ITEM_SHOVEL) {
+    if(ITEM_TYPE(o) != ITEM_TYPE_SHOVEL) {
         send_to_char("How do you plan on shovelling with that thing?",ch);
         return;
     }

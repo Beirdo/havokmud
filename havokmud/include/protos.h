@@ -3015,9 +3015,6 @@ int             MountEgoCheck(struct char_data *ch,
                               struct char_data *horse);
 int             RideCheck(struct char_data *ch, int mod);
 void            FallOffMount(struct char_data *ch, struct char_data *h);
-int             EqWBits(struct char_data *ch, int bits);
-int             InvWBits(struct char_data *ch, int bits);
-int             HasWBits(struct char_data *ch, int bits);
 int             LearnFromMistake(struct char_data *ch, int sknum,
                                  int silent, int max);
 int             IsOnPmp(int room_nr);

@@ -163,7 +163,7 @@ int Donation(struct char_data *ch, int cmd, char *arg,
     }
 
     if (arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
-        if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+        if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
             if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
                 return (FALSE);
             } else {
@@ -265,7 +265,7 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (ITEM_TYPE(obj) != ITEM_DRINKCON) {
+        if (ITEM_TYPE(obj) != ITEM_TYPE_DRINKCON) {
             send_to_char("Thats not a drink container!\n\r", ch);
             return (TRUE);
         }

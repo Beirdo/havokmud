@@ -338,7 +338,7 @@ void extract_obj(struct obj_data *obj)
              * set players equipment slot to 0; that will avoid the garbage
              * items.
              */
-            obj->equipped_by->equipment[(int)obj->eq_pos] = 0;
+            obj->equipped_by->equipment[obj->eq_pos] = 0;
         } else {
             LogPrint(LOG_CRIT, "Extract on equipped item in slot -1 on: "
                                "%s - %s (%d)",
@@ -640,14 +640,15 @@ int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
     int             num = 0;
 
     if (IS_IMMORTAL(ch)) {
-        return (1);
+        return (TRUE);
     }
+
     /*
      * changed the act.info.c, hope this works on traps INSIDE chests
      * etc..
      */
 
-    if (ITEM_TYPE(obj) == ITEM_TRAP && GET_TRAP_CHARGES(obj) > 0) {
+    if (ITEM_TYPE(obj) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(obj) > 0) {
         num = number(1, 101);
         if (CanSeeTrap(num, ch)) {
             return (TRUE);
@@ -657,23 +658,71 @@ int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
     }
 
     if (IS_AFFECTED(ch, AFF_BLIND)) {
-        return (0);
+        return (FALSE);
     }
     if (IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
-        return (1);
+        return (TRUE);
     }
-    if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, ITEM_GLOW)) {
-        return (0);
+    if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, extra_flags, ITEM_GLOW)) {
+        return (FALSE);
     }
     if (IS_AFFECTED(ch, AFF_DETECT_INVISIBLE)) {
-        return (1);
+        return (TRUE);
     }
-    if (IS_OBJ_STAT(obj, ITEM_INVISIBLE)) {
-        return (0);
+    if (IS_OBJ_STAT(obj, extra_flags, ITEM_INVISIBLE)) {
+        return (FALSE);
     }
-    return (1);
+    return (TRUE);
 }
 
+bool HasAntiBitsEquipment(struct char_data *ch, int bits)
+{
+    return( HasBitsEquipment(ch, bits, OFFSETOF(anti_class, struct obj_data)) );
+}
+
+bool HasBitsEquipment(struct char_data *ch, int bits, int offset)
+{
+    int                 i;
+    struct obj_data    *obj;
+
+    for (i = 0; i < MAX_WEAR; i++) {
+        obj = ch->equipment[i];
+        if( !obj ) {
+            continue;
+        }
+        
+        if( IS_SET_FLAG(obj, offset, bits) ) {
+            return (TRUE);
+        }
+    }
+    return (FALSE);
+}
+
+bool HasBitsInventory(struct char_data *ch, int bits, int offset)
+{
+    struct obj_data *o;
+
+    for (o = ch->carrying; o; o = o->next_content) {
+        if (IS_SET_FLAG(o, offset, bits)) {
+            return (TRUE);
+        }
+    }
+    return (FALSE);
+}
+
+bool HasBits(struct char_data *ch, int bits, int offset)
+{
+    if (HasBitsEquipment(ch, bits, offset) || 
+        HasBitsInventory(ch, bits, offset)) {
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
+bool HasExtraBits(struct char_data *ch, int bits)
+{
+    return( HasBits(ch, bits, OFFSETOF(extra_flags, struct obj_data)) );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

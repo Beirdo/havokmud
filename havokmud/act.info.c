@@ -36,10 +36,10 @@ void do_help_common(struct char_data *ch, char *argument, int type);
 int singular(struct obj_data *o)
 {
 
-    if (IS_SET(o->wear_flags, ITEM_WEAR_HANDS) ||
-        IS_SET(o->wear_flags, ITEM_WEAR_FEET) ||
-        IS_SET(o->wear_flags, ITEM_WEAR_LEGS) ||
-        IS_SET(o->wear_flags, ITEM_WEAR_ARMS)){
+    if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_HANDS) ||
+        IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_FEET) ||
+        IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_LEGS) ||
+        IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_ARMS)){
         return (FALSE);
 	}
     return (TRUE);
@@ -59,7 +59,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
              ((mode == 1) || (mode == 2) || (mode == 3) || (mode == 4))) {
         strcpy(buffer, object->short_description);
     } else if (mode == 5) {
-        if (object->type_flag == ITEM_NOTE) {
+        if (object->type_flag == ITEM_TYPE_NOTE) {
             if (object->action_description) {
                 strcpy(buffer, "There is something written upon it:\n\r\n\r");
                 strcat(buffer, object->action_description);
@@ -72,21 +72,18 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
              * mail fix, thanks brett
              */
 
-        } else if ((object->type_flag != ITEM_DRINKCON)) {
+        } else if ((object->type_flag != ITEM_TYPE_DRINKCON)) {
             strcpy(buffer, "You see nothing special..");
         } else {
-			/*
-			 * ITEM_TYPE == ITEM_DRINKCON
-			 */
             strcpy(buffer, "It looks like a drink container.");
         }
     }
 
     if (mode != 3) {
-        if (IS_OBJ_STAT(object, ITEM_INVISIBLE)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_INVISIBLE)) {
             strcat(buffer, " (invisible)");
         }
-        if (IS_OBJ_STAT(object, ITEM_ANTI_GOOD)
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)
             && IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows red");
@@ -94,7 +91,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
                 strcat(buffer, "..They glow red");
 			}
         }
-        if (IS_OBJ_STAT(object, ITEM_ANTI_EVIL)
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL)
             && IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows white");
@@ -102,7 +99,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
                 strcat(buffer, "..They glow white");
 			}
         }
-        if (IS_OBJ_STAT(object, ITEM_MAGIC)
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC)
             && IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows blue");
@@ -110,14 +107,14 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
                 strcat(buffer, "..They glow blue");
 			}
         }
-        if (IS_OBJ_STAT(object, ITEM_GLOW)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_GLOW)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows softly");
             } else {
                 strcat(buffer, "..They glow softly");
 			}
         }
-        if (IS_OBJ_STAT(object, ITEM_HUM)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_HUM)) {
             if (singular(object)) {
                 strcat(buffer, "..It hums powerfully");
             } else {
@@ -129,7 +126,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
          * 20030408
          */
 #if 0
-        if (singular(object) && object->type_flag == ITEM_CONTAINER) {
+        if (singular(object) && object->type_flag == ITEM_TYPE_CONTAINER) {
         	if (!object->value[2] && !object->value[3]) {
 			/*
 			 * check for ShowFull, IsCorpse
@@ -188,7 +185,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
         	}
         }
 #endif
-        if (object->type_flag == ITEM_ARMOR) {
+        if (object->type_flag == ITEM_TYPE_ARMOR) {
             if (object->value[0] < (object->value[1] / 4)) {
                 if (singular(object)) {
                     strcat(buffer, "..It is falling apart");
@@ -243,7 +240,7 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
              ((mode == 1) || (mode == 2) || (mode == 3) || (mode == 4))) {
         strcpy(buffer, object->short_description);
     } else if (mode == 5) {
-        if (object->type_flag == ITEM_NOTE) {
+        if (object->type_flag == ITEM_TYPE_NOTE) {
             if (object->action_description) {
                 strcpy(buffer, "There is something written upon it:\n\r\n\r");
                 strcat(buffer, object->action_description);
@@ -252,36 +249,33 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
                 act("It's blank.", FALSE, ch, 0, 0, TO_CHAR);
 			}
             return;
-        } else if ((object->type_flag != ITEM_DRINKCON)) {
+        } else if ((object->type_flag != ITEM_TYPE_DRINKCON)) {
             strcpy(buffer, "You see nothing special..");
         } else {
-			/*
-			 * ITEM_TYPE == ITEM_DRINKCON
-			 */
             strcpy(buffer, "It looks like a drink container.");
         }
     }
 
     if (mode != 3) {
-        if (IS_OBJ_STAT(object, ITEM_INVISIBLE)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_INVISIBLE)) {
             strcat(buffer, " (invisible)");
         }
-        if (IS_OBJ_STAT(object, ITEM_ANTI_GOOD)
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)
             && IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
             strcat(buffer, "..It glows red!");
         }
-        if (IS_OBJ_STAT(object, ITEM_ANTI_EVIL)
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL)
             && IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
             strcat(buffer, "..It glows white!");
         }
-        if (IS_OBJ_STAT(object, ITEM_MAGIC)
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC)
             && IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
             strcat(buffer, "..It glows blue!");
         }
-        if (IS_OBJ_STAT(object, ITEM_GLOW)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_GLOW)) {
             strcat(buffer, "..It has a soft glowing aura!");
         }
-        if (IS_OBJ_STAT(object, ITEM_HUM)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_HUM)) {
             strcat(buffer, "..It emits a faint humming sound!");
         }
     }
@@ -327,16 +321,12 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
                     cond_top += 1;
                 }
             } else {
-                if ((ITEM_TYPE(i) == ITEM_TRAP)
-                    || (GET_TRAP_CHARGES(i) > 0)) {
+                if ((ITEM_TYPE(i) == ITEM_TYPE_TRAP) || 
+                    (GET_TRAP_CHARGES(i) > 0)) {
                     if (CAN_SEE_OBJ(ch, i)) {
                         show_obj_to_char(i, ch, 0);
                     }
-                }
-                /*
-                 * not a trap
-                 */
-                else {
+                } else {
                     show_obj_to_char(i, ch, 0);
                 }
             }
@@ -345,7 +335,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
 
     if (cond_top) {
         for (k = 0; k < cond_top; k++) {
-            if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TRAP)
+            if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TYPE_TRAP)
                 && (GET_TRAP_CHARGES(cond_ptr[k]) > 0)) {
                 if (CAN_SEE_OBJ(ch, cond_ptr[k])) {
                     if (cond_tot[k] > 1) {
@@ -829,8 +819,9 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                           j == WEAR_HANDS || j == WEAR_SHIELD ||
                           j == WEAR_ABOUT || j == WEAR_EAR_R ||
                           j == WEAR_EAR_L || j == WEAR_EYES) &&
-                        !IS_OBJ_STAT(i->equipment[WEAR_ABOUT], ITEM_INVISIBLE)
-                        && !IS_IMMORTAL(ch) && (i != ch)) {
+                        !IS_OBJ_STAT(i->equipment[WEAR_ABOUT], extra_flags, 
+                                     ITEM_INVISIBLE) && !IS_IMMORTAL(ch) && 
+                        (i != ch)) {
                         /*
                          * see through cloak -Lennya
                          */
@@ -1638,7 +1629,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                     /*
                      * Found something
                      */
-                    if (GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) {
+                    if (ITEM_TYPE(tmp_object) == ITEM_TYPE_DRINKCON) {
                         if (tmp_object->value[1] <= 0) {
                             act("It is empty.", FALSE, ch, 0, 0, TO_CHAR);
                         } else {
@@ -1649,7 +1640,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                  color_liquid[tmp_object->value[2]]);
                             send_to_char(buffer, ch);
                         }
-                    } else if (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER) {
+                    } else if (ITEM_TYPE(tmp_object) == ITEM_TYPE_CONTAINER) {
                         if (!IS_SET(tmp_object->value[1], CONT_CLOSED)) {
                             if (!IS_CORPSE(tmp_object)) {
                                 /*
@@ -2069,8 +2060,8 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
     generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM |
                  FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
 
-    if (tmp_object && (GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON ||
-                       GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER)) {
+    if (tmp_object && (ITEM_TYPE(tmp_object) == ITEM_TYPE_DRINKCON ||
+                       ITEM_TYPE(tmp_object) == ITEM_TYPE_CONTAINER)) {
         send_to_char("When you look inside, you see:\n\r", ch);
         sprintf(buf, "look in %s", name);
         command_interpreter(ch, buf);
@@ -3870,7 +3861,7 @@ void do_value(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    sprinttype(GET_ITEM_TYPE(obj), item_types, buf);
+    sprinttype(ITEM_TYPE(obj), item_types, buf);
     oldSendOutput(ch, "Object: %s.  Item type: %s\n\r", obj->short_description,
                   buf);
 
@@ -3900,11 +3891,11 @@ void do_value(struct char_data *ch, char *argument, int cmd)
                   GetApprox(obj->cost_per_day, learned - 10),
                   IS_RARE(obj) ? "[RARE]" : " ");
 
-    if (ITEM_TYPE(obj) == ITEM_WEAPON) {
+    if (ITEM_TYPE(obj) == ITEM_TYPE_WEAPON) {
         oldSendOutput(ch, "Damage Dice is '%dD%d'\n\r",
                       GetApprox(obj->value[1], learned - 10),
                       GetApprox(obj->value[2], learned - 10));
-    } else if (ITEM_TYPE(obj) == ITEM_ARMOR) {
+    } else if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR) {
         oldSendOutput(ch, "AC-apply is %d\n\r",
                       GetApprox(obj->value[0], learned - 10));
     }

@@ -2238,7 +2238,7 @@ void affect_update(int pulse)
         /*
          * If this is a corpse 
          */
-        if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->value[3]) {
+        if (IS_CORPSE(j)) {
             /*
              * timer count down 
              */
@@ -2296,9 +2296,9 @@ void affect_update(int pulse)
             /*
              *  Sound objects
              */
-            if (ITEM_TYPE(j) == ITEM_AUDIO) {
-                if ((j->value[0] &&
-                     pulse % j->value[0] == 0) || !number(0, 5)) {
+            if (ITEM_TYPE(j) == ITEM_TYPE_AUDIO) {
+                if ((j->value[0] && pulse % j->value[0] == 0) || 
+                    !number(0, 5)) {
                     if (j->carried_by) {
                         room = j->carried_by->in_room;
                     } else if (j->equipped_by) {
@@ -3212,7 +3212,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
                 switch (BestMagicClass(ch)) {
                 case MAGE_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_MAGE)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_MAGE)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3220,7 +3220,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case SORCERER_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_MAGE)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_SORCERER)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3228,7 +3228,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case CLERIC_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_CLERIC)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_CLERIC)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3236,7 +3236,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case DRUID_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_DRUID)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_DRUID)) {
                         /* 
                          * 20% harder to cast spells 
                          */ 
@@ -3244,7 +3244,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case PALADIN_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_PALADIN)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_PALADIN)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3252,7 +3252,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case PSI_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_PSI)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_PSI)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3260,7 +3260,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case RANGER_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_RANGER)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_RANGER)) {
                         /* 
                          * 20% harder to cast spells 
                          */
@@ -3268,13 +3268,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     }
                     break;
                 case NECROMANCER_LEVEL_IND:
-                    if (EqWBits(ch, ITEM_ANTI_NECROMANCER)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_NECROMANCER)) {
                         max += 10;
                     }
                     break;
 
                 default:
-                    if (EqWBits(ch, ITEM_ANTI_MAGE)) {
+                    if (HasAntiBitsEquipment(ch, ITEM_ANTI_MAGE)) {
                         /* 
                          * 20% harder to cast spells 
                          */

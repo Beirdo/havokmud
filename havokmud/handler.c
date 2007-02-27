@@ -1130,7 +1130,7 @@ void char_from_room(struct char_data *ch)
     }
 
     if (ch->equipment[WEAR_LIGHT] &&
-        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT && 
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_TYPE_LIGHT && 
         ch->equipment[WEAR_LIGHT]->value[2]) {
         /* 
          * Light is ON 
@@ -1195,7 +1195,7 @@ void char_to_room(struct char_data *ch, long room)
     ch->in_room = room;
 
     if (ch->equipment[WEAR_LIGHT] && 
-        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT) {
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_TYPE_LIGHT) {
         if (rp->sector_type != SECT_UNDERWATER) {
             if (ch->equipment[WEAR_LIGHT]->value[2]) {
                 /* 
@@ -1369,7 +1369,7 @@ int apply_ac(struct char_data *ch, int eq_pos)
 {
     assert(ch->equipment[eq_pos]);
 
-    if (!(GET_ITEM_TYPE(ch->equipment[eq_pos]) == ITEM_ARMOR)) {
+    if (!(ITEM_TYPE(ch->equipment[eq_pos]) == ITEM_TYPE_ARMOR)) {
         return 0;
     }
     switch (eq_pos) {
@@ -1478,7 +1478,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
     obj->equipped_by = ch;
     obj->eq_pos = pos;
 
-    if (GET_ITEM_TYPE(obj) == ITEM_ARMOR) {
+    if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR) {
         GET_AC(ch) -= apply_ac(ch, pos);
     }
     for (j = 0; j < MAX_OBJ_AFFECT; j++) {
@@ -1487,7 +1487,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
                       obj->bitvector, TRUE);
     }
 
-    if (GET_ITEM_TYPE(obj) == ITEM_WEAPON) {
+    if (ITEM_TYPE(obj) == ITEM_TYPE_WEAPON) {
         /*
          * some nifty manuevering for strength 
          */
@@ -1535,7 +1535,7 @@ struct obj_data *unequip_char(struct char_data *ch, int pos)
 
     assert(!obj->in_obj && obj->in_room == NOWHERE && !obj->carried_by);
 
-    if (GET_ITEM_TYPE(obj) == ITEM_ARMOR) {
+    if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR) {
         GET_AC(ch) += apply_ac(ch, pos);
     }
     ch->equipment[pos] = 0;
@@ -1883,7 +1883,7 @@ void update_char_objects(struct char_data *ch)
     int             i;
 
     if (ch->equipment[WEAR_LIGHT] && 
-        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_LIGHT &&
+        ch->equipment[WEAR_LIGHT]->type_flag == ITEM_TYPE_LIGHT &&
         ch->equipment[WEAR_LIGHT]->value[2] > 0) {
         (ch->equipment[WEAR_LIGHT]->value[2])--;
     }

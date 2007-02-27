@@ -331,13 +331,13 @@ int remove_trap(struct char_data *ch, struct obj_data *trap)
     /*
      * to disarm traps inside item 
      */
-    if (ITEM_TYPE(trap) == ITEM_CONTAINER) {
+    if (ITEM_TYPE(trap) == ITEM_TYPE_CONTAINER) {
         for (t = trap->contains; t; t = t->next_content) {
-            if (ITEM_TYPE(t) == ITEM_TRAP && GET_TRAP_CHARGES(t) > 0) {
+            if (ITEM_TYPE(t) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(t) > 0) {
                 return (remove_trap(ch, t));
             }
         }
-    } else if (ITEM_TYPE(trap) != ITEM_TRAP) {
+    } else if (ITEM_TYPE(trap) != ITEM_TYPE_TRAP) {
         send_to_char("That's no trap!\n\r", ch);
         return (FALSE);
     }
@@ -515,7 +515,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             /*
              * obj found in inventory
              */
-            if (IS_OBJ_STAT(obj, ITEM_NODROP)) {
+            if (IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
                 send_to_char("You can't steal it, it must be CURSED!\n\r", ch);
                 FreeKeywords(key, TRUE);
                 return;

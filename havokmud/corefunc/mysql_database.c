@@ -354,6 +354,80 @@ QueryTable_t    QueryTable[] = {
 
 };
 
+struct obj_flag_bits {
+    int var;
+    unsigned int set;
+    unsigned int clear;
+};
+
+static struct obj_flag_bits obj_flags[] = {
+    { 0, ITEM_TAKE, 0 },
+    { 0, ITEM_WEAR_FINGER, 0 },
+    { 0, ITEM_WEAR_NECK, 0 },
+    { 0, ITEM_WEAR_BODY, 0 },
+    { 0, ITEM_WEAR_HEAD, 0 },
+    { 0, ITEM_WEAR_LEGS, 0 },
+    { 0, ITEM_WEAR_FEET, 0 },
+    { 0, ITEM_WEAR_HANDS, 0 },
+    { 0, ITEM_WEAR_ARMS, 0 },
+    { 0, ITEM_WEAR_SHIELD, 0 },
+    { 0, ITEM_WEAR_ABOUT, 0 },
+    { 0, ITEM_WEAR_WAISTE, 0 },
+    { 0, ITEM_WEAR_WRIST, 0 },
+    { 0, ITEM_WEAR_BACK, 0 },
+    { 0, ITEM_WEAR_EAR, 0 },
+    { 0, ITEM_WEAR_EYE, 0 },
+    { 0, ITEM_LIGHT_SOURCE, 0 },
+    { 0, ITEM_HOLD, 0 },
+    { 0, ITEM_WIELD, 0 },
+    { 0, ITEM_THROW, 0 },
+    { 1, ITEM_GLOW, 0 },
+    { 1, ITEM_HUM, 0 },
+    { 1, ITEM_METAL, 0 },
+    { 1, ITEM_MINERAL, 0 },
+    { 1, ITEM_ORGANIC, 0 },
+    { 1, ITEM_INVISIBLE, 0 },
+    { 1, ITEM_MAGIC, 0 },
+    { 1, ITEM_NODROP, 0 },
+    { 1, ITEM_BRITTLE, 0 },
+    { 1, ITEM_RESISTANT, 0 },
+    { 1, ITEM_IMMUNE, 0 },
+    { 1, ITEM_RARE, 0 },
+    { 1, ITEM_UBERRARE, 0 },
+    { 1, ITEM_QUEST, 0 },
+    { 2, ITEM_ANTI_SUN, 0 },
+    { 2, ITEM_ANTI_GOOD, 0 },
+    { 2, ITEM_ANTI_EVIL, 0 },
+    { 2, ITEM_ANTI_NEUTRAL, 0 },
+    { 2, ITEM_ANTI_MEN, 0 },
+    { 2, ITEM_ANTI_WOMEN, 0 },
+    { 3, ITEM_ANTI_MAGE | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_CLERIC | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_FIGHTER | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_THIEF | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_DRUID | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_MONK | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_BARBARIAN | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_SORCERER | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_PALADIN | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_RANGER | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_PSI | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_NECROMANCER | ITEM_ONLY_CLASS, 0 },
+    { 3, ITEM_ANTI_MAGE, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_CLERIC, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_FIGHTER, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_THIEF, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_DRUID, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_MONK, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_BARBARIAN, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_SORCERER, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_PALADIN, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_RANGER, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_PSI, ITEM_ONLY_CLASS },
+    { 3, ITEM_ANTI_NECROMANCER, ITEM_ONLY_CLASS }
+};
+static int obj_flag_count = NELEMENTS(obj_flags);
+
 void db_report_entry(int reportId, struct char_data *ch, char *report)
 {
     MYSQL_BIND     *data;
@@ -1129,6 +1203,8 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     char               *temp;
+    unsigned int       *var;
+    int                 value;
 
     mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     pthread_mutex_init( mutex, NULL );
@@ -1211,87 +1287,28 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
     bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
     bind_numeric( &data[2], ownerItem, MYSQL_TYPE_LONG );
-    bind_numeric( &data[3], WEAR_FLAG(obj, ITEM_TAKE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[4], WEAR_FLAG(obj, ITEM_WEAR_FINGER), MYSQL_TYPE_LONG );
-    bind_numeric( &data[5], WEAR_FLAG(obj, ITEM_WEAR_NECK), MYSQL_TYPE_LONG );
-    bind_numeric( &data[6], WEAR_FLAG(obj, ITEM_WEAR_BODY), MYSQL_TYPE_LONG );
-    bind_numeric( &data[7], WEAR_FLAG(obj, ITEM_WEAR_HEAD), MYSQL_TYPE_LONG );
-    bind_numeric( &data[8], WEAR_FLAG(obj, ITEM_WEAR_LEGS), MYSQL_TYPE_LONG );
-    bind_numeric( &data[9], WEAR_FLAG(obj, ITEM_WEAR_FEET), MYSQL_TYPE_LONG );
-    bind_numeric( &data[10], WEAR_FLAG(obj, ITEM_WEAR_HANDS), MYSQL_TYPE_LONG );
-    bind_numeric( &data[11], WEAR_FLAG(obj, ITEM_WEAR_ARMS), MYSQL_TYPE_LONG );
-    bind_numeric( &data[12], WEAR_FLAG(obj, ITEM_WEAR_SHIELD),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[13], WEAR_FLAG(obj, ITEM_WEAR_ABOUT), MYSQL_TYPE_LONG );
-    bind_numeric( &data[14], WEAR_FLAG(obj, ITEM_WEAR_WAISTE),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[15], WEAR_FLAG(obj, ITEM_WEAR_WRIST), MYSQL_TYPE_LONG );
-    bind_numeric( &data[16], WEAR_FLAG(obj, ITEM_WEAR_BACK), MYSQL_TYPE_LONG );
-    bind_numeric( &data[17], WEAR_FLAG(obj, ITEM_WEAR_EAR), MYSQL_TYPE_LONG );
-    bind_numeric( &data[18], WEAR_FLAG(obj, ITEM_WEAR_EYE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[19], WEAR_FLAG(obj, ITEM_LIGHT_SOURCE),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[20], WEAR_FLAG(obj, ITEM_HOLD), MYSQL_TYPE_LONG );
-    bind_numeric( &data[21], WEAR_FLAG(obj, ITEM_WIELD), MYSQL_TYPE_LONG );
-    bind_numeric( &data[22], WEAR_FLAG(obj, ITEM_THROW), MYSQL_TYPE_LONG );
-    bind_numeric( &data[23], EXTRA_FLAG(obj, ITEM_GLOW), MYSQL_TYPE_LONG );
-    bind_numeric( &data[24], EXTRA_FLAG(obj, ITEM_HUM), MYSQL_TYPE_LONG );
-    bind_numeric( &data[25], EXTRA_FLAG(obj, ITEM_METAL), MYSQL_TYPE_LONG );
-    bind_numeric( &data[26], EXTRA_FLAG(obj, ITEM_MINERAL), MYSQL_TYPE_LONG );
-    bind_numeric( &data[27], EXTRA_FLAG(obj, ITEM_ORGANIC), MYSQL_TYPE_LONG );
-    bind_numeric( &data[28], EXTRA_FLAG(obj, ITEM_INVISIBLE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[29], EXTRA_FLAG(obj, ITEM_MAGIC), MYSQL_TYPE_LONG );
-    bind_numeric( &data[30], EXTRA_FLAG(obj, ITEM_NODROP), MYSQL_TYPE_LONG );
-    bind_numeric( &data[31], EXTRA_FLAG(obj, ITEM_BRITTLE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[32], EXTRA_FLAG(obj, ITEM_RESISTANT), MYSQL_TYPE_LONG );
-    bind_numeric( &data[33], EXTRA_FLAG(obj, ITEM_IMMUNE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[34], EXTRA_FLAG(obj, ITEM_RARE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[35], EXTRA_FLAG(obj, ITEM_UNUSED), MYSQL_TYPE_LONG );
-    bind_numeric( &data[36], EXTRA_FLAG(obj, ITEM_QUEST), MYSQL_TYPE_LONG );
-    bind_numeric( &data[37], EXTRA_FLAG(obj, ITEM_ANTI_SUN), MYSQL_TYPE_LONG );
-    bind_numeric( &data[38], EXTRA_FLAG(obj, ITEM_ANTI_GOOD), MYSQL_TYPE_LONG );
-    bind_numeric( &data[39], EXTRA_FLAG(obj, ITEM_ANTI_EVIL), MYSQL_TYPE_LONG );
-    bind_numeric( &data[40], EXTRA_FLAG(obj, ITEM_ANTI_NEUTRAL),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[41], EXTRA_FLAG(obj, ITEM_ANTI_MEN), MYSQL_TYPE_LONG );
-    bind_numeric( &data[42], EXTRA_FLAG(obj, ITEM_ANTI_WOMEN),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[43], ONLY_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[44], ONLY_FLAG(obj, ITEM_ANTI_CLERIC),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[45], ONLY_FLAG(obj, ITEM_ANTI_FIGHTER),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[46], ONLY_FLAG(obj, ITEM_ANTI_THIEF), MYSQL_TYPE_LONG );
-    bind_numeric( &data[47], ONLY_FLAG(obj, ITEM_ANTI_DRUID), MYSQL_TYPE_LONG );
-    bind_numeric( &data[48], ONLY_FLAG(obj, ITEM_ANTI_MONK), MYSQL_TYPE_LONG );
-    bind_numeric( &data[49], ONLY_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[50], ONLY_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[51], ONLY_FLAG(obj, ITEM_ANTI_PALADIN),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[52], ONLY_FLAG(obj, ITEM_ANTI_RANGER),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[53], ONLY_FLAG(obj, ITEM_ANTI_PSI), MYSQL_TYPE_LONG );
-    bind_numeric( &data[54], ONLY_FLAG(obj, ITEM_ANTI_NECROMANCER),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[55], ANTI_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[56], ANTI_FLAG(obj, ITEM_ANTI_CLERIC),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[57], ANTI_FLAG(obj, ITEM_ANTI_FIGHTER),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[58], ANTI_FLAG(obj, ITEM_ANTI_THIEF), MYSQL_TYPE_LONG );
-    bind_numeric( &data[59], ANTI_FLAG(obj, ITEM_ANTI_DRUID), MYSQL_TYPE_LONG );
-    bind_numeric( &data[60], ANTI_FLAG(obj, ITEM_ANTI_MONK), MYSQL_TYPE_LONG );
-    bind_numeric( &data[61], ANTI_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[62], ANTI_FLAG(obj, ITEM_ANTI_MAGE), MYSQL_TYPE_LONG );
-    bind_numeric( &data[63], ANTI_FLAG(obj, ITEM_ANTI_PALADIN),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[64], ANTI_FLAG(obj, ITEM_ANTI_RANGER),
-                  MYSQL_TYPE_LONG );
-    bind_numeric( &data[65], ANTI_FLAG(obj, ITEM_ANTI_PSI), MYSQL_TYPE_LONG );
-    bind_numeric( &data[66], ANTI_FLAG(obj, ITEM_ANTI_NECROMANCER),
-                  MYSQL_TYPE_LONG );
+
+    for( i = 0; i < obj_flag_count; i++ ) {
+        switch( obj_flags[i].var ) {
+        case 0:
+            var = (unsigned int *)&(obj->wear_flags);
+            break;
+        case 2:
+            var = (unsigned int *)&(obj->anti_flags);
+            break;
+        case 3:
+            var = (unsigned int *)&(obj->anti_class);
+            break;
+        default:
+        case 1:
+            var = (unsigned int *)&(obj->extra_flags);
+            break;
+        }
+
+        value = (IS_SET(*var, obj_flags[i].set) && 
+                 !IS_SET(*var, obj_flags[i].clear)) ? 1 : 0;
+        bind_numeric( &data[i+3], value, MYSQL_TYPE_LONG );
+    }
     db_queue_query( 42, QueryTable, data, 67, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
 
@@ -1358,78 +1375,6 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     free( mutex );
 }
 
-struct obj_flag_bits {
-    int var;
-    unsigned int set;
-    unsigned int clear;
-};
-
-struct obj_flag_bits obj_flags[] = {
-    { 0, ITEM_TAKE, 0 },
-    { 0, ITEM_WEAR_FINGER, 0 },
-    { 0, ITEM_WEAR_NECK, 0 },
-    { 0, ITEM_WEAR_BODY, 0 },
-    { 0, ITEM_WEAR_HEAD, 0 },
-    { 0, ITEM_WEAR_LEGS, 0 },
-    { 0, ITEM_WEAR_FEET, 0 },
-    { 0, ITEM_WEAR_HANDS, 0 },
-    { 0, ITEM_WEAR_ARMS, 0 },
-    { 0, ITEM_WEAR_SHIELD, 0 },
-    { 0, ITEM_WEAR_ABOUT, 0 },
-    { 0, ITEM_WEAR_WAISTE, 0 },
-    { 0, ITEM_WEAR_WRIST, 0 },
-    { 0, ITEM_WEAR_BACK, 0 },
-    { 0, ITEM_WEAR_EAR, 0 },
-    { 0, ITEM_WEAR_EYE, 0 },
-    { 0, ITEM_LIGHT_SOURCE, 0 },
-    { 0, ITEM_HOLD, 0 },
-    { 0, ITEM_WIELD, 0 },
-    { 0, ITEM_THROW, 0 },
-    { 1, ITEM_GLOW, 0 },
-    { 1, ITEM_HUM, 0 },
-    { 1, ITEM_METAL, 0 },
-    { 1, ITEM_MINERAL, 0 },
-    { 1, ITEM_ORGANIC, 0 },
-    { 1, ITEM_INVISIBLE, 0 },
-    { 1, ITEM_MAGIC, 0 },
-    { 1, ITEM_NODROP, 0 },
-    { 1, ITEM_BRITTLE, 0 },
-    { 1, ITEM_RESISTANT, 0 },
-    { 1, ITEM_IMMUNE, 0 },
-    { 1, ITEM_RARE, 0 },
-    { 1, ITEM_UNUSED, 0 },
-    { 1, ITEM_QUEST, 0 },
-    { 1, ITEM_ANTI_SUN, 0 },
-    { 1, ITEM_ANTI_GOOD, 0 },
-    { 1, ITEM_ANTI_EVIL, 0 },
-    { 1, ITEM_ANTI_NEUTRAL, 0 },
-    { 1, ITEM_ANTI_MEN, 0 },
-    { 1, ITEM_ANTI_WOMEN, 0 },
-    { 1, ITEM_ANTI_MAGE | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_CLERIC | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_FIGHTER | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_THIEF | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_DRUID | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_MONK | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_BARBARIAN | ITEM_ONLY_CLASS, 0 },
-    { 1, 0, 0 },
-    { 1, ITEM_ANTI_PALADIN | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_RANGER | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_PSI | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_NECROMANCER | ITEM_ONLY_CLASS, 0 },
-    { 1, ITEM_ANTI_MAGE, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_CLERIC, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_FIGHTER, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_THIEF, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_DRUID, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_MONK, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_BARBARIAN, ITEM_ONLY_CLASS },
-    { 1, 0, 0 },
-    { 1, ITEM_ANTI_PALADIN, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_RANGER, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_PSI, ITEM_ONLY_CLASS },
-    { 1, ITEM_ANTI_NECROMANCER, ITEM_ONLY_CLASS }
-};
 
 struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
                                 int ownerItem )
@@ -2894,14 +2839,22 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     obj->wear_flags = 0;
     obj->extra_flags = 0;
+    obj->anti_flags = 0;
+    obj->anti_class = 0;
 
     row = mysql_fetch_row(res);
 
-    for( i = 0; i < 64; i++ ) {
+    for( i = 0; i < obj_flag_count; i++ ) {
         if( *row[i] == '1' ) {
             switch( obj_flags[i].var ) {
             case 0:
                 var = (unsigned int *)&(obj->wear_flags);
+                break;
+            case 2:
+                var = (unsigned int *)&(obj->anti_flags);
+                break;
+            case 3:
+                var = (unsigned int *)&(obj->anti_class);
                 break;
             default:
             case 1:

@@ -309,35 +309,35 @@ struct special_proc_entry {
  * For 'type_flag'
  */
 typedef enum {
-    ITEM_LIGHT = 1,
-    ITEM_SCROLL,
-    ITEM_WAND,
-    ITEM_STAFF,
-    ITEM_WEAPON,
-    ITEM_FIREWEAPON,
-    ITEM_MISSILE,
-    ITEM_TREASURE,
-    ITEM_ARMOR,
-    ITEM_POTION,
-    ITEM_WORN,
-    ITEM_OTHER,
-    ITEM_TRASH,
-    ITEM_TRAP,
-    ITEM_CONTAINER,
-    ITEM_NOTE,
-    ITEM_DRINKCON,
-    ITEM_KEY,
-    ITEM_FOOD,
-    ITEM_MONEY,
-    ITEM_PEN,
-    ITEM_BOAT,
-    ITEM_AUDIO,
-    ITEM_BOARD,
-    ITEM_TREE,
-    ITEM_ROCK,
-    ITEM_PORTAL,
-    ITEM_INSTRUMENT,
-    ITEM_SHIPS_HELM
+    ITEM_TYPE_LIGHT = 1,
+    ITEM_TYPE_SCROLL,
+    ITEM_TYPE_WAND,
+    ITEM_TYPE_STAFF,
+    ITEM_TYPE_WEAPON,
+    ITEM_TYPE_FIREWEAPON,
+    ITEM_TYPE_MISSILE,
+    ITEM_TYPE_TREASURE,
+    ITEM_TYPE_ARMOR,
+    ITEM_TYPE_POTION,
+    ITEM_TYPE_WORN,
+    ITEM_TYPE_OTHER,
+    ITEM_TYPE_TRASH,
+    ITEM_TYPE_TRAP,
+    ITEM_TYPE_CONTAINER,
+    ITEM_TYPE_NOTE,
+    ITEM_TYPE_DRINKCON,
+    ITEM_TYPE_KEY,
+    ITEM_TYPE_FOOD,
+    ITEM_TYPE_MONEY,
+    ITEM_TYPE_PEN,
+    ITEM_TYPE_BOAT,
+    ITEM_TYPE_AUDIO,
+    ITEM_TYPE_BOARD,
+    ITEM_TYPE_TREE,
+    ITEM_TYPE_ROCK,
+    ITEM_TYPE_PORTAL,
+    ITEM_TYPE_INSTRUMENT,
+    ITEM_TYPE_SHIPS_HELM
 } ItemType_t;
 
 /*
@@ -376,30 +376,39 @@ typedef enum {
 #define ITEM_INVISIBLE          BV(5)
 #define ITEM_MAGIC              BV(6)
 #define ITEM_NODROP             BV(7)
-#define ITEM_ANTI_NECROMANCER   BV(8)
-#define ITEM_ANTI_GOOD          BV(9)
-#define ITEM_ANTI_EVIL          BV(10)
-#define ITEM_ANTI_NEUTRAL       BV(11)
-#define ITEM_ANTI_CLERIC        BV(12)
-#define ITEM_ANTI_MAGE          BV(13)
-#define ITEM_ANTI_THIEF         BV(14)
-#define ITEM_ANTI_FIGHTER       BV(15)
-#define ITEM_BRITTLE            BV(16)
-#define ITEM_RESISTANT          BV(17)
-#define ITEM_IMMUNE             BV(18)
-#define ITEM_ANTI_MEN           BV(19)
-#define ITEM_ANTI_WOMEN         BV(20)
-#define ITEM_ANTI_SUN           BV(21)
-#define ITEM_ANTI_BARBARIAN     BV(22)
-#define ITEM_ANTI_RANGER        BV(23)
-#define ITEM_ANTI_PALADIN       BV(24)
-#define ITEM_ANTI_PSI           BV(25)
-#define ITEM_ANTI_MONK          BV(26)
-#define ITEM_ANTI_DRUID         BV(27)
-#define ITEM_ONLY_CLASS         BV(28)
-#define ITEM_UNUSED             BV(29)
-#define ITEM_RARE               BV(30)
-#define ITEM_QUEST              BV(31)
+#define ITEM_BRITTLE            BV(8)
+#define ITEM_RESISTANT          BV(9)
+#define ITEM_IMMUNE             BV(10)
+#define ITEM_RARE               BV(11)
+#define ITEM_UBERRARE           BV(12)
+#define ITEM_QUEST              BV(13)
+
+/*
+ * Bitvector for 'anti_flags'
+ */
+#define ITEM_ANTI_GOOD          BV(0)
+#define ITEM_ANTI_EVIL          BV(1)
+#define ITEM_ANTI_NEUTRAL       BV(2)
+#define ITEM_ANTI_MEN           BV(3)
+#define ITEM_ANTI_WOMEN         BV(4)
+#define ITEM_ANTI_SUN           BV(5)
+
+/*
+ * Bitvector for 'anti_class'
+ */
+#define ITEM_ONLY_CLASS         BV(0)
+#define ITEM_ANTI_MAGE          BV(1)
+#define ITEM_ANTI_CLERIC        BV(2)
+#define ITEM_ANTI_FIGHTER       BV(3)
+#define ITEM_ANTI_THIEF         BV(4)
+#define ITEM_ANTI_DRUID         BV(5)
+#define ITEM_ANTI_MONK          BV(6)
+#define ITEM_ANTI_BARBARIAN     BV(7)
+#define ITEM_ANTI_SORCERER      BV(8)
+#define ITEM_ANTI_PALADIN       BV(9)
+#define ITEM_ANTI_RANGER        BV(10)
+#define ITEM_ANTI_PSI           BV(11)
+#define ITEM_ANTI_NECROMANCER   BV(12)
 
 /*
  * Some different kind of liquids
@@ -497,25 +506,27 @@ struct obj_data {
 
     int             value[4];       /**< Values of the item (see list) */
     ItemType_t      type_flag;      /**< Type of item */
+
     long            wear_flags;     /**< Where you can wear it */
     long            extra_flags;    /**< If it hums, glows etc */
+    long            anti_flags;     /**< Which things the item is anti */
+    long            anti_class;     /**< Which class(es) the item is anti */
+
     int             weight;         /**< Weight of the item */
     int             cost;           /**< Value when sold (gp.) */
     int             cost_per_day;   /**< Cost to keep per real day */
     int             timer;          /**< Timer for object */
-    long            bitvector;      /**< To set chars bits */
 
+    long            bitvector;      /**< To set chars bits */
     struct obj_affected_type
                     affected[MAX_OBJ_AFFECT];   /**< Which abilities in PC
                                                  * to change */
 
-    sh_int          sector;             /**< for large rooms */
+    int             sector;             /**< for large rooms */
     int             char_vnum;          /**< for ressurection */
     long            char_f_pos;         /**< for ressurection */
+
     Keywords_t      keywords;           /**< Keywords used by get, etc. */
-#if 0
-    char           *name;               /**< Title of object :get etc.  */
-#endif
     char           *description;        /**< When in room */
     char           *short_description;  /**< when worn/carry/in cont.  */
     char           *action_description; /**< What to write when used */
@@ -524,18 +535,16 @@ struct obj_data {
     int             ex_description_count;   /**< count of extra descriptions */
 
     struct char_data *carried_by;       /**< Carried by :NULL in room/conta */
-    byte            eq_pos;             /**< what is the equip. pos? */
+    int             eq_pos;             /**< what is the equip. pos? */
     struct char_data *equipped_by;      /**< equipped by :NULL in room/conta */
     struct obj_data *in_obj;            /**< In what object NULL when none */
     struct obj_data *contains;          /**< Contains objects */
     struct obj_data *next_content;      /**< For 'contains' lists */
     struct obj_data *next;              /**< For the object list */
-    Keywords_t      old_keywords;       /**< For Behead */
-#if 0
-    char           *old_name;           /**< For Behead */
-#endif
+
     int             is_corpse;          /**< For Behead */
     int             beheaded_corpse;    /**< For Behead */
+
     int             level;              /**< Level ego of the item */
     int             max;                /**< max of the object */
     int             speed;              /**< Speed of the weapon */

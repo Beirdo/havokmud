@@ -53,7 +53,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
             obj_from_room(obj_object);
             obj_to_char(obj_object, ch);
         }
-        if ((obj_object->type_flag == ITEM_MONEY) &&
+        if ((obj_object->type_flag == ITEM_TYPE_MONEY) &&
             (obj_object->value[0] >= 1)) {
             obj_from_char(obj_object);
             /*
@@ -294,7 +294,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         has = FALSE;
         sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
         if (sub_object) {
-            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+            if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
                 if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
                     has = TRUE;
                 }
@@ -366,7 +366,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         has = FALSE;
         sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
         if (sub_object) {
-            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+            if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
                 if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying)))
                     has = TRUE;
                 if (getall(arg1, newarg) == TRUE) {
@@ -490,7 +490,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         for (tmp_object = ch->carrying;
              tmp_object; tmp_object = next_obj) {
             next_obj = tmp_object->next_content;
-            if (!IS_SET(tmp_object->extra_flags, ITEM_NODROP)) {
+            if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 obj_from_char(tmp_object);
                 obj_to_room(tmp_object, ch->in_room);
                 check_falling_obj(tmp_object, ch->in_room);
@@ -531,7 +531,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     while (num != 0) {
         tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
         if (tmp_object) {
-            if (!IS_SET(tmp_object->extra_flags, ITEM_NODROP)) {
+            if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 oldSendOutput(ch, "You drop %s.\n\r",
                               tmp_object->short_description);
                 act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
@@ -612,8 +612,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                     for (tmp_object = ch->carrying; tmp_object;
                          tmp_object = next_object) {
                         next_object = tmp_object->next_content;
-                        if (IS_SET(tmp_object->extra_flags,
-                                   ITEM_NODROP)) {
+                        if (IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                             oldSendOutput(ch, "%s : CURSED!\n\r",
                                           tmp_object->short_description);
                         } else if (tmp_object != sub_object) {
@@ -645,7 +644,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                     bits = generic_find(arg1, FIND_OBJ_INV, ch, &tmp_char,
                                         &obj_object);
                     if (obj_object) {
-                        if (IS_OBJ_STAT(obj_object, ITEM_NODROP)) {
+                        if (IS_OBJ_STAT(obj_object, extra_flags, ITEM_NODROP)) {
                             if (singular(obj_object)) {
                                 send_to_char("You can't let go of it, it must "
                                              "be CURSED!\n\r", ch);
@@ -658,7 +657,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,
                                             ch, &tmp_char, &sub_object);
                         if (sub_object) {
-                            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+                            if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
                                 if (!IS_SET(sub_object->value[1],
                                             CONT_CLOSED)) {
                                     if (obj_object == sub_object) {
@@ -880,7 +879,8 @@ void do_give(struct char_data *ch, char *argument, int cmd)
                 }
             }
 
-            if ((IS_OBJ_STAT(obj, ITEM_NODROP)) && (!IS_IMMORTAL(ch))) {
+            if (IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP) && 
+                !IS_IMMORTAL(ch)) {
                 if (singular(obj)) {
                     oldSendOutput(ch, "You can't let go of %s, it must be "
                                   "CURSED!\r", obj->short_description);
@@ -933,7 +933,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
             for (tmp_object = ch->carrying;
                  tmp_object; tmp_object = next_obj) {
                 next_obj = tmp_object->next_content;
-                if (!IS_SET(tmp_object->extra_flags, ITEM_NODROP)) {
+                if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                     obj_from_char(tmp_object);
                     obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
                                 donations1 : donations2);
@@ -980,8 +980,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
         while (num != 0) {
             tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
             if (tmp_object) {
-                if (!IS_SET
-                    (tmp_object->extra_flags, ITEM_NODROP)) {
+                if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                     oldSendOutput(ch, "%s disappears from your hands! A "
                                   "small voice says: 'Thank you'.\n\r",
                                   tmp_object->short_description);

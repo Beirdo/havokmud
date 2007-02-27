@@ -17,18 +17,13 @@
 
 #define FALSE 0
 
-#define WEAR_FLAG(o,f)  (IS_SET(o->wear_flags, f) != 0)
-#define EXTRA_FLAG(o,f) (IS_SET(o->extra_flags, f) != 0)
-#define ONLY_FLAG(o,f)  (EXTRA_FLAG(o, f) && EXTRA_FLAG(o, ITEM_ONLY_CLASS))
-#define ANTI_FLAG(o,f)  (EXTRA_FLAG(o, f) && !EXTRA_FLAG(o, ITEM_ONLY_CLASS))
-
 #define LOWER(c) (((c)>='A'  && (c) <= 'Z') ? ((c)+('a'-'A')) : (c))
 
 #define UPPER(c) (((c)>='a'  && (c) <= 'z') ? ((c)+('A'-'a')) : (c) )
 
 #define ISNEWL(ch) ((ch) == '\n' || (ch) == '\r')
 
-#define IS_WEAPON(o) (o->type_flag == ITEM_WEAPON)
+#define IS_WEAPON(o) (o->type_flag == ITEM_TYPE_WEAPON)
 
 #define IS_RARE(obj) (IS_SET(obj->extra_flags, ITEM_RARE))
 
@@ -45,10 +40,6 @@
   if (!((result) = (type *) realloc ((result), sizeof(type) * (number))))\
                 { perror("realloc failure"); abort(); } \
                 } while(0)
-
-#ifndef IS_SET
-#define IS_SET(flag,bit)  ((flag) & (bit))
-#endif
 
 #define SWITCH(a,b) { (a) ^= (b); \
                       (b) ^= (a); \
@@ -233,8 +224,6 @@
  * Object And Carry related macros 
  */
 
-#define GET_ITEM_TYPE(obj) ((obj)->type_flag)
-
 #define GET_XCOORD(obj)  ((obj)->value[0])
 #define GET_YCOORD(obj)  ((obj)->value[1])
 
@@ -257,8 +246,6 @@
 #define CAN_GET_OBJ(ch, obj)   \
    (CAN_WEAR((obj), ITEM_TAKE) && CAN_CARRY_OBJ((ch),(obj)) &&          \
     CAN_SEE_OBJ((ch),(obj)))
-
-#define IS_OBJ_STAT(obj,stat) (IS_SET((obj)->extra_flags,stat))
 
 /*
  * char name/short_desc(for mobs) or someone? 
@@ -287,7 +274,7 @@
                        (mob_index[ch->nr].virtual == 3069) || \
                        (mob_index[ch->nr].virtual == 3067))
 
-#define IS_CORPSE(obj) (GET_ITEM_TYPE((obj))==ITEM_CONTAINER && \
+#define IS_CORPSE(obj) (ITEM_TYPE((obj))==ITEM_TYPE_CONTAINER && \
                         (obj)->value[3] && \
                         KeywordsMatch(&keyCorpse, &(obj)->keywords))
 

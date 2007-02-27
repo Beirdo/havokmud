@@ -58,169 +58,7 @@ void cast_aid(int level, struct char_data *ch, char *arg,
         break;
     }
 }
-#if 0
-void spell_animate_dead(int level, struct char_data *ch,
-                        struct char_data *victim, struct obj_data *corpse)
-{
-    struct char_data *mob;
-    struct obj_data *obj_object,
-                   *next_obj;
-    char            buf[MAX_STRING_LENGTH];
-    int             r_num = 100;
 
-    if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER ||
-        !corpse->value[3]) {
-        send_to_char("The magic fails abruptly!\n\r", ch);
-        return;
-    }
-
-    mob = read_mobile(r_num, VIRTUAL);
-    char_to_room(mob, ch->in_room);
-
-    act("With mystic power, $n animates a corpse.", TRUE, ch, 0, 0, TO_ROOM);
-    act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_ROOM);
-    act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_CHAR);
-
-    if (too_many_followers(ch)) {
-        act("$N takes one look at the size of your posse and just says no!",
-            TRUE, ch, 0, mob, TO_CHAR);
-        act("You take one look at the size of $n's posse and just say no!",
-            TRUE, ch, 0, mob, TO_ROOM);
-    } else {
-        SET_BIT(mob->specials.affected_by, AFF_CHARM);
-        add_follower(mob, ch);
-    }
-
-    GET_EXP(mob) = 0;
-    IS_CARRYING_W(mob) = 0;
-    IS_CARRYING_N(mob) = 0;
-
-
-    for (obj_object = corpse->contains; obj_object; obj_object = next_obj) {
-        next_obj = obj_object->next_content;
-        obj_from_obj(obj_object);
-        obj_to_char(obj_object, mob);
-    }
-    sprintf(buf, "%s is here, slowly animating\n\r", corpse->short_description);
-    mob->player.long_descr = (char *) strdup(buf);
-    
-    mob->points.max_hit = dice(MAX(level / 2, 5), 8);
-    mob->points.hit = mob->points.max_hit / 2;
-    mob->player.sex = 0;
-    GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
-    mob->player.class = ch->player.class;
-    
-    extract_obj(corpse);
-}
-
-void cast_animate_dead(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj)
-{
-
-    struct obj_data *i;
-
-    if (NoSummon(ch)) {
-        return;
-    }
-    switch (type) {
-
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-        if (tar_obj) {
-            if (IS_CORPSE(tar_obj)) {
-                spell_animate_dead(level, ch, 0, tar_obj);
-            } else {
-                send_to_char("That's not a corpse!\n\r", ch);
-                return;
-            }
-        } else {
-            send_to_char("That isn't a corpse!\n\r", ch);
-            return;
-        }
-        break;
-    case SPELL_TYPE_POTION:
-        send_to_char("Your body revolts against the magic liquid.\n\r", ch);
-        ch->points.hit = 0;
-        break;
-    case SPELL_TYPE_STAFF:
-        for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->value[3]) {
-                spell_animate_dead(level, ch, 0, i);
-            }
-        }
-        break;
-    default:
-        Log("Serious screw-up in animate_dead!");
-        break;
-    }
-}
-#endif
-#if 0
-void spell_armor(int level, struct char_data *ch,
-                 struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    assert(victim);
-    if (level < 0 || level > ABS_MAX_LVL) {
-        return;
-    }
-    if (!affected_by_spell(victim, SPELL_ARMOR)) {
-        af.type = SPELL_ARMOR;
-        af.duration = 24;
-        af.modifier = -20;
-        af.location = APPLY_AC;
-        af.bitvector = 0;
-
-        affect_to_char(victim, &af);
-        send_to_char("You feel someone protecting you.\n\r", victim);
-    } else {
-        send_to_char("Nothing new seems to happen\n\r", ch);
-    }
-}
-
-void cast_armor(int level, struct char_data *ch, char *arg, int type,
-                struct char_data *tar_ch, struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-        if (affected_by_spell(tar_ch, SPELL_ARMOR)) {
-            send_to_char("Nothing seems to happen.\n\r", ch);
-            return;
-        }
-        if (ch != tar_ch) {
-            act("$N is protected.", FALSE, ch, 0, tar_ch, TO_CHAR);
-        }
-        spell_armor(level, ch, tar_ch, 0);
-        break;
-    case SPELL_TYPE_POTION:
-        if (affected_by_spell(ch, SPELL_ARMOR)) {
-            return;
-        }
-        spell_armor(level, ch, ch, 0);
-        break;
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:    
-        if (tar_obj) {
-            return;
-        }
-        if (!tar_ch) {
-            tar_ch = ch;
-        }
-        if (affected_by_spell(tar_ch, SPELL_ARMOR)) {
-            return;
-        }
-        spell_armor(level, ch, ch, 0);
-        break;
-    default:
-        Log("Error in cast_armor()");
-        break;
-    }
-}
-#endif
 #define ASTRAL_ENTRANCE 2701
 void spell_astral_walk(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
@@ -893,7 +731,7 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->description = (char *)strdup("A really delicious looking magic"
                                           " mushroom lies here.");
 
-    tmp_obj->type_flag = ITEM_FOOD;
+    tmp_obj->type_flag = ITEM_TYPE_FOOD;
     tmp_obj->wear_flags = ITEM_TAKE | ITEM_HOLD;
     tmp_obj->value[0] = 5 + level;
     tmp_obj->weight = 1;
@@ -999,7 +837,7 @@ void spell_create_water(int level, struct char_data *ch,
 
     assert(ch && obj);
 
-    if (GET_ITEM_TYPE(obj) == ITEM_DRINKCON) {
+    if (GET_ITEM_TYPE(obj) == ITEM_TYPE_DRINKCON) {
 	if (obj->value[2] != LIQ_WATER &&
 	    obj->value[1] != 0) {
 
@@ -1031,7 +869,7 @@ void cast_create_water(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
-        if (tar_obj->type_flag != ITEM_DRINKCON) {
+        if (tar_obj->type_flag != ITEM_TYPE_DRINKCON) {
             send_to_char("It is unable to hold water.\n\r", ch);
             return;
         }
@@ -1100,7 +938,7 @@ void spell_curse(int level, struct char_data *ch,
         return;
     }
     if (obj) {
-        SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD);
+        SET_BIT(obj->anti_flags, ITEM_ANTI_GOOD);
         SET_BIT(obj->extra_flags, ITEM_NODROP);
 
         /*
@@ -1597,38 +1435,38 @@ void spell_golem(int level, struct char_data *ch,
         return;
     }
     for (o = rp->contents; o; o = o->next_content) {
-        if (ITEM_TYPE(o) == ITEM_ARMOR) {
-            if (IS_SET(o->wear_flags, ITEM_WEAR_HEAD) && !helm) {
+        if (ITEM_TYPE(o) == ITEM_TYPE_ARMOR) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_HEAD) && !helm) {
                 count++;
                 helm = o;
                 continue;
             }
 
-            if (IS_SET(o->wear_flags, ITEM_WEAR_FEET) && !boots) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_FEET) && !boots) {
                 count++;
                 boots = o;
                 continue;
             }
 
-            if (IS_SET(o->wear_flags, ITEM_WEAR_BODY) && !jacket) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_BODY) && !jacket) {
                 count++;
                 jacket = o;
                 continue;
             }
 
-            if (IS_SET(o->wear_flags, ITEM_WEAR_LEGS) && !leggings) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_LEGS) && !leggings) {
                 count++;
                 leggings = o;
                 continue;
             }
 
-            if (IS_SET(o->wear_flags, ITEM_WEAR_ARMS) && !sleeves) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_ARMS) && !sleeves) {
                 count++;
                 sleeves = o;
                 continue;
             }
 
-            if (IS_SET(o->wear_flags, ITEM_WEAR_HANDS) && !gloves) {
+            if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_HANDS) && !gloves) {
                 count++;
                 gloves = o;
                 continue;
@@ -1966,7 +1804,7 @@ void spell_identify(int level, struct char_data *ch,
 
         sprintf(buf, "%sObject '%s%s%s', Item type: %s", color1, color2,
                 obj->name, color1, color2);
-        sprinttype(GET_ITEM_TYPE(obj), item_types, buf2);
+        sprinttype(ITEM_TYPE(obj), item_types, buf2);
         strcat(buf, buf2);
         if (IS_WEAPON(obj)) {
             if (IS_IMMORTAL(ch)) {
@@ -2050,10 +1888,10 @@ void spell_identify(int level, struct char_data *ch,
         strcat(buf2, "\n\r");
         send_to_char(buf2, ch);
 
-        switch (GET_ITEM_TYPE(obj)) {
+        switch (ITEM_TYPE(obj)) {
 
-        case ITEM_SCROLL:
-        case ITEM_POTION:
+        case ITEM_TYPE_SCROLL:
+        case ITEM_TYPE_POTION:
             sprintf(buf, "%sLevel %s%d%s spells of:\n\r", color1, color2,
                     obj->value[0], color1);
             send_to_char(buf, ch);
@@ -2068,8 +1906,8 @@ void spell_identify(int level, struct char_data *ch,
             }
             break;
 
-        case ITEM_WAND:
-        case ITEM_STAFF:
+        case ITEM_TYPE_WAND:
+        case ITEM_TYPE_STAFF:
             sprintf(buf, "%sCosts %s%d%s mana to use, with %s%d%s charges "
                          "left.\n\r",
                     color1, color2, obj->value[1], color1,
@@ -2087,7 +1925,7 @@ void spell_identify(int level, struct char_data *ch,
             }
             break;
 
-        case ITEM_WEAPON:
+        case ITEM_TYPE_WEAPON:
             sprintf(buf, "%sDamage Dice is '%s%dD%d%s' [%s%s%s] [%s%s%s]\n\r",
                     color1, color2, obj->value[1],
                     obj->value[2], color1, color2,
@@ -2096,7 +1934,7 @@ void spell_identify(int level, struct char_data *ch,
             send_to_char(buf, ch);
             break;
 
-        case ITEM_ARMOR:
+        case ITEM_TYPE_ARMOR:
             sprintf(buf, "%sAC-apply is: %s%d%s,   Size of armor is: %s%s\n\r",
                     color1, color2, obj->value[0], color1,
                     color2, ArmorSize(obj->value[2]));
@@ -2347,7 +2185,7 @@ void spell_locate_object(int level, struct char_data *ch,
     buf[0] = '\0';
 
     for (i = object_list; i && (j > 0); i = i->next) {
-        if ( !IS_SET(i->extra_flags, ITEM_QUEST) && 
+        if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) && 
              KeywordsMatch(key, &i->keywords) ) {
             /*
              * we found at least one item
@@ -2778,7 +2616,7 @@ void spell_remove_curse(int level, struct char_data *ch,
     assert(ch && (victim || obj));
 
     if (obj) {
-        if (IS_SET(obj->extra_flags, ITEM_NODROP)) {
+        if (IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
             act("$p briefly glows blue.", TRUE, ch, obj, 0, TO_CHAR);
             act("$p, held by $n, briefly glows blue.", TRUE, ch, obj, 0,
                 TO_ROOM);
@@ -2800,8 +2638,8 @@ void spell_remove_curse(int level, struct char_data *ch,
             i = 0;
             do {
                 if (victim->equipment[i] &&
-                    IS_SET(victim->equipment[i]->extra_flags,
-                           ITEM_NODROP)) {
+                    IS_OBJ_STAT(victim->equipment[i], extra_flags,
+                                ITEM_NODROP)) {
                     spell_remove_curse(level, victim, NULL,
                                        victim->equipment[i]);
                     found = TRUE;

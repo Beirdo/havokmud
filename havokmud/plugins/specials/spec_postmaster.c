@@ -201,7 +201,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
         tmp_obj->short_description = strdup("a piece of mail");
         tmp_obj->description = strdup("Someone has left a piece of mail here.");
 
-        tmp_obj->type_flag = ITEM_NOTE;
+        tmp_obj->type_flag = ITEM_TYPE_NOTE;
         tmp_obj->wear_flags = ITEM_TAKE | ITEM_HOLD;
         tmp_obj->weight = 1;
         tmp_obj->cost = 30;

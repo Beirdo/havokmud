@@ -21,7 +21,7 @@ void spell_animate_rock(int level, struct char_data *ch,
     struct affected_type af;
     int             mobn = LITTLE_ROCK;
 
-    if (ITEM_TYPE(obj) != ITEM_ROCK) {
+    if (ITEM_TYPE(obj) != ITEM_TYPE_ROCK) {
         send_to_char("Thats not the right kind of rock\n\r", ch);
         return;
     }
@@ -336,7 +336,7 @@ void spell_changestaff(int level, struct char_data *ch,
     }
 
     s = unequip_char(ch, HOLD);
-    if (ITEM_TYPE(s) != ITEM_STAFF) {
+    if (ITEM_TYPE(s) != ITEM_TYPE_STAFF) {
         act("$p is not sufficient to complete this spell",
             FALSE, ch, s, 0, TO_CHAR);
         extract_obj(s);
@@ -1131,7 +1131,7 @@ void spell_flame_blade(int level, struct char_data *ch,
     StringToKeywords( "blade flame", &tmp_obj->keywords );
     tmp_obj->short_description = strdup("a flame blade");
     tmp_obj->description = strdup("A flame blade burns brightly here.");
-    tmp_obj->type_flag = ITEM_WEAPON;
+    tmp_obj->type_flag = ITEM_TYPE_WEAPON;
     tmp_obj->wear_flags = ITEM_TAKE | ITEM_WIELD;
     tmp_obj->value[0] = 0;
     tmp_obj->value[1] = 1;
@@ -1210,7 +1210,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
             for (j = 0; j < MAX_WEAR; j++) {
                 if (ch->equipment[j]) {
                     obj = ch->equipment[j];
-                    if (IS_OBJ_STAT(obj, ITEM_METAL)) {
+                    if (IS_OBJ_STAT(obj, extra_flags, ITEM_METAL)) {
                         act("$p glows brightly from the heat, and you quickly"
                             " let go of it!", FALSE, ch, obj, 0, TO_CHAR);
                         act("$p turns so hot that $n is forced to let go of "
@@ -1251,7 +1251,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
             for (j = 0; j < MAX_WEAR; j++) {
                 if (victim->equipment[j]) {
                     obj = victim->equipment[j];
-                    if (IS_OBJ_STAT(obj, ITEM_METAL)) {
+                    if (IS_OBJ_STAT(obj, extra_flags, ITEM_METAL)) {
                         act("$p glows brightly from the heat, and you quickly"
                             " let go of it!", FALSE, victim, obj, 0, TO_CHAR);
                         act("$p turns so hot that $n is forced to let go of "
@@ -1429,7 +1429,7 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     rp = real_roomp(ch->in_room);
     for (o = rp->contents; o; o = o->next_content) {
-        if (ITEM_TYPE(o) == ITEM_TREE) {
+        if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
         }
     }
@@ -1445,7 +1445,8 @@ void spell_plant_gate(int level, struct char_data *ch,
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if (ITEM_TYPE(i) == ITEM_TREE && KeywordsMatch(key, &i->keywords)) {
+        if (ITEM_TYPE(i) == ITEM_TYPE_TREE && 
+            KeywordsMatch(key, &i->keywords)) {
             /*
              * we found a druid tree with the right name
              */
@@ -1715,8 +1716,8 @@ void spell_shillelagh(int level, struct char_data *ch,
         return;
     }
 
-    if ((GET_ITEM_TYPE(obj) == ITEM_WEAPON) &&
-        !IS_SET(obj->extra_flags, ITEM_MAGIC)) {
+    if ((ITEM_TYPE(obj) == ITEM_TYPE_WEAPON) &&
+        !IS_OBJ_STAT(obj, extra_flags, ITEM_MAGIC)) {
 
         key = StringToKeywords( "club", NULL );
         if (!KeywordsMatch(key, &obj->keywords)) {
@@ -1749,7 +1750,7 @@ void spell_shillelagh(int level, struct char_data *ch,
         obj->value[1] = 2;
         obj->value[2] = 4;
         act("$p glows yellow.", FALSE, ch, obj, 0, TO_CHAR);
-        SET_BIT(obj->extra_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
+        SET_BIT(obj->anti_flags, ITEM_ANTI_GOOD | ITEM_ANTI_EVIL);
     }
 }
 
@@ -1779,7 +1780,7 @@ void spell_speak_with_plants(int level, struct char_data *ch,
 
     assert(ch && obj);
 
-    if (ITEM_TYPE(obj) != ITEM_TREE) {
+    if (ITEM_TYPE(obj) != ITEM_TYPE_TREE) {
         send_to_char("Sorry, you can't talk to that sort of thing\n\r", ch);
         return;
     }
@@ -1833,7 +1834,8 @@ void spell_sunray(int level, struct char_data *ch,
             if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
                 for (j = 0; j <= (MAX_WEAR - 1); j++) {
                     if (t->equipment[j] && t->equipment[j]->item_number >= 0 &&
-                        IS_SET(t->equipment[j]->extra_flags, ITEM_ANTI_SUN)) {
+                        IS_OBJ_STAT(t->equipment[j], anti_flags, 
+                                    ITEM_ANTI_SUN)) {
                         obj = t->equipment[j];
                         act("$n's sunray strikes your $p, causing it to fall "
                             "apart!", FALSE, ch, 0, 0, TO_VICT);
@@ -1895,7 +1897,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
      */
     rp = real_roomp(ch->in_room);
     for (o = rp->contents; o; o = o->next_content) {
-        if (ITEM_TYPE(o) == ITEM_TREE) {
+        if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
         }
     }
@@ -1911,7 +1913,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
-        if ( ITEM_TYPE(i) == ITEM_TREE && KeywordsMatch(key, &i->keywords) ) {
+        if ( ITEM_TYPE(i) == ITEM_TYPE_TREE && 
+             KeywordsMatch(key, &i->keywords) ) {
             /*
              * we found a druid tree with the right name
              */

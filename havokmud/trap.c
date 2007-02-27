@@ -33,7 +33,7 @@ int CheckForMoveTrap(struct char_data *ch, int dir)
     struct obj_data *i;
 
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (ITEM_TYPE(i) == ITEM_TRAP && GET_TRAP_CHARGES(i) > 0 &&
+        if (ITEM_TYPE(i) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(i) > 0 &&
             IS_SET(GET_TRAP_EFF(i), direction[dir].trap) &&
             IS_SET(GET_TRAP_EFF(i), TRAP_EFF_MOVE)) {
             return (TriggerTrap(ch, i));
@@ -47,7 +47,7 @@ int CheckForInsideTrap(struct char_data *ch, struct obj_data *i)
     struct obj_data *t;
 
     for (t = i->contains; t; t = t->next_content) {
-        if (ITEM_TYPE(t) == ITEM_TRAP && GET_TRAP_CHARGES(t) > 0 &&
+        if (ITEM_TYPE(t) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(t) > 0 &&
             IS_SET(GET_TRAP_EFF(t), TRAP_EFF_OBJECT)) {
             return (TriggerTrap(ch, t));
         }
@@ -57,7 +57,7 @@ int CheckForInsideTrap(struct char_data *ch, struct obj_data *i)
 
 int CheckForAnyTrap(struct char_data *ch, struct obj_data *i)
 {
-    if ((ITEM_TYPE(i) == ITEM_TRAP) && (GET_TRAP_CHARGES(i) > 0)) {
+    if ((ITEM_TYPE(i) == ITEM_TYPE_TRAP) && (GET_TRAP_CHARGES(i) > 0)) {
         return (TriggerTrap(ch, i));
     }
     return (FALSE);
@@ -65,7 +65,7 @@ int CheckForAnyTrap(struct char_data *ch, struct obj_data *i)
 
 int CheckForGetTrap(struct char_data *ch, struct obj_data *i)
 {
-    if (ITEM_TYPE(i) == ITEM_TRAP &&
+    if (ITEM_TYPE(i) == ITEM_TYPE_TRAP &&
         GET_TRAP_CHARGES(i) > 0 &&
         IS_SET(GET_TRAP_EFF(i), TRAP_EFF_OBJECT)) {
         return (TriggerTrap(ch, i));
@@ -77,7 +77,7 @@ int TriggerTrap(struct char_data *ch, struct obj_data *i)
 {
     struct char_data *v;
 
-    if (ITEM_TYPE(i) == ITEM_TRAP && i->value[TRAP_CHARGES]) {
+    if (ITEM_TYPE(i) == ITEM_TYPE_TRAP && i->value[TRAP_CHARGES]) {
         act("You hear a strange noise...", TRUE, ch, 0, 0, TO_ROOM);
         act("You hear a strange noise...", TRUE, ch, 0, 0, TO_CHAR);
         GET_TRAP_CHARGES(i) -= 1;

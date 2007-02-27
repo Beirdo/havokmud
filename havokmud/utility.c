@@ -64,47 +64,51 @@ int EgoBladeSave(struct char_data *ch)
 int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
 {
     if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER)) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_MAGE)) {
+        return (FALSE);
+    }
+    if (HasClass(ch, CLASS_SORCERER) &&
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_SORCERER)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_THIEF) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_THIEF)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_THIEF)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_WARRIOR) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_FIGHTER)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_FIGHTER)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_CLERIC) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_CLERIC)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_CLERIC)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_BARBARIAN) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_BARBARIAN)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_BARBARIAN)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_RANGER) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_RANGER)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_RANGER)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_PALADIN) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_PALADIN)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_PALADIN)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_PSI) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_PSI)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_PSI)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_MONK) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_MONK)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_MONK)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_DRUID) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_DRUID)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_DRUID)) {
         return (FALSE);
     }
     if (HasClass(ch, CLASS_NECROMANCER) &&
-        !IS_SET(obj->extra_flags, ITEM_ANTI_NECROMANCER)) {
+        !IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_NECROMANCER)) {
         return (FALSE);
     }
     return (TRUE);
@@ -114,52 +118,53 @@ int GetItemClassRestrictions(struct obj_data *obj)
 {
     int             total = 0;
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
-        total += CLASS_SORCERER;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_SORCERER)) {
+        total |= CLASS_SORCERER;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_MAGE)) {
-        total += CLASS_MAGIC_USER;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_MAGE)) {
+        total |= CLASS_MAGIC_USER;
+        total |= CLASS_SORCERER;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_THIEF)) {
-        total += CLASS_THIEF;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_THIEF)) {
+        total |= CLASS_THIEF;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_FIGHTER)) {
-        total += CLASS_WARRIOR;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_FIGHTER)) {
+        total |= CLASS_WARRIOR;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_CLERIC)) {
-        total += CLASS_CLERIC;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_CLERIC)) {
+        total |= CLASS_CLERIC;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_BARBARIAN)) {
-        total += CLASS_BARBARIAN;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_BARBARIAN)) {
+        total |= CLASS_BARBARIAN;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_RANGER)) {
-        total += CLASS_RANGER;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_RANGER)) {
+        total |= CLASS_RANGER;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_PALADIN)) {
-        total += CLASS_PALADIN;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_PALADIN)) {
+        total |= CLASS_PALADIN;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_PSI)) {
-        total += CLASS_PSI;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_PSI)) {
+        total |= CLASS_PSI;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_MONK)) {
-        total += CLASS_MONK;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_MONK)) {
+        total |= CLASS_MONK;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_DRUID)) {
-        total += CLASS_DRUID;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_DRUID)) {
+        total |= CLASS_DRUID;
     }
 
-    if (IS_SET(obj->extra_flags, ITEM_ANTI_NECROMANCER)) {
-        total += CLASS_NECROMANCER;
+    if (IS_OBJ_STAT(obj, anti_class, ITEM_ANTI_NECROMANCER)) {
+        total |= CLASS_NECROMANCER;
     }
 
     return (total);
@@ -262,7 +267,7 @@ void RecZwriteObj(FILE * fp, struct obj_data *o)
     struct obj_data *t;
     struct index_data *index;
 
-    if (ITEM_TYPE(o) == ITEM_CONTAINER) {
+    if (ITEM_TYPE(o) == ITEM_TYPE_CONTAINER) {
         for (t = o->contains; t; t = t->next_content) {
             Zwrite(fp, 'P', 1, t->item_number, t->index->number, o->item_number,
                    t->short_description);
@@ -490,8 +495,8 @@ void CleanZone(int zone)
              * scavenge quest is going on. Maybe make a SYS_NODEINIT? Hard
              * to use for small imms. -Lennya
              */
-            if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TREE &&
-                !IS_SET(obj->extra_flags, ITEM_QUEST)) {
+            if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TYPE_TREE &&
+                !IS_OBJ_STAT(obj, extra_flags, ITEM_QUEST)) {
                 extract_obj(obj);
             }
         }
@@ -3007,7 +3012,7 @@ int RecCompObjNum(struct obj_data *o, int obj_num)
     if (o->item_number == obj_num) {
         total = 1;
     }
-    if (ITEM_TYPE(o) == ITEM_CONTAINER) {
+    if (ITEM_TYPE(o) == ITEM_TYPE_CONTAINER) {
         for (i = o->contains; i; i = i->next_content) {
             total += RecCompObjNum(i, obj_num);
         }
@@ -3291,7 +3296,7 @@ void DarknessPulseStuff(int pulse)
                  * scrap antisun before doing the darkness check
                  */
                 if (ch->equipment[j] && ch->equipment[j]->item_number >= 0 &&
-                    IS_SET(ch->equipment[j]->extra_flags, ITEM_ANTI_SUN)) {
+                    IS_OBJ_STAT(ch->equipment[j], anti_flags, ITEM_ANTI_SUN)) {
                     AntiSunItem(ch, 0, 0, ch->equipment[j], PULSE_COMMAND);
                 }
             }
@@ -3850,6 +3855,10 @@ int CountLims(struct obj_data *obj)
     return (total);
 }
 
+/**
+ * @todo rewrite this crap to be iterative.  No need to recurse on a linked
+ *       list!
+ */
 struct obj_data *find_a_rare(struct obj_data *obj)
 {
     struct obj_data *rare;
@@ -3884,10 +3893,7 @@ struct obj_data *find_a_rare(struct obj_data *obj)
         }
     }
 
-    return (0);
-    /*
-     * no rares found
-     */
+    return (NULL);
 }
 
 void CheckLegendStatus(struct char_data *ch)
@@ -4605,42 +4611,6 @@ void FallOffMount(struct char_data *ch, struct char_data *h)
     act("You lose control and fall off of $N", FALSE, ch, 0, h, TO_CHAR);
 }
 
-int EqWBits(struct char_data *ch, int bits)
-{
-    int             i;
-
-    for (i = 0; i < MAX_WEAR; i++) {
-        if (ch->equipment[i] &&
-            IS_SET(ch->equipment[i]->extra_flags, bits)) {
-            return (TRUE);
-        }
-    }
-    return (FALSE);
-}
-
-int InvWBits(struct char_data *ch, int bits)
-{
-    struct obj_data *o;
-
-    for (o = ch->carrying; o; o = o->next_content) {
-        if (IS_SET(o->extra_flags, bits)) {
-            return (TRUE);
-        }
-    }
-    return (FALSE);
-}
-
-int HasWBits(struct char_data *ch, int bits)
-{
-    if (EqWBits(ch, bits)) {
-        return (TRUE);
-    }
-    if (InvWBits(ch, bits)) {
-        return (TRUE);
-    }
-    return (FALSE);
-}
-
 int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 {
     if (!ch->skills) {
@@ -4725,9 +4695,9 @@ int follow_time(struct char_data *ch)
 
 int ItemAlignClash(struct char_data *ch, struct obj_data *obj)
 {
-    if ((IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && IS_EVIL(ch)) ||
-        (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) && IS_GOOD(ch)) ||
-        (IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && IS_NEUTRAL(ch))) {
+    if ((IS_OBJ_STAT(obj, anti_flags, ITEM_ANTI_EVIL) && IS_EVIL(ch)) ||
+        (IS_OBJ_STAT(obj, anti_flags, ITEM_ANTI_GOOD) && IS_GOOD(ch)) ||
+        (IS_OBJ_STAT(obj, anti_flags, ITEM_ANTI_NEUTRAL) && IS_NEUTRAL(ch))) {
         return (TRUE);
     }
     return (FALSE);
@@ -4772,8 +4742,8 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
          * alignment stuff
          */
 
-        if (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) ||
-            IS_OBJ_STAT(obj, ITEM_ANTI_EVIL)) {
+        if (IS_OBJ_STAT(obj, anti_flags, ITEM_ANTI_GOOD) ||
+            IS_OBJ_STAT(obj, anti_flags, ITEM_ANTI_EVIL)) {
             if (IS_NEUTRAL(ch)) {
                 obj_ego += obj_ego / 4;
             }
@@ -4844,11 +4814,11 @@ int IsDarkOutside(struct room_data *rp)
 
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
-    if (ITEM_TYPE(obj_object) != ITEM_KEY &&
-        (IS_OBJ_STAT(obj_object, ITEM_GLOW) ||
-         IS_OBJ_STAT(obj_object, ITEM_HUM) ||
-         IS_OBJ_STAT(obj_object, ITEM_MAGIC) ||
-         IS_OBJ_STAT(obj_object, ITEM_NODROP))) {
+    if (ITEM_TYPE(obj_object) != ITEM_TYPE_KEY &&
+        (IS_OBJ_STAT(obj_object, extra_flags, ITEM_GLOW) ||
+         IS_OBJ_STAT(obj_object, extra_flags, ITEM_HUM) ||
+         IS_OBJ_STAT(obj_object, extra_flags, ITEM_MAGIC) ||
+         IS_OBJ_STAT(obj_object, extra_flags, ITEM_NODROP))) {
         return (TRUE);
     } else {
         return (FALSE);
@@ -6099,7 +6069,7 @@ void tweak(struct obj_data *obj)
         return;
     }
 
-    if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) {
+    if (IS_OBJ_STAT(obj, extra_flags, ITEM_IMMUNE)) {
         /*
          * don't tweak artifacts
          */
@@ -6138,7 +6108,7 @@ void tweak(struct obj_data *obj)
                     /*
                      * stick to certain limits
                      */
-                    if (mod > 3 && ITEM_TYPE(obj) != ITEM_WEAPON) {
+                    if (mod > 3 && ITEM_TYPE(obj) != ITEM_TYPE_WEAPON) {
                         mod = 3;
                     } else if (mod > 5) {
                         mod = 5;

@@ -2387,7 +2387,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
 
             switch (obj->type_flag) {
 
-            case ITEM_FOOD:
+            case ITEM_TYPE_FOOD:
                 if (obj->value[3]) {
                     act("$n sniffs $p, then discards it with disgust.",
                         TRUE, latt, obj, 0, TO_ROOM);
@@ -2409,7 +2409,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                     }
                 }
                 break;
-            case ITEM_KEY:
+            case ITEM_TYPE_KEY:
                 /*
                  * What he really wants
                  */
@@ -5044,7 +5044,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-        if (IS_SET(i->wear_flags, ITEM_TAKE) && 
+        if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) && 
             !strncmp(i->keywords.words[0], "corpse", 6)) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
@@ -7675,7 +7675,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
     }
 
     if ((obj = get_obj_in_list_vis(ch, arg, ch->carrying))) {
-        if ((ITEM_TYPE(obj) == ITEM_WEAPON)) {
+        if ((ITEM_TYPE(obj) == ITEM_TYPE_WEAPON)) {
             /*
              * can only sharpen edged weapons 
              */

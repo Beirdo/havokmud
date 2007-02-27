@@ -141,7 +141,7 @@ void shopping_buy(char *arg, struct char_data *ch,
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
-                shop_index[shop_nr].type[i] == ITEM_FOOD) {
+                shop_index[shop_nr].type[i] == ITEM_TYPE_FOOD) {
                 /* 
                  * we're in a famine, we sell food, 
                  * so we crank our prices 
@@ -151,8 +151,8 @@ void shopping_buy(char *arg, struct char_data *ch,
                 break;
             }
             if (keeper->generic == DWARVES_STRIKE &&
-                (shop_index[shop_nr].type[i] == ITEM_ARMOR || 
-                 shop_index[shop_nr].type[i] == ITEM_WEAPON)) {
+                (shop_index[shop_nr].type[i] == ITEM_TYPE_ARMOR || 
+                 shop_index[shop_nr].type[i] == ITEM_TYPE_WEAPON)) {
                 mult = shop_multiplier;
                 break;
             }
@@ -269,7 +269,7 @@ void shopping_sell(char *arg, struct char_data *ch,
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE && 
-                shop_index[shop_nr].type[i] == ITEM_FOOD) {
+                shop_index[shop_nr].type[i] == ITEM_TYPE_FOOD) {
                 mult = shop_multiplier;
                 /* 
                  * we're in a famine, we sell food, 
@@ -280,8 +280,8 @@ void shopping_sell(char *arg, struct char_data *ch,
             }
 
             if (keeper->generic == DWARVES_STRIKE && 
-                (shop_index[shop_nr].type[i] == ITEM_ARMOR || 
-                 shop_index[shop_nr].type[i] == ITEM_WEAPON)) {
+                (shop_index[shop_nr].type[i] == ITEM_TYPE_ARMOR || 
+                 shop_index[shop_nr].type[i] == ITEM_TYPE_WEAPON)) {
                 mult = shop_multiplier;
                 break;
             }
@@ -302,7 +302,7 @@ void shopping_sell(char *arg, struct char_data *ch,
         return;
     }
 
-    if (IS_OBJ_STAT(temp1, ITEM_NODROP)) {
+    if (IS_OBJ_STAT(temp1, extra_flags, ITEM_NODROP)) {
         send_to_char("You can't let go of it, it must be CURSED!\n\r", ch);
         return;
     }
@@ -315,14 +315,15 @@ void shopping_sell(char *arg, struct char_data *ch,
 
     cost = temp1->cost;
 
-    if (ITEM_TYPE(temp1) == ITEM_WAND || ITEM_TYPE(temp1) == ITEM_STAFF) {
+    if (ITEM_TYPE(temp1) == ITEM_TYPE_WAND || 
+        ITEM_TYPE(temp1) == ITEM_TYPE_STAFF) {
         if (temp1->value[1]) {
             cost = (int) (cost * (float) (temp1->value[2] /
                           (float) temp1->value[1]));
         } else {
             cost = 0;
         }
-    } else if (ITEM_TYPE(temp1) == ITEM_ARMOR) {
+    } else if (ITEM_TYPE(temp1) == ITEM_TYPE_ARMOR) {
         if (temp1->value[1]) {
             cost = (int) (cost * (float) (temp1->value[0] /
                           (float) (temp1->value[1])));
@@ -359,8 +360,8 @@ void shopping_sell(char *arg, struct char_data *ch,
 
     obj_from_char(temp1);
 
-    if (get_obj_in_list(argm, keeper->carrying) ||
-        GET_ITEM_TYPE(temp1) == ITEM_TRASH) {
+    if (get_obj_in_list(argm, keeper->carrying) || 
+        ITEM_TYPE(temp1) == ITEM_TYPE_TRASH) {
         extract_obj(temp1);
     } else {
         obj_to_char(temp1, keeper);
@@ -383,7 +384,7 @@ void shopping_value(char *arg, struct char_data *ch,
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
-                shop_index[shop_nr].type[i] == ITEM_FOOD) {
+                shop_index[shop_nr].type[i] == ITEM_TYPE_FOOD) {
                 /* 
                  * we're in a famine, we sell food, 
                  * so we crank our prices
@@ -394,8 +395,8 @@ void shopping_value(char *arg, struct char_data *ch,
             }
 
             if (keeper->generic == DWARVES_STRIKE &&
-                (shop_index[shop_nr].type[i] == ITEM_ARMOR || 
-                 shop_index[shop_nr].type[i] == ITEM_WEAPON)) {
+                (shop_index[shop_nr].type[i] == ITEM_TYPE_ARMOR || 
+                 shop_index[shop_nr].type[i] == ITEM_TYPE_WEAPON)) {
                 mult = shop_multiplier;
                 break;
             }
@@ -450,7 +451,7 @@ void shopping_list(char *arg, struct char_data *ch,
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
-                shop_index[shop_nr].type[i] == ITEM_FOOD) {
+                shop_index[shop_nr].type[i] == ITEM_TYPE_FOOD) {
                 mult = shop_multiplier;
                 /* 
                  * we're in a famine, we sell food, 
@@ -461,8 +462,8 @@ void shopping_list(char *arg, struct char_data *ch,
             }
 
             if (keeper->generic == DWARVES_STRIKE &&
-                (shop_index[shop_nr].type[i] == ITEM_ARMOR || 
-                 shop_index[shop_nr].type[i] == ITEM_WEAPON)) {
+                (shop_index[shop_nr].type[i] == ITEM_TYPE_ARMOR || 
+                 shop_index[shop_nr].type[i] == ITEM_TYPE_WEAPON)) {
                 mult = shop_multiplier;
                 break;
             }
@@ -480,7 +481,7 @@ void shopping_list(char *arg, struct char_data *ch,
                        ((chr_apply[(int)GET_CHR(ch)].reaction *
                          temp1->cost) / 100) +
                        (int)(mult * temp1->cost);
-                if (temp1->type_flag != ITEM_DRINKCON) {
+                if (temp1->type_flag != ITEM_TYPE_DRINKCON) {
                     sprintf(buf2, "%s for %d gold coins.\n\r",
                             temp1->short_description, cost);
                 } else {

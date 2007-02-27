@@ -235,7 +235,7 @@ void MobScavenge(struct char_data *ch)
 #if 0
     if (number(0, 3)) {
         for (obj = ch->carrying; obj; obj = obj->next) {
-            if (IS_OBJ_STAT(obj, ITEM_NODROP)) {
+            if (IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
                 do_junk(ch, obj->name, 0);
             }
         }
