@@ -444,9 +444,8 @@ void boot_db(void)
     }
 
     LogPrintNoArg( LOG_CRIT, "   Commands.");
-#ifdef MOVED
     assign_command_pointers();
-#endif
+
     LogPrintNoArg( LOG_CRIT, "   Spells.");
     assign_spell_pointers();
 

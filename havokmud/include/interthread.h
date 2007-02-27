@@ -231,8 +231,15 @@ void db_load_object_tree( BalancedBTree_t *tree );
  */
 void initializeObjects( void );
 struct index_data *objectIndex( int vnum );
+
+/*
+ * keywords.c
+ */
 char *KeywordsToString( Keywords_t *key, char *separator );
 Keywords_t *StringToKeywords( char *string, Keywords_t *key );
+void FreeKeywords( Keywords_t *key, bool freeRoot );
+bool KeywordsMatch(Keywords_t *tofind, Keywords_t *keywords);
+char *find_ex_description(char *word, Keywords_t *list, int count);
 
 
 /*************************************************************************
