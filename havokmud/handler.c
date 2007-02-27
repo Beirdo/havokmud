@@ -244,27 +244,18 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
     } else if (loc == APPLY_WEAPON_SPELL) {
         return;
     } else if (loc == APPLY_SPELL2 || loc == APPLY_BV2) {
-#if 0        
-        oldSendOutput(ch,"bitv?%d mod?%d\n\r",bitv,mod);
-#endif        
         if (add) {
             /*
              * do em both? this creates odd combinations, may not be the
              * solution 
              */
             SET_BIT(ch->specials.affected_by2, bitv);
-#if 0
-            SET_BIT(ch->specials.affected_by2, mod); 
-#endif
             /* 
              * mod takes care of 
              * the spells from items 
              */
         } else {
             REMOVE_BIT(ch->specials.affected_by2, bitv);
-#if 0            
-            REMOVE_BIT(ch->specials.affected_by2, mod);
-#endif        
         }
         return;
     } else if (add) {
@@ -419,6 +410,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         case APPLY_SUSC:
         case APPLY_M_IMMUNE:
         case APPLY_SPELL:
+        case APPLY_SPELL2:
         case APPLY_WEAPON_SPELL:
         case APPLY_EAT_SPELL:
         case APPLY_BACKSTAB:
@@ -689,6 +681,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         case APPLY_M_IMMUNE:
             break;
         case APPLY_SPELL:
+        case APPLY_SPELL2:
             break;
         case APPLY_HITNDAM:
             GET_HITROLL(ch) += mod;
@@ -1044,27 +1037,12 @@ void affect_from_char(struct char_data *ch, int skill)
     struct affected_type *hjp,
                    *hjp1;
 
-#if 0
-    hjp = ch->affected;
-    while ((hjp) && hjp->type != skill) 
-        /* 
-         * flip through the list searching 
-         */
-        hjp = hjp->next;
-
-    if (hjp->type == skill)     
-        /* 
-         * if we found remove it 
-         */
-        affect_remove(ch, hjp);
-#else
     for (hjp1 = hjp = ch->affected; hjp; hjp = hjp1) {
         hjp1 = hjp->next;
         if (hjp->type == skill) {
             affect_remove(ch, hjp);
         }
     }
-#endif
 }
 
 /*

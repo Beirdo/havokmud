@@ -1193,7 +1193,7 @@ void ClassSpecificStuff(struct char_data *ch)
                 (MIN(30, (GET_LEVEL(ch, PALADIN_LEVEL_IND))) * .05);
             if (GET_ALIGNMENT(ch) >= 350) {
                 SET_BIT(ch->specials.affected_by, AFF_DETECT_EVIL);
-                SET_BIT(ch->specials.affected_by, AFF_PROTECT_FROM_EVIL);
+                SET_BIT(ch->specials.affected2_by, AFF2_PROTECT_FROM_EVIL);
             }
         } else if (HasClass(ch, CLASS_WARRIOR)) {
             ch->mult_att +=
@@ -1350,7 +1350,7 @@ void ClassSpecificStuff(struct char_data *ch)
 
     if (HasClass(ch, CLASS_NECROMANCER)) {
         if (GET_ALIGNMENT(ch) < 350) {
-            SET_BIT(ch->specials.affected_by2, AFF2_DETECT_GOOD);
+            SET_BIT(ch->specials.affected_by, AFF_DETECT_GOOD);
         }
         if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) >= 15) {
             SET_BIT(ch->immune, IMM_DRAIN);

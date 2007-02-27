@@ -1896,9 +1896,8 @@ int HasFlyItem(struct char_data *ch)
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
             for (j = 0; j < MAX_OBJ_AFFECT; j++) {
-                if (ch->equipment[i]->affected[j].location == APPLY_SPELL
-                    && (ch->equipment[i]->affected[j].
-                        modifier & AFF_FLYING)) {
+                if (ch->equipment[i]->affected[j].location == APPLY_SPELL && 
+                    (ch->equipment[i]->affected[j].modifier & AFF_FLYING)) {
                     /*
                      * Search for fly affect in all worn items Messy but I 
                      * think it will work

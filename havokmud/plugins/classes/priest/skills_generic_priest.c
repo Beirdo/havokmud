@@ -1177,8 +1177,8 @@ void spell_detect_good(int level, struct char_data *ch,
     af.type = SPELL_DETECT_GOOD;
     af.duration = level * 5;
     af.modifier = 0;
-    af.location = APPLY_BV2;
-    af.bitvector = AFF2_DETECT_GOOD;
+    af.location = APPLY_SPELL;
+    af.bitvector = AFF_DETECT_GOOD;
 
     affect_to_char(victim, &af);
 
@@ -1208,7 +1208,7 @@ void cast_detect_good(int level, struct char_data *ch, char *arg,
     case SPELL_TYPE_STAFF:
         for (tar_ch = real_roomp(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
-            if (tar_ch != ch && !IS_AFFECTED2(tar_ch, AFF2_DETECT_GOOD)) {
+            if (tar_ch != ch && !IS_AFFECTED(tar_ch, AFF_DETECT_GOOD)) {
                 spell_detect_good(level, ch, tar_ch, 0);
             }
         }
@@ -3356,8 +3356,8 @@ void spell_protection_from_evil(int level, struct char_data *ch,
         af.type = SPELL_PROTECT_FROM_EVIL;
         af.duration = 24;
         af.modifier = 0;
-        af.location = APPLY_NONE;
-        af.bitvector = AFF_PROTECT_FROM_EVIL;
+        af.location = APPLY_SPELL2;
+        af.bitvector = AFF2_PROTECT_FROM_EVIL;
         affect_to_char(victim, &af);
         send_to_char("You have a righteous feeling!\n\r", victim);
     }
@@ -3412,8 +3412,8 @@ void spell_protection_from_evil_group(int level, struct char_data *ch,
             af.type = SPELL_PROTECT_FROM_EVIL;
             af.duration = 24;
             af.modifier = 0;
-            af.location = APPLY_NONE;
-            af.bitvector = AFF_PROTECT_FROM_EVIL;
+            af.location = APPLY_SPELL2;
+            af.bitvector = AFF2_PROTECT_FROM_EVIL;
             affect_to_char(dude, &af);
             send_to_char("You have a righteous feeling!\n\r", dude);
         }

@@ -201,36 +201,33 @@ struct QuestItem {
 /*
  * user flags
  */
-#define NO_DELETE       BV00    /* do not delete me, well until 6 months
+#define NO_DELETE       BV(0)   /* do not delete me, well until 6 months
                                  * pass! */
-#define USE_ANSI        BV01    /* we use ANSI color, yeah! */
-#define RACE_WAR        BV02    /* if enabled they can be hit by
+#define USE_ANSI        BV(1)   /* we use ANSI color, yeah! */
+#define RACE_WAR        BV(2)   /* if enabled they can be hit by
                                  * opposing race */
-#define UN_DEFINED_2    BV03
-#define SHOW_EXITS      BV04    /* for auto display exits */
+#define SHOW_EXITS      BV(3)   /* for auto display exits */
 
-#define MURDER_1        BV05    /* actually killed someone! */
-#define STOLE_1         BV06    /* caught stealing form someone! */
-#define MURDER_2        BV07    /* rumored killed someone */
-#define STOLE_2         BV08    /* rumored stole from someone */
+#define MURDER_1        BV(4)   /* actually killed someone! */
+#define STOLE_1         BV(5)   /* caught stealing form someone! */
+#define MURDER_2        BV(6)   /* rumored killed someone */
+#define STOLE_2         BV(7)   /* rumored stole from someone */
 
-#define STOLE_X         BV09    /* saved for later */
-#define MURDER_X        BV10    /* saved for later */
-#define USE_PAGING      BV11    /* pause screens? */
-#define CAN_OBJ_EDIT    BV12    /* this user can use oedit to edit objects */
-#define CAN_MOB_EDIT    BV13    /* this user can use medit to edit mobs */
-#define FAST_AREA_EDIT  BV14    /* immort is using fast online mapping */
-#define PKILLING        BV15
-#define CLOAKED         BV16    /* Used for mortal cloaking of their eq */
-#define ZONE_SOUNDS     BV17
-#define CHAR_PRIVATE    BV18
-#define CLAN_LEADER     BV19
-#define NEW_USER        BV20
-#define HERO_STATUS     BV21
-#define GHOST           BV22
-#define FAST_MAP_EDIT   BV23
+#define USE_PAGING      BV(8)   /* pause screens? */
+#define CAN_OBJ_EDIT    BV(9)   /* this user can use oedit to edit objects */
+#define CAN_MOB_EDIT    BV(10)  /* this user can use medit to edit mobs */
+#define FAST_AREA_EDIT  BV(11)  /* immort is using fast online mapping */
+#define PKILLING        BV(12)
+#define CLOAKED         BV(13)  /* Used for mortal cloaking of their eq */
+#define ZONE_SOUNDS     BV(14)
+#define CHAR_PRIVATE    BV(15)
+#define CLAN_LEADER     BV(16)
+#define NEW_USER        BV(17)
+#define HERO_STATUS     BV(18)
+#define GHOST           BV(19)
+#define FAST_MAP_EDIT   BV(20)
 
-#define OLD_COLORS      BV24
+#define OLD_COLORS      BV(21)
 
 /*
  * system flags defined on the fly and by wizards for this boot
@@ -672,7 +669,7 @@ struct room_data {
 #define MAX_WEAR_POS   23
 
 /*
- * For 'char_payer_data'
+ * For 'char_player_data'
  */
 
 /*
@@ -692,323 +689,319 @@ struct room_data {
                                  * CHANGE */
 
 /*
- * Predifined conditions
+ * Predefined conditions
  */
-#define MAX_CONDITIONS 5        /* USER FILE, DO NOT CHANGE */
+#define MAX_CONDITIONS 5
 
-#define DRUNK        0
-#define FULL         1
-#define THIRST       2
+typedef enum {
+    DRUNK,
+    FULL,
+    THIRST
+} Conditions_t;
 
 /*
  * Bitvector for 'affected_by'
  */
-#define AFF_BLIND             BV00
-#define AFF_INVISIBLE         BV01
-#define AFF_DETECT_EVIL       BV02
-#define AFF_DETECT_INVISIBLE  BV03
-#define AFF_DETECT_MAGIC      BV04
-#define AFF_SENSE_LIFE        BV05
-#define AFF_LIFE_PROT         BV06
-#define AFF_SANCTUARY         BV07
-#define AFF_DRAGON_RIDE       BV08
-#define AFF_GROWTH            BV09
-#define AFF_CURSE             BV10
-#define AFF_FLYING            BV11
-#define AFF_POISON            BV12
-#define AFF_TREE_TRAVEL       BV13
-#define AFF_PARALYSIS         BV14
-#define AFF_INFRAVISION       BV15
-#define AFF_WATERBREATH       BV16
-#define AFF_SLEEP             BV17
-#define AFF_TRAVELLING        BV18
-#define AFF_SNEAK             BV19
-#define AFF_HIDE              BV20
-#define AFF_SILENCE           BV21
-#define AFF_CHARM             BV22
-#define AFF_DARKNESS          BV23
-#define AFF_PROTECT_FROM_EVIL BV24
-#define AFF_TRUE_SIGHT        BV25
-#define AFF_SCRYING           BV26
-#define AFF_FIRESHIELD        BV27
-#define AFF_GROUP             BV28
-#define AFF_TELEPATHY         BV29
-#define AFF_CHILLSHIELD       BV30
-#define AFF_BLADE_BARRIER     BV31
+#define AFF_BLIND             BV(0)
+#define AFF_INVISIBLE         BV(1)
+#define AFF_DETECT_EVIL       BV(2)
+#define AFF_DETECT_GOOD       BV(3)
+#define AFF_DETECT_INVISIBLE  BV(4)
+#define AFF_DETECT_MAGIC      BV(5)
+#define AFF_SENSE_LIFE        BV(6)
+#define AFF_LIFE_PROT         BV(7)
+#define AFF_SANCTUARY         BV(8)
+#define AFF_DRAGON_RIDE       BV(9)
+#define AFF_GROWTH            BV(10)
+#define AFF_CURSE             BV(11)
+#define AFF_FLYING            BV(12)
+#define AFF_POISON            BV(13)
+#define AFF_TREE_TRAVEL       BV(14)
+#define AFF_PARALYSIS         BV(15)
+#define AFF_INFRAVISION       BV(16)
+#define AFF_WATERBREATH       BV(17)
+#define AFF_SLEEP             BV(18)
+#define AFF_TRAVELLING        BV(19)
+#define AFF_SNEAK             BV(20)
+#define AFF_HIDE              BV(21)
+#define AFF_SILENCE           BV(22)
+#define AFF_CHARM             BV(23)
+#define AFF_DARKNESS          BV(24)
+#define AFF_TRUE_SIGHT        BV(25)
+#define AFF_SCRYING           BV(26)
+#define AFF_FIRESHIELD        BV(27)
+#define AFF_GROUP             BV(28)
+#define AFF_TELEPATHY         BV(29)
+#define AFF_CHILLSHIELD       BV(30)
+#define AFF_BLADE_BARRIER     BV(31)
+
 
 /*
  * affects 2
  */
-#define AFF2_ANIMAL_INVIS      BV00
-#define AFF2_HEAT_STUFF        BV01
-#define AFF2_LOG_ME            BV02
-#define AFF2_BERSERK           BV03
-#define AFF2_CON_ORDER         BV04
-#define AFF2_AFK               BV05
-#define AFF2_DETECT_GOOD       BV06
-#define AFF2_PROTECT_FROM_GOOD BV07
-#define AFF2_FOLLOW            BV08
-#define AFF2_HASTE             BV09
-#define AFF2_SLOW              BV10
-#define AFF2_WINGSBURNED       BV11
-#define AFF2_STYLE_BERSERK     BV12
-#define AFF2_QUEST             BV13
-#define AFF2_NO_OUTDOOR        BV14
-#define AFF2_WINGSTIRED        BV15
-#define AFF2_INVIS_TO_UNDEAD   BV16
-#define AFF2_SKILL_SNEAK       BV19
+#define AFF2_ANIMAL_INVIS      BV(0)
+#define AFF2_HEAT_STUFF        BV(1)
+#define AFF2_LOG_ME            BV(2)
+#define AFF2_BERSERK           BV(3)
+#define AFF2_CON_ORDER         BV(4)
+#define AFF2_AFK               BV(5)
+#define AFF2_PROTECT_FROM_EVIL BV(6)
+#define AFF2_PROTECT_FROM_GOOD BV(7)
+#define AFF2_FOLLOW            BV(8)
+#define AFF2_HASTE             BV(9)
+#define AFF2_SLOW              BV(10)
+#define AFF2_WINGSBURNED       BV(11)
+#define AFF2_STYLE_BERSERK     BV(12)
+#define AFF2_QUEST             BV(13)
+#define AFF2_NO_OUTDOOR        BV(14)
+#define AFF2_WINGSTIRED        BV(15)
+#define AFF2_INVIS_TO_UNDEAD   BV(16)
+#define AFF2_SKILL_SNEAK       BV(17)
 
 /*
  * Flag spells as brewable or single class
  */
-#define BREWABLE_SPELL         BV00
-#define SINGLE_CLASS_SPELL     BV01
-#define DUAL_CLASS_SPELL       BV02
-#define TRI_CLASS_SPELL        BV03
+#define BREWABLE_SPELL         BV(0)
+#define SINGLE_CLASS_SPELL     BV(1)
+#define DUAL_CLASS_SPELL       BV(2)
+#define TRI_CLASS_SPELL        BV(3)
 
 /*
  * modifiers to char's abilities
  */
 
-#define APPLY_NONE              0
-#define APPLY_STR               1
-#define APPLY_DEX               2
-#define APPLY_INT               3
-#define APPLY_WIS               4
-#define APPLY_CON               5
-#define APPLY_CHR               6
-#define APPLY_SEX               7
-#define APPLY_LEVEL             8
-#define APPLY_AGE               9
-#define APPLY_CHAR_WEIGHT      10
-#define APPLY_CHAR_HEIGHT      11
-#define APPLY_MANA             12
-#define APPLY_HIT              13
-#define APPLY_MOVE             14
-#define APPLY_GOLD             15
-#define APPLY_SPELL2           16
-#define APPLY_AC               17
-#define APPLY_ARMOR            17
-#define APPLY_HITROLL          18
-#define APPLY_DAMROLL          19
-#define APPLY_SAVING_PARA      20
-#define APPLY_SAVING_ROD       21
-#define APPLY_SAVING_PETRI     22
-#define APPLY_SAVING_BREATH    23
-#define APPLY_SAVING_SPELL     24
-#define APPLY_SAVE_ALL         25
-#define APPLY_IMMUNE           26
-#define APPLY_SUSC             27
-#define APPLY_M_IMMUNE         28
-#define APPLY_SPELL            29
-#define APPLY_WEAPON_SPELL     30
-#define APPLY_EAT_SPELL        31
-#define APPLY_BACKSTAB         32
-#define APPLY_KICK             33
-#define APPLY_SNEAK            34
-#define APPLY_HIDE             35
-#define APPLY_BASH             36
-#define APPLY_PICK             37
-#define APPLY_STEAL            38
-#define APPLY_TRACK            39
-#define APPLY_HITNDAM          40
-#define APPLY_SPELLFAIL        41
-#define APPLY_ATTACKS          42
-#define APPLY_HASTE            43
-#define APPLY_SLOW             44
-#define APPLY_BV2              45
-#define APPLY_FIND_TRAPS       46
-#define APPLY_RIDE             47
-#define APPLY_RACE_SLAYER      48
-#define APPLY_ALIGN_SLAYER     49
-#define APPLY_MANA_REGEN       50
-#define APPLY_HIT_REGEN        51
-#define APPLY_MOVE_REGEN       52
-                /*
-                 * Set thirst/hunger/drunk to MOD
-                 */
-#define APPLY_MOD_THIRST        53
-#define APPLY_MOD_HUNGER        54
-#define APPLY_MOD_DRUNK         55
-
-                /*
-                 * not implemented
-                 */
-#define APPLY_T_STR             56
-#define APPLY_T_INT             57
-#define APPLY_T_DEX             58
-#define APPLY_T_WIS             59
-#define APPLY_T_CON             60
-#define APPLY_T_CHR             61
-#define APPLY_T_HPS             62
-#define APPLY_T_MOVE            63
-#define APPLY_T_MANA            64
+typedef enum {
+    APPLY_NONE = 0,
+    APPLY_STR,
+    APPLY_DEX,
+    APPLY_INT,
+    APPLY_WIS,
+    APPLY_CON,
+    APPLY_CHR,
+    APPLY_SEX,
+    APPLY_LEVEL,
+    APPLY_AGE,
+    APPLY_CHAR_WEIGHT,
+    APPLY_CHAR_HEIGHT,
+    APPLY_MANA,
+    APPLY_HIT,
+    APPLY_MOVE,
+    APPLY_GOLD,
+    APPLY_SPELL2,
+    APPLY_AC,
+    APPLY_ARMOR,
+    APPLY_HITROLL,
+    APPLY_DAMROLL,
+    APPLY_SAVING_PARA,
+    APPLY_SAVING_ROD,
+    APPLY_SAVING_PETRI,
+    APPLY_SAVING_BREATH,
+    APPLY_SAVING_SPELL,
+    APPLY_SAVE_ALL,
+    APPLY_IMMUNE,
+    APPLY_SUSC,
+    APPLY_M_IMMUNE,
+    APPLY_SPELL,
+    APPLY_WEAPON_SPELL,
+    APPLY_EAT_SPELL,
+    APPLY_BACKSTAB,
+    APPLY_KICK,
+    APPLY_SNEAK,
+    APPLY_HIDE,
+    APPLY_BASH,
+    APPLY_PICK,
+    APPLY_STEAL,
+    APPLY_TRACK,
+    APPLY_HITNDAM,
+    APPLY_SPELLFAIL,
+    APPLY_ATTACKS,
+    APPLY_HASTE,
+    APPLY_SLOW,
+    APPLY_BV2,
+    APPLY_FIND_TRAPS,
+    APPLY_RIDE,
+    APPLY_RACE_SLAYER,
+    APPLY_ALIGN_SLAYER,
+    APPLY_MANA_REGEN,
+    APPLY_HIT_REGEN,
+    APPLY_MOVE_REGEN,
+    APPLY_MOD_THIRST,
+    APPLY_MOD_HUNGER,
+    APPLY_MOD_DRUNK,
+    APPLY_T_STR,
+    APPLY_T_INT,
+    APPLY_T_DEX,
+    APPLY_T_WIS,
+    APPLY_T_CON,
+    APPLY_T_CHR,
+    APPLY_T_HPS,
+    APPLY_T_MOVE,
+    APPLY_T_MANA,
+} CharacterApply_t;
 
 /*
  * 'class' for PC's
  */
-#define CLASS_MAGIC_USER  BV00
-#define CLASS_CLERIC      BV01
-#define CLASS_WARRIOR     BV02
-#define CLASS_THIEF       BV03
-#define CLASS_DRUID       BV04
-#define CLASS_MONK        BV05
-#define CLASS_BARBARIAN   BV06
-#define CLASS_SORCERER    BV07
-#define CLASS_PALADIN     BV08
-#define CLASS_RANGER      BV09
-#define CLASS_PSI         BV10
-#define CLASS_NECROMANCER BV11
+#define CLASS_MAGIC_USER  BV(0)
+#define CLASS_CLERIC      BV(1)
+#define CLASS_WARRIOR     BV(2)
+#define CLASS_THIEF       BV(3)
+#define CLASS_DRUID       BV(4)
+#define CLASS_MONK        BV(5)
+#define CLASS_BARBARIAN   BV(6)
+#define CLASS_SORCERER    BV(7)
+#define CLASS_PALADIN     BV(8)
+#define CLASS_RANGER      BV(9)
+#define CLASS_PSI         BV(10)
+#define CLASS_NECROMANCER BV(11)
 
 /*
  * sex
  */
-#define SEX_NEUTRAL   0
-#define SEX_MALE      1
-#define SEX_FEMALE    2
+typedef enum {
+    SEX_NEUTRAL = 0,
+    SEX_MALE,
+    SEX_FEMALE
+} Sexes_t;
 
 /*
  * positions
  */
-#define POSITION_DEAD       0
-#define POSITION_MORTALLYW  1
-#define POSITION_INCAP      2
-#define POSITION_STUNNED    3
-#define POSITION_SLEEPING   4
-#define POSITION_RESTING    5
-#define POSITION_SITTING    6
-#define POSITION_FIGHTING   7
-#define POSITION_STANDING   8
-#define POSITION_MOUNTED    9
+typedef enum {
+    POSITION_DEAD = 0,
+    POSITION_MORTALLYW,
+    POSITION_INCAP,
+    POSITION_STUNNED,
+    POSITION_SLEEPING,
+    POSITION_RESTING,
+    POSITION_SITTING,
+    POSITION_FIGHTING,
+    POSITION_STANDING,
+    POSITION_MOUNTED
+} Positions_t;
 
 /*
  * for mobile actions: specials.act
  */
-#define ACT_SPEC       (1<<0)   /* special routine to be called if exist */
-#define ACT_SENTINEL   (1<<1)   /* this mobile not to be moved */
-#define ACT_SCAVENGER  (1<<2)   /* pick up stuff lying around */
-#define ACT_ISNPC      (1<<3)   /* This bit is set for use with IS_NPC() */
-#define ACT_NICE_THIEF (1<<4)   /* Set if a thief should NOT be killed */
-#define ACT_AGGRESSIVE (1<<5)   /* Set if automatic attack on NPC's */
-#define ACT_STAY_ZONE  (1<<6)   /* MOB Must stay inside its own zone */
-#define ACT_WIMPY      (1<<7)   /* MOB Will flee when injured, and if
-                                 * aggressive only attack sleeping players
-                                 */
-#define ACT_ANNOYING   (1<<8)   /* MOB is so utterly irritating that other
-                                 * monsters will attack it...
-                                 */
-#define ACT_HATEFUL    (1<<9)   /* MOB will attack a PC or NPC matching a
-                                 * specified name
-                                 */
-#define ACT_AFRAID    (1<<10)   /* MOB is afraid of a certain PC or NPC,
-                                 * and will always run away ....
-                                 */
-#define ACT_IMMORTAL  (1<<11)   /* MOB is a natural event, can't be kiled */
-#define ACT_HUNTING   (1<<12)   /* MOB is hunting someone */
-#define ACT_DEADLY    (1<<13)   /* MOB has deadly poison */
-#define ACT_POLYSELF  (1<<14)   /* MOB is a polymorphed person */
-#define ACT_META_AGG  (1<<15)   /* MOB is _very_ aggressive */
-#define ACT_GUARDIAN  (1<<16)   /* MOB will guard master */
-#define ACT_NECROMANCER     (1<<17)
-#define ACT_HUGE      (1<<18)   /* MOB is too large to go indoors */
-#define ACT_SCRIPT    (1<<19)   /* MOB has a script assigned to it DO NOT SET */
-#define ACT_GREET     (1<<20)   /* MOB greets people */
+#define ACT_SPEC        BV(0)   /* special routine to be called if exist */
+#define ACT_SENTINEL    BV(1)   /* this mobile not to be moved */
+#define ACT_SCAVENGER   BV(2)   /* pick up stuff lying around */
+#define ACT_ISNPC       BV(3)   /* This bit is set for use with IS_NPC() */
+#define ACT_NICE_THIEF  BV(4)   /* Set if a thief should NOT be killed */
+#define ACT_AGGRESSIVE  BV(5)   /* Set if automatic attack on NPC's */
+#define ACT_STAY_ZONE   BV(6)   /* MOB Must stay inside its own zone */
+#define ACT_WIMPY       BV(7)   /* MOB Will flee when injured, and if
+                                 * aggressive only attack sleeping players */
+#define ACT_ANNOYING    BV(8)   /* MOB is so utterly irritating that other
+                                 * monsters will attack it...  */
+#define ACT_HATEFUL     BV(9)   /* MOB will attack a PC or NPC matching a
+                                 * specified name */
+#define ACT_AFRAID      BV(10)   /* MOB is afraid of a certain PC or NPC,
+                                 * and will always run away ....  */
+#define ACT_IMMORTAL    BV(11)   /* MOB is a natural event, can't be kiled */
+#define ACT_HUNTING     BV(12)   /* MOB is hunting someone */
+#define ACT_DEADLY      BV(13)   /* MOB has deadly poison */
+#define ACT_META_AGG    BV(14)   /* MOB is _very_ aggressive */
+#define ACT_GUARDIAN    BV(15)   /* MOB will guard master */
+#define ACT_HUGE        BV(16)   /* MOB is too large to go indoors */
+#define ACT_SCRIPT      BV(17)   /* MOB has a script assigned to it */
+#define ACT_GREET       BV(18)   /* MOB greets people */
+#define ACT_POLYSELF    BV(19)   /* MOB is a polymorphed person */
 
-#define ACT_MAGIC_USER  (1<<21)
-#define ACT_WARRIOR     (1<<22)
-#define ACT_CLERIC      (1<<23)
-#define ACT_THIEF       (1<<24)
-#define ACT_DRUID       (1<<25)
-#define ACT_MONK        (1<<26)
-#define ACT_BARBARIAN   (1<<27)
-#define ACT_PALADIN     (1<<28)
-#define ACT_RANGER      (1<<29)
-#define ACT_PSI         (1<<30)
+
 /*
- * room for one more
+ * for mobile specials.act_class
  */
+#define ACT_MAGIC_USER  BV(0)
+#define ACT_CLERIC      BV(1)
+#define ACT_WARRIOR     BV(2)
+#define ACT_THIEF       BV(3)
+#define ACT_DRUID       BV(4)
+#define ACT_MONK        BV(5)
+#define ACT_BARBARIAN   BV(6)
+#define ACT_SORCERER    BV(7)
+#define ACT_PALADIN     BV(8)
+#define ACT_RANGER      BV(9)
+#define ACT_PSI         BV(10)
+#define ACT_NECROMANCER BV(11)
+
 /*
  * for common mobile procedures: specials.proc
  */
-#define PROC_NONE               0 /* no proc */
-#define PROC_SHOPKEEPER         1 /* int shopkeeper() behaviour */
-#define PROC_GUILDMASTER        2 /* GM, dependant on class in MobAct & level */
-#define PROC_SWALLOWER          3 /* Swallows when not bashed */
-#define PROC_DRAIN              4 /* Drains when not bashed */
-#define PROC_QUEST              5 /* it's a give/receive mob */
-
-#define PROC_OLD_BREATH         6
-#define PROC_FIRE_BREATH        7
-#define PROC_GAS_BREATH         8
-#define PROC_FROST_BREATH       9
-#define PROC_ACID_BREATH        10
-#define PROC_LIGHTNING_BREATH   11
-#define PROC_DEHYDRATION_BREATH 12
-#define PROC_VAPOR_BREATH       13
-#define PROC_SOUND_BREATH       14
-#define PROC_SHARD_BREATH       15
-#define PROC_SLEEP_BREATH       16
-#define PROC_LIGHT_BREATH       17
-#define PROC_DARK_BREATH        18
-#define PROC_RECEPTIONIST       19
-#define PROC_REPAIRGUY          20
+typedef enum {
+    PROC_NONE = 0,      /* no proc */
+    PROC_SHOPKEEPER,    /* int shopkeeper() behaviour */
+    PROC_GUILDMASTER,   /* GM, dependant on class in MobAct & level */
+    PROC_SWALLOWER,     /* Swallows when not bashed */
+    PROC_DRAIN,         /* Drains when not bashed */
+    PROC_QUEST,         /* it's a give/receive mob */
+    PROC_OLD_BREATH,
+    PROC_FIRE_BREATH,
+    PROC_GAS_BREATH,
+    PROC_FROST_BREATH,
+    PROC_ACID_BREATH,
+    PROC_LIGHTNING_BREATH,
+    PROC_DEHYDRATION_BREATH,
+    PROC_VAPOR_BREATH,
+    PROC_SOUND_BREATH,
+    PROC_SHARD_BREATH,
+    PROC_SLEEP_BREATH,
+    PROC_LIGHT_BREATH,
+    PROC_DARK_BREATH,
+    PROC_RECEPTIONIST,
+    PROC_REPAIRGUY
+} CommonProcTypes_t;
 
 /*
  * For players : specials.act
  */
-#define PLR_BRIEF       (1<<0)
-/*
- * (1<<1)
- */
-#define PLR_COMPACT     (1<<2)
-#define PLR_DONTSET     (1<<3)  /* Dont EVER set */
-#define PLR_WIMPY       (1<<4)  /* character will flee when seriously
+#define PLR_BRIEF       BV(0)
+#define PLR_COMPACT     BV(1)
+#define PLR_WIMPY       BV(2)   /* character will flee when seriously
                                  * injured */
-#define PLR_NOHASSLE    (1<<5)  /* char won't be attacked by aggressives. */
-#define PLR_STEALTH     (1<<6)  /* char won't be announced in a variety of
+#define PLR_NOHASSLE    BV(3)   /* char won't be attacked by aggressives. */
+#define PLR_STEALTH     BV(4)   /* char won't be announced in a variety of
                                  * situations */
-#define PLR_HUNTING     (1<<7)  /* the player is hunting someone, do a
+#define PLR_HUNTING     BV(5)   /* the player is hunting someone, do a
                                  * track each look */
-#define PLR_DEAF        (1<<8)  /* The player does not hear shouts */
-#define PLR_ECHO        (1<<9)  /* Messages (tells, shout,etc) echo back */
-#define PLR_NOGOSSIP    (1<<10) /* New, gossip channel */
-#define PLR_NOAUCTION   (1<<11) /* New AUCTION channel */
-#define PLR_POSTING     (1<<12) /* Posting to a board */
-#define PLR_NOOOC       (1<<13) /* Can't hear the OOC channel - Manwe
-                                 * Windmaster */
-#define PLR_NOSHOUT     (1<<14) /* the player is not allowed to shout */
-#define PLR_FREEZE      (1<<15) /* The player is frozen, must have pissed
-                                 * an immo off */
-#define PLR_NOTELL      (1<<16) /* The player does not hear tells */
-#define PLR_NOFLY       (1<<17) /* After 'land' the player will not fly
+#define PLR_DEAF        BV(6)   /* The player does not hear shouts */
+#define PLR_ECHO        BV(7)   /* Messages (tells, shout,etc) echo back */
+#define PLR_NOGOSSIP    BV(8)   /* New, gossip channel */
+#define PLR_NOAUCTION   BV(9)   /* New AUCTION channel */
+#define PLR_NOOOC       BV(10)  /* Can't hear the OOC channel */
+#define PLR_NOSHOUT     BV(11)  /* the player is not allowed to shout */
+#define PLR_NOTELL      BV(12)  /* The player does not hear tells */
+#define PLR_POSTING     BV(13)  /* Posting to a board */
+#define PLR_MAILING     BV(14)  /* Writing a message */
+#define PLR_NOFLY       BV(15)  /* After 'land' the player will not fly
                                  * until 'launch' */
-#define PLR_WIZNOOOC    (1<<18) /* Been forbidden from OOCing by gods */
-#define PLR_WIZREPORT   (1<<19)
-#define PLR_NOBEEP      (1<<20) /* ignore all beeps */
-#define PLR_HAVEROOM    (1<<21) /* Player is one of the first 100 heros
+#define PLR_FREEZE      BV(16)  /* The player is frozen, must have pissed
+                                 * an immo off */
+#define PLR_WIZNOOOC    BV(17)  /* Been forbidden from OOCing by gods */
+#define PLR_WIZREPORT   BV(18)
+#define PLR_POLYSELF    BV(19)  /* matches ACT_POLYSELF */
+#define PLR_NOBEEP      BV(20)  /* ignore all beeps */
+#define PLR_HAVEROOM    BV(21)  /* Player is one of the first 100 heros
                                  * and have been assigned an homeroom */
-#define PLR_MAILING     (1<<22) /* EMPTY */
-#define PLR_NOOUTDOOR   (1<<23)
-#define PLR_AUTOASSIST  (1<<24)
-#define PLR_AUTOEXIT    (1<<25)
-#define PLR_AUTOLOOT    (1<<26)
-#define PLR_AUTOSAC     (1<<27)
-#define PLR_AUTOGOLD    (1<<28)
-#define PLR_AUTOSPLIT   (1<<29)
-#define PLR_CLAN_LEADER (1<<30)
-#define PLR_LEGEND      (1<<31)
+#define PLR_NOOUTDOOR   BV(22)
+#define PLR_AUTOASSIST  BV(23)
+#define PLR_AUTOEXIT    BV(24)
+#define PLR_AUTOLOOT    BV(25)
+#define PLR_AUTOSAC     BV(26)
+#define PLR_AUTOGOLD    BV(27)
+#define PLR_AUTOSPLIT   BV(28)
+#define PLR_CLAN_LEADER BV(29)
+#define PLR_LEGEND      BV(30)
 
 /*
  * This structure is purely intended to be an easy way to transfer
- */
-/*
  * and return information about time (real or mudwise).
  */
 struct time_info_data {
-    byte            hours,
-                    day,
-                    month;
-    sh_int          year;
+    int             hours;
+    int             day;
+    int             month;
+    int             year;
 };
 
 /*
@@ -1042,98 +1035,72 @@ struct time_data {
  */
 struct char_player_data {
 
-    byte            sex;        /* PC / NPC s sex */
-    short           weight;     /* PC / NPC s weight */
-    short           height;     /* PC / NPC s height */
+    int             sex;        /* PC / NPC s sex */
+    int             weight;     /* PC / NPC s weight */
+    int             height;     /* PC / NPC s height */
     bool            talks[MAX_TOUNGE];  /* PC s Tounges 0 for NPC/not used
                                          * for languagesn */
     long            user_flags; /* no delete, ansi etc... */
     int             speaks;     /* current language speaking */
 
     char           *name;       /* PC / NPC s name (kill ...  ) */
-    char           *short_descr;        /* for 'actions' */
+    char           *short_descr;    /* for 'actions' */
     char           *long_descr; /* for 'look'.. Only here for testing */
-    char           *description;        /* Extra descriptions */
+    char           *description;    /* Extra descriptions */
     char           *title;      /* PC / NPC s title */
     char           *sounds;     /* Sound that the monster makes (in room) */
-    char           *distant_snds;       /* Sound that the monster makes
-                                         * (adjacent to room) */
+    char           *distant_snds;   /* Sound that the monster makes
+                                     * (adjacent to room) */
 
     long            class;      /* PC s class or NPC alignment */
     int             hometown;   /* PC s Hometown (zone) */
 
-    long            extra_flags;        /* for ressurection in the future
-                                         * , etc */
+    long            extra_flags;    /* for resurrection in the future, etc */
 
     struct time_data time;      /* PC s AGE in days */
 
-    byte            level[ABS_MAX_CLASS];       /* PC / NPC s level */
+    int             level[ABS_MAX_CLASS];   /* PC / NPC s level */
 #ifndef TODO
-    int             max_level;                  /* Maximum level (no need to 
-                                                 * recalc all the time */
-    int             class_count;                /* Number of classes had */
+    int             max_level;      /* Maximum level (no need to recalc all the 
+                                     * time */
+    int             class_count;    /* Number of classes had */
 #endif
-    unsigned short int q_points;        /* Quest points of player */
+    int             q_points;       /* Quest points of player */
     bool            has_mail;   /* Has the player mail waiting? */
 };
 
-/*
- * Used in CHAR_FILE_U *DO*NOT*CHANGE*
- */
 struct char_ability_data {
-    sbyte           str;
-    sbyte           str_add;    /* 000 - 100 if strength 18 */
-    sbyte           intel;
-    sbyte           wis;
-    sbyte           dex;
-    sbyte           con;
-    sbyte           chr;
-    sbyte           extra;
-    sbyte           extra2;
+    int             str;
+    int             str_add;    /* 000 - 100 if strength 18 */
+    int             intel;
+    int             wis;
+    int             dex;
+    int             con;
+    int             chr;
 };
 
-/*
- * Used in CHAR_FILE_U *DO*NOT*CHANGE*
- */
 struct char_point_data {
-    sh_int          mana;
-    sh_int          max_mana;
-    /*
-     * ubyte mana_gain ;
-     */
-    char            mana_gain;
+    int             mana;
+    int             max_mana;
+    int             mana_gain;
 
-    sh_int          hit;
-    sh_int          max_hit;    /* Max hit for NPC */
-    /*
-     * ubyte hit_gain;
-     */
-    char            hit_gain;
+    int             hit;
+    int             max_hit;    /* Max hit for NPC */
+    int             hit_gain;
 
-    sh_int          move;
-    sh_int          max_move;   /* Max move for NPC */
-    /*
-     * ubyte move_gain;
-     */
-    char            move_gain;
+    int             move;
+    int             max_move;   /* Max move for NPC */
+    int             move_gain;
 
-    sh_int          extra1;     /* extra stuff */
-    sh_int          extra2;
-    ubyte           extra3;
-
-    sh_int          armor;      /* Internal -100..100, external -10..10 AC
-                                 */
+    int             armor;      /* Internal -100..100, external -10..10 AC */
     int             gold;       /* Money carried */
     int             bankgold;   /* gold in the bank.  */
     int             exp;        /* The experience of the player */
     int             clan;       /* clan number */
     int             leadership_exp;     /* leadership experience */
 
-    sbyte           hitroll;    /* Any bonus or penalty to the hit roll */
-    sbyte           damroll;    /* Any bonus or penalty to the damage roll
-                                 */
-
-    sbyte           extra_h;    /* extra */
+    int             hitroll;    /* Any bonus or penalty to the hit roll */
+    int             damroll;    /* Any bonus or penalty to the damage roll */
 };
 
 struct pc_data {
@@ -1261,50 +1228,37 @@ struct char_special_data {
 /*
  * skill_data flags
  */
-#define SKILL_KNOWN                 BV00
-#define SKILL_KNOWN_CLERIC          BV01
-#define SKILL_KNOWN_MAGE            BV02
-#define SKILL_KNOWN_SORCERER        BV03
-#define SKILL_KNOWN_THIEF           BV04
-#define SKILL_KNOWN_MONK            BV05
-#define SKILL_KNOWN_DRUID           BV06
-#define SKILL_KNOWN_WARRIOR         BV07
-/*
- * need to make byte flags, to long or int flags in char_skill_data
- */
-#define SKILL_KNOWN_BARBARIAN       BV08
-#define SKILL_KNOWN_PALADIN         BV09
-#define SKILL_KNOWN_RANGER          BV10
-#define SKILL_KNOWN_PSI             BV11
-#define SKILL_KNOWN_NECROMANCER     BV12
+#define SKILL_KNOWN                 BV(0)
+#define SKILL_KNOWN_CLERIC          BV(1)
+#define SKILL_KNOWN_MAGE            BV(2)
+#define SKILL_KNOWN_SORCERER        BV(3)
+#define SKILL_KNOWN_THIEF           BV(4)
+#define SKILL_KNOWN_MONK            BV(5)
+#define SKILL_KNOWN_DRUID           BV(6)
+#define SKILL_KNOWN_WARRIOR         BV(7)
+#define SKILL_KNOWN_BARBARIAN       BV(8)
+#define SKILL_KNOWN_PALADIN         BV(9)
+#define SKILL_KNOWN_RANGER          BV(10)
+#define SKILL_KNOWN_PSI             BV(11)
+#define SKILL_KNOWN_NECROMANCER     BV(12)
 
 /*
  * skill_data special
  */
-#define SKILL_SPECIALIZED       1
-#define SKILL_UNDEFINED         2
-#define SKILL_UNDEFINED2        4
+#define SKILL_SPECIALIZED       BV(0)
+#define SKILL_UNDEFINED         BV(1)
+#define SKILL_UNDEFINED2        BV(2)
 
-/*
- * Used in CHAR_FILE_U *DO*NOT*CHANGE*
- */
 struct char_skill_data {
-    byte            learned;    /* % chance for success 0 = not learned */
-
-    /*
-     * change to int or long
-     */
-    byte            flags;      /* SKILL KNOWN? bit settings */
-    byte            special;    /* spell/skill specializations */
-    byte            nummem;     /* number of times this spell is memorized */
+    int             learned;    /* % chance for success 0 = not learned */
+    long            flags;      /* SKILL KNOWN? bit settings */
+    long            special;    /* spell/skill specializations */
+    int             nummem;     /* number of times this spell is memorized */
 };
 
-/*
- * Used in CHAR_FILE_U *DO*NOT*CHANGE*
- */
 struct affected_type {
-    short           type;       /* The type of spell that caused this */
-    sh_int          duration;   /* For how long its effects will last */
+    int             type;       /* The type of spell that caused this */
+    int             duration;   /* For how long its effects will last */
     long            modifier;   /* This is added to apropriate ability */
     long            location;   /* Tells which ability to
                                  * change(APPLY_XXX) */

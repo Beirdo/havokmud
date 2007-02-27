@@ -2662,7 +2662,7 @@ int CalcThaco(struct char_data *ch)
         calc_thaco -= 1;
     }
 
-    if (IS_AFFECTED(ch, AFF_PROTECT_FROM_EVIL) && ch->specials.fighting &&
+    if (IS_AFFECTED2(ch, AFF2_PROTECT_FROM_EVIL) && ch->specials.fighting &&
         IS_EVIL(ch->specials.fighting)) {
         /*
          * get +1 to hit evil
@@ -2674,7 +2674,7 @@ int CalcThaco(struct char_data *ch)
      * you get -4 to hit a mob if your evil and he has prot from evil
      */
     if (ch->specials.fighting && IS_EVIL(ch) &&
-        IS_AFFECTED(ch->specials.fighting, AFF_PROTECT_FROM_EVIL)) {
+        IS_AFFECTED2(ch->specials.fighting, AFF2_PROTECT_FROM_EVIL)) {
         calc_thaco += 4;
     }
 

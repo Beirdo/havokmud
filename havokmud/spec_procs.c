@@ -6480,7 +6480,7 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (!IS_AFFECTED(ch, AFF_PROTECT_FROM_EVIL) && !number(0, 6)) {
+        if (!IS_AFFECTED2(ch, AFF2_PROTECT_FROM_EVIL) && !number(0, 6)) {
             act("$n prays to $s deity to protect $m from evil.", 1, ch, 0,
                 0, TO_ROOM);
             cast_protection_from_evil(GetMaxLevel(ch), ch, "",

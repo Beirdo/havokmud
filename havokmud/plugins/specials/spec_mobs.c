@@ -482,7 +482,7 @@ int ghoul(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     tar = ch->specials.fighting;
 
     if (tar && tar->in_room == ch->in_room &&
-        !IS_AFFECTED(tar, AFF_PROTECT_FROM_EVIL) &&
+        !IS_AFFECTED2(tar, AFF2_PROTECT_FROM_EVIL) &&
         !IS_AFFECTED(tar, AFF_SANCTUARY) &&
         HitOrMiss(ch, tar, CalcThaco(ch))) {
 

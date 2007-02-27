@@ -83,24 +83,24 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
         if (IS_OBJ_STAT(object, extra_flags, ITEM_INVISIBLE)) {
             strcat(buffer, " (invisible)");
         }
-        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)
-            && IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD) && 
+            IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows red");
             } else {
                 strcat(buffer, "..They glow red");
 			}
         }
-        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL)
-            && IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL) && 
+            IS_AFFECTED(ch, AFF_DETECT_GOOD)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows white");
             } else {
                 strcat(buffer, "..They glow white");
 			}
         }
-        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC)
-            && IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC) && 
+            IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
             if (singular(object)) {
                 strcat(buffer, "..It glows blue");
             } else {
@@ -260,16 +260,16 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
         if (IS_OBJ_STAT(object, extra_flags, ITEM_INVISIBLE)) {
             strcat(buffer, " (invisible)");
         }
-        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD)
-            && IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_GOOD) && 
+            IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
             strcat(buffer, "..It glows red!");
         }
-        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL)
-            && IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
+        if (IS_OBJ_STAT(object, anti_flags, ITEM_ANTI_EVIL) && 
+            IS_AFFECTED(ch, AFF_DETECT_GOOD)) {
             strcat(buffer, "..It glows white!");
         }
-        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC)
-            && IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
+        if (IS_OBJ_STAT(object, extra_flags, ITEM_MAGIC) && 
+            IS_AFFECTED(ch, AFF_DETECT_MAGIC)) {
             strcat(buffer, "..It glows blue!");
         }
         if (IS_OBJ_STAT(object, extra_flags, ITEM_GLOW)) {
@@ -597,15 +597,11 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             if (IS_LINKDEAD(i)) {
                 strcat(buffer, "$c0015 (Linkdead)$c0007");
 			}
-            if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
-                if (IS_EVIL(i)) {
-                    strcat(buffer, "$c0009 (Red Aura)");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_EVIL) && IS_EVIL(i)) {
+                strcat(buffer, "$c0009 (Red Aura)");
             }
-			if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-                if (IS_GOOD(i)) {
-                    strcat(buffer, "$c0015 (White Aura)");
-				}
+			if (IS_AFFECTED(ch, AFF_DETECT_GOOD) && IS_GOOD(i)) {
+                strcat(buffer, "$c0015 (White Aura)");
             }
 
             act(buffer, FALSE, ch, 0, 0, TO_CHAR);
@@ -632,15 +628,11 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             if (IS_AFFECTED(i, AFF_CHARM)) {
                 strcat(buffer, " (pet)$c0007");
 			}
-            if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
-                if (IS_EVIL(i)) {
-                    strcat(buffer, "$c0009 (Red Aura)$c0007");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_EVIL) && IS_EVIL(i)) {
+                strcat(buffer, "$c0009 (Red Aura)$c0007");
             }
-            if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-                if (IS_GOOD(i)) {
-                    strcat(buffer, "$c0015 (White Aura)$c0007");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_GOOD) && IS_GOOD(i)) {
+                strcat(buffer, "$c0015 (White Aura)$c0007");
             }
             if (IS_AFFECTED2(i, AFF2_AFK)) {
                 strcat(buffer, "$c0006 (AFK)$c0007");
@@ -1090,16 +1082,12 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
                 strcat(buffer, "$c0006 is floating here.");
                 break;
             }
-            if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
-                if (IS_EVIL(i)) {
-                    strcat(buffer, "$c0009 (Red Aura)");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_EVIL) && IS_EVIL(i)) {
+                strcat(buffer, "$c0009 (Red Aura)");
             }
 
-            if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-                if (IS_GOOD(i)) {
-                    strcat(buffer, "$c0015 (White Aura)");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_GOOD) && IS_GOOD(i)) {
+                strcat(buffer, "$c0015 (White Aura)");
             }
 
             if (IS_AFFECTED2(i, AFF2_AFK)) {
@@ -1136,15 +1124,11 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
             if (IS_AFFECTED(i, AFF_CHARM)) {
                 strcat(buffer, " (pet)$c0007");
 			}
-            if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
-                if (IS_EVIL(i)) {
-                    strcat(buffer, "$c0009 (Red Aura)$c0007");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_EVIL) && IS_EVIL(i)) {
+                strcat(buffer, "$c0009 (Red Aura)$c0007");
             }
-            if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-                if (IS_GOOD(i)) {
-                    strcat(buffer, "$c0015 (White Aura)$c0007");
-				}
+            if (IS_AFFECTED(ch, AFF_DETECT_GOOD) && IS_GOOD(i)) {
+                strcat(buffer, "$c0015 (White Aura)$c0007");
             }
             if (IS_AFFECTED2(i, AFF2_AFK)) {
                 strcat(buffer, "$c0006 (AFK)$c0007");

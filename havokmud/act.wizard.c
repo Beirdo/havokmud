@@ -7531,9 +7531,6 @@ int eval(struct obj_data *object)
         case APPLY_GOLD:
             total += 1;
             break;
-        case APPLY_SPELL2:
-            total += 10;
-            break;
         case APPLY_ARMOR:
             total -= object->affected[i].modifier;
             break;
@@ -7768,9 +7765,6 @@ int eval(struct obj_data *object)
             if (IS_SET(object->affected[i].modifier, AFF_DARKNESS)) {
                 total += 4;
             }
-            if (IS_SET(object->affected[i].modifier, AFF_PROTECT_FROM_EVIL)) {
-                total += 6;
-            }
             if (IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT)) {
                 total += 10;
             }
@@ -7788,6 +7782,12 @@ int eval(struct obj_data *object)
             }
             if (IS_SET(object->affected[i].modifier, AFF_BLADE_BARRIER)) {
                 total += 30;
+            }
+            break;
+        case APPLY_SPELL2:
+            total += 10;
+            if (IS_SET(object->affected[i].modifier, AFF2_PROTECT_FROM_EVIL)) {
+                total += 6;
             }
             break;
         case APPLY_WEAPON_SPELL:
