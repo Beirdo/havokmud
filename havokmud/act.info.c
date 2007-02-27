@@ -5243,6 +5243,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 
 void do_weapons(struct char_data *ch, char *argument, int cmd)
 {
+    int             i;
+
     if (!ch) {
         return;
     }
@@ -5254,52 +5256,12 @@ void do_weapons(struct char_data *ch, char *argument, int cmd)
     send_to_char("You currently have expertise in use of the following "
                  "weaponry:\n\r\n\r", ch);
 
-    if (ch->weaponskills.slot1) {
-        oldSendOutput(ch, "[1]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot1 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade1));
-    }
-
-    if (ch->weaponskills.slot2) {
-        oldSendOutput(ch, "[2]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot2 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade2));
-    }
-
-    if (ch->weaponskills.slot3) {
-        oldSendOutput(ch, "[3]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot3 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade3));
-    }
-
-    if (ch->weaponskills.slot4) {
-        oldSendOutput(ch, "[4]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot4 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade4));
-    }
-
-    if (ch->weaponskills.slot5) {
-        oldSendOutput(ch, "[5]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot5 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade5));
-    }
-
-    if (ch->weaponskills.slot6) {
-        oldSendOutput(ch, "[6]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot6 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade6));
-    }
-
-    if (ch->weaponskills.slot7) {
-        oldSendOutput(ch, "[7]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot7 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade7));
-    }
-
-    if (ch->weaponskills.slot8) {
-        oldSendOutput(ch, "[8]  %-20s %10s\n\r",
-                      weaponskills[ch->weaponskills.slot8 - WEAPON_FIRST].name,
-                      how_good(ch->weaponskills.grade8));
+    for( i = 0; i < MAX_WEAPONSKILLS; i++ ) {
+        if (ch->weaponskills.slot[i]) {
+            oldSendOutput(ch, "[%d]  %-20s %10s\n\r", i+1,
+                   weaponskills[ch->weaponskills.slot[i] - WEAPON_FIRST].name,
+                   how_good(ch->weaponskills.grade[i]));
+        }
     }
 }
 

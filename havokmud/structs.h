@@ -1141,24 +1141,13 @@ struct pc_data {
     int             dimd_credits;       /* credits used in remote comm */
     long            comm;       /* flags used for remote communications */
 };
+
+#define MAX_WEAPONSKILLS 8
 struct weaponskills {
-    int             slot1;
-    int             slot2;
-    int             slot3;
-    int             slot4;
-    int             slot5;
-    int             slot6;
-    int             slot7;
-    int             slot8;
-    int             grade1;
-    int             grade2;
-    int             grade3;
-    int             grade4;
-    int             grade5;
-    int             grade6;
-    int             grade7;
-    int             grade8;
+    int             slot[MAX_WEAPONSKILLS];
+    int             grade[MAX_WEAPONSKILLS];
 };
+
 struct char_special_data {
     int             spellfail;  /* max # for spell failure (101) */
     byte            tick;       /* the tick that the mob/player is on */

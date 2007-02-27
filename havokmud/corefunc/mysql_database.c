@@ -423,7 +423,7 @@ struct obj_flags_t {
 };
 
 static struct obj_flags_t obj_flags[] = {
-    { NULL, 0 },
+    { NULL, 0, 0 },
     { obj_wear_flags,       NELEMENTS(obj_wear_flags), 
       OFFSETOF(wear_flags, struct obj_data) },
     { obj_extra_flags,      NELEMENTS(obj_extra_flags),
@@ -1258,7 +1258,7 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     bind_numeric( &data[17], (long)obj->modified, MYSQL_TYPE_LONG );
     bind_numeric( &data[18], (IS_WEAPON(obj)? obj->speed : 0), 
                   MYSQL_TYPE_LONG );
-    bind_numeric( &data[19], (IS_WEAPON(obj) ? obj->weapontype : 0),
+    bind_numeric( &data[19], (IS_WEAPON(obj) ? obj->weapontype + 1 : 0),
                   MYSQL_TYPE_LONG );
     bind_numeric( &data[20], obj->tweak, MYSQL_TYPE_LONG );
     db_queue_query( 39, QueryTable, data, 21, NULL, NULL, mutex );
@@ -1331,7 +1331,8 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         }
     }
 
-    for (descr = obj->ex_description, i = 0; descr; descr++, i++) {
+    for (descr = obj->ex_description, i = 0; 
+         i < obj->ex_description_count; descr++, i++) {
         /* Update extra descriptions */
         data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
         memset( data, 0, 6 * sizeof(MYSQL_BIND) );
@@ -2803,7 +2804,7 @@ void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     obj->max                    = atoi(row[13]);
     obj->modified               = atol(row[14]); 
     obj->speed                  = atoi(row[15]);
-    obj->weapontype             = atoi(row[16]);
+    obj->weapontype             = atoi(row[16]) - 1;
     obj->tweak                  = atoi(row[17]);
 }
 

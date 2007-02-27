@@ -3797,22 +3797,10 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 
     ch->specials.remortclass = st->remortclass;
 
-    ch->weaponskills.slot1 = st->slot1;
-    ch->weaponskills.slot2 = st->slot2;
-    ch->weaponskills.slot3 = st->slot3;
-    ch->weaponskills.slot4 = st->slot4;
-    ch->weaponskills.slot5 = st->slot5;
-    ch->weaponskills.slot6 = st->slot6;
-    ch->weaponskills.slot7 = st->slot7;
-    ch->weaponskills.slot8 = st->slot8;
-    ch->weaponskills.grade1 = st->grade1;
-    ch->weaponskills.grade2 = st->grade2;
-    ch->weaponskills.grade3 = st->grade3;
-    ch->weaponskills.grade4 = st->grade4;
-    ch->weaponskills.grade5 = st->grade5;
-    ch->weaponskills.grade6 = st->grade6;
-    ch->weaponskills.grade7 = st->grade7;
-    ch->weaponskills.grade8 = st->grade8;
+    for( i = 0; i < MAX_WEAPONSKILLS; i++ ) {
+        ch->weaponskills.slot[i] = st->slot[i];
+        ch->weaponskills.grade[i] = st->grade[i];
+    }
 
     ch->specials.spells_to_learn = st->spells_to_learn;
     ch->specials.alignment = st->alignment;
@@ -3982,22 +3970,10 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 
     st->remortclass = ch->specials.remortclass;
 
-    st->slot1 = ch->weaponskills.slot1;
-    st->slot2 = ch->weaponskills.slot2;
-    st->slot3 = ch->weaponskills.slot3;
-    st->slot4 = ch->weaponskills.slot4;
-    st->slot5 = ch->weaponskills.slot5;
-    st->slot6 = ch->weaponskills.slot6;
-    st->slot7 = ch->weaponskills.slot7;
-    st->slot8 = ch->weaponskills.slot8;
-    st->grade1 = ch->weaponskills.grade1;
-    st->grade2 = ch->weaponskills.grade2;
-    st->grade3 = ch->weaponskills.grade3;
-    st->grade4 = ch->weaponskills.grade4;
-    st->grade5 = ch->weaponskills.grade5;
-    st->grade6 = ch->weaponskills.grade6;
-    st->grade7 = ch->weaponskills.grade7;
-    st->grade8 = ch->weaponskills.grade8;
+    for( i = 0; i < MAX_WEAPONSKILLS; i++ ) {
+        st->slot[i] = ch->weaponskills.slot[i];
+        st->grade[i] = ch->weaponskills.grade[i];
+    }
 
     st->speaks = ch->player.speaks;
     st->user_flags = ch->player.user_flags;

@@ -485,9 +485,6 @@ struct index_data {
     int_func        func;       /* special procedure for this mob/obj */
     void           *data;
     Keywords_t      keywords;
-#if 0
-    char           *name;
-#endif
     char           *short_desc;
     char           *long_desc;
     int             MaxObjCount;
@@ -541,9 +538,6 @@ struct obj_data {
     struct obj_data *contains;          /**< Contains objects */
     struct obj_data *next_content;      /**< For 'contains' lists */
     struct obj_data *next;              /**< For the object list */
-
-    int             is_corpse;          /**< For Behead */
-    int             beheaded_corpse;    /**< For Behead */
 
     int             level;              /**< Level ego of the item */
     int             max;                /**< max of the object */

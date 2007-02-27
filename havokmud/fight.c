@@ -1548,21 +1548,19 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
     return (TRUE);
 }
 
-/**
- * @todo rewrite this fugly code!
- */
 void WeaponSkillCheck(struct char_data *ch)
 {
     struct obj_data *obj;
-    int             weapontype = 0;
-    int             found = 0;
-    int             maxpoints = 0;
-    int             totpoints = 0;
+    int             weapontype;
+    int             found;
+    int             maxpoints;
+    int             totpoints;
 
-    int             fighter = 0;
-    int             specialist = 0;
-    int             lowest = 100;
+    int             fighter;
+    int             specialist;
+    int             lowest;
     char            buf[256];
+    int             i;
 
     if (!(obj = ch->equipment[WIELD])) {
         return;
@@ -1575,22 +1573,10 @@ void WeaponSkillCheck(struct char_data *ch)
      */
     weapontype = obj->weapontype + WEAPON_FIRST;
 
-    if (ch->weaponskills.slot1 == weapontype) {
-        found = 1;
-    } else if (ch->weaponskills.slot2 == weapontype){
-        found = 2;
-    } else if (ch->weaponskills.slot3 == weapontype) {
-        found = 3;
-    } else if (ch->weaponskills.slot4 == weapontype) {
-        found = 4;
-    } else if (ch->weaponskills.slot5 == weapontype) {
-        found = 5;
-    } else if (ch->weaponskills.slot6 == weapontype) {
-        found = 6;
-    } else if (ch->weaponskills.slot7 == weapontype) {
-        found = 7;
-    } else if (ch->weaponskills.slot8 == weapontype) {
-        found = 8;
+    for( i = 0, found = -1; i < MAX_WEAPONSKILLS && found == -1; i++ ) {
+        if (ch->weaponskills.slot[i] == weapontype) {
+            found = i;
+        }
     }
 
     if (ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
@@ -1599,66 +1585,40 @@ void WeaponSkillCheck(struct char_data *ch)
         maxpoints = 400;
     } else if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_BARBARIAN) ||
                HasClass(ch, CLASS_PALADIN) || HasClass(ch, CLASS_RANGER)) {
+        specialist = 0;
         fighter = 1;
         maxpoints = 200;
     } else {
+        specialist = 0;
+        fighter = 0;
         maxpoints = 100;
     }
 
-    if (!found) {
+    if (found == -1) {
         /*
          * assign the lowest available slot to this type
          */
-        if (lowest > ch->weaponskills.grade1) {
-            lowest = ch->weaponskills.grade1;
-        }
-        if (lowest > ch->weaponskills.grade2) {
-            lowest = ch->weaponskills.grade2;
-        }
-        if (lowest > ch->weaponskills.grade3) {
-            lowest = ch->weaponskills.grade3;
-        }
-        if (lowest > ch->weaponskills.grade4 && fighter) {
-            lowest = ch->weaponskills.grade4;
-        }
-        if (lowest > ch->weaponskills.grade5 && fighter) {
-            lowest = ch->weaponskills.grade5;
-        }
-        if (lowest > ch->weaponskills.grade6 && specialist) {
-            lowest = ch->weaponskills.grade6;
-        }
-        if (lowest > ch->weaponskills.grade7 && specialist) {
-            lowest = ch->weaponskills.grade7;
-        }
-        if (lowest > ch->weaponskills.grade8 && specialist) {
-            lowest = ch->weaponskills.grade8;
+        for( i = 0, lowest = 100; i < MAX_WEAPONSKILLS; i++ ) {
+            if( !fighter && i >= 3 ) {
+                break;
+            }
+
+            if( !specialist && i >= 5 ) {
+                break;
+            }
+
+            lowest = MIN( lowest, ch->weaponskills.grade[i] );
         }
 
-        if (lowest == ch->weaponskills.grade1) {
-            ch->weaponskills.grade1 = 1;
-            ch->weaponskills.slot1 = weapontype;
-        } else if (lowest == ch->weaponskills.grade2) {
-            ch->weaponskills.grade2 = 1;
-            ch->weaponskills.slot2 = weapontype;
-        } else if (lowest == ch->weaponskills.grade3) {
-            ch->weaponskills.grade3 = 1;
-            ch->weaponskills.slot3 = weapontype;
-        } else if (lowest == ch->weaponskills.grade4) {
-            ch->weaponskills.grade4 = 1;
-            ch->weaponskills.slot4 = weapontype;
-        } else if (lowest == ch->weaponskills.grade5) {
-            ch->weaponskills.grade5 = 1;
-            ch->weaponskills.slot5 = weapontype;
-        } else if (lowest == ch->weaponskills.grade6) {
-            ch->weaponskills.grade6 = 1;
-            ch->weaponskills.slot6 = weapontype;
-        } else if (lowest == ch->weaponskills.grade7) {
-            ch->weaponskills.grade7 = 1;
-            ch->weaponskills.slot7 = weapontype;
-        } else if (lowest == ch->weaponskills.grade8) {
-            ch->weaponskills.grade8 = 1;
-            ch->weaponskills.slot8 = weapontype;
-        } else {
+        for( i = 0; i < MAXWEAPONSKILLS; i++ ) {
+            if( lowest == ch->weaponskills.grade[i] ) {
+                ch->weaponskills.grade[i] = 1;
+                ch->weaponskills.slot[i] = weapontype;
+                break;
+            }
+        }
+
+        if( i >= MAXWEAPONSKILLS ) {
             Log("got to bad spot in WeaponSkillCheck");
             return;
         }
@@ -1666,93 +1626,44 @@ void WeaponSkillCheck(struct char_data *ch)
         sprintf(buf, "You've decided to get in some practice with the %s.\n\r",
                 weaponskills[weapontype - WEAPON_FIRST].name);
         send_to_char(buf, ch);
-    } else {
+        return;
+    } 
+    
+    /*
+     * 3% chance of skill increase
+     */
+    if (number(1, 100) < 4) {
+        if( ch->weaponskills.grade[found] < 100 ) {
+            ch->weaponskills.grade[found]++;
+        }
+        send_to_char("Practice makes perfect!\n\r", ch);
+
         /*
-         * 3% chance of skill increase
+         * now check for total skill points
          */
-        if (number(1, 100) < 4) {
-            switch (found) {
-            case 1:
-                if (ch->weaponskills.grade1 < 100) {
-                    ch->weaponskills.grade1++;
-                }
-                break;
-            case 2:
-                if (ch->weaponskills.grade2 < 100) {
-                    ch->weaponskills.grade2++;
-                }
-                break;
-            case 3:
-                if (ch->weaponskills.grade3 < 100) {
-                    ch->weaponskills.grade3++;
-                }
-                break;
-            case 4:
-                if (ch->weaponskills.grade4 < 100) {
-                    ch->weaponskills.grade4++;
-                }
-                break;
-            case 5:
-                if (ch->weaponskills.grade5 < 100) {
-                    ch->weaponskills.grade5++;
-                }
-                break;
-            case 6:
-                if (ch->weaponskills.grade6 < 100) {
-                    ch->weaponskills.grade6++;
-                }
-                break;
-            case 7:
-                if (ch->weaponskills.grade7 < 100) {
-                    ch->weaponskills.grade7++;
-                }
-                break;
-            case 8:
-                if (ch->weaponskills.grade8 < 100) {
-                    ch->weaponskills.grade8++;
-                }
-                break;
-            default:
-                Log("odd spot in weapon increase");
-                break;
-            }
-            send_to_char("Practice makes perfect!\n\r", ch);
+        for( i = 0, totpoints = 0; i < MAX_WEAPONSKILLS ) {
+            totpoints += ch->weaponskills.grade[i];
+        }
 
+        if (totpoints > maxpoints) {
             /*
-             * now check for total skill points
+             * let's lower all the others a point
              */
-            totpoints = ch->weaponskills.grade1 + ch->weaponskills.grade2 +
-                        ch->weaponskills.grade3 + ch->weaponskills.grade4 +
-                        ch->weaponskills.grade5 + ch->weaponskills.grade6 +
-                        ch->weaponskills.grade7 + ch->weaponskills.grade8;
+            for( i = 0; i < MAX_WEAPONSKILLS; i++ ) {
+                if( found == i ) {
+                    continue;
+                }
 
-            if (totpoints > maxpoints) {
-                /*
-                 * let's lower all the others a point
-                 */
-                if (found != 1 && ch->weaponskills.grade1 > 0) {
-                    ch->weaponskills.grade1--;
+                if( !fighter && i >= 3 ) {
+                    break;
                 }
-                if (found != 2 && ch->weaponskills.grade2 > 0) {
-                    ch->weaponskills.grade2--;
+
+                if( !specialist && i >= 5 ) {
+                    break;
                 }
-                if (found != 3 && ch->weaponskills.grade3 > 0) {
-                    ch->weaponskills.grade3--;
-                }
-                if (found != 4 && ch->weaponskills.grade4 > 0 && fighter) {
-                    ch->weaponskills.grade4--;
-                }
-                if (found != 5 && ch->weaponskills.grade5 > 0 && fighter) {
-                    ch->weaponskills.grade5--;
-                }
-                if (found != 6 && ch->weaponskills.grade6 > 0 && specialist) {
-                    ch->weaponskills.grade6--;
-                }
-                if (found != 7 && ch->weaponskills.grade7 > 0 && specialist) {
-                    ch->weaponskills.grade7--;
-                }
-                if (found != 8 && ch->weaponskills.grade8 > 0 && specialist) {
-                    ch->weaponskills.grade8--;
+
+                if( ch->weaponskills.grade[i] > 0 ) {
+                    ch->weaponskills.grade[i]--;
                 }
             }
         }
@@ -3250,22 +3161,10 @@ void perform_violence(int pulse)
                          */
                         weapontype = obj->weapontype + WEAPON_FIRST;
 
-                        if (ch->weaponskills.slot1 == weapontype) {
-                            x += (ch->weaponskills.grade1 - 50) / 100;
-                        } else if (ch->weaponskills.slot2 == weapontype) {
-                            x += (ch->weaponskills.grade2 - 50) / 100;
-                        } else if (ch->weaponskills.slot3 == weapontype) {
-                            x += (ch->weaponskills.grade3 - 50) / 100;
-                        } else if (ch->weaponskills.slot4 == weapontype) {
-                            x += (ch->weaponskills.grade4 - 50) / 100;
-                        } else if (ch->weaponskills.slot5 == weapontype) {
-                            x += (ch->weaponskills.grade5 - 50) / 100;
-                        } else if (ch->weaponskills.slot6 == weapontype) {
-                            x += (ch->weaponskills.grade6 - 50) / 100;
-                        } else if (ch->weaponskills.slot7 == weapontype) {
-                            x += (ch->weaponskills.grade7 - 50) / 100;
-                        } else if (ch->weaponskills.slot8 == weapontype) {
-                            x += (ch->weaponskills.grade8 - 50) / 100;
+                        for( i = 0; i < MAX_WEAPONSKILLS; i++ ) {
+                            if (ch->weaponskills.slot[i] == weapontype) {
+                                x += (ch->weaponskills.grade[i] - 50) / 100;
+                            }
                         }
                     }
 
@@ -3275,11 +3174,11 @@ void perform_violence(int pulse)
                              * I did this for the remortskills changes.
                              * Maybe I'll look at slow later (Gordon)
                              */
-                            x = x + 1.5;
+                            x += 1.5;
                         }
 
                         if (IS_SET(ch->specials.affected_by2, AFF2_SLOW))
-                            x = x / 2;
+                            x /= 2.0;
                     }
 
                     if (ch->equipment[WIELD]) {
@@ -3336,11 +3235,6 @@ void perform_violence(int pulse)
                                           "You raise your weapon and run in to"
                                           " assist %s.\n\r",
                                           GET_NAME(f->follower->master));
-#if 0
-                                do_assist(f->follower,
-                                GET_NAME(f->follower->master),
-                                0);
-#endif
                                 set_fighting(f->follower,
                                              ch->specials.fighting);
                             }
@@ -3359,11 +3253,6 @@ void perform_violence(int pulse)
                             oldSendOutput(ch->master,
                                       "You raise your weapon and run in to "
                                       "assist %s.\n\r", GET_NAME(ch));
-#if 0
-                            do_assist(ch->master,
-                            GET_NAME(f->follower->master),
-                            0);
-#endif
                             set_fighting(ch->master, ch->specials.fighting);
                         }
                     }
