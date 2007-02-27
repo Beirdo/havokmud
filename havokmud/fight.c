@@ -4710,7 +4710,7 @@ int GetItemDamageType(int type)
     case SPELL_ACID_BLAST:
         return (ACID_DAMAGE);
     default:
-        return (0);
+        return (NORMAL_DAMAGE);
         break;
     }
 

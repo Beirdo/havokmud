@@ -37,33 +37,37 @@ typedef char    byte;
 #define ONE_PARAGRAPH            576
 #define ONE_PAGE                3072
 
-#define PULSE_COMMAND   0
-#define PULSE_TICK      1
-#define EVENT_DEATH     2
-#define EVENT_SUMMER    3
-#define EVENT_SPRING    4
-#define EVENT_FALL      5
-#define EVENT_WINTER    6
-#define EVENT_GATHER    7
-#define EVENT_ATTACK    8
-#define EVENT_FOLLOW    9
-#define EVENT_MONTH    10
-#define EVENT_BIRTH    11       /* birth event for the mob.  */
-#define EVENT_FAMINE   12
-#define EVENT_DWARVES_STRIKE 13 /* fitting number, eh? -DM */
-#define EVENT_END_STRIKE  14
-#define EVENT_END_FAMINE  15
-#define EVENT_WEEK        16
-#define EVENT_GOBLIN_RAID 17
-#define EVENT_END_GOB_RAID 18
+typedef enum {
+    PULSE_COMMAND = 0,
+    PULSE_TICK,
+    EVENT_DEATH,
+    EVENT_SUMMER,
+    EVENT_SPRING,
+    EVENT_FALL,
+    EVENT_WINTER,
+    EVENT_GATHER,
+    EVENT_ATTACK,
+    EVENT_FOLLOW,
+    EVENT_MONTH,
+    EVENT_BIRTH,
+    EVENT_FAMINE,
+    EVENT_DWARVES_STRIKE,
+    EVENT_END_STRIKE,
+    EVENT_END_FAMINE,
+    EVENT_WEEK,
+    EVENT_GOBLIN_RAID,
+    EVENT_END_GOB_RAID
+} Events_t;
 
-#define DWARVES_STRIKE 1
-#define FAMINE         2
+#define DWARVES_STRIKE BV(0)
+#define FAMINE         BV(1)
 
-#define SEASON_WINTER  1
-#define SEASON_SPRING  2
-#define SEASON_SUMMER  4
-#define SEASON_FALL    8
+typedef enum {
+    SEASON_WINTER = 0,
+    SEASON_SPRING,
+    SEASON_SUMMER,
+    SEASON_FALL
+} Seasons_t;
 
 typedef struct alias_type {
     char           *com[10];    /* 10 aliases */
@@ -84,49 +88,12 @@ typedef struct alias_type {
 #define MAX_STAT 6              /* s i, w, d, co (ch) */
 
 /*
- * the poofin and poofout shit.  Dm gave this to Parallax, and the other
- * gods are demanding it, so I'll install it :-)
+ * the poofin and poofout mask bits
  */
 
-#define BIT_POOF_IN  1
-#define BIT_POOF_OUT 2
+#define BIT_POOF_IN     BV(0)
+#define BIT_POOF_OUT    BV(1)
 
-/*
- * 32bit bitvector defines Should prevent some coder errors while adding
- * new bitvectors
- */
-#define BV00            (1 <<  0)
-#define BV01            (1 <<  1)
-#define BV02            (1 <<  2)
-#define BV03            (1 <<  3)
-#define BV04            (1 <<  4)
-#define BV05            (1 <<  5)
-#define BV06            (1 <<  6)
-#define BV07            (1 <<  7)
-#define BV08            (1 <<  8)
-#define BV09            (1 <<  9)
-#define BV10            (1 << 10)
-#define BV11            (1 << 11)
-#define BV12            (1 << 12)
-#define BV13            (1 << 13)
-#define BV14            (1 << 14)
-#define BV15            (1 << 15)
-#define BV16            (1 << 16)
-#define BV17            (1 << 17)
-#define BV18            (1 << 18)
-#define BV19            (1 << 19)
-#define BV20            (1 << 20)
-#define BV21            (1 << 21)
-#define BV22            (1 << 22)
-#define BV23            (1 << 23)
-#define BV24            (1 << 24)
-#define BV25            (1 << 25)
-#define BV26            (1 << 26)
-#define BV27            (1 << 27)
-#define BV28            (1 << 28)
-#define BV29            (1 << 29)
-#define BV30            (1 << 30)
-#define BV31            (1 << 31)
 
 /*
  * Quest stuff
@@ -183,20 +150,22 @@ struct QuestItem {
  **  multiclassing stuff
  */
 
-#define MAGE_LEVEL_IND      0
-#define CLERIC_LEVEL_IND    1
-#define WARRIOR_LEVEL_IND   2
-#define THIEF_LEVEL_IND     3
-#define DRUID_LEVEL_IND     4
-#define MONK_LEVEL_IND      5
-#define BARBARIAN_LEVEL_IND 6
-#define SORCERER_LEVEL_IND  7
-#define PALADIN_LEVEL_IND   8
-#define RANGER_LEVEL_IND    9
-#define PSI_LEVEL_IND       10
-#define NECROMANCER_LEVEL_IND 11
+typedef enum {
+    MAGE_LEVEL_IND = 0,
+    CLERIC_LEVEL_IND,
+    WARRIOR_LEVEL_IND,
+    THIEF_LEVEL_IND,
+    DRUID_LEVEL_IND,
+    MONK_LEVEL_IND,
+    BARBARIAN_LEVEL_IND,
+    SORCERER_LEVEL_IND,
+    PALADIN_LEVEL_IND,
+    RANGER_LEVEL_IND,
+    PSI_LEVEL_IND,
+    NECROMANCER_LEVEL_IND
+} TempClassIndex_t;
 
-#define CLASS_COUNT  11
+#define CLASS_COUNT  NECROMANCER_LEVEL_IND + 1
 
 /*
  * user flags
@@ -232,67 +201,75 @@ struct QuestItem {
 /*
  * system flags defined on the fly and by wizards for this boot
  */
-#define SYS_NOPORTAL    BV00    /* no one can portal */
-#define SYS_NOASTRAL    BV01    /* no one can astral */
-#define SYS_NOSUMMON    BV02    /* no one can summon */
-#define SYS_NOKILL      BV03    /* NO PC (good side or bad side) can fight */
-#define SYS_LOGALL      BV04    /* log ALL users to the system log */
-#define SYS_ECLIPS      BV05    /* the world is in constant darkness! */
-#define SYS_SKIPDNS     BV06    /* skips DNS name searches on connects */
-#define SYS_REQAPPROVE  BV07    /* force god approval for new char */
-#define SYS_NOANSI      BV08    /* disable ansi colors world wide */
-#define SYS_WIZLOCKED   BV09    /* System is Wizlocked for all */
-#define SYS_NO_POLY     BV10    /* Spell Polymorph Self is disabled */
-#define SYS_NOOOC       BV11    /* Provide from OOCing worldwird - Manwe */
-#define SYS_LOCOBJ      BV12    /* Disable Locate Object - Manwe */
-#define SYS_WLD_ARENA   BV13    /* Makes the entire world flagged arena */
-#define SYS_NO_DEINIT   BV14    /* makes zone not deinit */
-#define SYS_NO_TWEAK    BV15    /* makes items not tweak */
-#define SYS_ZONELOCATE  BV16    /* makes locate in zone only */
+#define SYS_NOPORTAL    BV(0)       /* no one can portal */
+#define SYS_NOASTRAL    BV(1)       /* no one can astral */
+#define SYS_NOSUMMON    BV(2)       /* no one can summon */
+#define SYS_NOKILL      BV(3)       /* NO PC (good side or bad side) can 
+                                     * fight */
+#define SYS_LOGALL      BV(4)       /* log ALL users to the system log */
+#define SYS_ECLIPS      BV(5)       /* the world is in constant darkness! */
+#define SYS_SKIPDNS     BV(6)       /* skips DNS name searches on connects */
+#define SYS_REQAPPROVE  BV(7)       /* force god approval for new char */
+#define SYS_NOANSI      BV(8)       /* disable ansi colors world wide */
+#define SYS_WIZLOCKED   BV(9)       /* System is Wizlocked for all */
+#define SYS_NO_POLY     BV(10)      /* Spell Polymorph Self is disabled */
+#define SYS_NOOOC       BV(11)      /* Provide from OOCing worldwird - Manwe */
+#define SYS_LOCOBJ      BV(12)      /* Disable Locate Object - Manwe */
+#define SYS_WLD_ARENA   BV(13)      /* Makes the entire world flagged arena */
+#define SYS_NO_DEINIT   BV(14)      /* makes zone not deinit */
+#define SYS_NO_TWEAK    BV(15)      /* makes items not tweak */
+#define SYS_ZONELOCATE  BV(16)      /* makes locate in zone only */
 
-#define SPEAK_COMMON            1
-#define SPEAK_ELVISH            2
-#define SPEAK_HALFLING          3
-#define SPEAK_DWARVISH          4
-#define SPEAK_ORCISH            5
-#define SPEAK_GIANTISH          6
-#define SPEAK_OGRE              7
-#define SPEAK_GNOMISH           8
-#define SPEAK_ALL               9
-#define SPEAK_GODLIKE           10
+typedef enum {
+    SPEAK_COMMON = 1,
+    SPEAK_ELVISH,
+    SPEAK_HALFLING,
+    SPEAK_DWARVISH,
+    SPEAK_ORCISH,
+    SPEAK_GIANTISH,
+    SPEAK_OGRE,
+    SPEAK_GNOMISH,
+    SPEAK_ALL,
+    SPEAK_GODLIKE
+} SpeakLanguages_t;
 
-#define FIRE_DAMAGE 1
-#define COLD_DAMAGE 2
-#define ELEC_DAMAGE 3
-#define BLOW_DAMAGE 4
-#define ACID_DAMAGE 5
-#define FIRESHIELD  6
-#define CHILLSHIELD 7
-#define BLADE_BARRIER 8
+typedef enum {
+    NORMAL_DAMAGE = 0,
+    FIRE_DAMAGE,
+    COLD_DAMAGE,
+    ELEC_DAMAGE,
+    BLOW_DAMAGE,
+    ACID_DAMAGE,
+    FIRESHIELD,
+    CHILLSHIELD,
+    BLADE_BARRIER
+} DamageTypes_t;
 
-#define HATE_SEX   1
-#define HATE_RACE  2
-#define HATE_CHAR  4
-#define HATE_CLASS 8
-#define HATE_EVIL  16
-#define HATE_GOOD  32
-#define HATE_VNUM  64
+#define HATE_SEX   BV(0)
+#define HATE_RACE  BV(1)
+#define HATE_CHAR  BV(2)
+#define HATE_CLASS BV(3)
+#define HATE_EVIL  BV(4)
+#define HATE_GOOD  BV(5)
+#define HATE_VNUM  BV(6)
 
-#define FEAR_SEX   1
-#define FEAR_RACE  2
-#define FEAR_CHAR  4
-#define FEAR_CLASS 8
-#define FEAR_EVIL  16
-#define FEAR_GOOD  32
-#define FEAR_VNUM  64
+#define FEAR_SEX   BV(0)
+#define FEAR_RACE  BV(1)
+#define FEAR_CHAR  BV(2)
+#define FEAR_CLASS BV(3)
+#define FEAR_EVIL  BV(4)
+#define FEAR_GOOD  BV(5)
+#define FEAR_VNUM  BV(6)
 
-#define OP_SEX   1
-#define OP_RACE  2
-#define OP_CHAR  3
-#define OP_CLASS 4
-#define OP_EVIL  5
-#define OP_GOOD  6
-#define OP_VNUM  7
+typedef enum {
+    OP_SEX = 1,
+    OP_RACE,
+    OP_CHAR,
+    OP_CLASS,
+    OP_EVIL,
+    OP_GOOD,
+    OP_VNUM
+} OpinionType_t;
 
 #define ABS_MAX_LVL  70
 #define MAX_MORT     50
@@ -308,49 +285,57 @@ struct QuestItem {
 #define MAX_IMMORT   60
 #define NEVER_USE    61
 
-        /*
-         * Immune flags...
-         */
+/*
+ * Immune flags...
+ */
 
-#define IMM_FIRE        1
-#define IMM_COLD        2
-#define IMM_ELEC        4
-#define IMM_ENERGY      8
-#define IMM_BLUNT      16
-#define IMM_PIERCE     32
-#define IMM_SLASH      64
-#define IMM_ACID      128
-#define IMM_POISON    256
-#define IMM_DRAIN     512
-#define IMM_SLEEP    1024
-#define IMM_CHARM    2048
-#define IMM_HOLD     4096
-#define IMM_NONMAG   8192
-#define IMM_PLUS1   16384
-#define IMM_PLUS2   32768
-#define IMM_PLUS3   65536
-#define IMM_PLUS4  131072
+#define IMM_FIRE    BV(0)
+#define IMM_COLD    BV(1)
+#define IMM_ELEC    BV(2)
+#define IMM_ENERGY  BV(3)
+#define IMM_BLUNT   BV(4)
+#define IMM_PIERCE  BV(5)
+#define IMM_SLASH   BV(6)
+#define IMM_ACID    BV(7)
+#define IMM_POISON  BV(8)
+#define IMM_DRAIN   BV(9)
+#define IMM_SLEEP   BV(10)
+#define IMM_CHARM   BV(11)
+#define IMM_HOLD    BV(12)
+#define IMM_NONMAG  BV(13)
+#define IMM_PLUS1   BV(14)
+#define IMM_PLUS2   BV(15)
+#define IMM_PLUS3   BV(16)
+#define IMM_PLUS4   BV(17)
 
-#define PULSE_RIVER    15
+#define PULSE_RIVER         15
 #define PULSE_TELEPORT      10
-#define PULSE_MAILCHECK         240
-#define PULSE_ADVICE       200
-#define PULSE_DARKNESS  250
-#define PULSE_ARENA     100     /* see if there's a winner in arena */
-#define PULSE_AUCTION 80        /* every 20 seconds */
-#define PULSE_TROLLREGEN 14     /* every once in a while */
-#define PULSE_TQP 40            /* do a travel check for the qp, every 10
-                                 * secs */
-#define MAX_ROOMS   5000
+#define PULSE_MAILCHECK     240
+#define PULSE_ADVICE        200
+#define PULSE_DARKNESS      250
+#define PULSE_ARENA         100 /* see if there's a winner in arena */
+#define PULSE_AUCTION       80  /* every 20 seconds */
+#define PULSE_TROLLREGEN    14  /* every once in a while */
+#define PULSE_TQP           40  /* do a travel check for qp, every 10 sec */
+#define PULSE_ZONE          240
+#define PULSE_MOBILE        30
+#define PULSE_VIOLENCE      16
+
+#define WAIT_SEC       4
+#define WAIT_ROUND     4
+
+#define MAX_ROOMS           5000
 
 /*
  * FIghting styles!!!
  */
-#define FIGHTING_STYLE_STANDARD   0
-#define FIGHTING_STYLE_BERSERKED  1
-#define FIGHTING_STYLE_AGGRESSIVE 2
-#define FIGHTING_STYLE_DEFENSIVE  3
-#define FIGHTING_STYLE_EVASIVE    4
+typedef enum {
+    FIGHTING_STYLE_STANDARD = 0,
+    FIGHTING_STYLE_BERSERKED,
+    FIGHTING_STYLE_AGGRESSIVE,
+    FIGHTING_STYLE_DEFENSIVE,
+    FIGHTING_STYLE_EVASIVE
+} FightingStyles_t;
 
 /*
  * minimum # of zones needed to keep tqp alive
@@ -368,11 +353,7 @@ struct nodes {
 };
 
 struct room_q {
-#if 0
-    int             room_nr;
-#else
     long            room_nr;
-#endif
     struct room_q  *next_q;
 };
 
@@ -403,20 +384,6 @@ typedef struct {
     int             good;       /* align > good = attack */
 } Opinion;
 
-/*
- * old stuff.
- */
-
-#define PULSE_ZONE     240
-
-#define PULSE_MOBILE    30
-#define PULSE_VIOLENCE  16
-#define WAIT_SEC       4
-#define WAIT_ROUND     4
-
-/*
- * We were getting purify hits on MAX_STRING_LENGTH
- */
 #define MAX_STRING_LENGTH   40960
 #define MAX_INPUT_LENGTH     160
 
@@ -460,102 +427,93 @@ typedef struct {
  * Bitvector For 'room_flags'
  */
 
-#define DARK                    BV00
-#define DEATH                   BV01
-#define NO_MOB                  BV02
-#define INDOORS                 BV03
-#define PEACEFUL                BV04
-#define NOSTEAL                 BV05
-#define NO_SUM                  BV06
-#define NO_MAGIC                BV07
-#define TUNNEL                  BV08
-#define PRIVATE                 BV09
-#define SILENCE                 BV10
-#define LARGE                   BV11
-#define NO_DEATH                BV12
-#define SAVE_ROOM               BV13
-#define ARENA_ROOM              BV14
-#define NO_FLY                  BV15
-#define REGEN_ROOM              BV16
-#define FIRE_ROOM               BV17
-#define ICE_ROOM                BV18
-#define WIND_ROOM               BV19
-#define EARTH_ROOM              BV20
-#define ELECTRIC_ROOM           BV21
-#define WATER_ROOM              BV22
-#define MOVE_ROOM               BV23
-#define MANA_ROOM               BV24
-#define NO_FLEE                 BV25
-#define NO_SPY                  BV26
-#define EVER_LIGHT              BV27
-#define ROOM_WILDERNESS         BV28
+#define DARK                    BV(0)
+#define DEATH                   BV(1)
+#define NO_MOB                  BV(2)
+#define INDOORS                 BV(3)
+#define PEACEFUL                BV(4)
+#define NOSTEAL                 BV(5)
+#define NO_SUM                  BV(6)
+#define NO_MAGIC                BV(7)
+#define TUNNEL                  BV(8)
+#define PRIVATE                 BV(9)
+#define SILENCE                 BV(10)
+#define LARGE                   BV(11)
+#define NO_DEATH                BV(12)
+#define SAVE_ROOM               BV(13)
+#define ARENA_ROOM              BV(14)
+#define NO_FLY                  BV(15)
+#define REGEN_ROOM              BV(16)
+#define FIRE_ROOM               BV(17)
+#define ICE_ROOM                BV(18)
+#define WIND_ROOM               BV(19)
+#define EARTH_ROOM              BV(20)
+#define ELECTRIC_ROOM           BV(21)
+#define WATER_ROOM              BV(22)
+#define MOVE_ROOM               BV(23)
+#define MANA_ROOM               BV(24)
+#define NO_FLEE                 BV(25)
+#define NO_SPY                  BV(26)
+#define EVER_LIGHT              BV(27)
+#define ROOM_WILDERNESS         BV(28)
 
 /*
  * For 'dir_option'
  */
 
-#define NORTH          0
-#define EAST           1
-#define SOUTH          2
-#define WEST           3
-#define UP             4
-#define DOWN           5
+typedef enum {
+    NORTH = 0,
+    EAST,
+    SOUTH,
+    WEST,
+    UP,
+    DOWN
+} Directions_t;
 
-#define EX_ISDOOR       1
-#define EX_CLOSED       2
-#define EX_LOCKED       4
-#define EX_SECRET       8
-#define EX_RSLOCKED     16
-#define EX_PICKPROOF    32
-#define EX_CLIMB        64
+#define EX_ISDOOR       BV(0)
+#define EX_CLOSED       BV(1)
+#define EX_LOCKED       BV(2)
+#define EX_SECRET       BV(3)
+#define EX_RSLOCKED     BV(4)
+#define EX_PICKPROOF    BV(5)
+#define EX_CLIMB        BV(6)
 
 /*
  * For 'Sector types'
  */
 
-#define SECT_INSIDE          0
-#define SECT_CITY            1
-#define SECT_FIELD           2
-#define SECT_FOREST          3
-#define SECT_HILLS           4
-#define SECT_MOUNTAIN        5
-#define SECT_WATER_SWIM      6
-#define SECT_WATER_NOSWIM    7
-#define SECT_AIR             8
-#define SECT_UNDERWATER      9
-#define SECT_DESERT          10
-#define SECT_TREE            11
-#define SECT_SEA             12
-#define SECT_BLANK           13
-#define SECT_ROCK_MOUNTAIN   14
-#define SECT_SNOW_MOUNTAIN   15
-#define SECT_RUINS           16
-#define SECT_JUNGLE          17
-#define SECT_SWAMP           18
-#define SECT_LAVA            19
-#define SECT_ENTRANCE        20
-#define SECT_FARM            21
-#define SECT_EMPTY           22
+typedef enum {
+    SECT_INSIDE = 0,
+    SECT_CITY,
+    SECT_FIELD,
+    SECT_FOREST,
+    SECT_HILLS,
+    SECT_MOUNTAIN,
+    SECT_WATER_SWIM,
+    SECT_WATER_NOSWIM,
+    SECT_AIR,
+    SECT_UNDERWATER,
+    SECT_DESERT,
+    SECT_TREE,
+    SECT_SEA,
+    SECT_BLANK,
+    SECT_ROCK_MOUNTAIN,
+    SECT_SNOW_MOUNTAIN,
+    SECT_RUINS,
+    SECT_JUNGLE,
+    SECT_SWAMP,
+    SECT_LAVA,
+    SECT_ENTRANCE,
+    SECT_FARM,
+    SECT_EMPTY
+} SectorTypes_t;
 
-#define SECT_MAX             22
+#define SECT_MAX        SECT_EMPTY
 
-#define TELE_LOOK            1
-#define TELE_COUNT           2
-#define TELE_RANDOM          4
-#define TELE_SPIN            8
-
-#define LARGE_NONE           0
-#define LARGE_WATER          1
-#define LARGE_AIR            2
-#define LARGE_IMPASS         4
-
-struct large_room_data {
-#if 0
-    unsigned int    flags[9];
-#else
-    long            flags[9];
-#endif
-};
+#define TELE_LOOK       BV(0)
+#define TELE_COUNT      BV(1)
+#define TELE_RANDOM     BV(2)
+#define TELE_SPIN       BV(3)
 
 struct auction_data {
     struct obj_data *obj;
@@ -568,38 +526,20 @@ struct room_direction_data {
     char           *general_description;        /* When look DIR.  */
     char           *keyword;    /* for open/close */
 
-#if 0
-    sh_int          exit_info;  /* Exit info */
-    int             key;        /* Key's number (-1 for no key) */
-    int             to_room;    /* Where direction leeds (NOWHERE) */
-    int             open_cmd;   /* cmd needed to OPEN/CLOSE door */
-#else
     long            exit_info;  /* Exit info */
     long            key;        /* Key's number (-1 for no key) */
     long            to_room;    /* Where direction leeds (NOWHERE) */
     long            open_cmd;   /* cmd needed to OPEN/CLOSE door */
-#endif
-
 };
 
 /*
  * ========================= Structure for room ==========================
  */
 struct room_data {
-    /*
-     * sh_int
-     */
-#if 0
-    sh_int          number;     /* Rooms number */
-    sh_int          zone;       /* Room zone (for resetting) */
-    sh_int          continent;  /* Which continent/mega-zone */
-    sh_int          sector_type;        /* sector type (move/hide) */
-#else
     long            number;     /* Rooms number */
     long            zone;       /* Room zone (for resetting) */
     long            continent;  /* Which continent/mega-zone */
     long            sector_type;        /* sector type (move/hide) */
-#endif
 
     int             river_dir;  /* dir of flow on river */
     int             river_speed;        /* speed of flow on river */
@@ -623,8 +563,6 @@ struct room_data {
     struct obj_data *contents;  /* List of items in room */
     struct char_data *people;   /* List of NPC / PC in room */
 
-    struct large_room_data *large;      /* special for large rooms */
-
     int             special;
 
 };
@@ -640,33 +578,35 @@ struct room_data {
  * For 'equipment'
  */
 
-#define WEAR_LIGHT      0
-#define WEAR_FINGER_R   1
-#define WEAR_FINGER_L   2
-#define WEAR_NECK_1     3
-#define WEAR_NECK_2     4
-#define WEAR_BODY       5
-#define WEAR_HEAD       6
-#define WEAR_LEGS       7
-#define WEAR_FEET       8
-#define WEAR_HANDS      9
-#define WEAR_ARMS      10
-#define WEAR_SHIELD    11
-#define WEAR_ABOUT     12
-#define WEAR_WAIST     13
-#define WEAR_WRIST_R   14
-#define WEAR_WRIST_L   15
-#define WIELD          16
-#define HOLD           17
-#define WEAR_BACK      18
-#define WEAR_EAR_R     19
-#define WEAR_EAR_L     20
-#define WEAR_EYES      21
-#define LOADED_WEAPON  22
+typedef enum {
+    WEAR_LIGHT = 0,
+    WEAR_FINGER_R,
+    WEAR_FINGER_L,
+    WEAR_NECK_1,
+    WEAR_NECK_2,
+    WEAR_BODY,
+    WEAR_HEAD,
+    WEAR_LEGS,
+    WEAR_FEET,
+    WEAR_HANDS,
+    WEAR_ARMS,
+    WEAR_SHIELD,
+    WEAR_ABOUT,
+    WEAR_WAIST,
+    WEAR_WRIST_R,
+    WEAR_WRIST_L,
+    WIELD,
+    HOLD,
+    WEAR_BACK,
+    WEAR_EAR_R,
+    WEAR_EAR_L,
+    WEAR_EYES,
+    LOADED_WEAPON
 #if 0
-#define AUCTION_SLOT 23
+    , AUCTION_SLOT
 #endif
-#define MAX_WEAR_POS   23
+} WearPos_t;
+#define MAX_WEAR_POS   LOADED_WEAPON
 
 /*
  * For 'char_player_data'
@@ -1034,14 +974,12 @@ struct time_data {
  * @todo implement the new class_count handling in creation and loading
  */
 struct char_player_data {
-
-    int             sex;        /* PC / NPC s sex */
+    Sexes_t         sex;        /* PC / NPC s sex */
     int             weight;     /* PC / NPC s weight */
     int             height;     /* PC / NPC s height */
     bool            talks[MAX_TOUNGE];  /* PC s Tounges 0 for NPC/not used
                                          * for languagesn */
-    long            user_flags; /* no delete, ansi etc... */
-    int             speaks;     /* current language speaking */
+    SpeakLanguages_t speaks;    /* current language speaking */
 
     char           *name;       /* PC / NPC s name (kill ...  ) */
     char           *short_descr;    /* for 'actions' */
@@ -1053,9 +991,10 @@ struct char_player_data {
                                      * (adjacent to room) */
 
     long            class;      /* PC s class or NPC alignment */
-    int             hometown;   /* PC s Hometown (zone) */
-
+    long            user_flags; /* no delete, ansi etc... */
     long            extra_flags;    /* for resurrection in the future, etc */
+
+    int             hometown;   /* PC s Hometown (zone) */
 
     struct time_data time;      /* PC s AGE in days */
 
@@ -1117,53 +1056,50 @@ struct weaponskills {
 
 struct char_special_data {
     int             spellfail;  /* max # for spell failure (101) */
-    byte            tick;       /* the tick that the mob/player is on */
-    byte            pmask;      /* poof mask */
-    byte            position;   /* Standing or ...  */
-    byte            default_pos;        /* Default position for NPC */
-    byte            spells_to_learn;    /* How many can you learn yet this
+    int             tick;       /* the tick that the mob/player is on */
+    int             pmask;      /* poof mask */
+    Positions_t     position;   /* Standing or ...  */
+    Positions_t     default_pos;        /* Default position for NPC */
+    int             spells_to_learn;    /* How many can you learn yet this
                                          * level */
-    byte            carry_items;        /* Number of items carried */
-    byte            last_direction;     /* The last direction the monster
+    int             carry_items;        /* Number of items carried */
+    int             last_direction;     /* The last direction the monster
                                          * went */
-    char            sev;        /* log severety level for gods */
-    long            userpos;
-    char           *userpwd;
+    int             sev;        /* log severity level for gods */
 
-    long            start_room; /* so people can be set to start certain
+    int             start_room; /* so people can be set to start certain
                                  * places */
     int             edit;       /* edit state */
 
-    sbyte           mobtype;    /* mob type simple, A, L, B */
-    unsigned long   exp_flag;   /* exp flag for this mob */
-    sbyte           hp_num_dice;        /* number of HPS dice */
-    unsigned int    hp_size_dice;       /* size of HPS dice */
-    unsigned int    hp_bonus_hps;       /* bonus hps number */
+    int             mobtype;    /* mob type simple, A, L, B */
+    int             exp_flag;   /* exp flag for this mob */
+    int             hp_num_dice;        /* number of HPS dice */
+    int             hp_size_dice;       /* size of HPS dice */
+    int             hp_bonus_hps;       /* bonus hps number */
 
-    byte            damnodice;  /* The number of damage dice's */
-    byte            damsizedice;        /* The size of the damage dice's */
+    int             damnodice;  /* The number of damage dice's */
+    int             damsizedice;        /* The size of the damage dice's */
 
-    unsigned int    dam_bonus;  /* damage bonus */
-    byte            medit;      /* mob edit menu at */
+    int             dam_bonus;  /* damage bonus */
+    int             medit;      /* mob edit menu at */
     struct char_data *mobedit;  /* mob editing */
 
-    byte            oedit;      /* obj editing menu at */
+    int             oedit;      /* obj editing menu at */
     struct obj_data *objedit;   /* object editing */
 
-    byte            tfd;
+    int             tfd;
     struct edit_txt_msg *txtedit;       /* motd/wmotd/news editing */
 
     int             tick_to_lag;
 
-    sbyte           conditions[MAX_CONDITIONS]; /* Drunk full etc.  */
+    int             conditions[MAX_CONDITIONS]; /* Drunk full etc.  */
     int             permissions;
     int             zone;       /* zone that an NPC lives in */
-    int             carry_weight;       /* Carried weight */
+    int             carry_weight;   /* Carried weight */
     int             timer;      /* Timer for update */
-    int             was_in_room;        /* storage of location for
-                                         * linkdead people */
-    int             attack_type;        /* The Attack Type Bitvector for
-                                         * NPC's */
+    int             was_in_room;    /* storage of location for
+                                     * linkdead people */
+    int             attack_type;    /* The Attack Type for NPC's */
     int             alignment;  /* +-1000 for alignments */
 
     char           *poofin;
@@ -1173,11 +1109,12 @@ struct char_special_data {
     char           *email;      /* email address in aux */
     char           *immtitle;
 
+#if 0
     char           *clan;
-    int            *clanNum;
+#endif
     char           *rumor;
     char           *group_name; /* current group name if any... */
-    char           *hostip;     /* (GH) keep track of IP */
+    char           *hostip;     /* keep track of IP */
     Alias          *A_list;
     struct char_data *misc;
     struct char_data *fighting; /* Opponent */
@@ -1197,20 +1134,20 @@ struct char_special_data {
     long            act;        /* flags for NPC behavior */
     long            act_class;  /* flags for NPCs to act like a class */
 
-    sh_int          apply_saving_throw[MAX_SAVES];      /* Saving throw
+    int             apply_saving_throw[MAX_SAVES];      /* Saving throw
                                                          * (Bonuses) */
 
     int             questwon;
     struct auction_data *auctionx;      /* not used */
     struct obj_data *auction;
-    long            minbid;
+    int             minbid;
 
     int             a_deaths;
     int             a_kills;
     int             m_deaths;
-    long            m_kills;
+    long long       m_kills;
 
-    int             proc;       /* flags for more common NPC behaviour
+    CommonProcTypes_t proc;       /* flags for more common NPC behaviour
                                  * (shopkeeper, GM, swallower, drainer,
                                  * etc) */
 
@@ -1277,40 +1214,39 @@ struct follow_type {
  * =====================
  */
 struct char_data {
-    long            nr;         /* monster nr */
-    long            in_room;    /* Location */
+    int             nr;         /* monster nr */
+    int             in_room;    /* Location */
     int             reroll;     /* Number of rerolls still availiable */
     int             term;
     int             size;
     struct last_checked last;   /* For displays */
-    unsigned        immune;     /* Immunities */
-    unsigned        M_immune;   /* Meta Immunities */
-    unsigned        susc;       /* susceptibilities */
+    long            immune;     /* Immunities */
+    long            M_immune;   /* Meta Immunities */
+    long            susc;       /* susceptibilities */
     float           mult_att;   /* the number of attacks */
-    byte            attackers;
-    byte            sector;     /* which part of a large room am i in? */
+    int             attackers;
+    int             sector;     /* which part of a large room am i in? */
     int             generic;    /* generic int */
     int             commandp;   /* command poitner for scripts */
     int             waitp;      /* waitp for scripts */
     int             commandp2;  /* place-holder for gosubs, etc. */
     int             script;
 
-    sh_int          race;
-    sh_int          hunt_dist;  /* max dist the player can hunt */
+    int             race;
+    int             hunt_dist;  /* max dist the player can hunt */
 
     struct pc_data *pc;         /* pcdata */
 
-    unsigned short  hatefield;
-    unsigned short  fearfield;
+    long            hatefield;
+    long            fearfield;
 
     Opinion         hates;
     Opinion         fears;
 
-    sh_int          persist;
+    int             persist;
     int             old_room;
 
-    void           *act_ptr;    /* numeric argument for the mobile actions
-                                 */
+    void           *act_ptr;    /* numeric argument for the mobile actions */
 
     struct char_player_data player;     /* Normal data */
     struct char_ability_data abilities; /* Abilities */
@@ -1359,27 +1295,31 @@ struct char_data {
  * How much light is in the land ?
  */
 
-#define SUN_DARK        0
-#define SUN_RISE        1
-#define SUN_LIGHT       2
-#define SUN_SET         3
-#define MOON_SET        4
-#define MOON_RISE       5
+typedef enum {
+    SUN_DARK = 0,
+    SUN_RISE,
+    SUN_LIGHT,
+    SUN_SET,
+    MOON_SET,
+    MOON_RISE
+} WeatherLight_t;
 
 /*
  * And how is the sky ?
  */
 
-#define SKY_CLOUDLESS   0
-#define SKY_CLOUDY      1
-#define SKY_RAINING     2
-#define SKY_LIGHTNING   3
+typedef enum {
+    SKY_CLOUDLESS = 0,
+    SKY_CLOUDY,
+    SKY_RAINING,
+    SKY_LIGHTNING
+} WeatherSky_t;
 
 struct weather_data {
     int             pressure;   /* How is the pressure ( Mb ) */
     int             change;     /* How fast and what way does it change. */
-    int             sky;        /* How is the sky. */
-    int             sunlight;   /* And how much sun. */
+    WeatherSky_t    sky;        /* How is the sky. */
+    WeatherLight_t  sunlight;   /* And how much sun. */
 };
 
 /*
@@ -1436,22 +1376,8 @@ struct char_file_u {
     long            m_kills;
 
     int             remortclass;
-    int             slot1;
-    int             slot2;
-    int             slot3;
-    int             slot4;
-    int             slot5;
-    int             slot6;
-    int             slot7;
-    int             slot8;
-    int             grade1;
-    int             grade2;
-    int             grade3;
-    int             grade4;
-    int             grade5;
-    int             grade6;
-    int             grade7;
-    int             grade8;
+    int             slot[MAX_WEAPONSKILLS];
+    int             grade[MAX_WEAPONSKILLS];
 };
 
 
@@ -1499,42 +1425,6 @@ struct obj_file_u {
     struct obj_file_elem objects[MAX_OBJ_SAVE];
 };
 
-#if 0
-
-#define MAX_OBJ_SAVE 200        /* Used in OBJ_FILE_U *DO*NOT*CHANGE* */
-
-struct rental_header {
-    char            inuse;
-    int             length;
-    char            owner[20];  /* Name of player */
-};
-
-struct obj_file_elem {
-    int             item_number;
-
-    int             value[4];
-    int             extra_flags;
-    int             weight;
-    int             timer;
-    long            bitvector;
-    struct obj_affected_type affected[MAX_OBJ_AFFECT];
-};
-
-struct obj_file_u {
-    int             gold_left;  /* Number of goldcoins left at owner */
-    int             total_cost; /* The cost for all items, per day */
-    long            last_update;        /* Time in seconds, when last
-                                         * updated */
-    long            minimum_stay;       /* For stasis */
-    int             nobjects;   /* how many objects below */
-    struct obj_file_elem objects[MAX_OBJ_SAVE];
-    /*
-     * We don't always allocate this much space but it is handy for the
-     * times when you need a fast one lying around.
-     */
-};
-
-#endif
 
 /*
  ***********************************************************
@@ -1553,6 +1443,7 @@ struct txt_q {
 
 /*
  * modes of connectedness
+ * @todo got to here
  */
 
 #define CON_PLYNG           0

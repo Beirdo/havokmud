@@ -2036,7 +2036,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         /*
          * Initialisering Ok
          */
-        mob->equipment[i] = 0;
+        mob->equipment[i] = NULL;
     }
 
     mob->desc = 0;
@@ -2312,7 +2312,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
         /*
          * Initialisering Ok
          */
-        mob->equipment[i] = 0;
+        mob->equipment[i] = NULL;
     }
     mob->desc = 0;
 
@@ -3904,7 +3904,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
         if (ch->equipment[i]) {
             char_eq[i] = unequip_char(ch, i);
         } else {
-            char_eq[i] = 0;
+            char_eq[i] = NULL;
         }
     }
 
@@ -4358,7 +4358,7 @@ void reset_char(struct char_data *ch)
     int             i;
 
     for (i = 0; i < MAX_WEAR; i++) {
-        ch->equipment[i] = 0;
+        ch->equipment[i] = NULL;
     }
     ch->followers = 0;
     ch->master = 0;

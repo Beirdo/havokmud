@@ -168,8 +168,8 @@ extern char    *drinknames[];
 extern int      qp_patience;
 
 extern int      auct_loop;
-extern long     minbid;
-extern long     intbid;
+extern int      minbid;
+extern int      intbid;
 extern struct char_data *auctioneer;
 extern struct char_data *bidder;
 

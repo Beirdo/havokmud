@@ -25,8 +25,8 @@
  * if 5, going twice, about to be gone. 
  */
 int             auct_loop = 0;
-long            intbid = 0;     
-long            minbid = 0;
+int             intbid = 0;     
+int             minbid = 0;
 struct char_data *auctioneer;   
 struct char_data *bidder;       
 
@@ -1617,8 +1617,8 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
                    *arg;
-    long            bid = 0;
-    long            newminbid = 0;
+    int             bid = 0;
+    int             newminbid = 0;
     float           fnewminbid = 0;
     struct obj_data *auctionobj;
 
@@ -1717,13 +1717,13 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
 
         if (bid < newminbid) {
             oldSendOutput(ch, "Sorry, your bid has to be at least 5%% higher "
-                          "(min. %ld).\n\r", newminbid);
+                              "(min. %d).\n\r", newminbid);
             return;
         }
 
         if (bid < minbid) {
-            oldSendOutput(ch, "Sorry, your bid has to be at least the minimum bid "
-                          "(%ld).\n\r", minbid);
+            oldSendOutput(ch, "Sorry, your bid has to be at least the minimum "
+                              "bid (%d).\n\r", minbid);
             return;
         }
 
@@ -1761,7 +1761,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         do_save(ch, "", 0);
 
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c places a bid of "
-                     "$c000w%ld$c000c coins for $c000w%s$c000c.\n\r",
+                     "$c000w%d$c000c coins for $c000w%s$c000c.\n\r",
                 GET_NAME(ch), intbid, auctionobj->short_description);
         send_to_all(buf);
         /*

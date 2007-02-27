@@ -145,7 +145,7 @@ int AddHated(struct char_data *ch, struct char_data *pud)
     return ((pud && ch) ? TRUE : FALSE);
 }
 
-int AddHatred(struct char_data *ch, int parm_type, int parm)
+int AddHatred(struct char_data *ch, OpinionType_t parm_type, int parm)
 {
     if( !ch ) {
         return( FALSE );
@@ -567,8 +567,12 @@ int AddFeared(struct char_data *ch, struct char_data *pud)
     return ((pud) ? TRUE : FALSE);
 }
 
-int AddFears(struct char_data *ch, int parm_type, int parm)
+int AddFears(struct char_data *ch, OpinionType_t parm_type, int parm)
 {
+    if( !ch ) {
+        return( FALSE );
+    }
+
     switch (parm_type) {
     case OP_SEX:
         if (!IS_SET(ch->fearfield, FEAR_SEX)) {

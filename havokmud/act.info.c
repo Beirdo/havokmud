@@ -2811,7 +2811,7 @@ void show_who_mortal(struct char_data *ch, struct char_data *person, char type)
 
     right = 8;
 
-    for (bit = 1, i = 0; i <= CLASS_COUNT; i++, bit <<= 1) {
+    for (bit = 1, i = 0; i < CLASS_COUNT; i++, bit <<= 1) {
         if (HasClass(person, bit)) {
             if (right != 8) {
                 send_to_char("/", ch);
@@ -4910,7 +4910,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                  */
                 if (!IS_IMMORTAL(person)) {
                     for (bit = 1, i = total = classn = 0;
-                         i < CLASS_COUNT + 1; i++, bit <<= 1) {
+                         i < CLASS_COUNT; i++, bit <<= 1) {
 
                         if (HasClass(person, bit)) {
                             total += person->player.level[i];

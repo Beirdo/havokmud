@@ -3493,7 +3493,7 @@ void AuctionPulseStuff(int pulse)
     case 1:
     case 2:
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c.  Minimum bid set at "
-                     "$c000w%ld$c000c coins.\n\r",
+                     "$c000w%d$c000c coins.\n\r",
                 auctionobj->short_description, minbid);
         send_to_all(buf);
         auct_loop++;

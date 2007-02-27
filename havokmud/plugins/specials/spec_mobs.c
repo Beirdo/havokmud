@@ -3770,9 +3770,7 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
                                                  sizeof(char) * 54);
         strcpy(ch->player.long_descr,
                "A dwarven mine-worker is here, working the mines.\n\r");
-        if (gevent != 0) {
-            gevent = 0;
-        }
+        gevent &= ~DWARVES_STRIKE;
         shop_multiplier = 0;
     }
 
@@ -3791,7 +3789,7 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
     }
 
     if (type == PULSE_TICK) {
-        if (gevent != DWARVES_STRIKE) {
+        if (!(gevent & DWARVES_STRIKE)) {
             ch->generic = 0;
             return (FALSE);
         }
@@ -3801,6 +3799,7 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
             /* 
              * strike over, back to work 
              */
+            gevent &= ~DWARVES_STRIKE;
             PulseMobiles(EVENT_END_STRIKE);
             if (ch->specials.position == POSITION_SITTING) {
                 command_interpreter(ch, "emote is off strike.");
@@ -3812,14 +3811,13 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
                        "A dwarven mine-worker is here, working the mines.\n\r");
             }
             ch->generic = 0;
-            gevent = 0;
             shop_multiplier = 0;
         }
 
         return (FALSE);
     }
 
-    if ((type == EVENT_BIRTH) && (gevent != DWARVES_STRIKE)) {
+    if ((type == EVENT_BIRTH) && (!(gevent & DWARVES_STRIKE))) {
         return (FALSE);
     }
     if (type == EVENT_BIRTH) {
@@ -3851,8 +3849,9 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
+        gevent |= DWARVES_STRIKE;
         PulseMobiles(EVENT_DWARVES_STRIKE);
-        gevent = DWARVES_STRIKE;
+
         switch (number(1, 5)) {
         case 1:
             shop_multiplier = 0.25;
