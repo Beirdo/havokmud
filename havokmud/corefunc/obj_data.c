@@ -252,7 +252,6 @@ struct obj_data *read_object(int nr, int type)
 
 /**
  * @todo rename to objectFree
- * @todo check why we are checking for *obj->name for freeing
  * @todo does this get it out of the object_list or does the caller do that?
  * @brief release memory allocated for an obj struct
  */
@@ -275,16 +274,19 @@ void free_obj(struct obj_data *obj)
     free( obj->keywords.length );
     free( obj->keywords.found );
 
-    if (obj->description && *obj->description) {
+    if (obj->description) {
         free(obj->description);
     }
-    if (obj->short_description && *obj->short_description) {
+
+    if (obj->short_description) {
         free(obj->short_description);
     }
-    if (obj->action_description && *obj->action_description) {
+
+    if (obj->action_description) {
         free(obj->action_description);
     }
-    if (obj->modBy && *obj->modBy) {
+
+    if (obj->modBy) {
         free(obj->modBy);
     }
 

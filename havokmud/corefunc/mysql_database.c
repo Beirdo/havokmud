@@ -717,9 +717,6 @@ void db_load_textfiles(void)
     free( mutex );
 }
 
-/**
- * @todo make player be populated from ch, will currently crash
- */
 int db_save_textfile(struct char_data *ch)
 {
     char                   *outbuf;
@@ -729,7 +726,6 @@ int db_save_textfile(struct char_data *ch)
     MYSQL_BIND             *data;
     pthread_mutex_t        *mutex;
 
-    player = NULL;
 
     if (!ch) {
         return (FALSE);
@@ -739,6 +735,8 @@ int db_save_textfile(struct char_data *ch)
     if (!tfd) {
         return (FALSE);
     }
+
+    player = (PlayerStruct_t *)ch->playerDesc;
 
     switch (tfd->file) {
     case 1:
