@@ -3134,7 +3134,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * load up the head object
      */
-    head = read_object(SEVERED_HEAD, VIRTUAL);
+    head = objectRead(SEVERED_HEAD, VIRTUAL);
     if (!head) {
         Log("ERROR IN Behead.. make head object");
         return;

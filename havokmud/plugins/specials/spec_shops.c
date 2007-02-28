@@ -229,7 +229,7 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     for( count = 0; num > 0; num--, count++ ) {
         if (shop_producing(temp1, shop_nr)) {
-            temp1 = read_object(temp1->item_number, VIRTUAL);
+            temp1 = objectRead(temp1->item_number, VIRTUAL);
         } else {
             if (!(temp1 = get_obj_in_list_vis(ch, newarg, keeper->carrying))) {
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);
@@ -657,12 +657,7 @@ void boot_the_shops(void)
 
             for (count = 0; count < MAX_PROD; count++) {
                 fscanf(shop_f, "%d \n", &temp);
-                if (temp >= 0) {
-                    shop_index[number_of_shops].producing[count] =
-                        real_object(temp);
-                } else {
-                    shop_index[number_of_shops].producing[count] = temp;
-                }
+                shop_index[number_of_shops].producing[count] = temp;
             }
             fscanf(shop_f, "%f \n", &shop_index[number_of_shops].profit_buy);
             fscanf(shop_f, "%f \n", &shop_index[number_of_shops].profit_sell);

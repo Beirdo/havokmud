@@ -572,7 +572,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
                 FALSE, ch, obj, 0, TO_CHAR);
             act("$n drops $p, and it shatters!", FALSE, ch, obj, 0, TO_ROOM);
 
-            i = read_object(30, VIRTUAL);
+            i = objectRead(30, VIRTUAL);
             sprintf(buf, "Scraps from %s lie in a pile here.",
                     obj->short_description);
             i->description = (char *) strdup(buf);
@@ -975,13 +975,13 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
         obj_from_room(obj);
         extract_obj(obj);
 
-        obj = read_object(51831, VIRTUAL);
+        obj = objectRead(51831, VIRTUAL);
         obj_to_room(obj, ch->in_room);
 
         /*
          * Load up the prize 
          */
-        win = read_object(randomitem(), VIRTUAL);
+        win = objectRead(randomitem(), VIRTUAL);
         if (!win) {
             Log("Invalid item in lennyas altar proc");
             return (FALSE);
@@ -1320,26 +1320,18 @@ int grayswandir(struct char_data *ch, int cmd, char *arg,
     struct obj_data *object;
     int             percent = 0;
     int             r_num = 0;
-    int             v_num1 = 0;
-    int             v_num2 = 0;
+    int             vnum;
     extern struct dex_app_type dex_app[];
 
     if (cmd == 157) {
         /* Bash */
-        if ((r_num = real_object(GRAYSWANDIR)) >= 0) {
-            object = read_object(r_num, REAL);
-            v_num1 = object->item_number;
-            extract_obj(object);
-        }
-
         if (!ch->equipment[HOLD]) {
             return (FALSE);
         }
-        object = ch->equipment[HOLD];
 
-        v_num2 = object->item_number;
+        vnum = ch->equipment[HOLD]->item_number;
 
-        if (v_num1 != v_num2) {
+        if (vnum != GRAYSWANDIR) {
             return (FALSE);
         }
         if (!ch->skills) {
@@ -1446,9 +1438,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
     char           *buf;
     struct obj_data *i;
     struct obj_data *obj;
-    int             pillrnum = 0;
     int             has_pill = 0;
-    int             r_num = 0;
 
     if (cmd == 12) {
         /* 
@@ -1461,19 +1451,14 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        pillrnum = real_object(BLUE_PILL);
-        for (i = ch->carrying; i; i = i->next_content) {
-            if (has_pill != 1) {
-                if (i->item_number == pillrnum) {
-                    has_pill = 1;
-                } else {
-                    has_pill = 0;
-                }
+        for (i = ch->carrying; i && !has_pill; i = i->next_content) {
+            if (i->item_number == BLUE_PILL) {
+                has_pill = 1;
             }
         }
 
         if (has_pill == 1) {
-            if (obj->item_number != pillrnum) {
+            if (obj->item_number != BLUE_PILL) {
                 return (FALSE);
             }
             act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
@@ -1482,14 +1467,12 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
 
             if (time_info.hours > 6) {
                 if (time_info.hours < 20) {
-                    if ((r_num = real_object(PEN_MIGHT)) >= 0) {
-                        obj = read_object(r_num, REAL);
-                        obj_to_char(obj, ch);
-                        send_to_char("Elamin's Pen of Might bursts out of thin"
-                                     " air and lands in your hands.\n\r", ch);
-                        act("Elamin's Pen of Might bursts out of thin air and"
-                            " lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
-                    }
+                    obj = objectRead(PEN_MIGHT, VIRTUAL);
+                    obj_to_char(obj, ch);
+                    send_to_char("Elamin's Pen of Might bursts out of thin"
+                                 " air and lands in your hands.\n\r", ch);
+                    act("Elamin's Pen of Might bursts out of thin air and"
+                        " lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
                 } else {
                     send_to_char("You realize too late that you chose the "
                                  "wrong pill.\n\r", ch);
@@ -1520,9 +1503,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
     char           *buf;
     struct obj_data *i;
     struct obj_data *obj;
-    int             pillrnum = 0;
     int             has_pill = 0;
-    int             r_num = 0;
 
     if (cmd == 12) {
         /* Eat */
@@ -1532,43 +1513,27 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        pillrnum = real_object(BLACK_PILL);
-        for (i = ch->carrying; i; i = i->next_content) {
-            if (has_pill != 1) {
-                if (i->item_number == pillrnum) {
-                    has_pill = 1;
-                } else {
-                    has_pill = 0;
-                }
+        for (i = ch->carrying; i && !has_pill; i = i->next_content) {
+            if (i->item_number == BLACK_PILL) {
+                has_pill = 1;
             }
         }
 
         if (has_pill == 1) {
-            if (obj->item_number != pillrnum) {
+            if (obj->item_number != BLACK_PILL) {
                 return (FALSE);
             }
             act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
             act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
             extract_obj(obj);
 
-            if (time_info.hours < 7) {
-                if ((r_num = real_object(PEN_MIGHT)) >= 0) {
-                    obj = read_object(r_num, REAL);
-                    obj_to_char(obj, ch);
-                    send_to_char("Elamin's Pen of Might bursts out of thin air"
-                                 " and lands in your hands.\n\r", ch);
-                    act("Elamin's Pen of Might bursts out of thin air and lands"
-                        " in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
-                }
-            } else if (time_info.hours > 19) {
-                if ((r_num = real_object(PEN_MIGHT)) >= 0) {
-                    obj = read_object(r_num, REAL);
-                    obj_to_char(obj, ch);
-                    send_to_char("Elamin's Pen of Might bursts out of thin air"
-                                 " and lands in your hands.\n\r", ch);
-                    act("Elamin's Pen of Might bursts out of thin air and "
-                        "lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
-                }
+            if (time_info.hours < 7 || time_info.hours > 19) {
+                obj = objectRead(PEN_MIGHT, VIRTUAL);
+                obj_to_char(obj, ch);
+                send_to_char("Elamin's Pen of Might bursts out of thin air"
+                             " and lands in your hands.\n\r", ch);
+                act("Elamin's Pen of Might bursts out of thin air and lands"
+                    " in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
             } else {
                 send_to_char("You realize too late that you chose the wrong "
                              "pill.\n\r", ch);
@@ -1592,7 +1557,6 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     struct obj_data *obj1;
     struct obj_data *obj2;
-    int             r_num = 0;
 
     if (cmd == 67) {
         /* 
@@ -1620,11 +1584,8 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         extract_obj(obj1);
         extract_obj(obj2);
 
-        if ((r_num = real_object(DRAGON_SCEPTRE_TWO)) >= 0) {
-            obj = read_object(r_num, REAL);
-            obj_to_char(obj, ch);
-        }
-
+        obj = objectRead(DRAGON_SCEPTRE_TWO, VIRTUAL);
+        obj_to_char(obj, ch);
         return (TRUE);
     }
 
@@ -1639,7 +1600,6 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     struct obj_data *obj1;
     struct obj_data *obj2;
-    int             r_num = 0;
     struct char_data *tmp,
                    *tmp2;
     struct room_data *room;
@@ -1677,24 +1637,20 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         extract_obj(obj1);
         extract_obj(obj2);
 
-        if ((r_num = real_object(DRAGON_SCEPTRE_ONE)) >= 0) {
-            obj = read_object(r_num, REAL);
-            obj_to_room(obj, ch->in_room);
-        }
+        obj = objectRead(DRAGON_SCEPTRE_ONE, VIRTUAL);
+        obj_to_room(obj, ch->in_room);
 
-        if ((r_num = real_object(EYE_DRAGON)) >= 0) {
-            obj = read_object(r_num, REAL);
-            obj_to_room(obj, ch->in_room);
-            obj = read_object(r_num, REAL);
-            obj_to_room(obj, ch->in_room);
-        }
+        obj = objectRead(EYE_DRAGON, VIRTUAL);
+        obj_to_room(obj, ch->in_room);
+        obj = objectRead(EYE_DRAGON, VIRTUAL);
+        obj_to_room(obj, ch->in_room);
 
         room = real_roomp(ch->in_room);
         for (tmp = room->people; tmp; tmp = tmp2) {
             tmp2 = tmp->next_in_room;
             if (in_group(ch, tmp) && !tmp->specials.fighting &&
-                (IS_PC(tmp) || IS_SET(tmp->specials.act, ACT_POLYSELF))
-                && IS_AFFECTED(tmp, AFF_GROUP)) {
+                (IS_PC(tmp) || IS_SET(tmp->specials.act, ACT_POLYSELF)) && 
+                IS_AFFECTED(tmp, AFF_GROUP)) {
 
                 char_from_room(tmp);
                 char_to_room(tmp, CALM_BEFORE_STORM);
@@ -2062,7 +2018,6 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
     char           *arg1;
     struct obj_data *found;
     struct obj_data *obj;
-    int             pot_rnr = 0;
     int             has_pot = 0;
 
     if (cmd != 206) {
@@ -2079,19 +2034,14 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
         return (TRUE);
     }
 
-    pot_rnr = real_object(QUEST_POTION);
-    for (found = ch->carrying; found; found = found->next_content) {
-        if (has_pot != 1) {
-            if (found->item_number == pot_rnr) {
-                has_pot = 1;
-            } else {
-                has_pot = 0;
-            }
+    for (found = ch->carrying; found && !has_pot; found = found->next_content) {
+        if (found->item_number == QUEST_POTION) {
+            has_pot = 1;
         }
     }
 
     if (has_pot == 1) {
-        if (obj->item_number != pot_rnr) {
+        if (obj->item_number != QUEST_POTION) {
             return (FALSE);
         }
         act("$n quaffs $p.", TRUE, ch, obj, 0, TO_ROOM);

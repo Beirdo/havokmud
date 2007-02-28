@@ -465,7 +465,7 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                 act("You notice a faint light in Odin's eye.",
                     FALSE, ch, 0, 0, TO_CHAR);
             }
-            obj = read_object(tmp_obj->item_number, REAL);
+            obj = objectRead(tmp_obj->item_number, REAL);
             obj_to_room(obj, ch->in_room);
             act("$p slowly fades into existence.", FALSE, ch, obj, 0,
                 TO_ROOM);
@@ -1171,20 +1171,18 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                     return (TRUE);
                 }
                 
-                if ((r_num = real_object(BAHAMUT_SKIN)) >= 0) {
-                    /* make corpse unusable for another tan */
-                    object->affected[1].modifier = 0;
-                    sprintf(buf, "It seems you are able to make some very "
-                                 "stylish body armor.");
-                    send_to_char(buf, ch);
-                    sprintf(buf, "%s fashions some very fine body armor out of"
-                                 " the %s.", GET_NAME(ch), 
-                                 object->short_description);
-                    act(buf, TRUE, ch, 0, 0, TO_ROOM);
-                    object = read_object(r_num, REAL);
-                    obj_to_char(object, ch);
-                    return (TRUE);
-                }
+                /* make corpse unusable for another tan */
+                object->affected[1].modifier = 0;
+                sprintf(buf, "It seems you are able to make some very "
+                             "stylish body armor.");
+                send_to_char(buf, ch);
+                sprintf(buf, "%s fashions some very fine body armor out of"
+                             " the %s.", GET_NAME(ch), 
+                             object->short_description);
+                act(buf, TRUE, ch, 0, 0, TO_ROOM);
+                object = objectRead(BAHAMUT_SKIN, VIRTUAL);
+                obj_to_char(object, ch);
+                return (TRUE);
             } else {
                 return (FALSE);
             }
@@ -2581,7 +2579,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
             act("$n picks an acorn.", FALSE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
-            if ((obj = read_object(ACORN, VIRTUAL))) {
+            if ((obj = objectRead(ACORN, VIRTUAL))) {
                 obj_to_char(obj, ch);
             } else {
                 Log("no acorns found for pick_acorns");
@@ -2649,12 +2647,8 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
             act("$n picks some berries.", FALSE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
-            if ((real_object(berry)) >= 0) {
-                obj = read_object(berry, VIRTUAL);
-                obj_to_char(obj, ch);
-            } else {
-                Log("no berries found for pick_berries");
-            }
+            obj = objectRead(berry, VIRTUAL);
+            obj_to_char(obj, ch);
         } else {
             act("You try to pick some berries, but hurt yourself on a thorn.",
                 FALSE, ch, 0, 0, TO_CHAR);
@@ -3098,7 +3092,6 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 {
     char           *buf1;
     char           *buf2;
-    int             ventobjrnum = -1;
     struct obj_data *ventobj;
     struct room_data *ventroom;
 
@@ -3115,8 +3108,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
     }
 
     ventroom = real_roomp(VENTROOMVNUM);
-    ventobjrnum = real_object(VENTOBJVNUM);
-    ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
+    ventobj = get_obj_in_list_num(VENTOBJVNUM, ventroom->contents);
 
     if (!ventobj) {
         return (FALSE);

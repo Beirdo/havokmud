@@ -2241,9 +2241,9 @@ struct obj_data *create_money(int amount)
     }
 
     if (amount == 1) {
-        obj = read_object(OBJ_VNUM_MONEY_ONE, VIRTUAL);
+        obj = objectRead(OBJ_VNUM_MONEY_ONE, VIRTUAL);
     } else {
-        obj = read_object(OBJ_VNUM_MONEY_SOME, VIRTUAL);
+        obj = objectRead(OBJ_VNUM_MONEY_SOME, VIRTUAL);
         sprintf(buf, obj->short_description, amount);
         if (obj->short_description) {
             free(obj->short_description);

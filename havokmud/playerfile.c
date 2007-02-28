@@ -119,7 +119,7 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
 
     for (i = 0; i < st->number; i++) {
         if (st->objects[i].item_number > -1 ) {
-            obj = read_object(st->objects[i].item_number, VIRTUAL);
+            obj = objectRead(st->objects[i].item_number, VIRTUAL);
             if (IS_RARE(obj)) {
                 obj->index->number--;
             }
@@ -753,13 +753,12 @@ void CountLimitedItems(struct obj_file_u *st)
     }
 
     for (i = 0; i < st->number; i++) {
-        if (st->objects[i].item_number > -1 &&
-            real_object(st->objects[i].item_number) > -1) {
+        if (st->objects[i].item_number > -1) {
             /*
              * eek.. read in the object, and then extract it.
              * (all this just to find rent cost.)  *sigh*
              */
-            obj = read_object(st->objects[i].item_number, VIRTUAL);
+            obj = objectRead(st->objects[i].item_number, VIRTUAL);
             cost_per_day = obj->cost_per_day;
 
             /*
@@ -1103,10 +1102,8 @@ void obj_store_to_room(int room, struct obj_file_u *st)
     struct index_data *index;
 
     for (i = 0; i < st->number; i++) {
-        if (st->objects[i].item_number > -1 &&
-            real_object(st->objects[i].item_number) > -1) {
-
-            obj = read_object(st->objects[i].item_number, VIRTUAL);
+        if (st->objects[i].item_number > -1) {
+            obj = objectRead(st->objects[i].item_number, VIRTUAL);
             if (IS_RARE(obj)) {
                 obj->index->number--;
             }

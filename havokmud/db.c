@@ -1252,7 +1252,6 @@ void renum_zone_table(int spec_zone)
                 }
                 break;
             case 'O':
-                cmd->arg1 = real_object(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('O', "object", zone, comm);
                 }
@@ -1266,23 +1265,19 @@ void renum_zone_table(int spec_zone)
                 }
                 break;
             case 'G':
-                cmd->arg1 = real_object(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('G', "object", zone, comm);
                 }
                 break;
             case 'E':
-                cmd->arg1 = real_object(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('E', "object", zone, comm);
                 }
                 break;
             case 'P':
-                cmd->arg1 = real_object(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('P', "object", zone, comm);
                 }
-                cmd->arg3 = real_object(cmd->arg3);
                 if (cmd->arg3 < 0) {
                     LOG_ZONE_ERROR('P', "object", zone, comm);
                 }
@@ -2841,7 +2836,7 @@ void zone_update(void)
                         }
                     }
                 }
-                if (!(travelqp = read_object(TRAVELQP, VIRTUAL))) {
+                if (!(travelqp = objectRead(TRAVELQP, VIRTUAL))) {
                     Log("no tqp item could be loaded");
                     return;
                 }
@@ -3060,7 +3055,7 @@ void reset_zone(int zone, int cmd)
                          ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                         (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
                             (-ZCMD.if_flag) + 1)) {
-                        if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
+                        if ((obj = objectRead(ZCMD.arg1, REAL)) != NULL) {
                             index = objectIndex(ZCMD.arg1);
                             index->MaxObjCount = ZCMD.arg2;
 
@@ -3094,7 +3089,7 @@ void reset_zone(int zone, int cmd)
                     } else {
                         last_cmd = 0;
                     }
-                } else if ((obj = read_object(ZCMD.arg1, REAL))) {
+                } else if ((obj = objectRead(ZCMD.arg1, REAL))) {
                     Log("Error finding room #%d", ZCMD.arg3);
                     last_cmd = 1;
                 } else {
@@ -3108,7 +3103,7 @@ void reset_zone(int zone, int cmd)
                  *
                  * object to object
                  */
-                obj = read_object(ZCMD.arg1, REAL);
+                obj = objectRead(ZCMD.arg1, REAL);
                 obj_to = get_obj_num(ZCMD.arg3);
                 if (obj_to && obj) {
                     index = objectIndex( ZCMD.arg1 );
@@ -3149,7 +3144,7 @@ void reset_zone(int zone, int cmd)
                  *
                  * obj_to_char
                  */
-                if ((obj = read_object(ZCMD.arg1, REAL)) && mob) {
+                if ((obj = objectRead(ZCMD.arg1, REAL)) && mob) {
                     index = objectIndex( ZCMD.arg1 );
                     index->MaxObjCount = ZCMD.arg2;
 
@@ -3210,7 +3205,7 @@ void reset_zone(int zone, int cmd)
              * @todo make 'E' work with VIRTUAL
              * object to equipment list
              */
-                if ((obj = read_object(ZCMD.arg1, REAL))) {
+                if ((obj = objectRead(ZCMD.arg1, REAL))) {
                     if (!mob->equipment[ZCMD.arg3]) {
                         index = objectIndex( ZCMD.arg1 );
                         index->MaxObjCount = ZCMD.arg2;
@@ -3437,7 +3432,7 @@ void reset_zone(int zone, int cmd)
                              ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                             (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1, rp) <
                                 (-ZCMD.if_flag) + 1)) {
-                            if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
+                            if ((obj = objectRead(ZCMD.arg1, REAL)) != NULL) {
                                 if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                                     tweakroll = number(1, 100);
                                     if (obj->tweak < tweakmin) {
@@ -3458,7 +3453,7 @@ void reset_zone(int zone, int cmd)
                         } else {
                             last_cmd = 0;
                         }
-                    } else if (obj = read_object(ZCMD.arg1, REAL)) {
+                    } else if (obj = objectRead(ZCMD.arg1, REAL)) {
                         Log("Error finding room #%d", ZCMD.arg3);
                         last_cmd = 1;
                     } else {
@@ -3472,7 +3467,7 @@ void reset_zone(int zone, int cmd)
                  * object to object
                  */
                 if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
-                    obj = read_object(ZCMD.arg1, REAL);
+                    obj = objectRead(ZCMD.arg1, REAL);
                     obj_to = get_obj_num(ZCMD.arg3);
                     if (obj_to && obj) {
                         if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -3502,7 +3497,7 @@ void reset_zone(int zone, int cmd)
                  * obj_to_char
                  */
                 if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
-                    (obj = read_object(ZCMD.arg1, REAL))) {
+                    (obj = objectRead(ZCMD.arg1, REAL))) {
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
                         if (obj->tweak < tweakmin) {
@@ -3551,7 +3546,7 @@ void reset_zone(int zone, int cmd)
                  * object to equipment list
                  */
                 if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
-                    (obj = read_object(ZCMD.arg1, REAL))) {
+                    (obj = objectRead(ZCMD.arg1, REAL))) {
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -5437,7 +5432,7 @@ void ReadTextZone(FILE * fl)
                     if (j >= 0 && ((rp = real_roomp(j)) != NULL)) {
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
-                            if ((obj = read_object(i, REAL)) != NULL) {
+                            if ((obj = objectRead(i, REAL)) != NULL) {
                                 obj_to_room(obj, k);
                                 last_cmd = 1;
                             } else {
@@ -5446,7 +5441,7 @@ void ReadTextZone(FILE * fl)
                         } else {
                             last_cmd = 0;
                         }
-                    } else if ((obj = read_object(i, VIRTUAL))) {
+                    } else if ((obj = objectRead(i, VIRTUAL))) {
                         Log("Error finding room #%d", k);
                         last_cmd = 1;
                     } else {
@@ -5460,7 +5455,7 @@ void ReadTextZone(FILE * fl)
                  * object to object
                  */
                 if (i < j) {
-                    obj = read_object(i, VIRTUAL);
+                    obj = objectRead(i, VIRTUAL);
                     obj_to = get_obj_num(k);
                     if (obj_to && obj) {
                         obj_to_obj(obj, obj_to);
@@ -5478,7 +5473,7 @@ void ReadTextZone(FILE * fl)
                  * obj_to_char
                  */
                 if (i < j &&
-                    (obj = read_object(i, REAL)) && mob) {
+                    (obj = objectRead(i, REAL)) && mob) {
                     obj_to_char(obj, mob);
                     last_cmd = 1;
 #ifndef NEW_RENT
@@ -5517,7 +5512,7 @@ void ReadTextZone(FILE * fl)
                  * object to equipment list
                  */
                 if (i < j &&
-                    (obj = read_object(i, REAL))) {
+                    (obj = objectRead(i, REAL))) {
                     if (!mob->equipment[k]) {
                         equip_char(mob, obj, k);
                     } else {

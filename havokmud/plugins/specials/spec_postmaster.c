@@ -195,7 +195,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
 
     for( i = 0; i < count; i++ ) {
         CREATE(tmp_obj, struct obj_data, 1);
-        clear_object(tmp_obj);
+        objectClear(tmp_obj);
 
         StringToKeywords( "mail paper letter", &tmp_obj->keywords );
         tmp_obj->short_description = strdup("a piece of mail");

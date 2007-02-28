@@ -1417,28 +1417,25 @@ int chalice(struct char_data *ch, int cmd, char *arg)
     struct obj_data *chalice;
     char           *buf1,
                    *buf2;
-    static int      chl = -1,
-                    achl = -1;
+    static int      chl,
+                    achl;
 
     /*
      * 222 is the normal chalice, 223 is chalice-on-altar
      */
 
-    if (chl < 1) {
-        chl = real_object(222);
-        achl = real_object(223);
-    }
+    chl = 222;
+    achl = 223;
 
     switch (cmd) {
     case 10:
         /*
          * get
          */
-        if (!(chalice =
-                get_obj_in_list_num(chl, real_roomp(ch->in_room)-> contents)) &&
+        if (!(chalice = get_obj_in_list_num(chl, 
+                                        real_roomp(ch->in_room)->contents)) &&
             CAN_SEE_OBJ(ch, chalice)) {
-            if (!(chalice =
-                    get_obj_in_list_num(achl,
+            if (!(chalice = get_obj_in_list_num(achl,
                                         real_roomp(ch->in_room)->contents)) &&
                 CAN_SEE_OBJ(ch, chalice)) {
                 return (0);
@@ -1455,7 +1452,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
          */
         if (chalice == get_obj_in_list_num(achl, ch->carrying)) {
             extract_obj(chalice);
-            chalice = read_object(chl, VIRTUAL);
+            chalice = objectRead(chl, VIRTUAL);
             obj_to_char(chalice, ch);
         }
         return (TRUE);
@@ -1473,7 +1470,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         if (buf1 && buf2 && !strcasecmp(buf1, "chalice") && 
             !strcasecmp(buf2, "altar")) {
             extract_obj(chalice);
-            chalice = read_object(achl, VIRTUAL);
+            chalice = objectRead(achl, VIRTUAL);
             obj_to_room(chalice, ch->in_room);
             send_to_char("Ok.\n\r", ch);
         }
@@ -1483,8 +1480,8 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * pray
          */
-        if (!(chalice =
-                get_obj_in_list_num(achl, real_roomp(ch->in_room)->contents))) {
+        if (!(chalice = get_obj_in_list_num(achl, 
+                                        real_roomp(ch->in_room)->contents))) {
             return (FALSE);
         }
 
@@ -1894,10 +1891,10 @@ int delivery_beast(struct char_data *ch, int cmd, char *arg,
         command_interpreter(ch, "drop all.biscuit");
     } else if (time_info.hours < 2) {
         if (!number(0, 1)) {
-            o = read_object(3012, VIRTUAL);
+            o = objectRead(3012, VIRTUAL);
             obj_to_char(o, ch);
         } else {
-            o = read_object(3013, VIRTUAL);
+            o = objectRead(3013, VIRTUAL);
             obj_to_char(o, ch);
         }
     } else if (GET_POS(ch) > POSITION_SLEEPING) {
@@ -2328,7 +2325,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                         !(strcmp(mem->names[mem->index], GET_NAME(t)))) {
                         act("$n crawls under the large table.",
                             FALSE, ch, 0, 0, TO_ROOM);
-                        obj = read_object(PostKey, VIRTUAL);
+                        obj = objectRead(PostKey, VIRTUAL);
                         if ((IS_CARRYING_N(t) + 1) < CAN_CARRY_N(t)) {
                             act("$N emerges with $p, and gives it to you.",
                                 FALSE, t, obj, ch, TO_CHAR);
@@ -7579,7 +7576,7 @@ int generate_legend_statue(void)
                 /*
                  * load the generic item 
                  */
-                if ((obj = read_object(itype, VIRTUAL))) {
+                if ((obj = objectRead(itype, VIRTUAL))) {
                     /*
                      * and string it up a bit 
                      */
@@ -7741,7 +7738,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (!(cmp = read_object(obj->item_number, VIRTUAL))) {
+                if (!(cmp = objectRead(obj->item_number, VIRTUAL))) {
                     Log("Could not load comparison weapon in do_sharpen");
                     return;
                 }

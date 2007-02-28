@@ -371,7 +371,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
                     ADeadBody = FALSE;
 
     CREATE(corpse, struct obj_data, 1);
-    clear_object(corpse);
+    objectClear(corpse);
 
     corpse->item_number = NOWHERE;
     corpse->in_room = NOWHERE;
@@ -384,7 +384,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
          */
         if ((GET_HIT(ch) < -50) && (killedbytype == TYPE_SLASH ||
                                     killedbytype == TYPE_CLEAVE)) {
-            cp = read_object(SEVERED_HEAD, VIRTUAL);
+            cp = objectRead(SEVERED_HEAD, VIRTUAL);
             corpse->beheaded_corpse = TRUE;
 
             sprintf(buf, "head severed %s", 
@@ -4307,7 +4307,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     act("$p falls to the ground in scraps.", TRUE, ch, obj, 0, TO_CHAR);
     act("$p falls to the ground in scraps.", TRUE, ch, obj, 0, TO_ROOM);
 
-    t = read_object(30, VIRTUAL);
+    t = objectRead(30, VIRTUAL);
 
     sprintf(buf, "Scraps from %s lie in a pile here.",
             obj->short_description);

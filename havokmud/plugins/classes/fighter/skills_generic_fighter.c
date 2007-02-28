@@ -1125,13 +1125,11 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
                 "roots and berries.", TRUE, ch, 0, 0, TO_CHAR);
             act("$n searches the area for something to eat and manages to find "
                 "something.", TRUE, ch, 0, 0, TO_ROOM);
-            if ((r_num = real_object(FOUND_FOOD)) >= 0) {
-                obj = read_object(r_num, REAL);
-                obj_to_char(obj, ch);
-                send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
-                             "using your abilities.$c0007\n\r", ch);
-                gain_exp(ch, 100);
-            }
+            obj = objectRead(FOUND_FOOD, VIRTUAL);
+            obj_to_char(obj, ch);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
+                         "using your abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
         }
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     } else {
@@ -1180,13 +1178,11 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
                 TRUE, ch, 0, 0, TO_CHAR);
             act("$n searches the area for something to drink and manages to "
                 "find a small amount of water.", TRUE, ch, 0, 0, TO_ROOM);
-            if ((r_num = real_object(FOUND_WATER)) >= 0) {
-                obj = read_object(r_num, REAL);
-                obj_to_char(obj, ch);
-                send_to_char("$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your abilities.$c0007\n\r", ch);
-                gain_exp(ch, 100);
-            }
+            obj = objectRead(FOUND_WATER, VIRTUAL);
+            obj_to_char(obj, ch);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience "
+                         "for using your abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
         }
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     } else {
@@ -1690,26 +1686,20 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             acapply = 0;
         }
         if (!strcmp(itemtype, "shield")) {
-            if ((r_num = real_object(TAN_SHIELD)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_SHIELD, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " shield");
         } else if (!strcmp(itemtype, "jacket")) {
-            if ((r_num = real_object(TAN_JACKET)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_JACKET, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply += 5;
             acbonus += 2;
             strcat(hidetype, " jacket");
         } else if (!strcmp(itemtype, "boots")) {
-            if ((r_num = real_object(TAN_BOOTS)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_BOOTS, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply--;
             if (acapply < 0) {
                 acapply = 0;
@@ -1720,10 +1710,8 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " pair of boots");
         } else if (!strcmp(itemtype, "gloves")) {
-            if ((r_num = real_object(TAN_GLOVES)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_GLOVES, VIRTUAL);
+            obj_to_char(hide, ch);
 
             acapply--;
             if (acapply < 0) {
@@ -1735,26 +1723,20 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " pair of gloves");
         } else if (!strcmp(itemtype, "leggings")) {
-            if ((r_num = real_object(TAN_LEGGINGS)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_LEGGINGS, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of leggings");
         } else if (!strcmp(itemtype, "sleeves")) {
-            if ((r_num = real_object(TAN_SLEEVES)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_SLEEVES, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of sleeves");
         } else if (!strcmp(itemtype, "helmet")) {
-            if ((r_num = real_object(TAN_HELMET)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_HELMET, VIRTUAL);
+            obj_to_char(hide, ch);
             acapply--;
             if (acapply < 0) {
                 acapply = 0;
@@ -1765,10 +1747,8 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " helmet");
         } else if (!strcmp(itemtype, "bag")) {
-            if ((r_num = real_object(TAN_BAG)) >= 0) {
-                hide = read_object(r_num, REAL);
-                obj_to_char(hide, ch);
-            }
+            hide = objectRead(TAN_BAG, VIRTUAL);
+            obj_to_char(hide, ch);
             strcat(hidetype, " bag");
         } else {
             send_to_char("Illegal type of equipment!\n\r", ch);

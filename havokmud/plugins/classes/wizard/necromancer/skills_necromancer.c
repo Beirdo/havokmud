@@ -576,7 +576,7 @@ void spell_cold_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = read_object(COLD_LIGHT, VIRTUAL);
+    tmp_obj = objectRead(COLD_LIGHT, VIRTUAL);
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
         obj_to_char(tmp_obj, ch);
@@ -1979,7 +1979,7 @@ void spell_scourge_warlock(int level, struct char_data *ch,
         /*
          * give him a tongue to wear on his face
          */
-        if ((obj = read_object(TONGUE_ITEM, VIRTUAL))) {
+        if ((obj = objectRead(TONGUE_ITEM, VIRTUAL))) {
             /*
              * add a random Dark Lord's boon to it
              */

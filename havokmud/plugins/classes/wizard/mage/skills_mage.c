@@ -1141,7 +1141,7 @@ void spell_cont_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = read_object(20, VIRTUAL);
+    tmp_obj = objectRead(20, VIRTUAL);
     if (tmp_obj) {
         obj_to_char(tmp_obj, ch);
     } else {
@@ -1193,7 +1193,7 @@ void spell_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = read_object(20, VIRTUAL); /* this is all you have to do */
+    tmp_obj = objectRead(20, VIRTUAL); /* this is all you have to do */
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
         obj_to_char(tmp_obj, ch);
@@ -3235,7 +3235,7 @@ void cast_minor_creation(int level, struct char_data *ch, char *arg,
         return;
     }
 
-    o = read_object(obj, VIRTUAL);
+    o = objectRead(obj, VIRTUAL);
     if (!o) {
         send_to_char("There is nothing of that available\n\r", ch);
         return;
@@ -3977,7 +3977,7 @@ void spell_portal(int level, struct char_data *ch,
      * check target room for legality.
      */
     rp = real_roomp(ch->in_room);
-    tmp_obj = read_object(PORTAL, VIRTUAL);
+    tmp_obj = objectRead(PORTAL, VIRTUAL);
     if (!rp || !tmp_obj) {
         send_to_char("The magic fails\n\r", ch);
         return;
@@ -4865,7 +4865,7 @@ void spell_succor(int level, struct char_data *ch,
 {
     struct obj_data *o;
 
-    o = read_object(3052, VIRTUAL);
+    o = objectRead(3052, VIRTUAL);
     obj_to_char(o, ch);
 
     o->cost = 0;
@@ -5545,7 +5545,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = read_object(EMPTY_POTION, VIRTUAL))) {
+    if (!(obj = objectRead(EMPTY_POTION, VIRTUAL))) {
         Log("no default potion could be found for brew");
         send_to_char("woops, something's wrong.\n\r", ch);
         return;

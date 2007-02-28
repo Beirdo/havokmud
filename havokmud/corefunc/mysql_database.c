@@ -2820,7 +2820,7 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     if( !res || !(count = mysql_num_rows(res)) ) {
         *retobj = NULL;
-        free_obj(obj);
+        objectFree(obj);
         return;
     }
 

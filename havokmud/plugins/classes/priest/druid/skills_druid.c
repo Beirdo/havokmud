@@ -1127,7 +1127,7 @@ void spell_flame_blade(int level, struct char_data *ch,
     }
 
     CREATE(tmp_obj, struct obj_data, 1);
-    clear_object(tmp_obj);
+    objectClear(tmp_obj);
     StringToKeywords( "blade flame", &tmp_obj->keywords );
     tmp_obj->short_description = strdup("a flame blade");
     tmp_obj->description = strdup("A flame blade burns brightly here.");

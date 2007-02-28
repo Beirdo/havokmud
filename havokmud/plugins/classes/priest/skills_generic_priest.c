@@ -605,7 +605,7 @@ void spell_cont_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = read_object(20, VIRTUAL);
+    tmp_obj = objectRead(20, VIRTUAL);
     if (tmp_obj) {
         obj_to_char(tmp_obj, ch);
     } else {
@@ -2387,7 +2387,7 @@ void spell_goodberry(int level, struct char_data *ch,
     }
 
     CREATE(tmp_obj, struct obj_data, 1);
-    clear_object(tmp_obj);
+    objectClear(tmp_obj);
     StringToKeywords( "berry blue blueberry", &tmp_obj->keywords );
     tmp_obj->short_description = strdup("a plump blueberry");
     tmp_obj->description = strdup("A scrumptions blueberry lies here.");

@@ -3014,7 +3014,7 @@ void do_load_object(struct char_data *ch, char *argument, int number)
         number = db_find_object_named(argument, -1, -1);
     }
 
-    if (number < 0 || !(obj = read_object(number, VIRTUAL))) {
+    if (number < 0 || !(obj = objectRead(number, VIRTUAL))) {
         send_to_char("There is no such object.\n\r", ch);
         return;
     }
@@ -3312,17 +3312,17 @@ void do_start(struct char_data *ch)
     /*
      * bread
      */
-    obj = read_object(12, VIRTUAL);
+    obj = objectRead(12, VIRTUAL);
     obj_to_char(obj, ch);
-    obj = read_object(12, VIRTUAL);
+    obj = objectRead(12, VIRTUAL);
     obj_to_char(obj, ch);
 
     /*
      * water
      */
-    obj = read_object(13, VIRTUAL);
+    obj = objectRead(13, VIRTUAL);
     obj_to_char(obj, ch);
-    obj = read_object(13, VIRTUAL);
+    obj = objectRead(13, VIRTUAL);
     obj_to_char(obj, ch);
 
     ch->skills[STYLE_STANDARD].learned = 95;
@@ -4001,7 +4001,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum, VIRTUAL);
         if (obj) {
             if (eval(obj) < -5) {
                 sprintf(color, "%s", "$c0008");
@@ -4075,7 +4075,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
          item = BalancedBTreeFindNext( objectTree, item, LOCKED ) ) {
         index = (struct index_data *)item->item;
 
-        obj = read_object(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum, VIRTUAL);
         if (obj) {
             if (IS_SET(obj->wear_flags, pc_num_class(wearslot))) {
                 if (eval(obj) < -5) {
@@ -4164,7 +4164,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
 
         index = (struct index_data *)item->item;
 
-        obj = read_object(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum, VIRTUAL);
         if (obj) {
             if (ITEM_TYPE(obj) == type) {
                 if (eval(obj) < -5) {
@@ -4344,7 +4344,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum, VIRTUAL);
         if (obj) {
             sprintbit((unsigned) obj->wear_flags, wear_bits, temp1);
             sprintbit((unsigned) obj->extra_flags, extra_bits, temp2);
@@ -4507,7 +4507,7 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum, VIRTUAL);
         if (obj && obj->max != 0) {
             objname = KeywordsToString( &index->keywords, " " );
             sprintf(buf, "%5ld  %3d/%3d  %s \n\r", index->vnum, 
@@ -5585,53 +5585,6 @@ void do_mforce(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-/**
- * @todo how is this different than clone_obj_to_obj?
- */
-struct obj_data *clone_obj(struct obj_data *obj)
-{
-    struct obj_data *ocopy;
-    ocopy = read_object(obj->item_number, VIRTUAL);
-    /*
-     * clear
-     */
-    if (ocopy->name) {
-        free(ocopy->name);
-    }
-    if (ocopy->short_description) {
-        free(ocopy->short_description);
-    }
-    if (ocopy->description) {
-        free(ocopy->description);
-    }
-    /*
-     * copy
-     */
-    if (obj->name) {
-        ocopy->name = strdup(obj->name);
-    }
-    if (obj->short_description) {
-        ocopy->short_description = strdup(obj->short_description);
-    }
-    if (obj->description) {
-        ocopy->description = strdup(obj->description);
-    }
-    return ocopy;
-}
-
-void clone_container_obj(struct obj_data *to, struct obj_data *obj)
-{
-    struct obj_data *tmp,
-                   *ocopy;
-
-    for (tmp = obj->contains; tmp; tmp = tmp->next_content) {
-        ocopy = clone_obj(tmp);
-        if (tmp->contains) {
-            clone_container_obj(ocopy, tmp);
-        }
-        obj_to_obj(ocopy, to);
-    }
-}
 
 void do_clone(struct char_data *ch, char *argument, int cmd)
 {
@@ -5735,9 +5688,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
                         /*
                          * clone mob->equipment[j]
                          */
-                        ocopy = clone_obj(mob->equipment[j]);
+                        ocopy = objectClone(mob->equipment[j]);
                         if (mob->equipment[j]->contains) {
-                            clone_container_obj(ocopy, mob->equipment[j]);
+                            objectCloneContainer(ocopy, mob->equipment[j]);
                         }
                         equip_char(mcopy, ocopy, j);
                     }
@@ -5748,9 +5701,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
              */
             if (mob->carrying) {
                 for (obj = mob->carrying; obj; obj = obj->next_content) {
-                    ocopy = clone_obj(obj);
+                    ocopy = objectClone(obj);
                     if (obj->contains) {
-                        clone_container_obj(ocopy, obj);
+                        objectCloneContainer(ocopy, obj);
                     }
                     /*
                      * move obj to cloned mobs carrying
@@ -5781,9 +5734,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
             return;
         }
         for (i = 0; i < count; i++) {
-            ocopy = clone_obj(obj);
+            ocopy = objectClone(obj);
             if (obj->contains) {
-                clone_container_obj(ocopy, obj);
+                objectCloneContainer(ocopy, obj);
             }
             /*
              * put
@@ -6051,6 +6004,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
 void do_osave(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *obj;
+    struct index_data *index;
     char           *oname,
                    *field;
     long            vnum = -1;
@@ -6112,19 +6066,20 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     /*
      * check for valid VNUM period
      */
-    nr = real_object(vnum);
-    if (nr != -1) {
+    index = objectIndex(vnum);
+    if (index) {
         send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r", ch);
     }
 
     if (obj->modBy) {
         free(obj->modBy);
     }
+    obj->item_number = vnum;
     obj->modBy = (char *) strdup(GET_NAME(ch));
     obj->modified = time(0);
 
-    if (nr == -1) {
-        insert_object(obj, vnum);
+    if (!index) {
+        objectInsert(obj, vnum);
     }
     db_save_object(obj, -1, -1);
 

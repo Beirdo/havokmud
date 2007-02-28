@@ -69,24 +69,22 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         corpse, 0, TO_ROOM);
     send_to_char("You carve up a fat ration.\n\r", ch);
 
-    if ((r_num = real_object(FOUND_FOOD)) >= 0) {
-        food = read_object(r_num, REAL);
+    food = objectRead(FOUND_FOOD, VIRTUAL);
 
-        StringToKeywords( "ration slice filet food", &food->keywords );
-        sprintf(buffer, "a Ration%s", corpse->short_description + 10);
-        food->short_description = (char *) strdup(buffer);
-        food->action_description = (char *) strdup(buffer);
-        sprintf(buffer, "%s is lying on the ground.", food->short_description);
-        food->description = (char *) strdup(buffer);
-        corpse->weight = corpse->weight - 50;
+    StringToKeywords( "ration slice filet food", &food->keywords );
+    sprintf(buffer, "a Ration%s", corpse->short_description + 10);
+    food->short_description = (char *) strdup(buffer);
+    food->action_description = (char *) strdup(buffer);
+    sprintf(buffer, "%s is lying on the ground.", food->short_description);
+    food->description = (char *) strdup(buffer);
+    corpse->weight = corpse->weight - 50;
 
-        i = number(1, 6);
-        if (i == 6) {
-            food->value[3] = 1;
-        }
-        obj_to_room(food, ch->in_room);
-        WAIT_STATE(ch, PULSE_VIOLENCE * 3);
+    i = number(1, 6);
+    if (i == 6) {
+        food->value[3] = 1;
     }
+    obj_to_room(food, ch->in_room);
+    WAIT_STATE(ch, PULSE_VIOLENCE * 3);
 }
 
 void do_stalk(struct char_data *ch, char *argument, int cmd)

@@ -724,7 +724,7 @@ void spell_create_food(int level, struct char_data *ch,
         return;
     }
     CREATE(tmp_obj, struct obj_data, 1);
-    clear_object(tmp_obj);
+    objectClear(tmp_obj);
 
     StringToKeywords("mushroom", &tmp_obj->keywords);
     tmp_obj->short_description = (char *) strdup("A Magic Mushroom");
@@ -785,7 +785,7 @@ void spell_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = read_object(20, VIRTUAL); /* this is all you have to do */
+    tmp_obj = objectRead(20, VIRTUAL); /* this is all you have to do */
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
         obj_to_char(tmp_obj, ch);
@@ -2962,7 +2962,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = read_object(EMPTY_SCROLL, VIRTUAL))) {
+    if (!(obj = objectRead(EMPTY_SCROLL, VIRTUAL))) {
         Log("no default scroll could be found for scribe");
         send_to_char("woops, something's wrong.\n\r", ch);
         return;
@@ -3176,7 +3176,7 @@ void spell_succor(int level, struct char_data *ch,
 {
     struct obj_data *o;
 
-    o = read_object(3052, VIRTUAL);
+    o = objectRead(3052, VIRTUAL);
     obj_to_char(o, ch);
 
     o->cost = 0;

@@ -266,6 +266,13 @@ void db_load_object_tree( BalancedBTree_t *tree );
  */
 void initializeObjects( void );
 struct index_data *objectIndex( int vnum );
+void objectInsert(struct obj_data *obj, long vnum);
+void objectClear(struct obj_data *obj);
+struct obj_data *objectClone(struct obj_data *obj);
+void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
+struct obj_data *objectRead(int nr, int type);
+void objectFree(struct obj_data *obj);
+
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);
 bool HasBitsInventory(struct char_data *ch, int bits, int offset);

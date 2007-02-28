@@ -102,7 +102,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 
-            cmp = read_object(obj->item_number, REAL);
+            cmp = objectRead(obj->item_number, REAL);
             if (cmp->value[2] == 0) {
                 sprintf(buf, "%s tried to mend an weapon with invalid "
                              "value: %s, vnum %d.",

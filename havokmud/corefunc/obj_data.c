@@ -57,8 +57,6 @@ BalancedBTree_t *objectTree;
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
 
-void clear_object(struct obj_data *obj);
-
 struct obj_data *GetObjectInEquip(struct char_data *ch, char *arg,
                                   struct obj_data *equipment[], int *j,
                                   bool visible );
@@ -94,10 +92,7 @@ struct index_data *objectIndex( int vnum )
     return( index );
 }
 
-/**
- * @todo rename to objectInsert
- */
-void insert_object(struct obj_data *obj, long vnum)
+void objectInsert(struct obj_data *obj, long vnum)
 {
     BalancedBTreeItem_t    *item;
     struct index_data      *index;
@@ -121,90 +116,55 @@ void insert_object(struct obj_data *obj, long vnum)
 }
 
 
-/**
- * @todo rename to objectClone
- */
-void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
+struct obj_data *objectClone(struct obj_data *obj)
 {
-    Keywords_t     *new_descr,
-                   *old_descr;
-    int             i,
-                    j;
+    struct obj_data *ocopy;
+    char            *keywords;
+    
+    ocopy = objectRead(obj->item_number, VIRTUAL);
 
-    obj->index = osrc->index;
+    FreeKeywords( &ocopy->keywords, FALSE );
 
-    obj->keywords.count = osrc->keywords.count;
-    CREATE(obj->keywords.words, char *, osrc->keywords.count);
-    for( i = 0; i < osrc->keywords.count; i++ ) {
-        if( osrc->keywords.words[i] ) {
-            obj->keywords.words[i] = strdup( osrc->keywords.words[i] );
-        } else {
-            obj->keywords.words[i] = NULL;
+    if (ocopy->short_description) {
+        free(ocopy->short_description);
+    }
+
+    if (ocopy->description) {
+        free(ocopy->description);
+    }
+
+    keywords = KeywordsToString( &obj->keywords, " " );
+    StringToKeywords( keywords, &obj->keywords );
+    free( keywords );
+
+    if (obj->short_description) {
+        ocopy->short_description = strdup(obj->short_description);
+    }
+
+    if (obj->description) {
+        ocopy->description = strdup(obj->description);
+    }
+    return( ocopy );
+}
+
+void objectCloneContainer(struct obj_data *to, struct obj_data *obj)
+{
+    struct obj_data *tmp,
+                   *ocopy;
+
+    for (tmp = obj->contains; tmp; tmp = tmp->next_content) {
+        ocopy = objectClone(tmp);
+        if (tmp->contains) {
+            objectCloneContainer(ocopy, tmp);
         }
-    }
-
-    if (osrc->short_description) {
-        obj->short_description = strdup(osrc->short_description);
-    }
-    if (osrc->description) {
-        obj->description = strdup(osrc->description);
-    }
-    if (osrc->action_description) {
-        obj->action_description = strdup(osrc->action_description);
-    }
-
-    /*
-     *** numeric data ***
-     */
-
-    obj->type_flag = osrc->type_flag;
-    obj->extra_flags = osrc->extra_flags;
-    obj->wear_flags = osrc->wear_flags;
-    obj->value[0] = osrc->value[0];
-    obj->value[1] = osrc->value[1];
-    obj->value[2] = osrc->value[2];
-    obj->value[3] = osrc->value[3];
-    obj->weight = osrc->weight;
-    obj->cost = osrc->cost;
-    obj->cost_per_day = osrc->cost_per_day;
-    obj->ex_description_count = osrc->ex_description_count;
-
-    /*
-     *** extra descriptions ***
-     */
-
-    obj->ex_description = NULL;
-
-    if (osrc->ex_description) {
-        CREATE( obj->ex_description, Keywords_t, obj->ex_description_count );
-        for( i = 0; i < osrc->ex_description_count; i++ ) {
-            old_descr = &osrc->ex_description[i];
-            new_descr = &obj->ex_description[i];
-            new_descr->count = old_descr->count;
-            CREATE(new_descr->words, char *, old_descr->count);
-            for( j = 0; j < old_descr->count; j++ ) {
-                if( old_descr->words[j] ) {
-                    new_descr->words[j] = strdup( old_descr->words[j] );
-                } else {
-                    new_descr->words[j] = NULL;
-                }
-            }
-            new_descr->description = strdup( old_descr->description );
-        }
-    }
-
-    for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-        obj->affected[i].location = osrc->affected[i].location;
-        obj->affected[i].modifier = osrc->affected[i].modifier;
+        obj_to_obj(ocopy, to);
     }
 }
 
-
 /**
  * @todo what is object_list being used for?!
- * @todo rename to objectRead
  */
-struct obj_data *read_object(int nr, int type)
+struct obj_data *objectRead(int nr, int type)
 {
     struct obj_data    *obj;
     struct index_data  *index;
@@ -215,7 +175,7 @@ struct obj_data *read_object(int nr, int type)
     }
     
     if( type != 1 ) {
-        LogPrint( LOG_CRIT, "read_object(%d, %d) failed", nr, type );
+        LogPrint( LOG_CRIT, "objectRead(%d, %d) failed", nr, type );
         return( NULL );
     }
 
@@ -225,7 +185,7 @@ struct obj_data *read_object(int nr, int type)
         return(NULL);
     }
 
-    clear_object(obj);
+    objectClear(obj);
 
     if( !db_read_object(obj, nr, -1, -1) ) {
         free(obj);
@@ -247,6 +207,7 @@ struct obj_data *read_object(int nr, int type)
 
     index->number++;
     obj_count++;
+    
     return (obj);
 }
 
@@ -255,13 +216,13 @@ struct obj_data *read_object(int nr, int type)
  * @todo does this get it out of the object_list or does the caller do that?
  * @brief release memory allocated for an obj struct
  */
-void free_obj(struct obj_data *obj)
+void objectFree(struct obj_data *obj)
 {
     int                         i,
                                 j;
 
     if (!obj) {
-        LogPrintNoArg(LOG_CRIT, "!obj in free_obj, db.c");
+        LogPrintNoArg(LOG_CRIT, "!obj in objectFree, db.c");
         return;
     }
 
@@ -309,10 +270,7 @@ void free_obj(struct obj_data *obj)
     free(obj);
 }
 
-/**
- * @todo rename to objectClear
- */
-void clear_object(struct obj_data *obj)
+void objectClear(struct obj_data *obj)
 {
     memset(obj, 0, sizeof(struct obj_data));
     obj->item_number = -1;
@@ -402,7 +360,7 @@ void extract_obj(struct obj_data *obj)
         obj->index->number--;
         obj_count--;
     }
-    free_obj(obj);
+    objectFree(obj);
 
 }
 
@@ -618,7 +576,6 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
 
     obj = GetObjectInList( ch, name, real_roomp(ch->in_room)->contents, offset,
                            &count, TRUE, KEYWORD_FULL_MATCH );
-
     if( obj ) {
         return( obj );
     }
@@ -633,7 +590,6 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
 
     obj = GetObjectInList( ch, name, real_roomp(ch->in_room)->contents, offset,
                            &count, TRUE, KEYWORD_PARTIAL_MATCH );
-
     return( obj );
 }
 
@@ -644,11 +600,6 @@ int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
     if (IS_IMMORTAL(ch)) {
         return (TRUE);
     }
-
-    /*
-     * changed the act.info.c, hope this works on traps INSIDE chests
-     * etc..
-     */
 
     if (ITEM_TYPE(obj) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(obj) > 0) {
         num = number(1, 101);
