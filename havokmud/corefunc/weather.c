@@ -416,26 +416,43 @@ void switch_light(byte why)
 
     switch (why) {
     case MOON_SET:
-        log_sev("setting all rooms to dark", 2);
+        SysLogPrintNoArg( LOG_INFO, "setting all rooms to dark");
         gLightLevel = 0;
         break;
     case SUN_LIGHT:
-        log_sev("setting all rooms to light", 2);
+        SysLogPrintNoArg( LOG_INFO, "setting all rooms to light");
         gLightLevel = 4;
         break;
     case SUN_DARK:
-        log_sev("setting all rooms to dark", 2);
+        SysLogPrintNoArg( LOG_INFO, "setting all rooms to dark");
         gLightLevel = 0;
         break;
     case MOON_RISE:
-        log_sev("setting all non-forest to light", 2);
+        SysLogPrintNoArg( LOG_INFO, "setting all non-forest to light");
         gLightLevel = 1;
         break;
     default:
-        log_sev("Unknown switch on switch_light", 2);
+        SysLogPrintNoArg( LOG_INFO, "Unknown switch on switch_light");
         break;
     }
 }
+
+int IsDarkOutside(struct room_data *rp)
+{
+    if (gLightLevel >= 4) {
+        return (FALSE);
+    }
+    if (IS_SET(rp->room_flags, INDOORS) || IS_SET(rp->room_flags, DEATH)) {
+        return (FALSE);
+    }
+    if (rp->sector_type == SECT_FOREST && gLightLevel <= 1) {
+        return (TRUE);
+    } else if (gLightLevel == 0) {
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

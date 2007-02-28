@@ -71,8 +71,8 @@ void StartThreads( void );
 #define OPT_USEC 250000         
 #endif
 
-int             mud_port;   /**< The TCP port the MUD will listen on */
-int             no_specials;    /**< Disable special functions completely */
+int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
+int             no_specials = 0;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
@@ -93,6 +93,9 @@ long            total_max_players;
 struct time_info_data time_info;        /* the infomation about the time */
 struct weather_data weather_info;       /* the infomation about the
                                          * weather */
+int             mudshutdown = 0;        /* clean shutdown */
+int             reboot_now = 0;     /* reboot the game after a shutdown */
+time_t          Uptime;         /* time that the game has been up */
 
 /*
  *********************************************************************

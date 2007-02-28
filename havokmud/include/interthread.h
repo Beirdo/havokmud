@@ -68,7 +68,10 @@ extern bool GlobalAbort;
 extern long SystemFlags;
 extern long total_connections;
 extern long total_max_players;
-extern int no_specials;
+extern int  no_specials;
+extern int  mudshutdown;
+extern int  reboot_now;
+
 
 extern char *login;
 extern char *credits;
@@ -104,6 +107,11 @@ extern int                 specProcCount;
 
 extern struct race_type   *races;
 extern int                 raceCount;
+
+#define DEF_MYSQL_DB     "havokdevel"
+#define DEF_MYSQL_USER   "havokmud"
+#define DEF_MYSQL_PASSWD "havokmud"
+#define DEF_MYSQL_HOST   "localhost"
 
 extern char *mySQL_db;
 extern char *mySQL_user;
@@ -206,6 +214,8 @@ int dice(int number, int size);
  * core_commands.c
  */
 void            do_siteban(struct char_data *ch, char *argument, int cmd);
+void            do_shutdow(struct char_data *ch, char *argument, int cmd);
+void            do_shutdown(struct char_data *ch, char *argument, int cmd);
 
 /*
  * mysql_handler.c
@@ -274,14 +284,13 @@ char *find_ex_description(char *word, Keywords_t *list, int count);
 /*
  * weather.c
  */
-void            SaveTheWorld(void);
-void            weather_and_time(int mode);
-void            another_hour(int mode);
-void            weather_change(void);
-void            GetMonth(int month);
-void            ChangeWeather(int change);
-void            switch_light(byte why);
-void            PulseMobiles(int type);
+void weather_and_time(int mode);
+void another_hour(int mode);
+void weather_change(void);
+void GetMonth(int month);
+void ChangeWeather(int change);
+void switch_light(byte why);
+int IsDarkOutside(struct room_data *rp);
 
 /*************************************************************************
  * Support for different platforms

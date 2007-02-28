@@ -4796,22 +4796,6 @@ void IncrementZoneNr(int nr)
     }
 }
 
-int IsDarkOutside(struct room_data *rp)
-{
-    if (gLightLevel >= 4) {
-        return (FALSE);
-    }
-    if (IS_SET(rp->room_flags, INDOORS) || IS_SET(rp->room_flags, DEATH)) {
-        return (FALSE);
-    }
-    if (rp->sector_type == SECT_FOREST && gLightLevel <= 1) {
-        return (TRUE);
-    } else if (gLightLevel == 0) {
-        return (TRUE);
-    }
-    return (FALSE);
-}
-
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
     if (ITEM_TYPE(obj_object) != ITEM_TYPE_KEY &&

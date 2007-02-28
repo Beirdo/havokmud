@@ -387,8 +387,6 @@ void            do_at(struct char_data *ch, char *argument, int cmd);
 void            do_goto(struct char_data *ch, char *argument, int cmd);
 void            do_stat(struct char_data *ch, char *argument, int cmd);
 void            do_set(struct char_data *ch, char *argument, int cmd);
-void            do_shutdow(struct char_data *ch, char *argument, int cmd);
-void            do_shutdown(struct char_data *ch, char *argument, int cmd);
 void            do_snoop(struct char_data *ch, char *argument, int cmd);
 void            do_switch(struct char_data *ch, char *argument, int cmd);
 void            do_return(struct char_data *ch, char *argument, int cmd);
@@ -3011,7 +3009,6 @@ int             ItemAlignClash(struct char_data *ch, struct obj_data *obj);
 int             ItemEgoClash(struct char_data *ch, struct obj_data *obj,
                              int bon);
 void            IncrementZoneNr(int nr);
-int             IsDarkOutside(struct room_data *rp);
 int             CheckEgo(struct char_data *ch, struct obj_data *obj);
 int             CheckGetEgo(struct char_data *ch, struct obj_data *obj);
 int             CheckEgoGive(struct char_data *ch, struct char_data *vict,

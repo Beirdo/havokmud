@@ -70,12 +70,6 @@ int             buf_switches;   /* # of switches from small to large buf */
 int             lawful = 0;     /* work like the game regulator */
 int             slow_death = 0; /* Shut her down, Martha, she's sucking
                                  * mud */
-int             mudshutdown = 0;        /* clean shutdown */
-int             reboot_now = 0;     /* reboot the game after a shutdown */
-int             no_specials = 0;        /* Suppress ass. of special
-                                         * routines */
-time_t          Uptime;         /* time that the game has been up */
-long            SystemFlags;
 long            TempDis = 0;
 
 int             pulse;

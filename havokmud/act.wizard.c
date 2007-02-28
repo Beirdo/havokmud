@@ -2677,38 +2677,6 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-void do_shutdow(struct char_data *ch, char *argument, int cmd)
-{
-    send_to_char("If you want to shut something down - say so!\n\r", ch);
-}
-
-void do_shutdown(struct char_data *ch, char *argument, int cmd)
-{
-    char            buf[100],
-                   *arg;
-
-    dlog("in do_shutdown");
-
-    if (IS_NPC(ch)) {
-        return;
-    }
-    argument = get_argument(argument, &arg);
-
-    if (!arg) {
-        sprintf(buf, "Shutdown by %s.", GET_NAME(ch));
-        send_to_all(buf);
-        Log(buf);
-        mudshutdown = 1;
-    } else if (!strcasecmp(arg, "reboot")) {
-        sprintf(buf, "Reboot by %s.", GET_NAME(ch));
-        send_to_all(buf);
-        Log(buf);
-        mudshutdown = reboot_now = 1;
-    } else {
-        send_to_char("Go shut down someone your own size.\n\r", ch);
-    }
-}
-
 void do_snoop(struct char_data *ch, char *argument, int cmd)
 {
     char          *arg;

@@ -39,6 +39,7 @@
 
 #include "protos.h"
 #include "externs.h"
+#include "interthread.h"
 #include "logging.h"
 
 static char ident[] _UNUSED_ =

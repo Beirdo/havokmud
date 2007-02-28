@@ -179,19 +179,6 @@ extern int                 languageCount;
 
 extern int      Silence;
 
-#define DEF_MYSQL_DB     "havokdevel"
-#define DEF_MYSQL_USER   "havokmud"
-#define DEF_MYSQL_PASSWD "havokmud"
-#define DEF_MYSQL_HOST   "localhost"
-
-extern char *mysql_db;
-extern char *mysql_user;
-extern char *mysql_passwd;
-extern char *mysql_host;
-
-extern int      mudshutdown;
-extern int      reboot_now;
-
 #endif
 
 /*
