@@ -290,6 +290,9 @@ void CommandParser( PlayerStruct_t *player, char *line )
         case POSITION_STANDING:
             SendOutput( player, "Fraid you can't do that\n\r");
             break;
+        case POSITION_MOUNTED:
+            SendOutput( player, "Fraid you have no mounted steed.\n\r");
+            break;
 
         }
         if( tmparg ) {

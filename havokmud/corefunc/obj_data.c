@@ -106,7 +106,7 @@ void insert_object(struct obj_data *obj, long vnum)
     CREATE(index, struct index_data, 1);
     CREATE(item, BalancedBTreeItem_t, 1);
 
-    index->virtual = vnum;
+    index->vnum = vnum;
     index->keywords.count = obj->keywords.count;
     CREATE(index->keywords.words, char *, obj->keywords.count);
     for( i = 0; i < obj->keywords.count; i++ ) {
@@ -115,7 +115,7 @@ void insert_object(struct obj_data *obj, long vnum)
     index->number = 0;
     index->func = NULL;
 
-    item->key = &index->virtual;
+    item->key = &index->vnum;
     item->item = (void *)index;
     BalancedBTreeAdd( objectTree, item, UNLOCKED, TRUE );
 }

@@ -342,7 +342,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     for (v = rp->people; (v && (!found)); v = next) {
         next = v->next_in_room;
-        if (IS_NPC(v) && mob_index[v->nr].virtual == 100 && CAN_SEE(ch, v)) {
+        if (IS_NPC(v) && mob_index[v->nr].vnum == 100 && CAN_SEE(ch, v)) {
             /*
              * is a zombie
              */
@@ -1618,7 +1618,7 @@ int StatTeller(struct char_data *ch, int cmd, char *arg,
              * for Ash's dam/hitroll teller
              */
 
-            if (mob_index[mob->nr].virtual == 31818) {
+            if (mob_index[mob->nr].vnum == 31818) {
                 if (GET_GOLD(ch) < 10000) {
                     act("$c0013[$c0015$N$c0013] tells you 'You do not have the"
                         " money to pay me.\n\r", FALSE, ch, 0, mob, TO_CHAR);
@@ -2727,7 +2727,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         /*
          * the target is not the Avatar of Posereisn or is a PC 
          */
-        if (mob_index[vict->nr].virtual != 28042) {
+        if (mob_index[vict->nr].vnum != 28042) {
             return (FALSE);
         }
         
@@ -2869,7 +2869,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
     arg = get_argument(arg, &arg1);
     if (arg1 && (is_abbrev(arg1, "pool") || is_abbrev(arg1, "color pool")) && 
         (portal = get_char_room("color pool", ch->in_room))) {
-        i = mob_index[portal->nr].virtual - AST_MOB_NUM;
+        i = mob_index[portal->nr].vnum - AST_MOB_NUM;
         if( i < 0 || i >= astral_dest_count ) {
             Log( "Astral destination bugger-up: index %d", i );
             return(FALSE);
@@ -3029,7 +3029,7 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         ch->specials.fighting->in_room == ch->in_room) {
 
         for (scan = breath_monsters;
-             scan->vnum >= 0 && scan->vnum != mob_index[ch->nr].virtual;
+             scan->vnum >= 0 && scan->vnum != mob_index[ch->nr].vnum;
              scan++) {
             /*
              * Empty loop
@@ -3496,7 +3496,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 return (FALSE);
             } else if (ch->generic == 21) {
                 for (i = character_list; i; i = i->next) {
-                    if (IS_MOB(i) && mob_index[i->nr].virtual == WHO_TO_HUNT) {
+                    if (IS_MOB(i) && mob_index[i->nr].vnum == WHO_TO_HUNT) {
                         found = TRUE;
                         break;
                     }
@@ -3514,7 +3514,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     for (i = real_roomp(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && 
-                            mob_index[i->nr].virtual == WHO_TO_CALL) {
+                            mob_index[i->nr].vnum == WHO_TO_CALL) {
                             (*mob_index[i->nr].func) (i, 0, "", ch,
                                                       EVENT_FOLLOW);
                             sprintf(buf, "group %d.%s", count, GET_NAME(i));
@@ -3539,7 +3539,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 return (FALSE);
             } else if (ch->generic == 23) {
                 for (i = character_list; i; i = i->next) {
-                    if (IS_MOB(i) && mob_index[i->nr].virtual == WHO_TO_HUNT) {
+                    if (IS_MOB(i) && mob_index[i->nr].vnum == WHO_TO_HUNT) {
                         found = TRUE;
                         break;
                     }
@@ -3569,7 +3569,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                         for (j = real_roomp(ch->in_room)->people; j;
                              j = j->next_in_room) {
                             if (IS_MOB(j) && 
-                                mob_index[j->nr].virtual == WHO_TO_CALL) {
+                                mob_index[j->nr].vnum == WHO_TO_CALL) {
                                 (*mob_index[j->nr].func) (j, 0, "", i,
                                                           EVENT_ATTACK);
                             }
@@ -3598,7 +3598,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     for (i = real_roomp(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && 
-                            mob_index[i->nr].virtual == WHO_TO_CALL) {
+                            mob_index[i->nr].vnum == WHO_TO_CALL) {
                             (*mob_index[i->nr].func) (i, 0, "", i,
                                                       EVENT_FOLLOW);
                         }
@@ -3625,7 +3625,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
         }
 
         for (i = character_list; i; i = i->next) {
-            if (IS_MOB(i) && mob_index[i->nr].virtual == WHO_TO_HUNT) {
+            if (IS_MOB(i) && mob_index[i->nr].vnum == WHO_TO_HUNT) {
                 found = TRUE;
                 break;
             }
@@ -3639,7 +3639,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
         }
 
         for (i = character_list; i; i = i->next) {
-            if (IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL)) {
+            if (IS_MOB(i) && (mob_index[i->nr].vnum == WHO_TO_CALL)) {
                 (*mob_index[i->nr].func) (i, 0, "", ch, EVENT_GATHER);
             }
         }
@@ -3936,7 +3936,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
                 check = -1;
 
                 for (x = 0; x < post_count; x++) {
-                    if (mob_index[post->nr].virtual == post_list[x]) {
+                    if (mob_index[post->nr].vnum == post_list[x]) {
                         check = x;
                     }
                 }
@@ -4425,7 +4425,7 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
         return FALSE;
     }
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
-        if (IS_NPC(i) && mob_index[i->nr].virtual == 6005 && !number(0, 3)) {
+        if (IS_NPC(i) && mob_index[i->nr].vnum == 6005 && !number(0, 3)) {
             command_interpreter(ch, "emote sees the damn fox and runs like "
                                     "hell.");
             do_flee(ch, NULL, 0);
@@ -4485,7 +4485,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     FreeKeywords(key, TRUE);
 
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
-        if (IS_NPC(i) && mob_index[i->nr].virtual == 6001 && !number(0, 3)) {
+        if (IS_NPC(i) && mob_index[i->nr].vnum == 6001 && !number(0, 3)) {
             command_interpreter(ch, "emote yips and starts to make dinner.");
             hit(ch, i, TYPE_UNDEFINED);
             return TRUE;
@@ -6232,7 +6232,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != BRAXIS) {
+        if (mob_index[vict->nr].vnum != BRAXIS) {
             return (FALSE);
         }
         marblesrnum = real_object(MARBLES);
@@ -6288,7 +6288,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != BRAXIS) {
+        if (mob_index[vict->nr].vnum != BRAXIS) {
             return (FALSE);
         }
 
@@ -6643,7 +6643,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != ELAMIN) {
+        if (mob_index[vict->nr].vnum != ELAMIN) {
             return (FALSE);
         }
 
@@ -6720,7 +6720,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != ELAMIN) {
+        if (mob_index[vict->nr].vnum != ELAMIN) {
             return (FALSE);
         }
 
@@ -6911,7 +6911,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != GOBLIN_CHUIRGEON) {
+        if (mob_index[vict->nr].vnum != GOBLIN_CHUIRGEON) {
             return (FALSE);
         }
         if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
@@ -7154,7 +7154,7 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if receiver isn't Jessep 
          */
-        if (mob_index[tgt->nr].virtual != 47951) {
+        if (mob_index[tgt->nr].vnum != 47951) {
             return (FALSE);
         }
         /*
@@ -7743,7 +7743,7 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != NADIA) {
+        if (mob_index[vict->nr].vnum != NADIA) {
             return (FALSE);
         }
 
@@ -8015,7 +8015,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
         if (IS_PC(vict)) {
             return (FALSE);
         }
-        universal = mob_index[vict->nr].virtual;
+        universal = mob_index[vict->nr].vnum;
 
         if (obj->item_number != universal) {
             if (!strcmp(vict->specials.quest_no, "")) {
@@ -8997,7 +8997,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != STARVING_MAN) {
+        if (mob_index[vict->nr].vnum != STARVING_MAN) {
             return (FALSE);
         }
         for (i = vict->carrying; i; i = i->next_content) {
@@ -9046,7 +9046,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         /*
          * Mob is not Starving Man
          */
-        if (mob_index[vict->nr].virtual != STARVING_MAN) {
+        if (mob_index[vict->nr].vnum != STARVING_MAN) {
             return (FALSE);
         }
         
@@ -9621,8 +9621,8 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual == TMK_GUARD_ONE || 
-            mob_index[vict->nr].virtual == TMK_GUARD_TWO) {
+        if (mob_index[vict->nr].vnum == TMK_GUARD_ONE || 
+            mob_index[vict->nr].vnum == TMK_GUARD_TWO) {
             switch (number(1, 10)) {
             case 1:
                 act("$n says, 'That Bahamut scares me to no end.  I know he's "
@@ -9846,16 +9846,16 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
     obj_to_char(trinket, mob);
     char_from_room(mob);
 
-    if (mob_index[ch->nr].virtual == ROBBER) {
+    if (mob_index[ch->nr].vnum == ROBBER) {
         toRoom = 51848;
     }
-    if (mob_index[ch->nr].virtual == NABBER) {
+    if (mob_index[ch->nr].vnum == NABBER) {
         toRoom = 51874;
     }
-    if (mob_index[ch->nr].virtual == MUGGER) {
+    if (mob_index[ch->nr].vnum == MUGGER) {
         toRoom = 51858;
     }
-    if (mob_index[ch->nr].virtual == FILCHER) {
+    if (mob_index[ch->nr].vnum == FILCHER) {
         toRoom = 51868;
     }
     if (toRoom == 0) {
@@ -9911,7 +9911,7 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if target isn't Tysha 
          */
-        if (mob_index[tgt->nr].virtual != 47975) {
+        if (mob_index[tgt->nr].vnum != 47975) {
             return (FALSE);
         }
         /*
@@ -9957,7 +9957,7 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room > -1) {
         for (i = real_roomp(ch->in_room)->people; i; i = next) {
             next = i->next_in_room;
-            if (mob_index[i->nr].virtual == 47975) {
+            if (mob_index[i->nr].vnum == 47975) {
                 /* 
                  * if tysha is in the room 
                  */
@@ -10159,7 +10159,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
 
-        if (mob_index[vict->nr].virtual != ZORK) {
+        if (mob_index[vict->nr].vnum != ZORK) {
             return (FALSE);
         }
 
@@ -10965,7 +10965,7 @@ int janaurius(struct char_data *ch, int cmd, char *arg,
     if ((target = ch->specials.fighting)) {
         ch->generic = 1;
         for (i = character_list; i; i = i->next) {
-            if (mob_index[i->nr].virtual == 51166) {
+            if (mob_index[i->nr].vnum == 51166) {
                 AddHated(i, target);
                 SetHunting(i, target);
             }
@@ -12296,7 +12296,7 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
             next_v = tempchar->next_in_room;
             if (IS_NPC(tempchar) && 
                 !IS_SET(tempchar->specials.act, ACT_POLYSELF) &&
-                mob_index[tempchar->nr].virtual == GUARDIANMOBVNUM) {
+                mob_index[tempchar->nr].vnum == GUARDIANMOBVNUM) {
                 extract_char(tempchar);
             }
         }

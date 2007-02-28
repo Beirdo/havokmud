@@ -2207,7 +2207,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         }
 
         vnum = atoi(row[0]);
-        index->virtual = vnum;
+        index->vnum = vnum;
         index->number = 0;
         index->data = NULL;
         index->func = NULL;
@@ -2221,7 +2221,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         pthread_mutex_unlock( mutex );
 
         bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
-        bitem->key  = &index->virtual;
+        bitem->key  = &index->vnum;
         bitem->item = (void *)index;
         BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
     }

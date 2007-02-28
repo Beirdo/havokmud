@@ -85,10 +85,6 @@ int             top_of_mobt = 0;        /* top of mobile index table */
 int             top_of_sort_mobt = 0;
 int             top_of_alloc_mobt = 99999;
 
-struct time_info_data time_info;        /* the infomation about the time */
-struct weather_data weather_info;       /* the infomation about the
-                                         * weather
-                                         */
 
 /*
  * long saved_rooms[WORLD_SIZE];
@@ -642,7 +638,7 @@ struct index_data *insert_index(struct index_data *index, void *data,
         }
         top_of_alloc_mobt += 50;
     }
-    index[top_of_mobt].virtual = vnum;
+    index[top_of_mobt].vnum = vnum;
     index[top_of_mobt].pos = -1;
     index[top_of_mobt].name = strdup(GET_NAME((struct char_data *) data));
     index[top_of_mobt].number = 0;
@@ -692,18 +688,18 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                     }
                     bc += 50;
                 }
-                sscanf(buf, "#%ld", &index[i].virtual);
-                sprintf(tbuf, "%s/%ld", dirname, index[i].virtual);
+                sscanf(buf, "#%ld", &index[i].vnum);
+                sprintf(tbuf, "%s/%ld", dirname, index[i].vnum);
                 if ((f = fopen(tbuf, "rt")) == NULL) {
                     index[i].pos = ftell(fl);
-                    index[i].name = (index[i].virtual < 99999) ?
+                    index[i].name = (index[i].vnum < 99999) ?
                                      fread_string(fl) : strdup("omega");
                 } else {
                     index[i].pos = -1;
                     fscanf(f, "#%*d\n");
-                    index[i].name = (index[i].virtual < 99999) ?
+                    index[i].name = (index[i].vnum < 99999) ?
                                      fread_string(f) : strdup("omega");
-                    dvnums[di++] = index[i].virtual;
+                    dvnums[di++] = index[i].vnum;
                     fclose(f);
                 }
                 index[i].number = 0;
@@ -772,9 +768,9 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
         }
 
         fscanf(f, "#%*d\n");
-        index[i].virtual = vnum;
+        index[i].vnum = vnum;
         index[i].pos = -1;
-        index[i].name = (index[i].virtual < 99999) ? fread_string(f) :
+        index[i].name = (index[i].vnum < 99999) ? fread_string(f) :
                          strdup("omega");
         index[i].number = 0;
         index[i].func = 0;
@@ -1479,9 +1475,9 @@ struct char_data *read_mobile(int nr, int type)
      * mobile in external file
      */
     if (mob_index[nr].pos == -1) {
-        sprintf(buf, "%s/%ld", MOB_DIR, mob_index[nr].virtual);
+        sprintf(buf, "%s/%ld", MOB_DIR, mob_index[nr].vnum);
         if ((f = fopen(buf, "rt")) == NULL) {
-            Log("can't open mobile file for mob %ld", mob_index[nr].virtual);
+            Log("can't open mobile file for mob %ld", mob_index[nr].vnum);
             free_char(mob);
             return (0);
         }
@@ -2058,7 +2054,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
     }
     for (i = 0; i < top_of_scripts; i++) {
-        if (script_data[i].virtual == mob_index[nr].virtual) {
+        if (script_data[i].vnum == mob_index[nr].vnum) {
             SET_BIT(mob->specials.act, ACT_SCRIPT);
             mob->script = i;
             break;
@@ -2129,7 +2125,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob_index[nr].number++;
 
 #ifdef BYTE_COUNT
-    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
+    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].vnum, bc);
 #endif
     return (bc);
 }
@@ -2333,7 +2329,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
     }
     for (i = 0; i < top_of_scripts; i++) {
-        if (script_data[i].virtual == mob_index[nr].virtual) {
+        if (script_data[i].vnum == mob_index[nr].vnum) {
             SET_BIT(mob->specials.act, ACT_SCRIPT);
             mob->script = i;
             break;
@@ -2398,7 +2394,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     mob_index[nr].number++;
 
 #ifdef BYTE_COUNT
-    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
+    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].vnum, bc);
 #endif
     return (bc);
 }
@@ -2967,7 +2963,7 @@ void reset_zone(int zone, int cmd)
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !fighting_in_room(ZCMD.arg3) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
+                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
                         log_sev("Error while loading mob in reset_zone(read)",
@@ -3002,7 +2998,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile.  Charm them to follow prev.
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
+                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
@@ -3245,7 +3241,7 @@ void reset_zone(int zone, int cmd)
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, mob"
                                      " %d, loc %d\n",
                                 zone, cmd_no, (int)ZCMD.arg1,
-                                (int)mob_index[mob->nr].virtual, ZCMD.arg3);
+                                (int)mob_index[mob->nr].vnum, ZCMD.arg3);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;
@@ -3350,7 +3346,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
+                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Read)", 1);
@@ -3378,7 +3374,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile.  Charm them to follow prev.
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
+                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
@@ -3574,8 +3570,8 @@ void reset_zone(int zone, int cmd)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, "
                                      "mob %d, loc %d\n",
-                                zone, cmd_no, ZCMD.arg1.virtual,
-                                mob_index[mob->nr].virtual, ZCMD.arg3);
+                                zone, cmd_no, ZCMD.arg1,
+                                mob_index[mob->nr].vnum, ZCMD.arg3);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;
@@ -5012,7 +5008,7 @@ int real_mobile(int virtual)
     for (;;) {
         mid = (bot + top) / 2;
 
-        if ((mob_index + mid)->virtual == virtual) {
+        if ((mob_index + mid)->vnum == virtual) {
             return (mid);
         }
         if (bot >= top) {
@@ -5020,13 +5016,13 @@ int real_mobile(int virtual)
              * start unsorted search now
              */
             for (mid = top_of_sort_mobt; mid < top_of_mobt; mid++) {
-                if ((mob_index + mid)->virtual == virtual) {
+                if ((mob_index + mid)->vnum == virtual) {
                     return (mid);
                 }
             }
             return (-1);
         }
-        if ((mob_index + mid)->virtual > virtual) {
+        if ((mob_index + mid)->vnum > virtual) {
             top = mid - 1;
         } else {
             bot = mid + 1;
@@ -5069,7 +5065,7 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
 
     for (p = character_list; p; p = p->next) {
         for (i = 0; i < top_of_scripts; i++) {
-            if (script_data[i].virtual == mob_index[p->nr].virtual) {
+            if (script_data[i].vnum == mob_index[p->nr].vnum) {
                 SET_BIT(p->specials.act, ACT_SCRIPT);
                 Log("Setting SCRIPT bit for mobile %s, file %s.", GET_NAME(p),
                     script_data[i].filename);
@@ -5174,7 +5170,7 @@ void InitScripts(void)
                 count++;
             }
 
-            script_data[top_of_scripts].virtual = i;
+            script_data[top_of_scripts].vnum = i;
             script_data[top_of_scripts].filename =
                 (char *) malloc((strlen(buf2) + 1) * sizeof(char));
             strcpy(script_data[top_of_scripts].filename, buf2);
@@ -5377,7 +5373,7 @@ void ReadTextZone(FILE * fl)
                  */
                 i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
-                    !CheckKillFile(mob_index[i].virtual)) {
+                    !CheckKillFile(mob_index[i].vnum)) {
                     mob = read_mobile(i, REAL);
                     char_to_room(mob, k);
 
@@ -5394,7 +5390,7 @@ void ReadTextZone(FILE * fl)
                  */
                 i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
-                    !CheckKillFile(mob_index[i].virtual)) {
+                    !CheckKillFile(mob_index[i].vnum)) {
                     mob = read_mobile(i, REAL);
                     if (master) {
                         char_to_room(mob, master->in_room);
@@ -5527,7 +5523,7 @@ void ReadTextZone(FILE * fl)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %ld, "
                                      "mob %ld, loc %d",
-                                zone, 1, i, mob_index[mob->nr].virtual, k);
+                                zone, 1, i, mob_index[mob->nr].vnum, k);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;

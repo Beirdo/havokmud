@@ -90,6 +90,10 @@ long            SystemFlags;
 long            total_connections;
 long            total_max_players;
 
+struct time_info_data time_info;        /* the infomation about the time */
+struct weather_data weather_info;       /* the infomation about the
+                                         * weather */
+
 /*
  *********************************************************************
  *  main game loop and related stuff                                    *

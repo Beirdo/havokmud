@@ -241,7 +241,7 @@ int exit_ok(struct room_direction_data *exit, struct room_data **rpp)
 long MobVnum(struct char_data *c)
 {
     if (IS_NPC(c)) {
-        return (mob_index[c->nr].virtual);
+        return (mob_index[c->nr].vnum);
     } else {
         return (0);
     }
@@ -2711,13 +2711,13 @@ void CallForGuard(struct char_data *ch, struct char_data *vict,
     }
     for (i = character_list; i && lev > 0; i = i->next) {
         if (IS_NPC(i) && i != ch && !i->specials.fighting) {
-            if (mob_index[i->nr].virtual == type1) {
+            if (mob_index[i->nr].vnum == type1) {
                 if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
                     vict) {
                     SetHunting(i, vict);
                     lev--;
                 }
-            } else if (mob_index[i->nr].virtual == type2) {
+            } else if (mob_index[i->nr].vnum == type2) {
                 if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
                     vict) {
                     SetHunting(i, vict);
@@ -4516,7 +4516,7 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
     /*
      * called steed check
      */
-    if (mob_index[horse->nr].virtual == STEED_TEMPLATE &&
+    if (mob_index[horse->nr].vnum == STEED_TEMPLATE &&
         HasClass(ch, CLASS_PALADIN) &&
         GetMaxLevel(ch) >= GetMaxLevel(horse) + 10) {
         /*

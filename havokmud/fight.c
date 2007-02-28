@@ -584,7 +584,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     IS_CARRYING_W(ch) = 0;
 
     if (IS_NPC(ch)) {
-        corpse->char_vnum = mob_index[ch->nr].virtual;
+        corpse->char_vnum = mob_index[ch->nr].vnum;
         corpse->char_f_pos = 0;
     } else {
         if (ch->desc) {
@@ -5570,7 +5570,7 @@ void specdamage(struct char_data *ch, struct char_data *v)
         }
     }
 
-    if (mob_index[ch->nr].virtual == BAHAMUT) {
+    if (mob_index[ch->nr].vnum == BAHAMUT) {
         bahamut_prayer(ch, v);
     }
 

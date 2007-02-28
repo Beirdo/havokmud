@@ -270,9 +270,9 @@
 
 #define IS_IMMORTAL(ch) (!IS_NPC(ch) && (GetMaxLevel(ch) >= IMMORTAL))
 
-#define IS_POLICE(ch) ((mob_index[ch->nr].virtual == 3060) || \
-                       (mob_index[ch->nr].virtual == 3069) || \
-                       (mob_index[ch->nr].virtual == 3067))
+#define IS_POLICE(ch) ((mob_index[ch->nr].vnum == 3060) || \
+                       (mob_index[ch->nr].vnum == 3069) || \
+                       (mob_index[ch->nr].vnum == 3067))
 
 #define IS_CORPSE(obj) (ITEM_TYPE((obj))==ITEM_TYPE_CONTAINER && \
                         (obj)->value[3] && \

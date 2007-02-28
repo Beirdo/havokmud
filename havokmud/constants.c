@@ -260,13 +260,13 @@ const char     *wear_bits[] = {
     "ABOUT",
     "WAIST",
     "WRIST",
-    "WIELD",
-    "HOLD",
-    "THROW",
-    "LIGHT-SOURCE",
     "BACK",
     "EARS",
     "EYES",
+    "LIGHT-SOURCE",
+    "HOLD",
+    "WIELD",
+    "THROW",
     "\n"
 };
 
@@ -279,31 +279,40 @@ const char     *extra_bits[] = {
     "INVISIBLE",
     "MAGIC",
     "NODROP",
-    "ANTI-NECROMANCER",
-    "ANTI-GOOD",
-    "ANTI-EVIL",
-    "ANTI-NEUTRAL",
-    "ANTI-CLERIC",
-    "ANTI-MAGE",
-    "ANTI-THIEF",
-    "ANTI-WARRIOR",
     "BRITTLE",
     "RESISTANT",
     "ARTIFACT",
+    "RARE",
+    "UBERRARE",
+    "QUEST",
+    "\n"
+};
+
+
+const char     *anti_bits[] = {
+    "ANTI-SUN",
+    "ANTI-GOOD",
+    "ANTI-EVIL",
+    "ANTI-NEUTRAL",
     "ANTI-MEN",
     "ANTI-WOMEN",
-    "ANTI-SUN",
-    "ANTI-BARBARIAN",
-    "ANTI-RANGER",
-    "ANTI-PALADIN",
-    "ANTI-PSIONIST",
-    "ANTI-MONK",
-    "ANTI-DRUID",
+    "\n"
+};
+
+const char     *anti_class_bits[] = {
     "ONLY-CLASS",
-    "unused",
-    "RARE",
-    "QUEST",
-    "UNIQUE",
+    "ANTI-MAGE",
+    "ANTI-CLERIC",
+    "ANTI-WARRIOR",
+    "ANTI-THIEF",
+    "ANTI-DRUID",
+    "ANTI-MONK",
+    "ANTI-BARBARIAN",
+    "ANTI-SORCERER",
+    "ANTI-PALADIN",
+    "ANTI-RANGER",
+    "ANTI-PSIONIST",
+    "ANTI-NECROMANCER",
     "\n"
 };
 

@@ -1363,7 +1363,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
         if (IS_MOB(k)) {
             sprintf(buf, "%sV-Number [%s%ld%s]", color1, color2,
-                    mob_index[k->nr].virtual, color1);
+                    mob_index[k->nr].vnum, color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
         }
 
@@ -4033,7 +4033,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->virtual, VIRTUAL);
+        obj = read_object(index->vnum, VIRTUAL);
         if (obj) {
             if (eval(obj) < -5) {
                 sprintf(color, "%s", "$c0008");
@@ -4044,7 +4044,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
             }
 
             objname = KeywordsToString( &index->keywords, " " );
-            sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual, 
+            sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->vnum, 
                     (index->number - 1), color, eval(obj), objname);
             free( objname );
             append_to_string_block(sb, buf);
@@ -4107,7 +4107,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
          item = BalancedBTreeFindNext( objectTree, item, LOCKED ) ) {
         index = (struct index_data *)item->item;
 
-        obj = read_object(index->virtual, VIRTUAL);
+        obj = read_object(index->vnum, VIRTUAL);
         if (obj) {
             if (IS_SET(obj->wear_flags, pc_num_class(wearslot))) {
                 if (eval(obj) < -5) {
@@ -4118,7 +4118,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
                     sprintf(color, "%s", "$c000W");
                 }
                 objname = KeywordsToString( &index->keywords, " " );
-                sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual, 
+                sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->vnum, 
                         (index->number - 1), color, eval(obj), objname);
                 free( objname );
                 append_to_string_block(sb, buf);
@@ -4196,7 +4196,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
 
         index = (struct index_data *)item->item;
 
-        obj = read_object(index->virtual, VIRTUAL);
+        obj = read_object(index->vnum, VIRTUAL);
         if (obj) {
             if (ITEM_TYPE(obj) == type) {
                 if (eval(obj) < -5) {
@@ -4207,7 +4207,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
                     sprintf(color, "%s", "$c000W");
                 }
                 objname = KeywordsToString( &index->keywords, " " );
-                sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->virtual,
+                sprintf(buf, "%5ld %3d %s%7d   $c000w%s\n\r", index->vnum,
                         (index->number - 1), color, eval(obj), objname);
                 free(objname);
                 append_to_string_block(sb, buf);
@@ -4251,14 +4251,14 @@ void do_show_mobiles( struct char_data *ch, struct string_block *sb,
 
     for (i = 0; i < top_of_mobt; i++) {
         index = &mob_index[i];
-        if ((zone >= 0 && (index->virtual < bottom || index->virtual > top)) ||
+        if ((zone >= 0 && (index->vnum < bottom || index->vnum > top)) ||
             (zone < 0 && !KeywordsMatch(key, &index->keywords))) {
             continue;
         }
         /*
          * optimize later
          */
-        sprintf(buf, "%5ld %4d %3d  %s\n\r", index->virtual, i, index->number, 
+        sprintf(buf, "%5ld %4d %3d  %s\n\r", index->vnum, i, index->number, 
                 index->name);
         append_to_string_block(sb, buf);
     }
@@ -4376,7 +4376,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->virtual, VIRTUAL);
+        obj = read_object(index->vnum, VIRTUAL);
         if (obj) {
             sprintbit((unsigned) obj->wear_flags, wear_bits, temp1);
             sprintbit((unsigned) obj->extra_flags, extra_bits, temp2);
@@ -4386,7 +4386,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                  * Affect4
                  */
                 objname = KeywordsToString( &index->keywords, " " );
-                sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;", zone, index->virtual, 
+                sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;", zone, index->vnum, 
                         ((index->number - 1 == 0) ? 0 : 1),
                         index->cost_per_day, objname, temp1, temp2);
                 free( objname );
@@ -4539,10 +4539,10 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = read_object(index->virtual, VIRTUAL);
+        obj = read_object(index->vnum, VIRTUAL);
         if (obj && obj->max != 0) {
             objname = KeywordsToString( &index->keywords, " " );
-            sprintf(buf, "%5ld  %3d/%3d  %s \n\r", index->virtual, 
+            sprintf(buf, "%5ld  %3d/%3d  %s \n\r", index->vnum, 
                     index->number - 1, index->max, objname);
             free(objname);
             append_to_string_block(sb, buf);

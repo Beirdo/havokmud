@@ -38,7 +38,7 @@
 #include "protected_data.h"
 #include "logging.h"
 #include "balanced_btree.h"
-#define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
+#define MAX_OBJ_AFFECT 5
 #include "structs.h"
 #include <mysql.h>
 
@@ -447,14 +447,9 @@ typedef enum {
 #define CONT_CLOSED         BV(2)
 #define CONT_LOCKED         BV(3)
 
-struct extra_descr_data {
-    char           *keyword;    /* Keyword in look/examine */
-    char           *description;        /* What to see */
-    struct extra_descr_data *next;      /* Next in list */
-};
 
 #ifndef MAX_OBJ_AFFECT
-#define MAX_OBJ_AFFECT 5        /* Used in OBJ_FILE_ELEM *DO*NOT*CHANGE* */
+#define MAX_OBJ_AFFECT 5
 #endif
 
 struct obj_affected_type {
@@ -475,11 +470,8 @@ typedef struct {
     bool            partial;
 } Keywords_t;
 
-/**
- * @todo rename virtual to vnum
- */
 struct index_data {
-    long            virtual;    /* virtual number of this mob/obj */
+    int             vnum;       /* virtual number of this mob/obj */
     int             number;     /* number of existing units of this
                                  * mob/obj */
     int_func        func;       /* special procedure for this mob/obj */
