@@ -678,7 +678,6 @@ bool HasExtraBits(struct char_data *ch, int bits)
 
 /**
  * @brief put an object in an object
- * @todo rename to objectPutInObject
  */
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
 {
@@ -714,7 +713,6 @@ void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
 
 /**
  * @brief remove an object from an object 
- * @todo rename to objectTakeFromObject
  */
 void objectTakeFromObject(struct obj_data *obj)
 {
