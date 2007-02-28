@@ -1203,7 +1203,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                              */
 #if 0
                               obj_from_room(o);
-                              extract_obj(o);
+                              objectExtract(o);
 #endif
                         } else {
                             obj_to_room(o, rm);

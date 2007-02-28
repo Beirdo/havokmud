@@ -75,7 +75,7 @@ void spell_animate_rock(int level, struct char_data *ch,
             SET_BIT(mob->specials.act, ACT_SENTINEL);
         }
 
-        extract_obj(obj);
+        objectExtract(obj);
     } else {
         send_to_char("Sorry, the spell isn't working today\n\r", ch);
         return;
@@ -339,14 +339,14 @@ void spell_changestaff(int level, struct char_data *ch,
     if (ITEM_TYPE(s) != ITEM_TYPE_STAFF) {
         act("$p is not sufficient to complete this spell",
             FALSE, ch, s, 0, TO_CHAR);
-        extract_obj(s);
+        objectExtract(s);
         return;
     }
 
     if (!s->value[2]) {
         act("$p is not sufficiently powerful to complete this spell",
             FALSE, ch, s, 0, TO_CHAR);
-        extract_obj(s);
+        objectExtract(s);
         return;
     }
 
@@ -379,7 +379,7 @@ void spell_changestaff(int level, struct char_data *ch,
         }
         add_follower(t, ch);
 
-        extract_obj(s);
+        objectExtract(s);
     }
 }
 

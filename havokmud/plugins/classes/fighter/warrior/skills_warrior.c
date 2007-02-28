@@ -109,14 +109,14 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                         GET_NAME(ch), obj->short_description,
                         obj->item_number);
                 Log(buf);
-                extract_obj(cmp);
+                objectExtract(cmp);
                 return;
             }
 
             if (cmp->value[2] == obj->value[2]) {
                 send_to_char("That item has no need of your attention.\n\r",
                              ch);
-                extract_obj(cmp);
+                objectExtract(cmp);
             } else {
                 if (ch->skills[SKILL_MEND].learned < perc) {
                     /*
@@ -145,7 +145,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                         send_to_char(buf, ch);
                         MakeScrap(ch, NULL, obj);
                     }
-                    extract_obj(cmp);
+                    objectExtract(cmp);
                     LearnFromMistake(ch, SKILL_MEND, 0, 95);
                     WAIT_STATE(ch, PULSE_VIOLENCE * 2);
                 } else {
@@ -160,7 +160,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                                  "experience for using your abilities."
                                  "$c0007\n\r", ch);
                     gain_exp(ch, 100);
-                    extract_obj(cmp);
+                    objectExtract(cmp);
                     WAIT_STATE(ch, PULSE_VIOLENCE * 1);
                 }
             }

@@ -3076,7 +3076,7 @@ void reset_zone(int zone, int cmd)
                                               (int)obj->max) == TRUE) {
                                     obj_to_room(obj, ZCMD.arg3);
                                 } else {
-                                    extract_obj(obj);
+                                    objectExtract(obj);
                                 }
                             } else {
                                 obj_to_room(obj, ZCMD.arg3);
@@ -3126,7 +3126,7 @@ void reset_zone(int zone, int cmd)
                                       (int) obj->max) == TRUE) {
                             obj_to_obj(obj, obj_to);
                         } else {
-                            extract_obj(obj);
+                            objectExtract(obj);
                         }
                     } else {
                         obj_to_obj(obj, obj_to);
@@ -3164,7 +3164,7 @@ void reset_zone(int zone, int cmd)
                                        (int) obj->max) == TRUE) {
                             obj_to_char(obj, mob);
                         } else {
-                            extract_obj(obj);
+                            objectExtract(obj);
                         }
                     } else {
                         obj_to_char(obj, mob);
@@ -3226,7 +3226,7 @@ void reset_zone(int zone, int cmd)
                                           (int) obj->max) == TRUE) {
                                 equip_char(mob, obj, ZCMD.arg3);
                             } else {
-                                extract_obj(obj);
+                                objectExtract(obj);
                             }
                         } else {
                             equip_char(mob, obj, ZCMD.arg3);

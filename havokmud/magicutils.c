@@ -470,14 +470,14 @@ void RawSummon(struct char_data *v, struct char_data *c)
         for (j = 0; j < MAX_WEAR; j++) {
             if (v->equipment[j]) {
                 o = unequip_char(v, j);
-                extract_obj(o);
+                objectExtract(o);
             }
         }
 
         for (o = v->carrying; o; o = n) {
             n = o->next_content;
             obj_from_char(o);
-            extract_obj(o);
+            objectExtract(o);
         }
         AddHated(v, c);
     } else if (!EasySummon) {

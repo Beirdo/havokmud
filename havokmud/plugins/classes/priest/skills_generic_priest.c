@@ -482,7 +482,7 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_ROOM);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_CHAR);
     obj_from_char(obj);
-    extract_obj(obj);
+    objectExtract(obj);
     char_to_room(victim, ch->in_room);
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
 

@@ -1972,7 +1972,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
             while (ch->carrying) {
                 i = ch->carrying;
                 obj_from_char(i);
-                extract_obj(i);
+                objectExtract(i);
             }
         }
 

@@ -127,7 +127,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
             }
             value += (MIN(1000, MAX(tmp_object->cost / 4, 1)));
             obj_from_char(tmp_object);
-            extract_obj(tmp_object);
+            objectExtract(tmp_object);
             if (num > 0) {
                 num--;
             }
@@ -1024,7 +1024,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
                 ch, temp, 0, TO_ROOM);
             act("You blindly fumble $p to the ground!  It shatters!", TRUE,
                 ch, temp, 0, TO_CHAR);
-            extract_obj(temp);
+            objectExtract(temp);
             return;
         }
     }
@@ -1038,7 +1038,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
         if (equipped) {
             temp = unequip_char(ch, HOLD);
         }
-        extract_obj(temp);
+        objectExtract(temp);
         return;
     }
 
@@ -1059,7 +1059,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     if (equipped) {
         temp = unequip_char(ch, HOLD);
     }
-    extract_obj(temp);
+    objectExtract(temp);
 
     if (!IS_IMMORTAL(ch)) {
         GET_COND(ch, FULL) += 1;
@@ -1339,7 +1339,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         scroll = unequip_char(ch, HOLD);
     }
 
-    extract_obj(scroll);
+    objectExtract(scroll);
 }
 
 void do_swim(struct char_data *ch, char *arg, int cmd)

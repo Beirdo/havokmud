@@ -364,7 +364,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 obj_from_obj(temp);
                 obj_to_room(temp, ch->in_room);
             }
-            extract_obj(i);
+            objectExtract(i);
             return (TRUE);
         }
     }
@@ -2140,11 +2140,11 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                                     }
                                 }
                             }
-                            extract_obj(o);
+                            objectExtract(o);
 
                         }
                     }
-                    extract_obj(co);
+                    objectExtract(co);
                     return (TRUE);
                 }
             }
@@ -4475,7 +4475,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
                 obj_from_obj(k);
                 obj_to_room(k, ch->in_room);
             }
-            extract_obj(j);
+            objectExtract(j);
             ch->generic = 10;
             FreeKeywords(key, TRUE);
             return (TRUE);
@@ -4688,7 +4688,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                         TRUE, ch, 0, vict, TO_ROOM);
                     act("$N says 'I'm sorry, you don't have enough money.'",
                         TRUE, ch, 0, vict, TO_CHAR);
-                    extract_obj(new);
+                    objectExtract(new);
                 }
             } else {
                 GET_GOLD(ch) -= cost;
@@ -4704,7 +4704,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 act("$N fiddles with $p.", TRUE, ch, obj, vict, TO_CHAR);
 
                 obj->value[2] = new->value[2];
-                extract_obj(new);
+                objectExtract(new);
 
                 if (check_soundproof(ch)) {
                     act("$N smiles broadly.", TRUE, ch, 0, vict, TO_ROOM);
@@ -8013,7 +8013,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
                 act("$N gives $p to $n.", FALSE, ch, obj2, vict, TO_ROOM);
                 obj_to_char(obj2, ch);
                 obj_from_char(obj);
-                extract_obj(obj);
+                objectExtract(obj);
                 return (TRUE);
             } else {
                 /* 
@@ -8030,7 +8030,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
                 }
                 act("$n puts $p into $s pocket.", TRUE, vict, obj, 0, TO_ROOM);
                 obj_from_char(obj);
-                extract_obj(obj);
+                objectExtract(obj);
 
                 /* 
                  * gain xps if there's no obj to be had 
@@ -8359,7 +8359,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 act("$N waves $s hands and makes something disappear.",
                     TRUE, ch, obj, vict, TO_CHAR);
                 obj_from_char(obj);
-                extract_obj(obj);
+                objectExtract(obj);
                 /*
                  * pick new quest 
                  */
@@ -10351,7 +10351,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                     }
 
                     /* remove the corpse */
-                    extract_obj(co);
+                    objectExtract(co);
                 }
             }
         }
@@ -10435,7 +10435,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                         /* 
                          * remove the corpse 
                          */
-                        extract_obj(co);
+                        objectExtract(co);
                     }
                 }
 
@@ -10758,7 +10758,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
             FALSE, gnome, 0, 0, TO_ROOM);
 
         while (gnome->carrying) {
-            extract_obj(gnome->carrying);
+            objectExtract(gnome->carrying);
         }
 
         extract_char(gnome);
@@ -10817,7 +10817,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
              * extract carried items if any 
              */
             while (gnome->carrying) {
-                extract_obj(gnome->carrying);
+                objectExtract(gnome->carrying);
             }
             extract_char(gnome);
             return (TRUE);
@@ -10959,7 +10959,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", WAITROOM);
-                    extract_obj(obj);
+                    objectExtract(obj);
                 }
             }
         }
@@ -10971,7 +10971,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", REAVER_RM);
-                    extract_obj(obj);
+                    objectExtract(obj);
                 }
             }
         }
@@ -10983,7 +10983,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
                                  "disappears completely!\n\r", DEST_ROOM);
-                    extract_obj(obj);
+                    objectExtract(obj);
                 }
             }
         }                       
@@ -11406,23 +11406,23 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
             GET_GOLD(ch) -= 1000000;
             if (obj1->carried_by) {
                 obj_from_char(obj1);
-                extract_obj(obj1);
+                objectExtract(obj1);
             }
             if (obj2->carried_by) {
                 obj_from_char(obj2);
-                extract_obj(obj2);
+                objectExtract(obj2);
             }
             if (obj3->carried_by) {
                 obj_from_char(obj3);
-                extract_obj(obj3);
+                objectExtract(obj3);
             }
             if (obj4->carried_by) {
                 obj_from_char(obj4);
-                extract_obj(obj4);
+                objectExtract(obj4);
             }
             if (obj5->carried_by) {
                 obj_from_char(obj5);
-                extract_obj(obj5);
+                objectExtract(obj5);
             }
 
             if ((obj = objectRead(SMITH_SHIELD, VIRTUAL))) {
@@ -11843,7 +11843,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                      */
                     act("With a glance, $n dissolves the corpse, looking "
                         "stronger for it.", TRUE, mob, 0, 0, TO_ROOM);
-                    extract_obj(corpse);
+                    objectExtract(corpse);
                 }
 
                 act("$n seems to biodegrade into nothingness, leaving only"
@@ -12162,7 +12162,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 remobj = curritem;
                 curritem = curritem->next;
                 if (k != j) {
-                    extract_obj(remobj);
+                    objectExtract(remobj);
                 }
                 k++;
             } else {

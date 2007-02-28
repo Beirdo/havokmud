@@ -82,7 +82,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
                 Log("%s just got %s coins", GET_NAME(ch),
                     formatNum(obj_object->value[0]));
             }
-            extract_obj(obj_object);
+            objectExtract(obj_object);
         }
     }
 }

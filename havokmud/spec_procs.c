@@ -1451,7 +1451,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
          * if got the altar one, switch her
          */
         if (chalice == get_obj_in_list_num(achl, ch->carrying)) {
-            extract_obj(chalice);
+            objectExtract(chalice);
             chalice = objectRead(chl, VIRTUAL);
             obj_to_char(chalice, ch);
         }
@@ -1469,7 +1469,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
 
         if (buf1 && buf2 && !strcasecmp(buf1, "chalice") && 
             !strcasecmp(buf2, "altar")) {
-            extract_obj(chalice);
+            objectExtract(chalice);
             chalice = objectRead(achl, VIRTUAL);
             obj_to_room(chalice, ch->in_room);
             send_to_char("Ok.\n\r", ch);
@@ -1490,7 +1490,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
          * pray
          */
         send_to_char(CHAL_ACT, ch);
-        extract_obj(chalice);
+        objectExtract(chalice);
         act("$n is torn out of existence!", TRUE, ch, 0, 0, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, 2500);
@@ -2398,7 +2398,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                 } else {
                     act("$n takes $p and hungrily wolfs it down.",
                         TRUE, latt, obj, 0, TO_ROOM);
-                    extract_obj(obj);
+                    objectExtract(obj);
                     if (!IS_MOB(ch) && CAN_SEE(latt, ch)) {
                         mem->index = affect_status(mem, latt, ch, 4);
                     } else {
@@ -2673,7 +2673,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                  * Take it away
                  */
                 obj_from_char(obj);
-                extract_obj(obj);
+                objectExtract(obj);
 
                 if (!IS_NPC(ch)) {
                     if (!(pass = fopen(RHYODIN_FILE, "a"))) {
@@ -5046,7 +5046,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
             obj_from_room(i);
-            extract_obj(i);
+            objectExtract(i);
             return (TRUE);
         }
     }
@@ -7747,14 +7747,14 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     Log("%s tried to sharpen a weapon with invalid value: %s, "
                         "vnum %d.", GET_NAME(ch), obj->short_description,
                         obj->item_number);
-                    extract_obj(cmp);
+                    objectExtract(cmp);
                     return;
                 }
 
                 if (cmp->value[2] == obj->value[2]) {
                     send_to_char("That item has no need of your attention.\n\r",
                                  ch);
-                    extract_obj(cmp);
+                    objectExtract(cmp);
                     return;
                 } 
                 
@@ -7770,7 +7770,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                         obj->short_description);
                 send_to_char(buf, ch);
 
-                extract_obj(cmp);
+                objectExtract(cmp);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
             } else {
                 send_to_char("You can only sharpen edged or pointy "

@@ -385,12 +385,12 @@ int reimb_char_objs(struct char_data *ch)
      */
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
-            extract_obj(unequip_char(ch, i));
+            objectExtract(unequip_char(ch, i));
         }
     }
 
     while (ch->carrying) {
-        extract_obj(ch->carrying);
+        objectExtract(ch->carrying);
     }
 
     /*
@@ -532,7 +532,7 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
         if (IS_RARE(obj)) {
             obj->index->.number++;
         }
-        extract_obj(obj);
+        objectExtract(obj);
     }
 }
 
@@ -771,7 +771,7 @@ void CountLimitedItems(struct obj_file_u *st)
                 }
                 obj->index->number++;
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
 }

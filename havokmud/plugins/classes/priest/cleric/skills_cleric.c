@@ -367,7 +367,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
             act("$p bursts into flame and disintegrates!",
                 TRUE, ch, obj, 0, TO_CHAR);
             obj_from_char(obj);
-            extract_obj(obj);
+            objectExtract(obj);
         }
     } else {
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
@@ -375,7 +375,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
             TO_CHAR);
         obj_from_char(obj);
-        extract_obj(obj);
+        objectExtract(obj);
         GET_ALIGNMENT(ch) -= 5;
     }
     char_to_room(victim, ch->in_room);
@@ -1537,12 +1537,12 @@ void spell_golem(int level, struct char_data *ch,
     act("$N is quickly assembled from the pieces", FALSE, ch, 0, gol, TO_CHAR);
 
     add_follower(gol, ch);
-    extract_obj(helm);
-    extract_obj(boots);
-    extract_obj(gloves);
-    extract_obj(leggings);
-    extract_obj(sleeves);
-    extract_obj(jacket);
+    objectExtract(helm);
+    objectExtract(boots);
+    objectExtract(gloves);
+    objectExtract(leggings);
+    objectExtract(sleeves);
+    objectExtract(jacket);
 }
 
 void cast_golem(int level, struct char_data *ch, char *arg,
@@ -2768,7 +2768,7 @@ void spell_resurrection(int level, struct char_data *ch,
             /*
              * get rid of corpse
              */
-            extract_obj(obj);
+            objectExtract(obj);
         } else {
             /*
              * corpse is a pc
@@ -3053,7 +3053,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         act("Ouch!", TRUE, ch, 0, NULL, TO_CHAR);
         LearnFromMistake(ch, SKILL_SCRIBE, 0, 90);
 
-        extract_obj(obj);
+        objectExtract(obj);
     } else {
         GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         sprintf(buf, "You have imbued a spell to %s.\n\r",

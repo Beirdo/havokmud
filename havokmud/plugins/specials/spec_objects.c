@@ -556,7 +556,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
                 FALSE, ch, obj, 0, TO_CHAR);
             act("$n tries to get $p, but it disintegrates in his hand!",
                 FALSE, ch, obj, 0, TO_ROOM);
-            extract_obj(obj);
+            objectExtract(obj);
             if (do_all) {
                 return (FALSE);
             } else {
@@ -578,7 +578,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
             i->description = (char *) strdup(buf);
             obj_to_room(i, ch->in_room);
             obj_from_char(obj);
-            extract_obj(obj);
+            objectExtract(obj);
 
             if (do_all) {
                 return (FALSE);
@@ -599,7 +599,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
                     FALSE, t, obj, ch, TO_CHAR);
                 act("As $n tries to give $p to $N, it vanishes!",
                     FALSE, ch, obj, t, TO_ROOM);
-                extract_obj(obj);
+                objectExtract(obj);
                 if (do_all) {
                     return (FALSE);
                 } else {
@@ -696,7 +696,7 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     obj->value[0]--;
     if (!obj->value[0]) {
         act("That used up $p.", FALSE, ch, obj, t, TO_CHAR);
-        extract_obj(obj);
+        objectExtract(obj);
     }
     return( TRUE );
 }
@@ -746,7 +746,7 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
                 act("$p vanishes in a cloud of smoke!", FALSE,
                     real_roomp(obj->in_room)->people, obj, 0, TO_CHAR);
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     return( TRUE );
@@ -768,7 +768,7 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
                 act("$p disintegrates into atomic particles!", FALSE,
                     real_roomp(obj->in_room)->people, obj, 0, TO_CHAR);
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     return( TRUE );
@@ -973,7 +973,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
          * purge everything in altar
          */
         obj_from_room(obj);
-        extract_obj(obj);
+        objectExtract(obj);
 
         obj = objectRead(51831, VIRTUAL);
         obj_to_room(obj, ch->in_room);
@@ -1174,7 +1174,7 @@ int applepie(struct char_data *ch, int cmd, char *argument,
             /*
              * purge pie 
              */
-            extract_obj(obj);
+            objectExtract(obj);
         }
         return (TRUE);
     }
@@ -1463,7 +1463,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
             }
             act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
             act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
-            extract_obj(obj);
+            objectExtract(obj);
 
             if (time_info.hours > 6) {
                 if (time_info.hours < 20) {
@@ -1525,7 +1525,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
             }
             act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
             act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
-            extract_obj(obj);
+            objectExtract(obj);
 
             if (time_info.hours < 7 || time_info.hours > 19) {
                 obj = objectRead(PEN_MIGHT, VIRTUAL);
@@ -1581,8 +1581,8 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
             "dragon.", FALSE, ch, 0, 0, TO_ROOM);
         act("The sceptre rumbles slightly as it unites with the eye of the "
             "dragon.", FALSE, ch, 0, 0, TO_CHAR);
-        extract_obj(obj1);
-        extract_obj(obj2);
+        objectExtract(obj1);
+        objectExtract(obj2);
 
         obj = objectRead(DRAGON_SCEPTRE_TWO, VIRTUAL);
         obj_to_char(obj, ch);
@@ -1634,8 +1634,8 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
             "yourself in a new room.", FALSE, ch, 0, 0, TO_ROOM);
         act("A blinding white light fills the room.  You blink and find "
             "yourself in a new room.", FALSE, ch, 0, 0, TO_CHAR);
-        extract_obj(obj1);
-        extract_obj(obj2);
+        objectExtract(obj1);
+        objectExtract(obj2);
 
         obj = objectRead(DRAGON_SCEPTRE_ONE, VIRTUAL);
         obj_to_room(obj, ch->in_room);
@@ -1796,16 +1796,16 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
 
     for (i = 0; i < MAX_WEAR; i++) {
         if (mob->equipment[i])
-            extract_obj(unequip_char(mob, i));
+            objectExtract(unequip_char(mob, i));
     }
     while (mob->carrying) {
-        extract_obj(mob->carrying);
+        objectExtract(mob->carrying);
     }
 
     obj_store_to_char(mob, &st);
 
     while (mob->carrying) {
-        extract_obj(mob->carrying);
+        objectExtract(mob->carrying);
     }
 
     /*
@@ -1822,7 +1822,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
             mob->equipment[i]->timer = 20;
             if (ITEM_TYPE(mob->equipment[i]) == ITEM_TYPE_CONTAINER) {
                 while ((tempobj = mob->equipment[i]->contains)) {
-                    extract_obj(tempobj);
+                    objectExtract(tempobj);
                 }
             }
 
@@ -2051,7 +2051,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 
         ch->player.q_points++;
         do_save(ch, NULL, 0);
-        extract_obj(obj);
+        objectExtract(obj);
         return (TRUE);
     }
     return (FALSE);
@@ -2225,7 +2225,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
         } else if( obj->in_obj ) {
             obj_from_obj(obj);
         }
-        extract_obj(obj);
+        objectExtract(obj);
     }
 
     return(zapit);
@@ -2240,7 +2240,7 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
     }
     if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
         obj_from_room(obj);
-        extract_obj(obj);
+        objectExtract(obj);
         act("The ring of blazing white light suddenly vanishes!", 
             FALSE, ch, obj, NULL, TO_ROOM);
         act("The ring of blazing white light suddenly vanishes!",

@@ -282,7 +282,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
             act("$p bursts into flame and disintegrates!",
                 TRUE, ch, obj, 0, TO_CHAR);
             obj_from_char(obj);
-            extract_obj(obj);
+            objectExtract(obj);
         }
     } else {
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
@@ -290,7 +290,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
             TO_CHAR);
         obj_from_char(obj);
-        extract_obj(obj);
+        objectExtract(obj);
         GET_ALIGNMENT(ch) -= 5;
     }
     char_to_room(victim, ch->in_room);
@@ -1019,7 +1019,7 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_ROOM);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_CHAR);
     obj_from_char(obj);
-    extract_obj(obj);
+    objectExtract(obj);
     char_to_room(victim, ch->in_room);
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
 
@@ -1393,7 +1393,7 @@ void spell_disintegrate(int level, struct char_data *ch,
                                 }
                             }
                             if (obj) {
-                                extract_obj(obj);
+                                objectExtract(obj);
                             }
                         } else if (obj) {
                             act("$c0010$p resists the disintegration ray "
@@ -5621,7 +5621,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
             NULL, TO_ROOM);
         act("You scream in pain as $p explodes.", TRUE, ch, obj, NULL, TO_CHAR);
         LearnFromMistake(ch, SKILL_BREW, 0, 90);
-        extract_obj(obj);
+        objectExtract(obj);
     } else {
         GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         sprintf(buf, "You have imbued a new spell to %s.\n\r",

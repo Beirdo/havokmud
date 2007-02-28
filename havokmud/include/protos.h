@@ -702,7 +702,6 @@ void            obj_to_obj(struct obj_data *obj, struct obj_data *obj_to);
 void            obj_from_obj(struct obj_data *obj);
 void            object_list_new_owner(struct obj_data *list,
                                       struct char_data *ch);
-void            extract_obj(struct obj_data *obj);
 void            update_object(struct obj_data *obj, int use);
 void            update_char_objects(struct char_data *ch);
 void            extract_char(struct char_data *ch);

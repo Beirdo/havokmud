@@ -186,7 +186,7 @@ void shopping_buy(char *arg, struct char_data *ch,
     if (temp1->cost <= 0) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
-        extract_obj(temp1);
+        objectExtract(temp1);
         return;
     }
 
@@ -362,7 +362,7 @@ void shopping_sell(char *arg, struct char_data *ch,
 
     if (get_obj_in_list(argm, keeper->carrying) || 
         ITEM_TYPE(temp1) == ITEM_TYPE_TRASH) {
-        extract_obj(temp1);
+        objectExtract(temp1);
     } else {
         obj_to_char(temp1, keeper);
     }

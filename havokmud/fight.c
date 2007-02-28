@@ -4344,7 +4344,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     }
 
     check_falling_obj(t, ch->in_room);
-    extract_obj(obj);
+    objectExtract(obj);
 
     DestroyedItems = 1;
 }
@@ -5056,7 +5056,7 @@ void NailThisSucker(struct char_data *ch)
 
         for (obj = real_roomp(room_num)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
 }

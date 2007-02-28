@@ -3200,7 +3200,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
         } else if ((obj = get_obj_in_list_vis(ch, name,
                                          real_roomp(ch->in_room)->contents))) {
             act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
-            extract_obj(obj);
+            objectExtract(obj);
         } else if (!strcasecmp("room", name)) {
             if (GetMaxLevel(ch) < IMPLEMENTOR) {
                 send_to_char("I'm sorry, I can't let you do that.\n\r", ch);
@@ -3272,7 +3272,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
 
         for (obj = real_roomp(ch->in_room)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
 }
@@ -4016,7 +4016,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
                     (index->number - 1), color, eval(obj), objname);
             free( objname );
             append_to_string_block(sb, buf);
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     BalancedBTreeUnlock(objectTree);
@@ -4091,7 +4091,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
                 free( objname );
                 append_to_string_block(sb, buf);
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     BalancedBTreeUnlock( objectTree );
@@ -4180,7 +4180,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
                 free(objname);
                 append_to_string_block(sb, buf);
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     BalancedBTreeUnlock( objectTree );
@@ -4458,7 +4458,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
                 }
                 append_to_string_block(sb, "\n\r");
             }
-            extract_obj(obj);
+            objectExtract(obj);
         }
     }
     BalancedBTreeUnlock(objectTree);
@@ -4515,7 +4515,7 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
             free(objname);
             append_to_string_block(sb, buf);
         }
-        extract_obj(obj);
+        objectExtract(obj);
     }
     BalancedBTreeUnlock( objectTree );
     FreeKeywords(key, TRUE);

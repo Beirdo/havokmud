@@ -1170,7 +1170,7 @@ void ObjFromCorpse(struct obj_data *c)
             Log("Memory lost in ObjFromCorpse.");
         }
     }
-    extract_obj(c);
+    objectExtract(c);
 }
 
 void ClassSpecificStuff(struct char_data *ch)

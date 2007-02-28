@@ -497,7 +497,7 @@ void CleanZone(int zone)
              */
             if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TYPE_TREE &&
                 !IS_OBJ_STAT(obj, extra_flags, ITEM_QUEST)) {
-                extract_obj(obj);
+                objectExtract(obj);
             }
         }
     }
@@ -3365,11 +3365,11 @@ void traveling_qp(int pulse)
         if (!(travelqp = find_tqp(k))) {
             f = 0;
         } else if (init_counter() < MIN_INIT_TQP) {
-            extract_obj(travelqp);
+            objectExtract(travelqp);
             f = 0;
         } else if (!(ch = travelqp->carried_by)) {
             Log("not carried, extracting");
-            extract_obj(travelqp);
+            objectExtract(travelqp);
             f = 0;
         } else if (!IS_NPC(ch)) {
 #if 0
@@ -3383,7 +3383,7 @@ void traveling_qp(int pulse)
             }
             Log("carried by player, gained a QT");
             qlog(ch, "found a quest token.");
-            extract_obj(travelqp);
+            objectExtract(travelqp);
             f = 0;
         } else if (qp_patience < 8) {
             /*

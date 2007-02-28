@@ -81,7 +81,7 @@ void spell_animate_dead(int level, struct char_data *ch,
     /*
      * get rid of corpse
      */
-    extract_obj(corpse);
+    objectExtract(corpse);
 }
 void cast_animate_dead(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
@@ -327,7 +327,7 @@ void spell_cavorting_bones(int level, struct char_data *ch,
     mob->points.hit = mob->points.max_hit;
     mob->points.hitroll = mob->points.hitroll + mtohit;
     char_to_room(mob, ch->in_room);
-    extract_obj(obj);
+    objectExtract(obj);
 
     act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0,
         TO_ROOM);
@@ -1300,7 +1300,7 @@ void spell_flesh_golem(int level, struct char_data *ch,
     mob->points.hit = mob->points.max_hit;
     mob->points.hitroll = mob->points.hitroll + mtohit;
     char_to_room(mob, ch->in_room);
-    extract_obj(obj);
+    objectExtract(obj);
 
     act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0,
         TO_ROOM);

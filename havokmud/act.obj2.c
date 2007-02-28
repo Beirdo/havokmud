@@ -205,7 +205,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
                  * its empty 
                  */
                 if (temp->value[0] < 20) {
-                    extract_obj(temp);  
+                    objectExtract(temp);  
                     /* 
                      * get rid of it 
                      */
@@ -290,7 +290,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         af.bitvector = AFF_POISON;
         affect_join(ch, &af, FALSE, FALSE);
     }
-    extract_obj(temp);
+    objectExtract(temp);
 }
 
 void do_pour(struct char_data *ch, char *argument, int cmd)
@@ -546,7 +546,7 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
          * Nothing left 
          */
         act("There is nothing left now.", FALSE, ch, 0, 0, TO_CHAR);
-        extract_obj(temp);
+        objectExtract(temp);
     }
 }
 

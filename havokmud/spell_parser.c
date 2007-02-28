@@ -2273,7 +2273,7 @@ void affect_update(int pulse)
                     act("$p crumbles to dust.", TRUE,
                         real_roomp(j->in_room)->people, j, 0, TO_CHAR);
                 }
-                extract_obj(j);
+                objectExtract(j);
             }
         } else if (j->item_number == EMPTY_POTION) {
             if (j->timer > 0) {
@@ -2290,7 +2290,7 @@ void affect_update(int pulse)
                     act("$p dissolves into nothingness.", TRUE,
                         real_roomp(j->in_room)->people, j, 0, TO_CHAR);
                 }
-                extract_obj(j);
+                objectExtract(j);
             }
         } else {
             /*

@@ -196,7 +196,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
                 send_to_char(buf, tmp_char);
             }
         }
-        extract_obj(k);
+        objectExtract(k);
     }
 
     if (cmd != 60) {
@@ -217,7 +217,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
             }
         }
         value += (MIN(1000, MAX(k->cost / 4, 1)));
-        extract_obj(k);
+        objectExtract(k);
     }
 
     if (value) {
@@ -815,7 +815,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                         extract_char(me->people);
                     }
                     while (me->contents) {
-                        extract_obj(me->contents);
+                        objectExtract(me->contents);
                     }
                     me->river_speed = 0;
                     return (TRUE);
@@ -1079,7 +1079,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
                         }
 
                         while (me->contents) {
-                            extract_obj(me->contents);
+                            objectExtract(me->contents);
                         }
 
                         me->river_speed = 0;

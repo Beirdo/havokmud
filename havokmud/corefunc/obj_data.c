@@ -279,10 +279,9 @@ void objectClear(struct obj_data *obj)
 }
 
 /**
- * @todo rename to objectExtract
  * @brief Extract an object from the world 
  */
-void extract_obj(struct obj_data *obj)
+void objectExtract(struct obj_data *obj)
 {
     struct obj_data *temp1,
                    *temp2;
@@ -329,7 +328,7 @@ void extract_obj(struct obj_data *obj)
     /*
      * leaves nothing ! 
      */
-    for (; obj->contains; extract_obj(obj->contains)) {
+    for (; obj->contains; objectExtract(obj->contains)) {
         /* 
          * Empty loop 
          */
