@@ -1,31 +1,46 @@
+/*
+ *  This file is part of the havokmud package
+ *  Copyright (C) 2007 Gavin Hurlbut
+ *
+ *  havokmud is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*HEADER---------------------------------------------------
+ * $Id$
+ *
+ * Copyright 2007 Gavin Hurlbut
+ * All rights reserved
+ */
+
+/**
+ * @file
+ * @brief Handles the weather in the MUD
+ */
+
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
 #include <stdio.h>
 #include <string.h>
-
 #include "protos.h"
+#include "logging.h"
+#include "interthread.h"
 
-/*
- * uses 
- */
+static char ident[] _UNUSED_ =
+    "$Id$";
 
-extern struct time_info_data time_info;
-extern struct weather_data weather_info;
-extern struct room_data *room_db;
-extern long     SystemFlags;
-
-/*
- * In this part. 
- */
-void            SaveTheWorld();
-void            weather_and_time(int mode);
-void            another_hour(int mode);
-void            weather_change(void);
-void            GetMonth(int month);
-void            ChangeWeather(int change);
-void            switch_light(byte why); /* -DM 7/16/92 */
-void            PulseMobiles(int type);
 
 /*
  * what stage is moon in? (1 - 32) 

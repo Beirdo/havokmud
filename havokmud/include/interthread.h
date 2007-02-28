@@ -109,6 +109,14 @@ extern char *mySQL_passwd;
 extern char *mySQL_host;
 extern int   mySQL_port;
 
+extern struct time_info_data time_info;
+extern struct weather_data weather_info;
+#ifdef HASH
+extern struct hash_header room_db;
+#else
+extern struct room_data *room_db[];
+#endif
+
 
 /*
  * Prototypes of the thread entry points
@@ -246,6 +254,17 @@ void FreeKeywords( Keywords_t *key, bool freeRoot );
 bool KeywordsMatch(Keywords_t *tofind, Keywords_t *keywords);
 char *find_ex_description(char *word, Keywords_t *list, int count);
 
+/*
+ * weather.c
+ */
+void            SaveTheWorld(void);
+void            weather_and_time(int mode);
+void            another_hour(int mode);
+void            weather_change(void);
+void            GetMonth(int month);
+void            ChangeWeather(int change);
+void            switch_light(byte why);
+void            PulseMobiles(int type);
 
 /*************************************************************************
  * Support for different platforms

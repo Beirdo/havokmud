@@ -41,12 +41,6 @@ extern struct skillset styleskillset[];
 extern int             styleskillCount;
 
 
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db[];
-#endif
-
 extern int      top_of_zone_table;
 extern int      top_of_mobt;
 extern int      top_of_objt;
