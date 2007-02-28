@@ -288,9 +288,9 @@ void objectExtract(struct obj_data *obj)
     extern long     obj_count;
 
     if (obj->in_room != NOWHERE) {
-        obj_from_room(obj);
+        objectTakeFromRoom(obj);
     } else if (obj->carried_by) {
-        obj_from_char(obj);
+        objectTakeFromChar(obj);
     } else if (obj->equipped_by) {
         if (obj->eq_pos > -1) {
             /*
@@ -800,6 +800,197 @@ void objectTakeFromObject(struct obj_data *obj)
 
         save_room(obj_from->in_room);
     }
+}
+
+/**
+ * @brief give an object to a char 
+ */
+void objectGiveToChar(struct obj_data *object, struct char_data *ch)
+{
+    if (!object || !ch) {
+        return;
+    }
+
+    if(object->in_obj || object->carried_by || object->equipped_by ||
+       object->in_room != NOWHERE) {
+        return;
+    }
+
+    if (ch->carrying) {
+        object->next_content = ch->carrying;
+    } else {
+        object->next_content = NULL;
+    }
+    ch->carrying = object;
+    object->carried_by = ch;
+    object->in_room = NOWHERE;
+    object->equipped_by = 0;
+    object->in_obj = 0;
+    IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(object);
+    IS_CARRYING_N(ch)++;
+}
+
+/**
+ * @brief take an object from a char 
+ */
+void objectTakeFromChar(struct obj_data *object)
+{
+    struct obj_data *tmp;
+
+    if (!object) {
+        LogPrintNoArg( LOG_CRIT, "No object to be take from char.");
+        return;
+    }
+
+    if (!object->carried_by) {
+        LogPrintNoArg( LOG_CRIT, "this object is not carried by anyone");
+        return;
+    }
+
+    if (!object->carried_by->carrying) {
+        LogPrintNoArg( LOG_CRIT, "No one is carrying this object");
+        return;
+    }
+
+    if (object->in_obj) {
+        return;
+    }
+
+    if (object->equipped_by) {
+        return;
+    }
+
+    if (object->carried_by->carrying == object) {
+        /* 
+         * head of list 
+         */
+        object->carried_by->carrying = object->next_content;
+    } else {
+        /* 
+         * locate previous 
+         */
+        for (tmp = object->carried_by->carrying; 
+             tmp && (tmp->next_content != object); tmp = tmp->next_content) {
+            /* 
+             * Empty loop 
+             */
+        }
+
+        if (!tmp) {
+            LogPrintNoArg( LOG_CRIT, "Couldn't find object on character");
+            return;
+        }
+
+        tmp->next_content = object->next_content;
+    }
+
+    IS_CARRYING_W(object->carried_by) -= GET_OBJ_WEIGHT(object);
+    IS_CARRYING_N(object->carried_by)--;
+    object->carried_by = NULL;
+    object->equipped_by = NULL;
+    object->next_content = NULL;
+    object->in_obj = NULL;
+}
+
+/*
+ * put an object in a room 
+ */
+void objectPutInRoom(struct obj_data *object, long room)
+{
+
+    if (room == -1) {
+        room = 4;
+    }
+
+    if(object->equipped_by || object->eq_pos != -1)
+    {
+        return;
+    }
+
+    if (object->in_room > NOWHERE) {
+        objectTakeFromRoom(object);
+    }
+
+    object->next_content = real_roomp(room)->contents;
+    real_roomp(room)->contents = object;
+    object->in_room = room;
+    object->carried_by = NULL;
+    object->equipped_by = NULL;
+    if (!IS_SET(real_roomp(room)->room_flags, DEATH)) {
+        save_room(room);
+    }
+}
+
+void obj_to_room2(struct obj_data *object, long room)
+{
+
+    if (room == -1) {
+        room = 4;
+    }
+
+    if(object->equipped_by || object->eq_pos != -1) {
+        return;
+    }
+
+    if (object->in_room > NOWHERE) {
+        objectTakeFromRoom(object);
+    }
+
+    object->next_content = real_roomp(room)->contents;
+    real_roomp(room)->contents = object;
+    object->in_room = room;
+    object->carried_by = NULL;
+    object->equipped_by = NULL;
+}
+
+/*
+ * Take an object from a room 
+ */
+void objectTakeFromRoom(struct obj_data *object)
+{
+    struct obj_data *i;
+
+    /*
+     * remove object from room 
+     */
+
+    if (object->in_room <= NOWHERE) {
+        if (object->carried_by || object->equipped_by) {
+            LogPrintNoArg( LOG_CRIT, "Eek.. an object was just taken from a "
+                                     "char, instead of a room");
+        }
+        return;
+    }
+
+    if (object == real_roomp(object->in_room)->contents) {
+        /* 
+         * head of list 
+         */
+        real_roomp(object->in_room)->contents = object->next_content;
+    } else {
+        /* 
+         * locate previous element in list 
+         */
+        for (i = real_roomp(object->in_room)->contents; i &&
+             (i->next_content != object); i = i->next_content) {
+            /* 
+             * Empty loop 
+             */
+        }
+
+        if (i) {
+            i->next_content = object->next_content;
+        } else {
+            LogPrintNoArg( LOG_CRIT, "Couldn't find object in room");
+            return;
+        }
+    }
+
+    if (!IS_SET(real_roomp(object->in_room)->room_flags, DEATH)) {
+        save_room(object->in_room);
+    }
+    object->in_room = NOWHERE;
+    object->next_content = NULL;
 }
 
 

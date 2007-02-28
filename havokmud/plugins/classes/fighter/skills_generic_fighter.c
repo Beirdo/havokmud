@@ -661,7 +661,7 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
             /*
              * send the object to a nearby room, instead 
              */
-            obj_to_room(w, victim->in_room);
+            objectPutInRoom(w, victim->in_room);
         } else {
             act("You try to disarm $N, but $E doesn't have a weapon.",
                 TRUE, ch, 0, victim, TO_CHAR);
@@ -1126,7 +1126,7 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
             act("$n searches the area for something to eat and manages to find "
                 "something.", TRUE, ch, 0, 0, TO_ROOM);
             obj = objectRead(FOUND_FOOD, VIRTUAL);
-            obj_to_char(obj, ch);
+            objectGiveToChar(obj, ch);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -1179,7 +1179,7 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
             act("$n searches the area for something to drink and manages to "
                 "find a small amount of water.", TRUE, ch, 0, 0, TO_ROOM);
             obj = objectRead(FOUND_WATER, VIRTUAL);
-            obj_to_char(obj, ch);
+            objectGiveToChar(obj, ch);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience "
                          "for using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -1687,19 +1687,19 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         }
         if (!strcmp(itemtype, "shield")) {
             hide = objectRead(TAN_SHIELD, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " shield");
         } else if (!strcmp(itemtype, "jacket")) {
             hide = objectRead(TAN_JACKET, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply += 5;
             acbonus += 2;
             strcat(hidetype, " jacket");
         } else if (!strcmp(itemtype, "boots")) {
             hide = objectRead(TAN_BOOTS, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply--;
             if (acapply < 0) {
                 acapply = 0;
@@ -1711,7 +1711,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             strcat(hidetype, " pair of boots");
         } else if (!strcmp(itemtype, "gloves")) {
             hide = objectRead(TAN_GLOVES, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
 
             acapply--;
             if (acapply < 0) {
@@ -1724,19 +1724,19 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             strcat(hidetype, " pair of gloves");
         } else if (!strcmp(itemtype, "leggings")) {
             hide = objectRead(TAN_LEGGINGS, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of leggings");
         } else if (!strcmp(itemtype, "sleeves")) {
             hide = objectRead(TAN_SLEEVES, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of sleeves");
         } else if (!strcmp(itemtype, "helmet")) {
             hide = objectRead(TAN_HELMET, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             acapply--;
             if (acapply < 0) {
                 acapply = 0;
@@ -1748,7 +1748,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             strcat(hidetype, " helmet");
         } else if (!strcmp(itemtype, "bag")) {
             hide = objectRead(TAN_BAG, VIRTUAL);
-            obj_to_char(hide, ch);
+            objectGiveToChar(hide, ch);
             strcat(hidetype, " bag");
         } else {
             send_to_char("Illegal type of equipment!\n\r", ch);

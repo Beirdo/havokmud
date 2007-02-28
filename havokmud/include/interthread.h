@@ -275,6 +275,11 @@ void objectFree(struct obj_data *obj);
 void objectExtract(struct obj_data *obj);
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
 void objectTakeFromObject(struct obj_data *obj);
+void objectGiveToChar(struct obj_data *object, struct char_data *ch);
+void objectTakeFromChar(struct obj_data *object);
+void objectPutInRoom(struct obj_data *object, long room);
+void obj_to_room2(struct obj_data *object, long room);
+void objectTakeFromRoom(struct obj_data *object);
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);

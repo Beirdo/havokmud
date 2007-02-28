@@ -1237,108 +1237,6 @@ void char_to_room(struct char_data *ch, long room)
     }
 }
 
-/*
- * give an object to a char 
- */
-void obj_to_char(struct obj_data *object, struct char_data *ch)
-{
-    char            buf[255];
-
-    if (!object) {
-        Log("!object in obj_to_char!");
-        return;
-    }
-    if (!ch) {
-        sprintf(buf, "!ch in obj_to_char for object <%s>,could be bogus "
-                      "maximum for the obj in the zone file", object->name);
-        slog(buf);
-        Log(buf);
-        return;
-    }
-
-    assert(!object->in_obj && !object->carried_by && !object->equipped_by &&
-           object->in_room == NOWHERE);
-
-    if (ch->carrying) {
-        object->next_content = ch->carrying;
-    } else {
-        object->next_content = 0;
-    }
-    ch->carrying = object;
-    object->carried_by = ch;
-    object->in_room = NOWHERE;
-    object->equipped_by = 0;
-    object->in_obj = 0;
-    IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(object);
-    IS_CARRYING_N(ch)++;
-
-}
-
-/*
- * take an object from a char 
- */
-void obj_from_char(struct obj_data *object)
-{
-    struct obj_data *tmp;
-
-    if (!object) {
-        Log("No object to be take from char.");
-        assert(0);
-    }
-
-    if (!object->carried_by) {
-        Log("this object is not carried by anyone");
-        /*
-         * assert(0); 
-         */
-    }
-
-    if (!object->carried_by->carrying) {
-        Log("No one is carrying this object");
-        assert(0);
-    }
-
-    if (object->in_obj) {
-        Log("Obj in more than one place.");
-        assert(0);
-    }
-
-    if (object->equipped_by) {
-        Log("Obj in more than one place.");
-        assert(0);
-    }
-
-    if (object->carried_by->carrying == object) {
-        /* 
-         * head of list 
-         */
-        object->carried_by->carrying = object->next_content;
-    } else {
-        /* 
-         * locate previous 
-         */
-        for (tmp = object->carried_by->carrying; 
-             tmp && (tmp->next_content != object); tmp = tmp->next_content) {
-            /* 
-             * Empty loop 
-             */
-        }
-
-        if (!tmp) {
-            Log("Couldn't find object on character");
-            assert(0);
-        }
-
-        tmp->next_content = object->next_content;
-    }
-
-    IS_CARRYING_W(object->carried_by) -= GET_OBJ_WEIGHT(object);
-    IS_CARRYING_N(object->carried_by)--;
-    object->carried_by = 0;
-    object->equipped_by = 0;
-    object->next_content = 0;
-    object->in_obj = 0;
-}
 
 /*
  * Return the effect of a piece of armor in position eq_pos 
@@ -1413,7 +1311,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         if (obj->index->func != EvilBlade && obj->index->func != NeutralBlade &&
             obj->index->func != GoodBlade && !CheckEgo(ch, obj)) {
             if (ch->in_room != NOWHERE) {
-                obj_to_room(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room);
                 do_save(ch, "", 0);
             } else {
                 Log("Ch->in_room = NOWHERE on anti-ego item!");
@@ -1423,7 +1321,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
 
         if (!CheckGetBarbarianOK(ch, obj)) {
             if (ch->in_room != NOWHERE) {
-                obj_to_room(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room);
                 do_save(ch, "", 0);
                 return;
             } else {
@@ -1438,7 +1336,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
                     FALSE, ch, obj, 0, TO_CHAR);
                 act("$n is zapped by $p and instantly drops it.",
                     FALSE, ch, obj, 0, TO_ROOM);
-                obj_to_room(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room);
                 do_save(ch, "", 0);
                 return;
             } else {
@@ -1626,104 +1524,6 @@ struct char_data *get_char_num(int nr)
 }
 
 /*
- * put an object in a room 
- */
-void obj_to_room(struct obj_data *object, long room)
-{
-
-    if (room == -1) {
-        room = 4;
-    }
-    assert(!object->equipped_by && object->eq_pos == -1);
-
-    if (object->in_room > NOWHERE) {
-        obj_from_room(object);
-    }
-
-    object->next_content = real_roomp(room)->contents;
-    real_roomp(room)->contents = object;
-    object->in_room = room;
-    object->carried_by = 0;
-    object->equipped_by = 0;
-    if (!IS_SET(real_roomp(room)->room_flags, DEATH)) {
-        save_room(room);
-    }
-}
-
-void obj_to_room2(struct obj_data *object, long room)
-{
-
-    if (room == -1) {
-        room = 4;
-    }
-    assert(!object->equipped_by && object->eq_pos == -1);
-
-    if (object->in_room > NOWHERE) {
-        obj_from_room(object);
-    }
-
-    object->next_content = real_roomp(room)->contents;
-    real_roomp(room)->contents = object;
-    object->in_room = room;
-    object->carried_by = 0;
-    object->equipped_by = 0;
-}
-
-/*
- * Take an object from a room 
- */
-void obj_from_room(struct obj_data *object)
-{
-    struct obj_data *i;
-
-    /*
-     * remove object from room 
-     */
-
-    if (object->in_room <= NOWHERE) {
-        if (object->carried_by || object->equipped_by) {
-            Log("Eek.. an object was just taken from a char, instead of "
-                "a room");
-            assert(0);
-        }
-        /* 
-         * its not in a room 
-         */
-        return;
-    }
-
-    if (object == real_roomp(object->in_room)->contents) {
-        /* 
-         * head of list 
-         */
-        real_roomp(object->in_room)->contents = object->next_content;
-    } else {
-        /* 
-         * locate previous element in list 
-         */
-        for (i = real_roomp(object->in_room)->contents; i &&
-             (i->next_content != object); i = i->next_content) {
-            /* 
-             * Empty loop 
-             */
-        }
-
-        if (i) {
-            i->next_content = object->next_content;
-        } else {
-            Log("Couldn't find object in room");
-            assert(0);
-        }
-    }
-
-    if (!IS_SET(real_roomp(object->in_room)->room_flags, DEATH)) {
-        save_room(object->in_room);
-    }
-    object->in_room = NOWHERE;
-    object->next_content = 0;
-}
-
-/*
  * Set all carried_by to point to new owner 
  */
 void object_list_new_owner(struct obj_data *list, struct char_data *ch)
@@ -1845,8 +1645,8 @@ void extract_char_smarter(struct char_data *ch, long save_room)
         if (!IS_IMMORTAL(ch)) {
             while (ch->carrying) {
                 i = ch->carrying;
-                obj_from_char(i);
-                obj_to_room(i, ch->in_room);
+                objectTakeFromChar(i);
+                objectPutInRoom(i, ch->in_room);
                 check_falling_obj(i, ch->in_room);
             }
         } else {
@@ -1858,13 +1658,13 @@ void extract_char_smarter(struct char_data *ch, long save_room)
              */
             for (j = 0; j < MAX_WEAR; j++) {
                 if (ch->equipment[j]) {
-                    obj_to_char(unequip_char(ch, j), ch);
+                    objectGiveToChar(unequip_char(ch, j), ch);
                 }
             }
 
             while (ch->carrying) {
                 i = ch->carrying;
-                obj_from_char(i);
+                objectTakeFromChar(i);
                 objectExtract(i);
             }
         }
@@ -1900,7 +1700,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
      */
     for (l = 0; l < MAX_WEAR; l++) {
         if (ch->equipment[l]) {
-            obj_to_room(unequip_char(ch, l), was_in);
+            objectPutInRoom(unequip_char(ch, l), was_in);
         }
     }
 

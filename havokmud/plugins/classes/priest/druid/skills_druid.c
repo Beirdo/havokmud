@@ -1216,7 +1216,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
                         act("$p turns so hot that $n is forced to let go of "
                             "it!", FALSE, ch, obj, 0, TO_ROOM);
                         if ((obj = unequip_char(ch, j)) != NULL) {
-                            obj_to_room(obj, ch->in_room);
+                            objectPutInRoom(obj, ch->in_room);
                         }
                     }
                 }
@@ -1257,7 +1257,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
                         act("$p turns so hot that $n is forced to let go of "
                             "it!", FALSE, victim, obj, 0, TO_ROOM);
                         if ((obj = unequip_char(victim, j)) != NULL) {
-                            obj_to_room(obj, victim->in_room);
+                            objectPutInRoom(obj, victim->in_room);
                         }
                     }
                 }

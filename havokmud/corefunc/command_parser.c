@@ -140,7 +140,7 @@ void JustLoggedIn( PlayerStruct_t *player )
         obj->equipped_by = 0;
         obj->eq_pos = -1;
 
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
         SendOutput(player, "Your item is returned to you.\n\r");
         do_save(ch, "", 0);
     }

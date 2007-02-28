@@ -366,7 +366,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
                 TRUE, ch, obj, 0, TO_ROOM);
             act("$p bursts into flame and disintegrates!",
                 TRUE, ch, obj, 0, TO_CHAR);
-            obj_from_char(obj);
+            objectTakeFromChar(obj);
             objectExtract(obj);
         }
     } else {
@@ -374,7 +374,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
             TO_ROOM);
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
             TO_CHAR);
-        obj_from_char(obj);
+        objectTakeFromChar(obj);
         objectExtract(obj);
         GET_ALIGNMENT(ch) -= 5;
     }
@@ -504,10 +504,10 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
         if (sac->cost >= 200) {
             equip_char(ch, sac, (held ? HOLD : WIELD));
         } else {
-            obj_to_char(sac, ch);
+            objectGiveToChar(sac, ch);
         }
     } else {
-        obj_to_char(sac, ch);
+        objectGiveToChar(sac, ch);
     }
 
     if (sac) {
@@ -741,7 +741,7 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->next = object_list;
     object_list = tmp_obj;
 
-    obj_to_room(tmp_obj, ch->in_room);
+    objectPutInRoom(tmp_obj, ch->in_room);
 
     tmp_obj->item_number = -1;
 
@@ -788,7 +788,7 @@ void spell_light(int level, struct char_data *ch,
     tmp_obj = objectRead(20, VIRTUAL); /* this is all you have to do */
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the ball of light\n\r", ch);
         return;
@@ -2762,7 +2762,7 @@ void spell_resurrection(int level, struct char_data *ch,
                  obj_object = next_obj) {
                 next_obj = obj_object->next_content;
                 objectTakeFromObject(obj_object);
-                obj_to_char(obj_object, victim);
+                objectGiveToChar(obj_object, victim);
             }
 
             /*
@@ -3108,7 +3108,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
                      "your abilities.$c0007\n\r", ch);
         gain_exp(ch, 100);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     }
 }
@@ -3177,7 +3177,7 @@ void spell_succor(int level, struct char_data *ch,
     struct obj_data *o;
 
     o = objectRead(3052, VIRTUAL);
-    obj_to_char(o, ch);
+    objectGiveToChar(o, ch);
 
     o->cost = 0;
     o->cost_per_day = -1;

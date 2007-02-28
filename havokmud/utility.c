@@ -1624,8 +1624,8 @@ void down_river(int pulse)
 
                 next_obj = obj_object->next_content;
                 if ((real_roomp(ch->in_room))->dir_option[rd]) {
-                    obj_from_room(obj_object);
-                    obj_to_room(obj_object,
+                    objectTakeFromRoom(obj_object);
+                    objectPutInRoom(obj_object,
                             real_roomp(ch->in_room)->dir_option[rd]->to_room);
                 }
             }
@@ -3117,8 +3117,8 @@ void TeleportPulseStuff(int pulse)
                 obj_object = (rp)->contents;
                 while (obj_object) {
                     temp_obj = obj_object->next_content;
-                    obj_from_room(obj_object);
-                    obj_to_room(obj_object, (rp)->tele_targ);
+                    objectTakeFromRoom(obj_object);
+                    objectPutInRoom(obj_object, (rp)->tele_targ);
                     obj_object = temp_obj;
                 }
 
@@ -3379,7 +3379,7 @@ void traveling_qp(int pulse)
                          " the gods with a $c000Rq$c000Yu$c000Ge$c000Bs"
                          "$c000Ct$c000w token.\n\r", ch);
             if ((qt = objectRead(QUEST_POTION, VIRTUAL))) {
-                obj_to_char(qt, ch);
+                objectGiveToChar(qt, ch);
             }
             Log("carried by player, gained a QT");
             qlog(ch, "found a quest token.");
@@ -3416,10 +3416,10 @@ void traveling_qp(int pulse)
                 }
             }
 
-            obj_from_char(travelqp);
+            objectTakeFromChar(travelqp);
             act("$n ceases to be outlined by a $c000Rm$c000Yu$c000Gl$c000Bt"
                 "$c000Ci$c000wcolored hue.", FALSE, ch, 0, 0, TO_ROOM);
-            obj_to_char(travelqp, newch);
+            objectGiveToChar(travelqp, newch);
             act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt"
                 "$c000Ci$c000wcolored hue!", FALSE, newch, 0, 0, TO_ROOM);
             qp_patience = 0;
@@ -3518,7 +3518,7 @@ void AuctionPulseStuff(int pulse)
         auctionobj->equipped_by = 0;
         auctionobj->eq_pos = -1;
 
-        obj_to_char(auctionobj, auctioneer);
+        objectGiveToChar(auctionobj, auctioneer);
         send_to_char("Your item is returned to you.\n\r.", auctioneer);
         do_save(auctioneer, "", 0);
 
@@ -3571,7 +3571,7 @@ void AuctionPulseStuff(int pulse)
         auctionobj->equipped_by = 0;
         auctionobj->eq_pos = -1;
 
-        obj_to_char(auctionobj, bidder);
+        objectGiveToChar(auctionobj, bidder);
 
         bidder->specials.minbid = 0;
 
@@ -3642,8 +3642,8 @@ void RiverPulseStuff(int pulse)
                      obj_object; obj_object = next_obj) {
                     next_obj = obj_object->next_content;
                     if (real_roomp(ch->in_room)->dir_option[rd]) {
-                        obj_from_room(obj_object);
-                        obj_to_room(obj_object,
+                        objectTakeFromRoom(obj_object);
+                        objectPutInRoom(obj_object,
                             real_roomp(ch->in_room)->dir_option[rd]->to_room);
                     }
                 }

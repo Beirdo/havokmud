@@ -63,7 +63,7 @@ void spell_animate_dead(int level, struct char_data *ch,
     for (obj_object = corpse->contains; obj_object; obj_object = next_obj) {
         next_obj = obj_object->next_content;
         objectTakeFromObject(obj_object);
-        obj_to_char(obj_object, mob);
+        objectGiveToChar(obj_object, mob);
     }
     /*
      * set up descriptions and such
@@ -579,7 +579,7 @@ void spell_cold_light(int level, struct char_data *ch,
     tmp_obj = objectRead(COLD_LIGHT, VIRTUAL);
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the cold ball of ice.\n\r", ch);
         return;

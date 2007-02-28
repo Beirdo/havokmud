@@ -847,12 +847,12 @@ void completely_cleanout_room(struct room_data *rp)
 
     while (rp->contents) {
         obj = rp->contents;
-        obj_from_room(obj);
+        objectTakeFromRoom(obj);
 
         /*
          * send item to the void
          */
-        obj_to_room(obj, 0);
+        objectPutInRoom(obj, 0);
     }
 
     cleanout_room(rp);
@@ -2840,7 +2840,7 @@ void zone_update(void)
                     Log("no tqp item could be loaded");
                     return;
                 }
-                obj_to_char(travelqp, newch);
+                objectGiveToChar(travelqp, newch);
                 Log("a traveling quest token was inited");
             }
         }
@@ -3074,12 +3074,12 @@ void reset_zone(int zone, int cmd)
                             if (cmd != 375) {
                                 if (does_Load((int)index->number,
                                               (int)obj->max) == TRUE) {
-                                    obj_to_room(obj, ZCMD.arg3);
+                                    objectPutInRoom(obj, ZCMD.arg3);
                                 } else {
                                     objectExtract(obj);
                                 }
                             } else {
-                                obj_to_room(obj, ZCMD.arg3);
+                                objectPutInRoom(obj, ZCMD.arg3);
                             }
 
                             last_cmd = 1;
@@ -3141,8 +3141,6 @@ void reset_zone(int zone, int cmd)
             case 'G':
                 /**
                  * @todo make 'G' work with VIRTUAL
-                 *
-                 * obj_to_char
                  */
                 if ((obj = objectRead(ZCMD.arg1, REAL)) && mob) {
                     index = objectIndex( ZCMD.arg1 );
@@ -3162,12 +3160,12 @@ void reset_zone(int zone, int cmd)
                     if (cmd != 375) {
                         if (does_Load ((int) index->number,
                                        (int) obj->max) == TRUE) {
-                            obj_to_char(obj, mob);
+                            objectGiveToChar(obj, mob);
                         } else {
                             objectExtract(obj);
                         }
                     } else {
-                        obj_to_char(obj, mob);
+                        objectGiveToChar(obj, mob);
                     }
 
                     last_cmd = 1;
@@ -3445,7 +3443,7 @@ void reset_zone(int zone, int cmd)
                                     }
                                 }
 
-                                obj_to_room(obj, ZCMD.arg3);
+                                objectPutInRoom(obj, ZCMD.arg3);
                                 last_cmd = 1;
                             } else {
                                 last_cmd = 0;
@@ -3493,9 +3491,6 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'G':
-                /*
-                 * obj_to_char
-                 */
                 if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
                     (obj = objectRead(ZCMD.arg1, REAL))) {
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -3510,7 +3505,7 @@ void reset_zone(int zone, int cmd)
                         }
                     }
 
-                    obj_to_char(obj, mob);
+                    objectGiveToChar(obj, mob);
                     last_cmd = 1;
                 } else {
                     last_cmd = 0;
@@ -5433,7 +5428,7 @@ void ReadTextZone(FILE * fl)
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
                             if ((obj = objectRead(i, REAL)) != NULL) {
-                                obj_to_room(obj, k);
+                                objectPutInRoom(obj, k);
                                 last_cmd = 1;
                             } else {
                                 last_cmd = 0;
@@ -5470,11 +5465,11 @@ void ReadTextZone(FILE * fl)
 
             case 'G':
                 /*
-                 * obj_to_char
+                 * objectGiveToChar
                  */
                 if (i < j &&
                     (obj = objectRead(i, REAL)) && mob) {
-                    obj_to_char(obj, mob);
+                    objectGiveToChar(obj, mob);
                     last_cmd = 1;
 #ifndef NEW_RENT
                 } else {

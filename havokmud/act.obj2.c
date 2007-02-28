@@ -50,9 +50,9 @@ void weight_change_object(struct obj_data *obj, int weight)
     if (obj->in_room != NOWHERE) {
         GET_OBJ_WEIGHT(obj) += weight;
     } else if ((tmp_ch = obj->carried_by)) {
-        obj_from_char(obj);
+        objectTakeFromChar(obj);
         GET_OBJ_WEIGHT(obj) += weight;
-        obj_to_char(obj, tmp_ch);
+        objectGiveToChar(obj, tmp_ch);
     } else if ((tmp_obj = obj->in_obj)) {
         objectTakeFromObject(obj);
         GET_OBJ_WEIGHT(obj) += weight;
@@ -678,8 +678,8 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         send_to_char("Eck! Not that! You sense magic on it!!! You quickly "
                      "drop it!\n\r", ch);
         act("$n shivers and drops $p!", FALSE, ch, obj_object, 0, TO_ROOM);
-        obj_from_char(obj_object);
-        obj_to_room(obj_object, ch->in_room);
+        objectTakeFromChar(obj_object);
+        objectPutInRoom(obj_object, ch->in_room);
         return;
     }
 
@@ -724,7 +724,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             oldSendOutput(ch, "You light %s and hold it.\n\r",
                           obj_object->short_description);
             perform_wear(ch, obj_object, keyword);
-            obj_from_char(obj_object);
+            objectTakeFromChar(obj_object);
             equip_char(ch, obj_object, WEAR_LIGHT);
         }
         break;
@@ -739,11 +739,11 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 perform_wear(ch, obj_object, keyword);
                 if (ch->equipment[WEAR_FINGER_L]) {
                     send_to_char("Ok. (right finger)\n\r", ch);
-                    obj_from_char(obj_object);
+                    objectTakeFromChar(obj_object);
                     equip_char(ch, obj_object, WEAR_FINGER_R);
                 } else {
                     send_to_char("Ok. (left finger)\n\r", ch);
-                    obj_from_char(obj_object);
+                    objectTakeFromChar(obj_object);
                     equip_char(ch, obj_object, WEAR_FINGER_L);
                 }
             }
@@ -762,10 +762,10 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
                 if (ch->equipment[WEAR_NECK_1]) {
-                    obj_from_char(obj_object);
+                    objectTakeFromChar(obj_object);
                     equip_char(ch, obj_object, WEAR_NECK_2);
                 } else {
-                    obj_from_char(obj_object);
+                    objectTakeFromChar(obj_object);
                     equip_char(ch, obj_object, WEAR_NECK_1);
                 }
             }
@@ -783,7 +783,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your body.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_BODY);
             }
         } else {
@@ -800,7 +800,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your head.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_HEAD);
             }
         } else {
@@ -817,7 +817,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your legs.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_LEGS);
             }
         } else {
@@ -834,7 +834,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your feet.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_FEET);
             }
         } else {
@@ -851,7 +851,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your hands.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_HANDS);
             }
         } else {
@@ -868,7 +868,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your arms.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_ARMS);
             }
         } else {
@@ -885,7 +885,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s about your body.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_ABOUT);
             }
         } else {
@@ -902,7 +902,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s around your waist.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_WAIST);
             }
         } else {
@@ -918,7 +918,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                              "your wrists.\n\r", ch);
             } else {
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 if (ch->equipment[WEAR_WRIST_L]) {
                     send_to_char("Ok. (right wrist)\n\r", ch);
                     equip_char(ch, obj_object, WEAR_WRIST_R);
@@ -955,7 +955,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                                          "hands\n\r", ch);
                         } else {
                              perform_wear(ch, obj_object, keyword);
-                            obj_from_char(obj_object);
+                            objectTakeFromChar(obj_object);
                             equip_char(ch, obj_object, WIELD);
                         }
                     } else {
@@ -966,7 +966,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                     oldSendOutput(ch, "You wield %s\n\r",
                                   obj_object->short_description);
                     perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
+                    objectTakeFromChar(obj_object);
                     equip_char(ch, obj_object, WIELD);
                 }
             }
@@ -1011,7 +1011,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You grab %s and hold it.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, HOLD);
             }
         } else {
@@ -1037,7 +1037,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 perform_wear(ch, obj_object, keyword);
                 oldSendOutput(ch, "You start using %s.\n\r",
                               obj_object->short_description);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_SHIELD);
             }
         } else {
@@ -1055,7 +1055,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your back.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_BACK);
             }
         } else {
@@ -1070,7 +1070,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                              "ears.\n\r", ch);
             } else {
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 if (ch->equipment[WEAR_EAR_L]) {
                     send_to_char("Ok. (right ear)\n\r", ch);
                     equip_char(ch, obj_object, WEAR_EAR_R);
@@ -1093,7 +1093,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                 oldSendOutput(ch, "You wear %s on your eyes.\n\r",
                               obj_object->short_description);
                 perform_wear(ch, obj_object, keyword);
-                obj_from_char(obj_object);
+                objectTakeFromChar(obj_object);
                 equip_char(ch, obj_object, WEAR_EYES);
             }
         } else {
@@ -1339,7 +1339,7 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
                 }
 
                 if ((obj2 = unequip_char(ch, WIELD)) != NULL) {
-                    obj_to_char(obj2, ch);
+                    objectGiveToChar(obj2, ch);
                     act("You stop using $p and attempt to draw another "
                         "weapon.", FALSE, ch, obj2, 0, TO_CHAR);
                     act("$n stops using $p and attempts to draw another "
@@ -1407,7 +1407,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                         if (!IS_OBJ_STAT(ch->equipment[j], extra_flags,
                                          ITEM_NODROP)) {
                             if ((obj_object = unequip_char(ch, j)) != NULL) {
-                                obj_to_char(obj_object, ch);
+                                objectGiveToChar(obj_object, ch);
                                 act("You stop using $p.", FALSE, ch,
                                     obj_object, 0, TO_CHAR);
                                 if (obj_object->type_flag == ITEM_TYPE_LIGHT && 
@@ -1458,7 +1458,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                         j = Rem_List[atoi(T) - 1];
                         if (ch->equipment[j] &&
                             (obj_object = unequip_char(ch, j)) != NULL) {
-                            obj_to_char(obj_object, ch);
+                            objectGiveToChar(obj_object, ch);
 
                             act("You stop using $p.", FALSE, ch, obj_object, 0,
                                 TO_CHAR);
@@ -1493,7 +1493,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
                 if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
-                    obj_to_char(unequip_char(ch, j), ch);
+                    objectGiveToChar(unequip_char(ch, j), ch);
 
                     if (obj_object->type_flag == ITEM_TYPE_LIGHT &&
                         obj_object->value[2]) {
@@ -1608,7 +1608,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
 
     auct_loop = 1;
     auctioneer = ch;
-    obj_from_char(auctionobj);
+    objectTakeFromChar(auctionobj);
     ch->specials.auction = auctionobj;
     do_save(ch, "", 0);
 }
@@ -1807,7 +1807,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
             auctionobj->equipped_by = 0;
             auctionobj->eq_pos = -1;
 
-            obj_to_char(auctionobj, auctioneer);
+            objectGiveToChar(auctionobj, auctioneer);
             send_to_char("Your item is returned to you.\n\r", auctioneer);
             do_save(auctioneer, "", 0);
             auct_loop = 0;

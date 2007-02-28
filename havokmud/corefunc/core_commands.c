@@ -946,7 +946,18 @@ void banHostDepthFirst( PlayerStruct_t *player, BalancedBTreeItem_t *item )
 
 void do_shutdow(struct char_data *ch, char *argument, int cmd)
 {
-    send_to_char("If you want to shut something down - say so!\n\r", ch);
+    PlayerStruct_t *player;
+
+    if( !ch ) {
+        return;
+    }
+
+    player = (PlayerStruct_t *)ch->playerDesc;
+    if( !player ) {
+        return;
+    }
+
+    SendOutput(player, "If you want to shut something down - say so!\n\r");
 }
 
 void do_shutdown(struct char_data *ch, char *argument, int cmd)

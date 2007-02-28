@@ -223,8 +223,8 @@ void MobScavenge(struct char_data *ch)
         }
 
         if (best_obj && !CheckForAnyTrap(ch, best_obj)) {
-            obj_from_room(best_obj);
-            obj_to_char(best_obj, ch);
+            objectTakeFromRoom(best_obj);
+            objectGiveToChar(best_obj, ch);
             act("$n gets $p.", FALSE, ch, best_obj, 0, TO_ROOM);
         }
     } else if (IsHumanoid(ch) && real_roomp(ch->in_room)->contents && 

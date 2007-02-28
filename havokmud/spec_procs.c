@@ -1453,7 +1453,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         if (chalice == get_obj_in_list_num(achl, ch->carrying)) {
             objectExtract(chalice);
             chalice = objectRead(chl, VIRTUAL);
-            obj_to_char(chalice, ch);
+            objectGiveToChar(chalice, ch);
         }
         return (TRUE);
         break;
@@ -1471,7 +1471,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
             !strcasecmp(buf2, "altar")) {
             objectExtract(chalice);
             chalice = objectRead(achl, VIRTUAL);
-            obj_to_room(chalice, ch->in_room);
+            objectPutInRoom(chalice, ch->in_room);
             send_to_char("Ok.\n\r", ch);
         }
         return (TRUE);
@@ -1892,10 +1892,10 @@ int delivery_beast(struct char_data *ch, int cmd, char *arg,
     } else if (time_info.hours < 2) {
         if (!number(0, 1)) {
             o = objectRead(3012, VIRTUAL);
-            obj_to_char(o, ch);
+            objectGiveToChar(o, ch);
         } else {
             o = objectRead(3013, VIRTUAL);
-            obj_to_char(o, ch);
+            objectGiveToChar(o, ch);
         }
     } else if (GET_POS(ch) > POSITION_SLEEPING) {
         do_sleep(ch, NULL, 0);
@@ -2331,11 +2331,11 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                                 FALSE, t, obj, ch, TO_CHAR);
                             act("$n emerges with $p, and gives it to $N.",
                                 FALSE, ch, obj, t, TO_ROOM);
-                            obj_to_char(obj, t);
+                            objectGiveToChar(obj, t);
                         } else {
                             act("$n emerges with $p, and drops it for $N.",
                                 FALSE, ch, obj, t, TO_ROOM);
-                            obj_to_room(obj, ch->in_room);
+                            objectPutInRoom(obj, ch->in_room);
                         }
                     }
                 }
@@ -2388,8 +2388,8 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                 if (obj->value[3]) {
                     act("$n sniffs $p, then discards it with disgust.",
                         TRUE, latt, obj, 0, TO_ROOM);
-                    obj_from_char(obj);
-                    obj_to_room(obj, ch->in_room);
+                    objectTakeFromChar(obj);
+                    objectPutInRoom(obj, ch->in_room);
                     if (!IS_MOB(ch) && CAN_SEE(latt, ch)) {
                         mem->index = affect_status(mem, latt, ch, -5);
                     } else {
@@ -2413,7 +2413,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                 if (obj->item_number == CrowBar) {
                     act("$n takes $p and jumps up and down in joy.",
                         TRUE, latt, obj, 0, TO_ROOM);
-                    obj_from_char(obj);
+                    objectTakeFromChar(obj);
                     if (!ch->equipment[HOLD]) {
                         equip_char(ch, obj, HOLD);
                     }
@@ -2672,7 +2672,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                 /*
                  * Take it away
                  */
-                obj_from_char(obj);
+                objectTakeFromChar(obj);
                 objectExtract(obj);
 
                 if (!IS_NPC(ch)) {
@@ -3230,7 +3230,7 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
             } else {
-                obj_to_char(unequip_char(ch, WEAR_EYES), ch);
+                objectGiveToChar(unequip_char(ch, WEAR_EYES), ch);
                 act("$n utters the words 'oh golly'", 1, ch, 0, 0, TO_ROOM);
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
@@ -5045,7 +5045,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
             !strncmp(i->keywords.words[0], "corpse", 6)) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
-            obj_from_room(i);
+            objectTakeFromRoom(i);
             objectExtract(i);
             return (TRUE);
         }
@@ -5112,8 +5112,8 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
 
             if (lowjoe) {
                 if (CAN_GET_OBJ(lowjoe, obj)) {
-                    obj_from_room(obj);
-                    obj_to_char(obj, lowjoe);
+                    objectTakeFromRoom(obj);
+                    objectGiveToChar(obj, lowjoe);
 
                     sprintf(buf, "%s leaps into your hands!\n\r",
                             obj->short_description);
@@ -5163,7 +5163,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
 
                     blade = unequip_char(holder, WIELD);
                     if (blade) {
-                        obj_to_room(blade, holder->in_room);
+                        objectPutInRoom(blade, holder->in_room);
                     }
                     if (!holder->equipment[WIELD]) {
                         sprintf(buf, "%s forces you to wield it!\n\r",
@@ -5418,8 +5418,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
             }
 
             if (lowjoe && CAN_GET_OBJ(lowjoe, obj)) {
-                obj_from_room(obj);
-                obj_to_char(obj, lowjoe);
+                objectTakeFromRoom(obj);
+                objectGiveToChar(obj, lowjoe);
 
                 sprintf(buf, "%s leaps into your hands!\n\r",
                         obj->short_description);
@@ -5468,7 +5468,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
 
                     blade = unequip_char(holder, WIELD);
                     if (blade) {
-                        obj_to_room(blade, holder->in_room);
+                        objectPutInRoom(blade, holder->in_room);
                     }
                     if (!holder->equipment[WIELD]) {
                         sprintf(buf, "%s forces you to wield it!\n\r",
@@ -7609,7 +7609,7 @@ int generate_legend_statue(void)
                     /*
                      * and finally place it in a room 
                      */
-                    obj_to_room(obj, rnum);
+                    objectPutInRoom(obj, rnum);
                 }
             }
             free(tmp);
@@ -7988,8 +7988,8 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                                  "better of buying it.\n\r", ch);
                     stop = 1;
                 } else {
-                    obj_from_char(obj);
-                    obj_to_char(obj, ch);
+                    objectTakeFromChar(obj);
+                    objectGiveToChar(obj, ch);
                     GET_GOLD(ch) -= cost;
                     GET_GOLD(shopkeep) += cost;
                     store_obj = obj;
@@ -8054,8 +8054,8 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                 return (TRUE);
             }
             
-            obj_from_char(obj);
-            obj_to_char(obj, shopkeep);
+            objectTakeFromChar(obj);
+            objectGiveToChar(obj, shopkeep);
             oldSendOutput(ch, "You just sold %s for %d coins.\n\r",
                       obj->short_description, cost);
             act("$n sells $p to $N.", FALSE, ch, obj, shopkeep, TO_ROOM);

@@ -1153,10 +1153,10 @@ void ObjFromCorpse(struct obj_data *c)
             if (c->in_obj) {
                 objectPutInObject(jj, c->in_obj);
             } else if (c->carried_by) {
-                obj_to_room(jj, c->carried_by->in_room);
+                objectPutInRoom(jj, c->carried_by->in_room);
                 check_falling_obj(jj, c->carried_by->in_room);
             } else if (c->in_room != NOWHERE) {
-                obj_to_room(jj, c->in_room);
+                objectPutInRoom(jj, c->in_room);
                 check_falling_obj(jj, c->in_room);
             } else {
                 assert(FALSE);

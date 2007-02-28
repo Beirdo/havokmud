@@ -235,9 +235,9 @@ void shopping_buy(char *arg, struct char_data *ch,
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);
                 break;
             }
-            obj_from_char(temp1);
+            objectTakeFromChar(temp1);
         }
-        obj_to_char(temp1, ch);
+        objectGiveToChar(temp1, ch);
     }
 
     if (GetMaxLevel(ch) < DEMIGOD) {
@@ -358,13 +358,13 @@ void shopping_sell(char *arg, struct char_data *ch,
     GET_GOLD(ch) += cost2;
     GET_GOLD(keeper) -= cost2;
 
-    obj_from_char(temp1);
+    objectTakeFromChar(temp1);
 
     if (get_obj_in_list(argm, keeper->carrying) || 
         ITEM_TYPE(temp1) == ITEM_TYPE_TRASH) {
         objectExtract(temp1);
     } else {
-        obj_to_char(temp1, keeper);
+        objectGiveToChar(temp1, keeper);
     }
 }
 

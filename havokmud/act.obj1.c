@@ -38,7 +38,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
                 act("$n gets $p from $P.", 1, ch, obj_object, sub_object,
                     TO_ROOM);
                 objectTakeFromObject(obj_object);
-                obj_to_char(obj_object, ch);
+                objectGiveToChar(obj_object, ch);
             } else {
                 act("$P must be opened first.", 1, ch, 0, sub_object,
                     TO_CHAR);
@@ -50,12 +50,12 @@ void get(struct char_data *ch, struct obj_data *obj_object,
             }
             act("You get $p.", 0, ch, obj_object, 0, TO_CHAR);
             act("$n gets $p.", 1, ch, obj_object, 0, TO_ROOM);
-            obj_from_room(obj_object);
-            obj_to_char(obj_object, ch);
+            objectTakeFromRoom(obj_object);
+            objectGiveToChar(obj_object, ch);
         }
         if ((obj_object->type_flag == ITEM_TYPE_MONEY) &&
             (obj_object->value[0] >= 1)) {
-            obj_from_char(obj_object);
+            objectTakeFromChar(obj_object);
             /*
              * don't notify if it's 1 coin or less
              */
@@ -481,7 +481,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
         act("$n drops some gold.", FALSE, ch, 0, 0, TO_ROOM);
         tmp_object = create_money(amount);
-        obj_to_room(tmp_object, ch->in_room);
+        objectPutInRoom(tmp_object, ch->in_room);
         GET_GOLD(ch) -= amount;
         return;
     }
@@ -491,8 +491,8 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
              tmp_object; tmp_object = next_obj) {
             next_obj = tmp_object->next_content;
             if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
-                obj_from_char(tmp_object);
-                obj_to_room(tmp_object, ch->in_room);
+                objectTakeFromChar(tmp_object);
+                objectPutInRoom(tmp_object, ch->in_room);
                 check_falling_obj(tmp_object, ch->in_room);
                 test = TRUE;
             } else if (CAN_SEE_OBJ(ch, tmp_object)) {
@@ -535,8 +535,8 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                 oldSendOutput(ch, "You drop %s.\n\r",
                               tmp_object->short_description);
                 act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
-                obj_from_char(tmp_object);
-                obj_to_room(tmp_object, ch->in_room);
+                objectTakeFromChar(tmp_object);
+                objectPutInRoom(tmp_object, ch->in_room);
 
                 check_falling_obj(tmp_object, ch->in_room);
             } else {
@@ -624,7 +624,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                             } else {
                                 oldSendOutput(ch, "%s : OK\n\r",
                                               tmp_object->short_description);
-                                obj_from_char(tmp_object);
+                                objectTakeFromChar(tmp_object);
                                 if (sub_object->carried_by) {
                                     IS_CARRYING_W(ch) +=
                                         GET_OBJ_WEIGHT(tmp_object);
@@ -678,7 +678,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                         act("You put $p in $P", TRUE, ch,
                                             obj_object, sub_object, TO_CHAR);
                                         if (bits == FIND_OBJ_INV) {
-                                            obj_from_char(obj_object);
+                                            objectTakeFromChar(obj_object);
                                             /*
                                              * make up for above line
                                              */
@@ -895,8 +895,8 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             act("$n gives $p to $N.", 1, ch, obj, vict, TO_NOTVICT);
             act("$n gives you $p.", 0, ch, obj, vict, TO_VICT);
             act("You give $p to $N", 0, ch, obj, vict, TO_CHAR);
-            obj_from_char(obj);
-            obj_to_char(obj, vict);
+            objectTakeFromChar(obj);
+            objectGiveToChar(obj, vict);
             if (num > 0)
                 num--;
             count++;
@@ -935,8 +935,8 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                  tmp_object; tmp_object = next_obj) {
                 next_obj = tmp_object->next_content;
                 if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
-                    obj_from_char(tmp_object);
-                    obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
+                    objectTakeFromChar(tmp_object);
+                    objectPutInRoom(tmp_object, ((number(0, 1) == 1)) ?
                                 donations1 : donations2);
                     value += ((tmp_object->cost) * 10 / 100);
                     test = TRUE;
@@ -989,8 +989,8 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                                   "donation!\n\r");
                     act("$p disappears from $n's hands!.", 1, ch,
                         tmp_object, 0, TO_ROOM);
-                    obj_from_char(tmp_object);
-                    obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
+                    objectTakeFromChar(tmp_object);
+                    objectPutInRoom(tmp_object, ((number(0, 1) == 1)) ?
                                 donations1 : donations2);
                     value += ((tmp_object->cost) * 10 / 100);
                 } else {

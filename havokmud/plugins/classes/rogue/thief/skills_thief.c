@@ -503,7 +503,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             
             act("You unequip $p and steal it.", FALSE, ch, obj, 0, TO_CHAR);
             act("$n steals $p from $N.", FALSE, ch, obj, victim, TO_NOTVICT);
-            obj_to_char(unequip_char(victim, eq_pos), ch);
+            objectGiveToChar(unequip_char(victim, eq_pos), ch);
 #ifndef DUPLICATES
             do_save(ch, "", 0);
             do_save(victim, "", 0);
@@ -541,8 +541,8 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                 if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
                     if (IS_CARRYING_W(ch) + GET_OBJ_WEIGHT(obj) <
                         CAN_CARRY_W(ch)) {
-                        obj_from_char(obj);
-                        obj_to_char(obj, ch);
+                        objectTakeFromChar(obj);
+                        objectGiveToChar(obj, ch);
                         send_to_char("Got it!\n\r", ch);
 #ifndef DUPLICATES
                         do_save(ch, "", 0);

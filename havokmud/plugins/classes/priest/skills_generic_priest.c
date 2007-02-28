@@ -481,7 +481,7 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     act("You gesture, and a cloud of smoke appears", TRUE, ch, 0, 0, TO_CHAR);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_ROOM);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_CHAR);
-    obj_from_char(obj);
+    objectTakeFromChar(obj);
     objectExtract(obj);
     char_to_room(victim, ch->in_room);
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
@@ -565,7 +565,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
 
     sac = unequip_char(ch, HOLD);
     if (sac) {
-        obj_to_char(sac, ch);
+        objectGiveToChar(sac, ch);
         if (sac->item_number != obj) {
             send_to_char("You must have the correct item to sacrifice.\n\r",
                          ch);
@@ -607,7 +607,7 @@ void spell_cont_light(int level, struct char_data *ch,
 
     tmp_obj = objectRead(20, VIRTUAL);
     if (tmp_obj) {
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the ball of light\n\r", ch);
         return;
@@ -2407,7 +2407,7 @@ void spell_goodberry(int level, struct char_data *ch,
     tmp_obj->affected[0].modifier = SPELL_CURE_LIGHT;
     tmp_obj->next = object_list;
     object_list = tmp_obj;
-    obj_to_char(tmp_obj, ch);
+    objectGiveToChar(tmp_obj, ch);
     tmp_obj->item_number = -1;
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_ROOM);
     act("$p suddenly appears in your hand.", TRUE, ch, tmp_obj, 0, TO_CHAR);

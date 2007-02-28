@@ -433,7 +433,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
             } else {
                 cp->timer = MAX_PC_CORPSE_TIME + 3;
             }
-            obj_to_room(cp, ch->in_room);
+            objectPutInRoom(cp, ch->in_room);
         }
 
         /*
@@ -607,7 +607,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     }
     object_list_new_owner(corpse, 0);
 
-    obj_to_room(corpse, ch->in_room);
+    objectPutInRoom(corpse, ch->in_room);
 
     /*
      * this must be set before dispel_magic, because if they
@@ -2750,7 +2750,7 @@ void MissVictim(struct char_data *ch, struct char_data *v, int type,
                     TO_CHAR);
                 act("$p falls to the ground harmlessly", FALSE, ch, o, 0,
                     TO_ROOM);
-                obj_to_room(o, ch->in_room);
+                objectPutInRoom(o, ch->in_room);
             }
         }
     }
@@ -3346,7 +3346,7 @@ void perform_violence(int pulse)
                                 if (!HasClass(ch, CLASS_RANGER) ||
                                     number(1, 20) > GET_DEX(ch)) {
                                     tmp = unequip_char(ch, HOLD);
-                                    obj_to_room(tmp, ch->in_room);
+                                    objectPutInRoom(tmp, ch->in_room);
                                     act("$c0014You fumble and drop $p",
                                         0, ch, tmp, tmp, TO_CHAR);
                                     act("$c0014$n fumbles and drops $p", 0,
@@ -3359,7 +3359,7 @@ void perform_violence(int pulse)
 
                                     if (number(1, 20) > GET_DEX(ch)) {
                                         tmp = unequip_char(ch, WIELD);
-                                        obj_to_room(tmp, ch->in_room);
+                                        objectPutInRoom(tmp, ch->in_room);
                                         act("$c0015and you fumble and drop"
                                             " $p too!", 0, ch, tmp, tmp,
                                             TO_CHAR);
@@ -3408,7 +3408,7 @@ void perform_violence(int pulse)
                                 } else if (!HasClass(ch, CLASS_RANGER) ||
                                            number(1, 20) > GET_DEX(ch)) {
                                     tmp = unequip_char(ch, HOLD);
-                                    obj_to_room(tmp, ch->in_room);
+                                    objectPutInRoom(tmp, ch->in_room);
                                     act("$c0014You fumble and drop $p",
                                         0, ch, tmp, tmp, TO_CHAR);
                                     act("$c0014$n fumbles and drops $p",
@@ -3422,7 +3422,7 @@ void perform_violence(int pulse)
                                     if (number(1, 20) >
                                         GET_DEX(ch)) {
                                         tmp = unequip_char(ch, WIELD);
-                                        obj_to_room(tmp, ch->in_room);
+                                        objectPutInRoom(tmp, ch->in_room);
                                         act("$c0015and you fumble and "
                                             "drop $p too!", 0, ch, tmp,
                                             tmp, TO_CHAR);
@@ -4316,7 +4316,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     }
     t->description = (char *) strdup(buf);
     if (obj->carried_by) {
-        obj_from_char(obj);
+        objectTakeFromChar(obj);
     } else if (obj->equipped_by) {
         obj = unequip_char(ch, obj->eq_pos);
     }
@@ -4327,12 +4327,12 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
             /*
              * for shooting * missles
              */
-            obj_to_room(t, v->in_room);
+            objectPutInRoom(t, v->in_room);
         } else
 #endif
-            obj_to_room(t, ch->in_room);
+            objectPutInRoom(t, ch->in_room);
     } else {
-        obj_to_room(t, ch->in_room);
+        objectPutInRoom(t, ch->in_room);
     }
 
     t->value[0] = 20;
@@ -4340,7 +4340,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     while (obj->contains) {
         x = obj->contains;
         objectTakeFromObject(x);
-        obj_to_room(x, ch->in_room);
+        objectPutInRoom(x, ch->in_room);
     }
 
     check_falling_obj(t, ch->in_room);

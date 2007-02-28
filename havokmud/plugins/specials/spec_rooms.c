@@ -466,7 +466,7 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                     FALSE, ch, 0, 0, TO_CHAR);
             }
             obj = objectRead(tmp_obj->item_number, REAL);
-            obj_to_room(obj, ch->in_room);
+            objectPutInRoom(obj, ch->in_room);
             act("$p slowly fades into existence.", FALSE, ch, obj, 0,
                 TO_ROOM);
             act("$p slowly fades into existence.", FALSE, ch, obj, 0,
@@ -876,14 +876,14 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         for (i = 0; i < MAX_WEAR; i++) {
             if (ch->equipment[i]) {
                 o = unequip_char(ch, i);
-                obj_to_char(o, ch);
+                objectGiveToChar(o, ch);
             }
         }
 
         for (tmp_obj = ch->carrying; tmp_obj; tmp_obj = next_obj) {
             next_obj = tmp_obj->next_content;
-            obj_from_char(tmp_obj);
-            obj_to_room(tmp_obj, ch->in_room);
+            objectTakeFromChar(tmp_obj);
+            objectPutInRoom(tmp_obj, ch->in_room);
         }
 
         monkpreproom = ch->in_room;
@@ -967,14 +967,14 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         for (i = 0; i < MAX_WEAR; i++) {
             if (ch->equipment[i]) {
                 o = unequip_char(ch, i);
-                obj_to_char(o, ch);
+                objectGiveToChar(o, ch);
             }
         }
 
         for (tmp_obj = ch->carrying; tmp_obj; tmp_obj = next_obj) {
             next_obj = tmp_obj->next_content;
-            obj_from_char(tmp_obj);
-            obj_to_room(tmp_obj, ch->in_room);
+            objectTakeFromChar(tmp_obj);
+            objectPutInRoom(tmp_obj, ch->in_room);
         }
 
         druidpreproom = ch->in_room;
@@ -1181,7 +1181,7 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                              object->short_description);
                 act(buf, TRUE, ch, 0, 0, TO_ROOM);
                 object = objectRead(BAHAMUT_SKIN, VIRTUAL);
-                obj_to_char(object, ch);
+                objectGiveToChar(object, ch);
                 return (TRUE);
             } else {
                 return (FALSE);
@@ -1338,7 +1338,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WIELD]) {
             obj = ch->equipment[WIELD];
             if ((obj = unequip_char(ch, WIELD)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
         /*
@@ -1347,7 +1347,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[HOLD]) {
             obj = ch->equipment[HOLD];
             if ((obj = unequip_char(ch, HOLD)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
         /*
@@ -1356,7 +1356,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_LIGHT]) {
             obj = ch->equipment[WEAR_LIGHT];
             if ((obj = unequip_char(ch, WEAR_LIGHT)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
         /*
@@ -1365,7 +1365,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_ABOUT]) {
             obj = ch->equipment[WEAR_ABOUT];
             if ((obj = unequip_char(ch, WEAR_ABOUT)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
         act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0,
@@ -1413,7 +1413,7 @@ int pride_remover_two(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_HEAD]) {
             obj = ch->equipment[WEAR_HEAD];
             if ((obj = unequip_char(ch, WEAR_HEAD)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1423,7 +1423,7 @@ int pride_remover_two(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_SHIELD]) {
             obj = ch->equipment[WEAR_SHIELD];
             if ((obj = unequip_char(ch, WEAR_SHIELD)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1472,7 +1472,7 @@ int pride_remover_three(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_BACK]) {
             obj = ch->equipment[WEAR_BACK];
             if ((obj = unequip_char(ch, WEAR_BACK)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1482,7 +1482,7 @@ int pride_remover_three(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_HANDS]) {
             obj = ch->equipment[WEAR_HANDS];
             if ((obj = unequip_char(ch, WEAR_HANDS)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1531,7 +1531,7 @@ int pride_remover_four(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_EYES]) {
             obj = ch->equipment[WEAR_EYES];
             if ((obj = unequip_char(ch, WEAR_EYES)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1541,7 +1541,7 @@ int pride_remover_four(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_ARMS]) {
             obj = ch->equipment[WEAR_ARMS];
             if ((obj = unequip_char(ch, WEAR_ARMS)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1590,14 +1590,14 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_FINGER_R]) {
             obj = ch->equipment[WEAR_FINGER_R];
             if ((obj = unequip_char(ch, WEAR_FINGER_R)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
         if (ch->equipment[WEAR_FINGER_L]) {
             obj = ch->equipment[WEAR_FINGER_L];
             if ((obj = unequip_char(ch, WEAR_FINGER_L)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1607,14 +1607,14 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_NECK_1]) {
             obj = ch->equipment[WEAR_NECK_1];
             if ((obj = unequip_char(ch, WEAR_NECK_1)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
         if (ch->equipment[WEAR_NECK_2]) {
             obj = ch->equipment[WEAR_NECK_2];
             if ((obj = unequip_char(ch, WEAR_NECK_2)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1624,14 +1624,14 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_WRIST_R]) {
             obj = ch->equipment[WEAR_WRIST_R];
             if ((obj = unequip_char(ch, WEAR_WRIST_R)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
         if (ch->equipment[WEAR_WRIST_L]) {
             obj = ch->equipment[WEAR_WRIST_L];
             if ((obj = unequip_char(ch, WEAR_WRIST_L)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1641,14 +1641,14 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_EAR_R]) {
             obj = ch->equipment[WEAR_EAR_R];
             if ((obj = unequip_char(ch, WEAR_EAR_R)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
         if (ch->equipment[WEAR_EAR_L]) {
             obj = ch->equipment[WEAR_EAR_L];
             if ((obj = unequip_char(ch, WEAR_EAR_L)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1697,7 +1697,7 @@ int pride_remover_six(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_BODY]) {
             obj = ch->equipment[WEAR_BODY];
             if ((obj = unequip_char(ch, WEAR_BODY)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1707,7 +1707,7 @@ int pride_remover_six(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_FEET]) {
             obj = ch->equipment[WEAR_FEET];
             if ((obj = unequip_char(ch, WEAR_FEET)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1756,7 +1756,7 @@ int pride_remover_seven(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_LEGS]) {
             obj = ch->equipment[WEAR_LEGS];
             if ((obj = unequip_char(ch, WEAR_LEGS)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1766,7 +1766,7 @@ int pride_remover_seven(struct char_data *ch, int cmd, char *arg,
         if (ch->equipment[WEAR_WAIST]) {
             obj = ch->equipment[WEAR_WAIST];
             if ((obj = unequip_char(ch, WEAR_WAIST)) != NULL) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
         }
 
@@ -1981,7 +1981,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 if (ch->equipment[WIELD]) {
                     obj = ch->equipment[WIELD];
                     if ((obj = unequip_char(ch, WIELD)) != NULL) {
-                        obj_to_char(obj, ch);
+                        objectGiveToChar(obj, ch);
                     }
                 }
 
@@ -1991,7 +1991,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 if (ch->equipment[HOLD]) {
                     obj = ch->equipment[HOLD];
                     if ((obj = unequip_char(ch, HOLD)) != NULL) {
-                        obj_to_char(obj, ch);
+                        objectGiveToChar(obj, ch);
                     }
                 }
 
@@ -2001,7 +2001,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 if (ch->equipment[WEAR_LIGHT]) {
                     obj = ch->equipment[WEAR_LIGHT];
                     if ((obj = unequip_char(ch, WEAR_LIGHT)) != NULL) {
-                        obj_to_char(obj, ch);
+                        objectGiveToChar(obj, ch);
                     }
                 }
 
@@ -2580,7 +2580,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
             if ((obj = objectRead(ACORN, VIRTUAL))) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             } else {
                 Log("no acorns found for pick_acorns");
             }
@@ -2648,7 +2648,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
             obj = objectRead(berry, VIRTUAL);
-            obj_to_char(obj, ch);
+            objectGiveToChar(obj, ch);
         } else {
             act("You try to pick some berries, but hurt yourself on a thorn.",
                 FALSE, ch, 0, 0, TO_CHAR);

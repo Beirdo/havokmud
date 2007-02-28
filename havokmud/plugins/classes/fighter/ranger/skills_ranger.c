@@ -83,7 +83,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
     if (i == 6) {
         food->value[3] = 1;
     }
-    obj_to_room(food, ch->in_room);
+    objectPutInRoom(food, ch->in_room);
     WAIT_STATE(ch, PULSE_VIOLENCE * 3);
 }
 

@@ -26,14 +26,14 @@ void SwitchStuff(struct char_data *giver, struct char_data *taker)
     for (j = 0; j < MAX_WEAR; j++) {
         if (giver->equipment[j]) {
             obj = unequip_char(giver, j);
-            obj_to_char(obj, taker);
+            objectGiveToChar(obj, taker);
         }
     }
 
     for (obj = giver->carrying; obj; obj = next) {
         next = obj->next_content;
-        obj_from_char(obj);
-        obj_to_char(obj, taker);
+        objectTakeFromChar(obj);
+        objectGiveToChar(obj, taker);
     }
 
     /*
@@ -476,7 +476,7 @@ void RawSummon(struct char_data *v, struct char_data *c)
 
         for (o = v->carrying; o; o = n) {
             n = o->next_content;
-            obj_from_char(o);
+            objectTakeFromChar(o);
             objectExtract(o);
         }
         AddHated(v, c);

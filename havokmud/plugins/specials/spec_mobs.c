@@ -362,7 +362,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             for (temp = i->contains; temp; temp = next_obj) {
                 next_obj = temp->next_content;
                 objectTakeFromObject(temp);
-                obj_to_room(temp, ch->in_room);
+                objectPutInRoom(temp, ch->in_room);
             }
             objectExtract(i);
             return (TRUE);
@@ -602,8 +602,8 @@ int janitor(struct char_data *ch, int cmd, char *arg,
         if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) &&
             (i->type_flag == ITEM_TYPE_DRINKCON || i->cost <= 10)) {
             act("$n picks up some trash.", FALSE, ch, 0, 0, TO_ROOM);
-            obj_from_room(i);
-            obj_to_char(i, ch);
+            objectTakeFromRoom(i);
+            objectGiveToChar(i, ch);
             return (TRUE);
         }
     }
@@ -647,8 +647,8 @@ int jugglernaut(struct char_data *ch, int cmd, char *arg,
         } else {
             act("$n tosses $p but fumbles it!", TRUE, ch, tmp_obj, NULL,
                 TO_ROOM);
-            obj_from_char(tmp_obj);
-            obj_to_room(tmp_obj, ch->in_room);
+            objectTakeFromChar(tmp_obj);
+            objectPutInRoom(tmp_obj, ch->in_room);
         }
         return (TRUE);
     }
@@ -2124,7 +2124,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                     while (co->contains) {
                         o = co->contains;
                         objectTakeFromObject(o);
-                        obj_to_char(o, ch);
+                        objectGiveToChar(o, ch);
 
                         if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
                             /*
@@ -2380,8 +2380,8 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             /*
              * Take it, in either case
              */
-            obj_from_char(obj);
-            obj_to_char(obj, vict);
+            objectTakeFromChar(obj);
+            objectGiveToChar(obj, vict);
             if ( obj->item_number == Shield) {
                 if (!check_soundproof(ch)) {
                     act("$N says 'The Shield of Lorces!'", FALSE, ch, 0,
@@ -2430,8 +2430,8 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     act("$N says 'You may now undertake the second quest.'",
                         FALSE, ch, 0, vict, TO_CHAR);
                 }
-                obj_from_char(obj);
-                obj_to_char(obj, vict);
+                objectTakeFromChar(obj);
+                objectGiveToChar(obj, vict);
                 vict->generic = Valik_Qtwo;
             } else {
                 act("$N shakes his head - it is the wrong item.",
@@ -2454,8 +2454,8 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     act("$N says 'You may now undertake the third quest.'",
                         FALSE, ch, 0, vict, TO_CHAR);
                 }
-                obj_from_char(obj);
-                obj_to_char(obj, vict);
+                objectTakeFromChar(obj);
+                objectGiveToChar(obj, vict);
                 vict->generic = Valik_Qthree;
             } else {
                 act("$N shakes his head - it is the wrong item.'",
@@ -2478,8 +2478,8 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     act("$N says 'You may now undertake the final quest.'",
                         FALSE, ch, 0, vict, TO_CHAR);
                 }
-                obj_from_char(obj);
-                obj_to_char(obj, vict);
+                objectTakeFromChar(obj);
+                objectGiveToChar(obj, vict);
                 vict->generic = Valik_Qfour;
             } else {
                 act("$N says 'That is not the item I require.'",
@@ -2524,7 +2524,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 FALSE, ch, 0, vict, TO_CHAR);
             act("$N takes the Necklace of Wisdom and hands it to $n.",
                 FALSE, ch, 0, vict, TO_ROOM);
-            obj_to_char(unequip_char(vict, WEAR_NECK_1), ch);
+            objectGiveToChar(unequip_char(vict, WEAR_NECK_1), ch);
         } else {
             for (i = 0; i < quest_lines[vict->generic - 2]; ++i) {
                 command_interpreter(vict, nonecklace[i]);
@@ -4473,7 +4473,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
             for (k = j->contains; k; k = next) {
                 next = k->next_content;
                 objectTakeFromObject(k);
-                obj_to_room(k, ch->in_room);
+                objectPutInRoom(k, ch->in_room);
             }
             objectExtract(j);
             ch->generic = 10;
@@ -6334,10 +6334,10 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
         act("$n hands over a couple of items.", FALSE, vict, 0, 0, TO_ROOM);
 
         obj = objectRead(EYE_DRAGON, VIRTUAL);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
 
         obj = objectRead(GATEKEEPER_KEY, VIRTUAL);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
 
         return (TRUE);
     }
@@ -6736,7 +6736,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         act("$n hands over the dragon sceptre.", FALSE, vict, 0, 0, TO_ROOM);
 
         obj = objectRead(DRAGON_SCEPTRE_ONE, VIRTUAL);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
         return (TRUE);
     }
     return (FALSE);
@@ -7377,7 +7377,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                                     FALSE, ch, 0, i, TO_NOTVICT);
 
                                 obj = objectRead(COMFY_ROBE, VIRTUAL);
-                                obj_to_char(obj, i);
+                                objectGiveToChar(obj, i);
 
                                 /*
                                  * and let's make him remove his
@@ -7386,7 +7386,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                                 if (i->equipment[WEAR_BODY]) {
                                     obj2 = i->equipment[WEAR_BODY];
                                     if ((obj2 = unequip_char(i, WEAR_BODY))) {
-                                        obj_to_char(obj2, i);
+                                        objectGiveToChar(obj2, i);
                                         act("Smiling happily, you stop wearing"
                                             " your current body armor.", FALSE,
                                             ch, 0, i, TO_VICT);
@@ -7440,7 +7440,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                                 FALSE, ch, 0, i, TO_NOTVICT);
 
                             obj = objectRead(COMFY_ROBE, VIRTUAL);
-                            obj_to_char(obj, i);
+                            objectGiveToChar(obj, i);
 
                             /*
                              * and let's make him remove his bodywear.. 
@@ -7448,7 +7448,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                             if (i->equipment[WEAR_BODY]) {
                                 obj2 = i->equipment[WEAR_BODY];
                                 if ((obj2 = unequip_char(i, WEAR_BODY))) {
-                                    obj_to_char(obj2, i);
+                                    objectGiveToChar(obj2, i);
                                     act("Smiling happily, you stop wearing "
                                         "your current body armor.", FALSE, ch,
                                         0, i, TO_VICT);
@@ -7552,10 +7552,10 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg,
         sprintf(buf, "nadia thunder mountain");
         if ((tmp_ch = get_char_vis_world(ch, buf, 0))) {
             target_obj = objectRead(NADIA_KEY, VIRTUAL);
-            obj_to_char(target_obj, tmp_ch);
+            objectGiveToChar(target_obj, tmp_ch);
 
             target_obj = objectRead(NADIA_PILL, VIRTUAL);
-            obj_to_char(target_obj, tmp_ch);
+            objectGiveToChar(target_obj, tmp_ch);
         }
     }
 
@@ -7906,7 +7906,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
                                   "you enjoy.'\n\r", mobname);
                     oldSendOutput(ch, "%s gives you %s\n\r", mobname,
                               obj->short_description);
-                    obj_to_char(obj, ch);
+                    objectGiveToChar(obj, ch);
                     sprintf(buf, "bought %s", obj->short_description);
                     qlog(ch, buf);
                 } else {
@@ -8011,8 +8011,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
 
                 act("$N gives you $p.", FALSE, ch, obj2, vict, TO_CHAR);
                 act("$N gives $p to $n.", FALSE, ch, obj2, vict, TO_ROOM);
-                obj_to_char(obj2, ch);
-                obj_from_char(obj);
+                objectGiveToChar(obj2, ch);
+                objectTakeFromChar(obj);
                 objectExtract(obj);
                 return (TRUE);
             } else {
@@ -8029,7 +8029,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
                     send_to_room(vict->specials.quest_yes, ch->in_room);
                 }
                 act("$n puts $p into $s pocket.", TRUE, vict, obj, 0, TO_ROOM);
-                obj_from_char(obj);
+                objectTakeFromChar(obj);
                 objectExtract(obj);
 
                 /* 
@@ -8347,7 +8347,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                             obj2->short_description);
                     qlog(ch, buf);
                 }
-                obj_to_char(obj2, ch);
+                objectGiveToChar(obj2, ch);
 
                 act("$N gives you $p.", TRUE, ch, obj2, vict, TO_CHAR);
                 act("$N gives $p to $n.", TRUE, ch, obj2, vict, TO_ROOM);
@@ -8358,7 +8358,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                     TRUE, ch, obj, vict, TO_ROOM);
                 act("$N waves $s hands and makes something disappear.",
                     TRUE, ch, obj, vict, TO_CHAR);
-                obj_from_char(obj);
+                objectTakeFromChar(obj);
                 objectExtract(obj);
                 /*
                  * pick new quest 
@@ -9147,10 +9147,10 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
              * new items for strahd number 2
              */
             target_obj = objectRead(STRAHD2_ITEM1, VIRTUAL);
-            obj_to_char(target_obj, mobtmp);
+            objectGiveToChar(target_obj, mobtmp);
 
             target_obj = objectRead(STRAHD2_ITEM2, VIRTUAL);
-            obj_to_char(target_obj, mobtmp);
+            objectGiveToChar(target_obj, mobtmp);
 
             act("$n falls to the ground and crumbles into dust, a faint green"
                 " shadow leaves the corpse.", FALSE, ch, 0, 0, TO_ROOM);
@@ -9290,13 +9290,13 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                  * place sun sword ... 
                  */
                 target_obj = objectRead(SUN_SWORD_RAVENLOFT, VIRTUAL);
-                obj_to_room(target_obj, sun_loc[number(0, 3)]);
+                objectPutInRoom(target_obj, sun_loc[number(0, 3)]);
 
                 /*
                  * place holy symbol 
                  */
                 target_obj = objectRead(HOLY_ITEM_RAVENLOFT, VIRTUAL);
-                obj_to_room(target_obj, holy_loc[number(0, 2)]);
+                objectPutInRoom(target_obj, holy_loc[number(0, 2)]);
 
                 return (FALSE);
             }
@@ -9796,7 +9796,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
                  "fades out of existence.\n\r", mob->in_room);
 
     objectTakeFromObject(trinket);
-    obj_to_char(trinket, mob);
+    objectGiveToChar(trinket, mob);
     char_from_room(mob);
 
     if (mob_index[ch->nr].vnum == ROBBER) {
@@ -9961,7 +9961,7 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
                     Log("No hero found in Vaelhar's proc");
                     return (FALSE);
                 }
-                obj_to_char(obj, hero);
+                objectGiveToChar(obj, hero);
             }
         }
 
@@ -10143,10 +10143,10 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 TO_ROOM);
 
             obj = objectRead(BLACK_PILL, VIRTUAL);
-            obj_to_char(obj, ch);
+            objectGiveToChar(obj, ch);
 
             obj = objectRead(BLUE_PILL, VIRTUAL);
-            obj_to_char(obj, ch);
+            objectGiveToChar(obj, ch);
 
             act("$n hands over 2 pills: one black and one blue.", FALSE,
                 vict, 0, 0, TO_ROOM);
@@ -10347,7 +10347,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                     while (co->contains) {
                         o = co->contains;
                         objectTakeFromObject(o);
-                        obj_to_room(o, ch->in_room);
+                        objectPutInRoom(o, ch->in_room);
                     }
 
                     /* remove the corpse */
@@ -10430,7 +10430,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                         while (co->contains) {
                             o = co->contains;
                             objectTakeFromObject(o);
-                            obj_to_room(o, ch->in_room);
+                            objectPutInRoom(o, ch->in_room);
                         }
                         /* 
                          * remove the corpse 
@@ -10805,7 +10805,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
                 act("$N gives $p to you.\n\r", FALSE, receiver, reward,
                     gnome, TO_CHAR);
 
-                obj_to_char(reward, receiver);
+                objectGiveToChar(reward, receiver);
             }
 
             act("$n says, 'Right, gotta get going now, I'm impatient to start "
@@ -10885,8 +10885,8 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
             "ages.'", FALSE, gnome, 0, 0, TO_ROOM);
         act("You give $p to $N.", FALSE, ch, obj, gnome, TO_CHAR);
         act("$n gives $p to $N.", FALSE, ch, obj, gnome, TO_ROOM);
-        obj_from_char(obj);
-        obj_to_char(obj, gnome);
+        objectTakeFromChar(obj);
+        objectGiveToChar(obj, gnome);
         return (TRUE);
     }
     return (FALSE);
@@ -11021,7 +11021,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears."
                              " It widens, turns sideways, and becomes a "
                              "portal!\n\r", WAITROOM);
-                obj_to_room(obj, WAITROOM);
+                objectPutInRoom(obj, WAITROOM);
             }
         }
 
@@ -11038,7 +11038,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears. It "
                              "widens, turns sideways, and becomes a "
                              "portal!\n\r", REAVER_RM);
-                obj_to_room(obj, REAVER_RM);
+                objectPutInRoom(obj, REAVER_RM);
             }
         }
 
@@ -11055,7 +11055,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears. It "
                              "widens, turns sideways, and becomes a "
                              "portal!\n\r", DEST_ROOM);
-                obj_to_room(obj, DEST_ROOM);
+                objectPutInRoom(obj, DEST_ROOM);
             }
         }
     }
@@ -11378,10 +11378,10 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                  */
                 if (i->equipped_by) {
                     obj = unequip_char(ch, i->eq_pos);
-                    obj_to_char(obj, ch);
+                    objectGiveToChar(obj, ch);
                 } else if (!i->carried_by && i->in_obj) {
                     objectTakeFromObject(i);
-                    obj_to_char(i, ch);
+                    objectGiveToChar(i, ch);
                 } else {
                     Log("where is this item!?! bad spot in master_smith");
                     send_to_char("Ugh, something wrong with this proc, "
@@ -11405,28 +11405,28 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
 
             GET_GOLD(ch) -= 1000000;
             if (obj1->carried_by) {
-                obj_from_char(obj1);
+                objectTakeFromChar(obj1);
                 objectExtract(obj1);
             }
             if (obj2->carried_by) {
-                obj_from_char(obj2);
+                objectTakeFromChar(obj2);
                 objectExtract(obj2);
             }
             if (obj3->carried_by) {
-                obj_from_char(obj3);
+                objectTakeFromChar(obj3);
                 objectExtract(obj3);
             }
             if (obj4->carried_by) {
-                obj_from_char(obj4);
+                objectTakeFromChar(obj4);
                 objectExtract(obj4);
             }
             if (obj5->carried_by) {
-                obj_from_char(obj5);
+                objectTakeFromChar(obj5);
                 objectExtract(obj5);
             }
 
             if ((obj = objectRead(SMITH_SHIELD, VIRTUAL))) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
                 send_to_char("You give your items to Yeelorn, along with an "
                              "incredible heap of coins.\n\r", ch);
                 send_to_char("Yeelorn pokes up his forge, and starts heating "
@@ -11794,7 +11794,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         for (j = 0; j < MAX_WEAR; j++) {
             if ((tempobj = mob->equipment[j])) {
                 if (tempobj->contains) {
-                    obj_to_char(unequip_char(mob, j), mob);
+                    objectGiveToChar(unequip_char(mob, j), mob);
                 } else {
                     MakeScrap(mob, NULL, tempobj);
                 }
@@ -11807,7 +11807,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             } else {
                 while ((nextobj = tempobj->contains)) {
                     objectTakeFromObject(nextobj);
-                    obj_to_char(nextobj, mob);
+                    objectGiveToChar(nextobj, mob);
                 }
             }
         }
@@ -11884,7 +11884,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
 
                 corpse = objectRead(CORPSEOBJVNUM, VIRTUAL);
-                obj_to_room(corpse, theitem->in_room);
+                objectPutInRoom(corpse, theitem->in_room);
                 currroomnum = mob->in_room;
                 char_from_room(mob);
                 char_to_room(mob, mob->generic);
@@ -11911,7 +11911,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  */
                 if(!temp) {
                     corpse = objectRead(CORPSEOBJVNUM, VIRTUAL);
-                    obj_to_room(corpse, theitem->in_room);
+                    objectPutInRoom(corpse, theitem->in_room);
                     currroomnum = mob->in_room;
                     char_from_room(mob);
                     char_to_room(mob, mob->generic);
@@ -11936,7 +11936,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 if (theitem->in_room == mob->in_room) {
                     act("$n gestures and a bauble disappears from the "
                         "ground.", TRUE, mob, 0, 0, TO_ROOM);
-                    obj_from_room(theitem);
+                    objectTakeFromRoom(theitem);
                     objectPutInObject(theitem, ventobj);
                     mob->generic = WAITTOGOHOME;
                 } else {
@@ -12040,7 +12040,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     }
                 }
                 corpse = objectRead(CORPSEOBJVNUM, VIRTUAL);
-                obj_to_room(corpse, mob->generic);
+                objectPutInRoom(corpse, mob->generic);
                 currroomnum = mob->in_room;
                 char_from_room(mob);
                 char_to_room(mob, tempchar->in_room);
@@ -12134,7 +12134,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 mob, parentobj, 0, TO_ROOM);
             char_from_room(mob);
             char_to_room(mob, currroomnum);
-            obj_from_room(parentobj);
+            objectTakeFromRoom(parentobj);
             objectPutInObject(parentobj, ventobj);
 
             while (theitem->in_obj != ventobj) {
@@ -12760,7 +12760,7 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
         act("$c000WSuddenly a large portal opens!$c000w",
             FALSE, mob, 0, 0, TO_ROOM);
         o = objectRead(6575, VIRTUAL);
-        obj_to_room(o, ch->in_room);
+        objectPutInRoom(o, ch->in_room);
         return(TRUE);
     } 
     
@@ -12821,7 +12821,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
         command_interpreter(mob, buf);
         
         o = objectRead(6593, VIRTUAL);
-        obj_to_char(o, ch);
+        objectGiveToChar(o, ch);
         gain_exp(ch, 150000);
         
         act("The riddle master waves his hand and a shimmering portal "
@@ -12830,7 +12830,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
             "the portal is the way home.", FALSE, mob, NULL, NULL, TO_ROOM);
 
         o = objectRead(6580, VIRTUAL);
-        obj_to_room(o, ch->in_room);
+        objectPutInRoom(o, ch->in_room);
         ret = TRUE;
     }
 
@@ -12874,7 +12874,7 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
             command_interpreter(mob, buf);
             
             o = objectRead(rid[i].reward, VIRTUAL);
-            obj_to_char(o, ch);
+            objectGiveToChar(o, ch);
             gain_exp(ch, exp);
             sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience!$c000w", 
                     exp);
@@ -12890,7 +12890,7 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
                 FALSE, mob, 0, 0, TO_ROOM);
 
             o = objectRead(portal, VIRTUAL);
-            obj_to_room(o, ch->in_room);
+            objectPutInRoom(o, ch->in_room);
 
             act("The riddler disapears in a puff of smoke!", 
                 FALSE, mob, NULL, NULL, TO_ROOM);

@@ -211,10 +211,10 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             rare = find_a_rare(tmp);
                             if (rare) {
                                 if (rare != tmp) {
-                                    obj_from_char(rare);
+                                    objectTakeFromChar(rare);
                                     objectExtract(rare);
                                 } else {
-                                    obj_from_char(tmp);
+                                    objectTakeFromChar(tmp);
                                     objectExtract(tmp);
                                     tmp = 0;
                                 }
@@ -242,10 +242,10 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             rare = find_a_rare(tmp);
                             if (rare) {
                                 if (rare != tmp) {
-                                    obj_from_char(rare);
+                                    objectTakeFromChar(rare);
                                     objectExtract(rare);
                                 } else {
-                                    obj_from_char(tmp);
+                                    objectTakeFromChar(tmp);
                                     objectExtract(tmp);
                                     tmp = 0;
                                 }

@@ -126,7 +126,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             value += (MIN(1000, MAX(tmp_object->cost / 4, 1)));
-            obj_from_char(tmp_object);
+            objectTakeFromChar(tmp_object);
             objectExtract(tmp_object);
             if (num > 0) {
                 num--;
@@ -464,9 +464,9 @@ void do_save(struct char_data *ch, char *argument, int cmd)
             if (ch->equipment[i] && ch->equipment[i]->in_room != -1) {
                 o = ch->equipment[i];
                 ch->equipment[i] = 0;
-                obj_from_room(o);
+                objectTakeFromRoom(o);
 #if 0
-                obj_to_char(o, ch);
+                objectGiveToChar(o, ch);
 #endif
                 equip_char(ch, o, i);
                 /*
@@ -3143,7 +3143,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * to room perhaps?
      */
-    obj_to_room(head, ch->in_room);
+    objectPutInRoom(head, ch->in_room);
 
     /*
      * CHange name of head

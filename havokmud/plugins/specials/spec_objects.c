@@ -576,8 +576,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
             sprintf(buf, "Scraps from %s lie in a pile here.",
                     obj->short_description);
             i->description = (char *) strdup(buf);
-            obj_to_room(i, ch->in_room);
-            obj_from_char(obj);
+            objectPutInRoom(i, ch->in_room);
+            objectTakeFromChar(obj);
             objectExtract(obj);
 
             if (do_all) {
@@ -972,11 +972,11 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
         /*
          * purge everything in altar
          */
-        obj_from_room(obj);
+        objectTakeFromRoom(obj);
         objectExtract(obj);
 
         obj = objectRead(51831, VIRTUAL);
-        obj_to_room(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room);
 
         /*
          * Load up the prize 
@@ -1468,7 +1468,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
             if (time_info.hours > 6) {
                 if (time_info.hours < 20) {
                     obj = objectRead(PEN_MIGHT, VIRTUAL);
-                    obj_to_char(obj, ch);
+                    objectGiveToChar(obj, ch);
                     send_to_char("Elamin's Pen of Might bursts out of thin"
                                  " air and lands in your hands.\n\r", ch);
                     act("Elamin's Pen of Might bursts out of thin air and"
@@ -1529,7 +1529,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
 
             if (time_info.hours < 7 || time_info.hours > 19) {
                 obj = objectRead(PEN_MIGHT, VIRTUAL);
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
                 send_to_char("Elamin's Pen of Might bursts out of thin air"
                              " and lands in your hands.\n\r", ch);
                 act("Elamin's Pen of Might bursts out of thin air and lands"
@@ -1585,7 +1585,7 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         objectExtract(obj2);
 
         obj = objectRead(DRAGON_SCEPTRE_TWO, VIRTUAL);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
         return (TRUE);
     }
 
@@ -1638,12 +1638,12 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         objectExtract(obj2);
 
         obj = objectRead(DRAGON_SCEPTRE_ONE, VIRTUAL);
-        obj_to_room(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room);
 
         obj = objectRead(EYE_DRAGON, VIRTUAL);
-        obj_to_room(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room);
         obj = objectRead(EYE_DRAGON, VIRTUAL);
-        obj_to_room(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room);
 
         room = real_roomp(ch->in_room);
         for (tmp = room->people; tmp; tmp = tmp2) {
@@ -2217,7 +2217,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
              obj->short_description, dam );
 
         if( obj->carried_by ) {
-            obj_from_char(obj);
+            objectTakeFromChar(obj);
         } else if( obj->equipped_by ) {
             tmp_obj = get_object_in_equip(ch, obj->name, 
                                           obj->equipped_by->equipment, &i );
@@ -2239,7 +2239,7 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
         return( FALSE );
     }
     if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
-        obj_from_room(obj);
+        objectTakeFromRoom(obj);
         objectExtract(obj);
         act("The ring of blazing white light suddenly vanishes!", 
             FALSE, ch, obj, NULL, TO_ROOM);

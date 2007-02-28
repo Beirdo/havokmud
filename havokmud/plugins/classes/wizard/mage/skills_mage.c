@@ -281,7 +281,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
                 TRUE, ch, obj, 0, TO_ROOM);
             act("$p bursts into flame and disintegrates!",
                 TRUE, ch, obj, 0, TO_CHAR);
-            obj_from_char(obj);
+            objectTakeFromChar(obj);
             objectExtract(obj);
         }
     } else {
@@ -289,7 +289,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
             TO_ROOM);
         act("$p bursts into flame and disintegrates!", TRUE, ch, obj, 0,
             TO_CHAR);
-        obj_from_char(obj);
+        objectTakeFromChar(obj);
         objectExtract(obj);
         GET_ALIGNMENT(ch) -= 5;
     }
@@ -419,10 +419,10 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
         if (sac->cost >= 200) {
             equip_char(ch, sac, (held ? HOLD : WIELD));
         } else {
-            obj_to_char(sac, ch);
+            objectGiveToChar(sac, ch);
         }
     } else {
-        obj_to_char(sac, ch);
+        objectGiveToChar(sac, ch);
     }
 
     if (sac) {
@@ -1018,7 +1018,7 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     act("You gesture, and a cloud of smoke appears", TRUE, ch, 0, 0, TO_CHAR);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_ROOM);
     act("$p explodes with a loud BANG!", TRUE, ch, obj, 0, TO_CHAR);
-    obj_from_char(obj);
+    objectTakeFromChar(obj);
     objectExtract(obj);
     char_to_room(victim, ch->in_room);
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
@@ -1102,7 +1102,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
 
     sac = unequip_char(ch, HOLD);
     if (sac) {
-        obj_to_char(sac, ch);
+        objectGiveToChar(sac, ch);
         if (sac->item_num != obj) {
             send_to_char("You must have the correct item to sacrifice.\n\r",
                          ch);
@@ -1143,7 +1143,7 @@ void spell_cont_light(int level, struct char_data *ch,
 
     tmp_obj = objectRead(20, VIRTUAL);
     if (tmp_obj) {
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the ball of light\n\r", ch);
         return;
@@ -1196,7 +1196,7 @@ void spell_light(int level, struct char_data *ch,
     tmp_obj = objectRead(20, VIRTUAL); /* this is all you have to do */
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
     } else {
         send_to_char("Sorry, I can't create the ball of light\n\r", ch);
         return;
@@ -1378,18 +1378,18 @@ void spell_disintegrate(int level, struct char_data *ch,
                             }
 
                             if (obj->carried_by) {
-                                obj_from_char(obj);
+                                objectTakeFromChar(obj);
                             } else if (obj->equipped_by) {
                                 obj = unequip_char(obj->equipped_by,
                                                    obj->eq_pos);
                             } else if (obj->in_obj) {
                                 objectTakeFromObject(obj);
-                                obj_to_room(obj, ch->in_room);
+                                objectPutInRoom(obj, ch->in_room);
                             } else if (obj->contains) {
                                 while (obj->contains) {
                                     x = obj->contains;
                                     objectTakeFromObject(x);
-                                    obj_to_room(x, ch->in_room);
+                                    objectPutInRoom(x, ch->in_room);
                                 }
                             }
                             if (obj) {
@@ -3194,7 +3194,7 @@ void spell_minor_create(int level, struct char_data *ch,
     act("You clap your hands together.", TRUE, ch, 0, 0, TO_CHAR);
     act("In a flash of light, $p appears.", TRUE, ch, obj, 0, TO_ROOM);
     act("In a flash of light, $p appears.", TRUE, ch, obj, 0, TO_CHAR);
-    obj_to_room(obj, ch->in_room);
+    objectPutInRoom(obj, ch->in_room);
 }
 
 #define LONG_SWORD   3022
@@ -4048,7 +4048,7 @@ void spell_portal(int level, struct char_data *ch,
     tmp_obj->value[0] = level / 5;
     tmp_obj->value[1] = tmp_ch->in_room;
 
-    obj_to_room(tmp_obj, ch->in_room);
+    objectPutInRoom(tmp_obj, ch->in_room);
 
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_ROOM);
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_CHAR);
@@ -4866,7 +4866,7 @@ void spell_succor(int level, struct char_data *ch,
     struct obj_data *o;
 
     o = objectRead(3052, VIRTUAL);
-    obj_to_char(o, ch);
+    objectGiveToChar(o, ch);
 
     o->cost = 0;
     o->cost_per_day = -1;
@@ -5666,7 +5666,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
                      "your abilities.$c0007\n\r", ch);
         gain_exp(ch, 100);
-        obj_to_char(obj, ch);
+        objectGiveToChar(obj, ch);
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     }
 }

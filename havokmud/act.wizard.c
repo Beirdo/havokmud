@@ -3019,7 +3019,7 @@ void do_load_object(struct char_data *ch, char *argument, int number)
         return;
     }
 
-    obj_to_char(obj, ch);
+    objectGiveToChar(obj, ch);
 
     if (GetMaxLevel(ch) < MAX_IMMORT) {
         sprintf(buf, "%s loaded %s (%d)", GET_NAME(ch), 
@@ -3125,11 +3125,11 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
 
     while (rp->contents) {
         obj = rp->contents;
-        obj_from_room(obj);
+        objectTakeFromRoom(obj);
         /*
          * send item to the void
          */
-        obj_to_room(obj, 0);
+        objectPutInRoom(obj, 0);
     }
 
     completely_cleanout_room(rp);
@@ -3313,17 +3313,17 @@ void do_start(struct char_data *ch)
      * bread
      */
     obj = objectRead(12, VIRTUAL);
-    obj_to_char(obj, ch);
+    objectGiveToChar(obj, ch);
     obj = objectRead(12, VIRTUAL);
-    obj_to_char(obj, ch);
+    objectGiveToChar(obj, ch);
 
     /*
      * water
      */
     obj = objectRead(13, VIRTUAL);
-    obj_to_char(obj, ch);
+    objectGiveToChar(obj, ch);
     obj = objectRead(13, VIRTUAL);
-    obj_to_char(obj, ch);
+    objectGiveToChar(obj, ch);
 
     ch->skills[STYLE_STANDARD].learned = 95;
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
@@ -5708,7 +5708,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
                     /*
                      * move obj to cloned mobs carrying
                      */
-                    obj_to_char(ocopy, mcopy);
+                    objectGiveToChar(ocopy, mcopy);
                 }
             }
 
@@ -5742,9 +5742,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
              * put
              */
             if (where == 1) {
-                obj_to_char(ocopy, ch);
+                objectGiveToChar(ocopy, ch);
             } else {
-                obj_to_room(ocopy, ch->in_room);
+                objectPutInRoom(ocopy, ch->in_room);
             }
             act("$n has cloned $p!", FALSE, ch, obj, 0, TO_ROOM);
             act("You cloned $p.", FALSE, ch, obj, 0, TO_CHAR);

@@ -217,7 +217,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
         tmp_obj->next = object_list;
         object_list = tmp_obj;
 
-        obj_to_char(tmp_obj, ch);
+        objectGiveToChar(tmp_obj, ch);
 
         tmp_obj->item_number = -1;
 

@@ -114,7 +114,7 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
                     j;
     struct index_data *index;
 
-    void            obj_to_char(struct obj_data *object,
+    void            objectGiveToChar(struct obj_data *object,
                                 struct char_data *ch);
 
     for (i = 0; i < st->number; i++) {
@@ -189,7 +189,7 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
             if (tmp_cur_depth && !st->objects[i].wearpos) {
                 objectPutInObject(obj, in_obj[tmp_cur_depth - 1]);
             } else if (st->objects[i].wearpos == 0) {
-                obj_to_char(obj, ch);
+                objectGiveToChar(obj, ch);
             }
             last_obj = obj;
         }
