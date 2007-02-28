@@ -273,6 +273,8 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
 struct obj_data *objectRead(int nr, int type);
 void objectFree(struct obj_data *obj);
 void objectExtract(struct obj_data *obj);
+void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
+void objectTakeFromObject(struct obj_data *obj);
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);

@@ -54,9 +54,9 @@ void weight_change_object(struct obj_data *obj, int weight)
         GET_OBJ_WEIGHT(obj) += weight;
         obj_to_char(obj, tmp_ch);
     } else if ((tmp_obj = obj->in_obj)) {
-        obj_from_obj(obj);
+        objectTakeFromObject(obj);
         GET_OBJ_WEIGHT(obj) += weight;
-        obj_to_obj(obj, tmp_obj);
+        objectPutInObject(obj, tmp_obj);
     } else {
         Log("Unknown attempt to subtract weight from an object.");
     }

@@ -2761,7 +2761,7 @@ void spell_resurrection(int level, struct char_data *ch,
             for (obj_object = obj->contains; obj_object;
                  obj_object = next_obj) {
                 next_obj = obj_object->next_content;
-                obj_from_obj(obj_object);
+                objectTakeFromObject(obj_object);
                 obj_to_char(obj_object, victim);
             }
 

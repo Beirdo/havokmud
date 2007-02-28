@@ -157,7 +157,7 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj)
         if (tmp->contains) {
             objectCloneContainer(ocopy, tmp);
         }
-        obj_to_obj(ocopy, to);
+        objectPutInObject(ocopy, to);
     }
 }
 
@@ -675,6 +675,135 @@ bool HasExtraBits(struct char_data *ch, int bits)
 {
     return( HasBits(ch, bits, OFFSETOF(extra_flags, struct obj_data)) );
 }
+
+/**
+ * @brief put an object in an object
+ * @todo rename to objectPutInObject
+ */
+void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
+{
+    struct obj_data *tmp_obj;
+
+    if( !obj || !obj_to ) {
+        return;
+    }
+
+    if( obj == obj_to ) {
+        LogPrint( LOG_CRIT, "Trying to fold object %s into itself!", 
+                            obj->short_description );
+        return;
+    }
+
+    obj->next_content = obj_to->contains;
+    obj_to->contains = obj;
+    obj->in_obj = obj_to;
+
+    obj->carried_by = NULL;
+    obj->equipped_by = NULL;
+
+    for (tmp_obj = obj_to; tmp_obj; tmp_obj = tmp_obj->in_obj) {
+        GET_OBJ_WEIGHT(tmp_obj) += GET_OBJ_WEIGHT(obj);
+    }
+
+    if (obj_to->in_room != NOWHERE &&
+        !IS_SET(real_roomp(obj_to->in_room)->room_flags, DEATH)) {
+
+        save_room(obj_to->in_room);
+    }
+}
+
+/**
+ * @brief remove an object from an object 
+ * @todo rename to objectTakeFromObject
+ */
+void objectTakeFromObject(struct obj_data *obj)
+{
+    struct obj_data    *tmp,
+                       *obj_from = NULL;
+    char               *objname;
+
+    if( !obj ) {
+        return;
+    }
+
+    objname = KeywordsToString( &obj->keywords, NULL );
+
+    if (obj->carried_by) {
+        LogPrint( LOG_INFO, "%s carried by %s in objectTakeFromObject", objname,
+                            obj->carried_by->player.name);
+    }
+
+    if (obj->equipped_by) {
+        LogPrint( LOG_INFO, "%s equipped by %s in objectTakeFromObject", 
+                            objname, obj->equipped_by->player.name);
+    }
+
+    if (obj->in_room != NOWHERE) {
+        LogPrint( LOG_INFO, "%s in room %d in objectTakeFromObject", objname, 
+                            obj->in_room);
+    }
+
+    if (!obj->in_obj) {
+        LogPrint( LOG_INFO, "Trying to take object %s from no object.", 
+                            objname);
+    }
+
+    free( objname );
+
+    if(obj->carried_by || obj->equipped_by || obj->in_room != NOWHERE || 
+       !obj->in_obj) {
+        return;
+    }
+
+    obj_from = obj->in_obj;
+    if (obj == obj_from->contains) {
+        /* 
+         * head of list 
+         */
+        obj_from->contains = obj->next_content;
+    } else {
+        /* 
+         * locate previous 
+         */
+        for (tmp = obj_from->contains; tmp && (tmp->next_content != obj);
+             tmp = tmp->next_content) {
+            /* 
+             * Empty loop 
+             */
+        }
+
+        if (!tmp) {
+            LogPrintNoArg( LOG_CRIT, "No previous object in chain!");
+            return;
+        }
+
+        tmp->next_content = obj->next_content;
+    }
+
+    /*
+     * Subtract weight from containers container 
+     */
+    for (tmp = obj->in_obj; tmp->in_obj; tmp = tmp->in_obj) {
+        GET_OBJ_WEIGHT(tmp) -= GET_OBJ_WEIGHT(obj);
+    }
+    GET_OBJ_WEIGHT(tmp) -= GET_OBJ_WEIGHT(obj);
+
+    /*
+     * Subtract weight from char that carries the object 
+     */
+    if (tmp->carried_by) {
+        IS_CARRYING_W(tmp->carried_by) -= GET_OBJ_WEIGHT(obj);
+    }
+    obj->in_obj = NULL;
+    obj->next_content = NULL;
+
+    if (obj_from->in_room != NOWHERE &&
+        !IS_SET(real_roomp(obj_from->in_room)->room_flags, DEATH)) {
+
+        save_room(obj_from->in_room);
+    }
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

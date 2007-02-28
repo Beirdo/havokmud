@@ -986,7 +986,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
             Log("Invalid item in lennyas altar proc");
             return (FALSE);
         }
-        obj_to_obj(win, obj);
+        objectPutInObject(win, obj);
         return (TRUE);
     }
     return (FALSE);
@@ -2223,7 +2223,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
                                           obj->equipped_by->equipment, &i );
             unequip_char(obj->equipped_by, i);
         } else if( obj->in_obj ) {
-            obj_from_obj(obj);
+            objectTakeFromObject(obj);
         }
         objectExtract(obj);
     }

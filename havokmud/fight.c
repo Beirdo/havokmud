@@ -536,7 +536,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     if (GET_GOLD(ch) > 0) {
         money = create_money(GET_GOLD(ch));
         GET_GOLD(ch) = 0;
-        obj_to_obj(money, corpse);
+        objectPutInObject(money, corpse);
     }
 
     corpse->type_flag = ITEM_TYPE_CONTAINER;
@@ -576,7 +576,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     }
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
-            obj_to_obj(unequip_char(ch, i), corpse);
+            objectPutInObject(unequip_char(ch, i), corpse);
         }
     }
     ch->carrying = 0;
@@ -4339,7 +4339,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
 
     while (obj->contains) {
         x = obj->contains;
-        obj_from_obj(x);
+        objectTakeFromObject(x);
         obj_to_room(x, ch->in_room);
     }
 

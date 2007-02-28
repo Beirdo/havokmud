@@ -1149,9 +1149,9 @@ void ObjFromCorpse(struct obj_data *c)
          */
         next_thing = jj->next_content;
         if (jj->in_obj) {
-            obj_from_obj(jj);
+            objectTakeFromObject(jj);
             if (c->in_obj) {
-                obj_to_obj(jj, c->in_obj);
+                objectPutInObject(jj, c->in_obj);
             } else if (c->carried_by) {
                 obj_to_room(jj, c->carried_by->in_room);
                 check_falling_obj(jj, c->carried_by->in_room);

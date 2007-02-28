@@ -187,7 +187,7 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
                 equip_char(ch, obj, st->objects[i].wearpos - 1);
             }
             if (tmp_cur_depth && !st->objects[i].wearpos) {
-                obj_to_obj(obj, in_obj[tmp_cur_depth - 1]);
+                objectPutInObject(obj, in_obj[tmp_cur_depth - 1]);
             } else if (st->objects[i].wearpos == 0) {
                 obj_to_char(obj, ch);
             }
@@ -527,10 +527,10 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
      */
     if (delete) {
         if (obj->in_obj) {
-            obj_from_obj(obj);
+            objectTakeFromObject(obj);
         }
         if (IS_RARE(obj)) {
-            obj->index->.number++;
+            obj->index->number++;
         }
         objectExtract(obj);
     }

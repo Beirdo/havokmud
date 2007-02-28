@@ -37,7 +37,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
                     TO_CHAR);
                 act("$n gets $p from $P.", 1, ch, obj_object, sub_object,
                     TO_ROOM);
-                obj_from_obj(obj_object);
+                objectTakeFromObject(obj_object);
                 obj_to_char(obj_object, ch);
             } else {
                 act("$P must be opened first.", 1, ch, 0, sub_object,
@@ -629,7 +629,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                     IS_CARRYING_W(ch) +=
                                         GET_OBJ_WEIGHT(tmp_object);
                                 }
-                                obj_to_obj(tmp_object, sub_object);
+                                objectPutInObject(tmp_object, sub_object);
                             }
                         }
                     }
@@ -686,7 +686,8 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                                 IS_CARRYING_W(ch) +=
                                                     GET_OBJ_WEIGHT(obj_object);
                                             }
-                                            obj_to_obj(obj_object, sub_object);
+                                            objectPutInObject(obj_object, 
+                                                              sub_object);
                                         }
 
                                         act("$n puts $p in $P", TRUE, ch,

@@ -698,8 +698,6 @@ struct char_data *get_char_num(int nr);
 void            obj_to_room(struct obj_data *object, long room);
 void            obj_to_room2(struct obj_data *object, long room);
 void            obj_from_room(struct obj_data *object);
-void            obj_to_obj(struct obj_data *obj, struct obj_data *obj_to);
-void            obj_from_obj(struct obj_data *obj);
 void            object_list_new_owner(struct obj_data *list,
                                       struct char_data *ch);
 void            update_object(struct obj_data *obj, int use);

@@ -125,7 +125,9 @@ CommandDef_t coreCommands[] = {
     { "grab", do_grab, 65, POSITION_RESTING, 0 },
     { "remove", do_remove, 66, POSITION_RESTING, 0 },
     { "put", do_put, 67, POSITION_RESTING, 0 },
+#endif
     { "shutdow", do_shutdow, 68, POSITION_DEAD, SILLYLORD },
+#if 0
     { "save", do_save, 69, POSITION_STUNNED, 0 },
 
     { "hit", do_hit, 70, POSITION_FIGHTING, 1 },
@@ -138,7 +140,9 @@ CommandDef_t coreCommands[] = {
     { "load", do_load, 77, POSITION_DEAD, SAINT },
     { "purge", do_purge, 78, POSITION_DEAD, 53 },
 
+#endif
     { "shutdown", do_shutdown, 79, POSITION_DEAD, SILLYLORD },
+#if 0
     { "idea", do_idea, 80, POSITION_DEAD, 0 },
     { "typo", do_typo, 81, POSITION_DEAD, 0 },
     { "bug", do_bug, 82, POSITION_DEAD, 0 },

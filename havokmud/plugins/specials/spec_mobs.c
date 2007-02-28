@@ -361,7 +361,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
             for (temp = i->contains; temp; temp = next_obj) {
                 next_obj = temp->next_content;
-                obj_from_obj(temp);
+                objectTakeFromObject(temp);
                 obj_to_room(temp, ch->in_room);
             }
             objectExtract(i);
@@ -2123,7 +2123,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                      */
                     while (co->contains) {
                         o = co->contains;
-                        obj_from_obj(o);
+                        objectTakeFromObject(o);
                         obj_to_char(o, ch);
 
                         if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
@@ -4472,7 +4472,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
             for (k = j->contains; k; k = next) {
                 next = k->next_content;
-                obj_from_obj(k);
+                objectTakeFromObject(k);
                 obj_to_room(k, ch->in_room);
             }
             objectExtract(j);
@@ -9795,7 +9795,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
     send_to_room("Still laughing like a madman, it quaffs a misty potion and "
                  "fades out of existence.\n\r", mob->in_room);
 
-    obj_from_obj(trinket);
+    objectTakeFromObject(trinket);
     obj_to_char(trinket, mob);
     char_from_room(mob);
 
@@ -10346,7 +10346,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                      */
                     while (co->contains) {
                         o = co->contains;
-                        obj_from_obj(o);
+                        objectTakeFromObject(o);
                         obj_to_room(o, ch->in_room);
                     }
 
@@ -10429,7 +10429,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                         /* assume 1st corpse is victim's */
                         while (co->contains) {
                             o = co->contains;
-                            obj_from_obj(o);
+                            objectTakeFromObject(o);
                             obj_to_room(o, ch->in_room);
                         }
                         /* 
@@ -11380,7 +11380,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                     obj = unequip_char(ch, i->eq_pos);
                     obj_to_char(obj, ch);
                 } else if (!i->carried_by && i->in_obj) {
-                    obj_from_obj(i);
+                    objectTakeFromObject(i);
                     obj_to_char(i, ch);
                 } else {
                     Log("where is this item!?! bad spot in master_smith");
@@ -11806,7 +11806,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 MakeScrap(mob, NULL, tempobj);
             } else {
                 while ((nextobj = tempobj->contains)) {
-                    obj_from_obj(nextobj);
+                    objectTakeFromObject(nextobj);
                     obj_to_char(nextobj, mob);
                 }
             }
@@ -11937,7 +11937,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     act("$n gestures and a bauble disappears from the "
                         "ground.", TRUE, mob, 0, 0, TO_ROOM);
                     obj_from_room(theitem);
-                    obj_to_obj(theitem, ventobj);
+                    objectPutInObject(theitem, ventobj);
                     mob->generic = WAITTOGOHOME;
                 } else {
                     act("$n looks frustrated by something.", TRUE,
@@ -12135,7 +12135,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             char_from_room(mob);
             char_to_room(mob, currroomnum);
             obj_from_room(parentobj);
-            obj_to_obj(parentobj, ventobj);
+            objectPutInObject(parentobj, ventobj);
 
             while (theitem->in_obj != ventobj) {
                 /* 
@@ -12144,8 +12144,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 parentobj = theitem->in_obj;
                 while (parentobj->contains) {
                     tempobj = parentobj->contains;
-                    obj_from_obj(tempobj);
-                    obj_to_obj(tempobj, ventobj);
+                    objectTakeFromObject(tempobj);
+                    objectPutInObject(tempobj, ventobj);
                 }
             }
         }

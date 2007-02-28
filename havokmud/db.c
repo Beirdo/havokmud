@@ -3124,12 +3124,12 @@ void reset_zone(int zone, int cmd)
                     if (cmd != 375) {
                         if (does_Load((int) index->number,
                                       (int) obj->max) == TRUE) {
-                            obj_to_obj(obj, obj_to);
+                            objectPutInObject(obj, obj_to);
                         } else {
                             objectExtract(obj);
                         }
                     } else {
-                        obj_to_obj(obj, obj_to);
+                        objectPutInObject(obj, obj_to);
                     }
 
                     last_cmd = 1;
@@ -3482,7 +3482,7 @@ void reset_zone(int zone, int cmd)
                             }
                         }
 
-                        obj_to_obj(obj, obj_to);
+                        objectPutInObject(obj, obj_to);
                         last_cmd = 1;
                     } else {
                         last_cmd = 0;
@@ -5458,7 +5458,7 @@ void ReadTextZone(FILE * fl)
                     obj = objectRead(i, VIRTUAL);
                     obj_to = get_obj_num(k);
                     if (obj_to && obj) {
-                        obj_to_obj(obj, obj_to);
+                        objectPutInObject(obj, obj_to);
                         last_cmd = 1;
                     } else {
                         last_cmd = 0;

@@ -1383,12 +1383,12 @@ void spell_disintegrate(int level, struct char_data *ch,
                                 obj = unequip_char(obj->equipped_by,
                                                    obj->eq_pos);
                             } else if (obj->in_obj) {
-                                obj_from_obj(obj);
+                                objectTakeFromObject(obj);
                                 obj_to_room(obj, ch->in_room);
                             } else if (obj->contains) {
                                 while (obj->contains) {
                                     x = obj->contains;
-                                    obj_from_obj(x);
+                                    objectTakeFromObject(x);
                                     obj_to_room(x, ch->in_room);
                                 }
                             }
