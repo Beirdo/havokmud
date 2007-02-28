@@ -82,13 +82,6 @@ void another_hour(int mode)
          * as a test, save a piece of the world every mud hour 
          */
         SaveTheWorld();
-#if 0
-        if (tmp == 0) {
-            for (i = 0; i < 29; i++)    /* save the rest of the world
-                                         * automatically */
-                SaveTheWorld();
-        }
-#endif
         if (tmp == gMoonRise) {
             if (moontype < 4) {
                 strcpy(moon, "new");
@@ -154,9 +147,6 @@ void another_hour(int mode)
         }
 
         if (time_info.hours > 23) {
-            /* 
-             * Changed by HHS due to bug ??? 
-             */
             time_info.hours -= 24;
             time_info.day++;
             switch (time_info.day) {
@@ -205,6 +195,7 @@ void ChangeSeason(int month)
     case 2:
     case 3:
     case 16:
+    default:
         gSunRise = 9;           /* very late */
         gSunSet = 16;           /* very early */
         gSeason = SEASON_WINTER;
@@ -232,11 +223,6 @@ void ChangeSeason(int month)
         gSunRise = 7;           /* late */
         gSunSet = 18;           /* early */
         gSeason = SEASON_FALL;
-        break;
-    default:
-        gSeason = SEASON_WINTER;
-        gSunRise = 9;           /* very late */
-        gSunSet = 16;           /* very early */
         break;
     }
 }

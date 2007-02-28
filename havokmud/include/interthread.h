@@ -48,6 +48,8 @@ static char interthread_h_ident[] _UNUSED_ =
 /*
  * Externals used for interthread communication
  */
+
+extern LinkedList_t *ConnectionList;
 extern QueueObject_t *ConnectInputQ;
 extern QueueObject_t *ConnectDnsQ;
 extern QueueObject_t *InputLoginQ;
@@ -138,8 +140,6 @@ void connClose( ConnectionItem_t *connItem );
 /*
  * Other prototypes to move later
  */
-void SendOutput( PlayerStruct_t *player, char *fmt, ... );
-void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len );
 void LoginSendBanner( PlayerStruct_t *player );
 void LoginStateMachine(PlayerStruct_t *player, char *arg);
 void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
@@ -159,6 +159,23 @@ int_func procGetFuncByName( char *name, proc_type type );
 char *procGetNameByFunc( int_func func, proc_type type );
 int procIsRegistered( int_func func, proc_type type );
 
+/*
+ * output.c
+ */
+void SendOutput( PlayerStruct_t *player, char *fmt, ... );
+void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len );
+void send_to_all(char *messg);
+void send_to_all_awake(char *messg);
+void send_to_outdoor(char *messg);
+void send_to_desert(char *messg);
+void send_to_out_other(char *messg);
+void send_to_arctic(char *messg);
+void send_to_except(char *messg, struct char_data *ch);
+void send_to_zone(char *messg, struct char_data *ch);
+void send_to_room(char *messg, int room);
+void send_to_room_except(char *messg, int room, struct char_data *ch);
+void send_to_room_except_two(char *messg, int room, struct char_data *ch1, 
+                             struct char_data *ch2);
 
 /* 
  * ansi_output.c 

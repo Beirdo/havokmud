@@ -486,20 +486,6 @@ void            nonblock(int s);
 void            coma(int s);
 void            send_to_char(char *messg, struct char_data *ch);
 void            save_all(void);
-void            send_to_all(char *messg);
-void            send_to_all_awake(char *messg);
-void            send_to_outdoor(char *messg);
-void            send_to_desert(char *messg);
-void            send_to_out_other(char *messg);
-void            send_to_arctic(char *messg);
-void            send_to_except(char *messg, struct char_data *ch);
-void            send_to_zone(char *messg, struct char_data *ch);
-void            send_to_room(char *messg, int room);
-void            send_to_room_except(char *messg, int room,
-                                    struct char_data *ch);
-void            send_to_room_except_two(char *messg, int room,
-                                        struct char_data *ch1,
-                                        struct char_data *ch2);
 void            act(char *str, int hide_invisible, struct char_data *ch,
                     struct obj_data *obj, void *vict_obj, int type);
 void            act2(char *str, int hide_invisible, struct char_data *ch,

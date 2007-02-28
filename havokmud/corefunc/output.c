@@ -39,9 +39,22 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include "linked_list.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
+
+extern struct zone_data *zone_table;
+
+void SendToAllCond( char *messg, int (*condfunc)(PlayerStruct_t *, void *),
+                    void *arg );
+int CondIsAwake( PlayerStruct_t *player, void *arg );
+int CondIsOutdoors( PlayerStruct_t *player, void *arg );
+int CondIsInDesert( PlayerStruct_t *player, void *arg );
+int CondIsOutdoorsOther( PlayerStruct_t *player, void *arg );
+int CondIsInArctic( PlayerStruct_t *player, void *arg );
+int CondAllExcept( PlayerStruct_t *player, void *arg );
+int CondInZone( PlayerStruct_t *player, void *arg );
 
 /**
  * @brief Outputs a string to a player with ANSI color expansion
@@ -117,6 +130,218 @@ void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len )
     QueueEnqueueItem( player->outputQ, buf );
 }
 
+
+void SendToAllCond( char *messg, int (*condfunc)(PlayerStruct_t *, void *),
+                    void *arg )
+{
+    LinkedListItem_t       *item;
+    ConnectionItem_t       *connection;
+    PlayerStruct_t         *player;
+
+    if( !messg ) {
+        return;
+    }
+
+    LinkedListLock( ConnectionList );
+    for (item = ConnectionList->head; item; item = item->next) {
+        connection = (ConnectionItem_t *)item;
+        player = connection->player;
+        if( !player ) {
+            continue;
+        }
+
+        if( player->state != STATE_PLAYING ) {
+            continue;
+        }
+
+        if( condfunc && !condfunc(player, arg) ) {
+            continue;
+        }
+
+        SendOutput( player, messg );
+    }
+    LinkedListUnlock( ConnectionList );
+}
+
+
+/**
+ * @brief Sends a message to all playing players
+ * @todo rename to SendToAll
+ */
+void send_to_all(char *messg)
+{
+    SendToAllCond(messg, NULL, NULL);
+}
+
+int CondIsAwake( PlayerStruct_t *player, void *arg )
+{
+    return( (AWAKE(player->charData)) ? 1 : 0 );
+}
+
+void send_to_all_awake(char *messg)
+{
+    SendToAllCond(messg, CondIsAwake, NULL);
+}
+
+int CondIsOutdoors( PlayerStruct_t *player, void *arg )
+{
+    return( (OUTSIDE(player->charData) && 
+             !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR)) ? 1 : 0 );
+}
+
+void send_to_outdoor(char *messg)
+{
+    SendToAllCond(messg, CondIsOutdoors, NULL);
+}
+
+int CondIsInDesert( PlayerStruct_t *player, void *arg )
+{
+    struct room_data *rp;
+
+    return( (OUTSIDE(player->charData) && 
+             !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
+             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             (IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) || 
+              rp->sector_type == SECT_DESERT)) ? 1 : 0 );
+}
+
+void send_to_desert(char *messg)
+{
+    SendToAllCond(messg, CondIsInDesert, NULL);
+}
+
+int CondIsOutdoorsOther( PlayerStruct_t *player, void *arg ) 
+{
+    struct room_data *rp;
+
+    return( (OUTSIDE(player->charData) && 
+             !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
+             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             !IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) && 
+             !IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC) && 
+             rp->sector_type != SECT_DESERT) ? 1 : 0 );
+}
+
+void send_to_out_other(char *messg)
+{
+    SendToAllCond(messg, CondIsOutdoorsOther, NULL);
+}
+
+int CondIsInArctic( PlayerStruct_t *player, void *arg )
+{
+    struct room_data *rp;
+
+    return( (OUTSIDE(player->charData) && 
+             !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
+             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC)) ? 1 : 0 );
+}
+
+void send_to_arctic(char *messg)
+{
+    SendToAllCond(messg, CondIsInArctic, NULL);
+}
+
+int CondAllExcept( PlayerStruct_t *player, void *arg )
+{
+    struct char_data *ch;
+
+    ch = (struct char_data *)arg;
+
+    return( (player->charData != ch) ? 1 : 0 );
+}
+
+void send_to_except(char *messg, struct char_data *ch)
+{
+    SendToAllCond(messg, CondAllExcept, (void *)ch);
+}
+
+typedef struct {
+    long        zone;
+    struct char_data *ch;
+} SendToZoneArgs_t;
+
+int CondInZone( PlayerStruct_t *player, void *arg )
+{
+    SendToZoneArgs_t   *args;
+    struct room_data   *rp;
+
+    args = (SendToZoneArgs_t *)arg;
+    if( !args ) {
+        return( 0 );
+    }
+
+    rp = real_roomp(player->charData->in_room);
+
+    return( (player->charData != args->ch && rp && 
+             rp->zone == args->zone) ? 1 : 0);
+}
+
+void send_to_zone(char *messg, struct char_data *ch)
+{
+    SendToZoneArgs_t    args;
+
+    args.zone = real_roomp(ch->in_room)->zone;
+    args.ch   = ch;
+
+    SendToAllCond(messg, CondInZone, (void *)&args);
+}
+
+/**
+ * @todo make char_data::playerDesc point at the PlayerStruct_t
+ */
+void send_to_room(char *messg, int room)
+{
+    struct char_data   *ch;
+    PlayerStruct_t     *player;
+
+    if( !messg ) {
+        return;
+    }
+
+    for (ch = real_roomp(room)->people; ch; ch = ch->next_in_room) {
+        player = (PlayerStruct_t *)ch->playerDesc;
+        if (player && GET_POS(ch) > POSITION_SLEEPING) {
+            SendOutput(player, messg);
+        }
+    }
+}
+
+void send_to_room_except(char *messg, int room, struct char_data *ch)
+{
+    struct char_data   *ch2;
+    PlayerStruct_t     *player;
+
+    if( !messg ) {
+        return;
+    }
+
+    for (ch2 = real_roomp(room)->people; ch2; ch2 = ch2->next_in_room) {
+        player = (PlayerStruct_t *)ch2->playerDesc;
+        if (ch2 != ch && player && GET_POS(ch2) > POSITION_SLEEPING) {
+            SendOutput( player, messg );
+        }
+    }
+}
+
+void send_to_room_except_two(char *messg, int room, struct char_data *ch1, 
+                             struct char_data *ch2) 
+{
+    struct char_data   *ch3;
+    PlayerStruct_t     *player;
+
+    if( !messg ) {
+        return;
+    }
+
+    for (ch3 = real_roomp(room)->people; ch3; ch3 = ch3->next_in_room) {
+        player = (PlayerStruct_t *)ch3->playerDesc;
+        if (ch3 != ch1 && ch3 != ch2 && player && 
+            GET_POS(ch3) > POSITION_SLEEPING) {
+            SendOutput( player, messg );
+        }
+    }
+}
 
 
 /*
