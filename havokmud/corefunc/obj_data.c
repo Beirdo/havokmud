@@ -66,6 +66,8 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset);
 int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
+int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
+                 int parentItem, int delete);
 
 
 void initializeObjects( void )
@@ -187,7 +189,7 @@ struct obj_data *objectRead(int nr, int type)
 
     objectClear(obj);
 
-    if( !db_read_object(obj, nr, -1, -1) ) {
+    if( !db_read_object(obj, nr, -1, -1, -1) ) {
         free(obj);
         return(NULL);
     }
@@ -297,7 +299,7 @@ void objectExtract(struct obj_data *obj)
              * set players equipment slot to 0; that will avoid the garbage
              * items.
              */
-            obj->equipped_by->equipment[obj->eq_pos] = 0;
+            obj->equipped_by->equipment[obj->eq_pos] = NULL;
         } else {
             LogPrint(LOG_CRIT, "Extract on equipped item in slot -1 on: "
                                "%s - %s (%d)",
@@ -360,7 +362,6 @@ void objectExtract(struct obj_data *obj)
         obj_count--;
     }
     objectFree(obj);
-
 }
 
 
@@ -991,6 +992,137 @@ void objectTakeFromRoom(struct obj_data *object)
     }
     object->in_room = NOWHERE;
     object->next_content = NULL;
+}
+
+/**
+ * @brief write the vital data of a player to the player file 
+ * @todo rename to objectSaveForChar
+ */
+void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
+{
+    int                 i;
+    int                 itemNum;
+    struct obj_data    *obj;
+
+    SysLogPrint( LOG_INFO, "Saving %s (%d): %d gold", fname(ch->player.name), 
+                           ch->playerId, GET_GOLD(ch) );
+
+    /*
+     * update the rent cost and gold
+     */
+    db_update_char_rent( ch->playerId, GET_GOLD(ch), cost->total_cost, 0 );
+
+    itemNum = 1;
+
+    for (i = 0; i < MAX_WEAR; i++) {
+        obj = ch->equipment[i];
+        if( !obj ) {
+            continue;
+        }
+
+        if (obj->cost_per_day != -1) {
+            obj->eq_pos = i + 1;
+        }
+
+        if (delete) {
+            unequip_char(ch, i);
+        }
+
+        itemNum = obj_to_store(obj, ch, itemNum, -1, delete);
+    }
+
+    itemNum = obj_to_store(ch->carrying, ch, itemNum, -1, delete);
+    if (delete) {
+        ch->carrying = NULL;
+    }
+
+    /* Clear out any objects above the last item */
+    db_clear_objects( ch->playerId, -1, itemNum );
+
+    /*
+     * write the aliases and bamfs 
+     */
+    write_char_extra(ch);
+}
+
+/**
+ * @brief Destroy inventory after transferring it to "store inventory" 
+ * @todo rename to objectStoreChain
+ */
+int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
+                 int parentItem, int delete)
+{
+    int                 weight;
+    PlayerStruct_t     *player;
+    struct obj_data    *next;
+    int                 newParent;
+
+    if (!obj || !ch) {
+        return( itemNum );
+    } 
+
+    player = (PlayerStruct_t *)ch->playerDesc;
+    if( !player ) {
+        return( itemNum );
+    }
+
+    for( ; obj; obj = next ) {
+        if( (obj->timer < 0 && obj->timer != OBJ_NOTIMER) ||
+            (obj->cost_per_day < 0) ) {
+#ifdef DUPLICATES
+            if( delete ) {
+                SendOutput(player, "You're told: '%s is just old junk, I'll "
+                                   "throw it away for you.'\n\r", 
+                                   obj->short_description);
+            }
+#endif
+            newParent = parentItem;
+        } else if (obj->item_number != -1) {
+            weight = contained_weight(obj);
+
+            GET_OBJ_WEIGHT(obj) -= weight;
+            db_save_object(obj, ch->playerId, -1, itemNum, parentItem);
+            GET_OBJ_WEIGHT(obj) += weight;
+            newParent = itemNum;
+            itemNum++;
+        } else {
+            /* If this is an unrentable, save any contents as in the parent */
+            newParent = parentItem;
+        }
+
+        if (obj->contains) {
+            itemNum = obj_to_store(obj->contains, ch, itemNum, newParent, 
+                                   delete);
+        }
+
+        next = obj->next_content;
+
+        /*
+         * and now we can destroy object 
+         */
+        if (delete) {
+            if (obj->in_obj) {
+                objectTakeFromObject(obj);
+            }
+            if (IS_RARE(obj)) {
+                obj->index->number++;
+            }
+            objectExtract(obj);
+        }
+    }
+    return( itemNum );
+}
+
+
+int contained_weight(struct obj_data *container)
+{
+    struct obj_data    *tmp;
+    int                 rval = 0;
+
+    for (tmp = container->contains; tmp; tmp = tmp->next_content) {
+        rval += GET_OBJ_WEIGHT(tmp);
+    }
+    return( rval );
 }
 
 

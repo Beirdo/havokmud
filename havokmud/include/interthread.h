@@ -255,11 +255,14 @@ void db_delete_mail_message(int messageId);
 
 char *db_lookup_help( int type, char *keywords );
 char *db_lookup_help_similar( int type, char *keywords );
-void db_save_object(struct obj_data *obj, int owner, int ownerItem );
+void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem, 
+                    int parentItem);
 struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
-                                int ownerItem );
+                                int room, int ownerItem );
 int db_find_object_named(char *string, int owner, int ownerItem);
 void db_load_object_tree( BalancedBTree_t *tree );
+void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay );
+void db_clear_objects( int ownerId, int room, int itemNum );
 
 /*
  * obj_data.c
@@ -280,6 +283,7 @@ void objectTakeFromChar(struct obj_data *object);
 void objectPutInRoom(struct obj_data *object, long room);
 void obj_to_room2(struct obj_data *object, long room);
 void objectTakeFromRoom(struct obj_data *object);
+void save_obj(struct char_data *ch, struct obj_cost *cost, int delete);
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);

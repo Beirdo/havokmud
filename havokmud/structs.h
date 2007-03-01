@@ -1215,6 +1215,7 @@ struct follow_type {
  */
 struct char_data {
     int             nr;         /* monster nr */
+    int             playerId;   /* ID number of the player */
     int             in_room;    /* Location */
     int             reroll;     /* Number of rerolls still availiable */
     int             term;

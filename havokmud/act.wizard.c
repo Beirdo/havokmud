@@ -6081,7 +6081,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     if (!index) {
         objectInsert(obj, vnum);
     }
-    db_save_object(obj, -1, -1);
+    db_save_object(obj, 0, -1, -1, -1);
 
     Log("Object %s saved as vnum %ld", obj->name, vnum);
     oldSendOutput(ch, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
