@@ -5518,7 +5518,6 @@ void do_ghost(struct char_data *ch, char *argument, int cmd)
 
         reset_char(tmp_ch);
         load_char_objs(tmp_ch);
-        save_char(tmp_ch, AUTO_RENT);
         tmp_ch->next = character_list;
         character_list = tmp_ch;
         tmp_ch->specials.tick = plr_tick_count++;

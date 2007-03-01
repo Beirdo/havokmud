@@ -89,8 +89,6 @@ void JustLoggedIn( PlayerStruct_t *player )
     }
 
     load_char_objs(ch);
-
-    save_char(ch, AUTO_RENT);
     SendOutput(player, WELC_MESSG);
 
     ch->next = character_list;

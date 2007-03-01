@@ -68,6 +68,8 @@ struct obj_data *GetObjectNumInList(int num, struct obj_data *list,
 int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
 int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
                  int parentItem, int delete);
+int contained_weight(struct obj_data *container);
+void RecursivePrintLimitedItems(BalancedBTreeItem_t *node);
 
 
 void initializeObjects( void )
@@ -1125,6 +1127,163 @@ int contained_weight(struct obj_data *container)
     return( rval );
 }
 
+void PrintLimitedItems(void)
+{
+    BalancedBTreeLock( objectTree );
+    RecursivePrintLimitedItems( objectTree->root );
+    BalancedBTreeUnlock( objectTree );
+}
+
+void RecursivePrintLimitedItems(BalancedBTreeItem_t *node)
+{
+    struct index_data  *index;
+
+    if( !node ) {
+        return;
+    }
+
+    RecursivePrintLimitedItems(node->left);
+
+    index = (struct index_data *)node->item;
+    if( index && index->number ) {
+        LogPrint( LOG_INFO, "Item> %d [%d]", index->vnum, index->number );
+    }
+
+    RecursivePrintLimitedItems(node->right);
+}
+
+void load_char_objs(struct char_data *ch)
+{
+    bool            found = FALSE;
+    int             timegold;
+    int             gold,
+                    rentCost,
+                    minStay,
+                    lastUpdate;
+    time_t          now;
+    PlayerStruct_t *player;
+
+    if( !ch ) {
+        return;
+    }
+
+    player = (PlayerStruct_t *)ch->playerDesc;
+    if( !player ) {
+        return;
+    }
+
+    /*
+     * load in aliases and poofs first 
+     */
+    db_load_char_extra(ch);
+
+
+    /*
+     * Get rent timing info
+     */
+    gold = 0;
+    rentCost = 0;
+    minStay = 0;
+    lastUpdate = 0;
+    db_get_char_rent( ch->playerId, &gold, &rentCost, &minStay, &lastUpdate );
+
+    /*
+     * if the character has been out for 12 real hours, they are fully
+     * healed upon re-entry.  if they stay out for 24 full hours, all
+     * affects are removed, including bad ones. 
+     */
+    now = time(0);
+    if (lastUpdate + 12 * SECS_PER_REAL_HOUR < now) {
+        RestoreChar(ch);
+    }
+
+    if (lastUpdate + 24 * SECS_PER_REAL_HOUR < now) {
+        RemAllAffects(ch);
+    }
+
+    if (ch->in_room == NOWHERE && lastUpdate + 1 * SECS_PER_REAL_HOUR > now) {
+        /*
+         * you made it back from the crash in time, 1 hour grace period. 
+         */
+        if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
+            LogPrint( LOG_INFO, "Character %s reconnecting.", GET_NAME(ch) );
+        }
+        found = TRUE;
+    } else {
+        if (ch->in_room == NOWHERE &&
+            (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
+            LogPrint( LOG_INFO, "Char %s reconnecting after autorent",
+                                GET_NAME(ch) );
+        }
+#ifdef NEW_RENT
+        timegold = (int) ((100.0 * (now - lastUpdate)) / (SECS_PER_REAL_DAY));
+#else
+        timegold = (int) (((float)rentCost * (now - lastUpdate)) /
+                          (SECS_PER_REAL_DAY));
+#endif
+
+        if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
+            LogPrint(LOG_INFO, "Char %s ran up charges of %d gold in rent", 
+                               GET_NAME(ch), timegold);
+        }
+
+        SendOutput(player, "You ran up charges of %d gold in rent.\n\r", 
+                           timegold);
+        GET_GOLD(ch) -= timegold;
+        found = TRUE;
+
+        if (GET_GOLD(ch) < 0) {
+            if (GET_BANK(ch) + (int)(1.05 * GET_GOLD(ch)) < 0) {
+                LogPrint( LOG_INFO, "** Char %s ran out of money in rent **",
+                                    GET_NAME(ch) );
+                SendOutput( player, "You ran out of money, you deadbeat.\n\r");
+                SendOutput( player, "You don't even have enough in your bank "
+                                    "account!!\n\r");
+                GET_GOLD(ch) = 0;
+                GET_BANK(ch) = 0;
+                found = FALSE;
+            } else {
+                LogPrint( LOG_INFO, "** Char %s ran out of rent so lets dip "
+                                    "into bank **", GET_NAME(ch) );
+                SendOutput( player, "You ran out rent money.. lets dip into "
+                                    "your bank account.\n\r");
+                SendOutput( player, "I'm going to have to charge you a little "
+                                    "extra for that though.\n\r");
+
+                GET_BANK(ch) = GET_BANK(ch) + (int)(1.05 * GET_GOLD(ch));
+
+                if (GET_BANK(ch) < 0) {
+                    GET_BANK(ch) = 0;
+                }
+                GET_GOLD(ch) = 0;
+                found = TRUE;
+            }
+        }
+
+        if (db_has_mail((char *) GET_NAME(ch))) {
+            SendOutput( player, "$c0013[$c0015The scribe$c0013] bespeaks you: "
+                                "'You have mail waiting!'");
+            ch->player.has_mail = TRUE;
+        }
+    }
+
+    if (found) {
+        /*
+         * Get the objects from the database
+         */
+        db_load_char_objects(ch);
+    } else {
+        /*
+         * Kiss goodbye to your objects, punk, you deadbeated.
+         */
+        db_clear_objects( ch->playerId, -1, 0 );
+    }
+
+    /*
+     * Save char, to avoid strange data if crashing 
+     */
+    save_char(ch, AUTO_RENT);
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

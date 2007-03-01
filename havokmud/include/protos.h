@@ -1394,9 +1394,7 @@ void            update_reimb_file(struct char_data *ch,
                                   struct obj_file_u *st);
 void            obj_store_to_char(struct char_data *ch,
                                   struct obj_file_u *st);
-void            load_char_objs(struct char_data *ch);
 int             reimb_char_objs(struct char_data *ch);
-int             contained_weight(struct obj_data *container);
 void            save_obj_reimb(struct char_data *ch);
 void            update_obj_file(void);
 void            CountLimitedItems(struct obj_file_u *st);

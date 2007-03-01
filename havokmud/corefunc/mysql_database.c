@@ -135,6 +135,8 @@ void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 
 
 QueryTable_t    QueryTable[] = {
@@ -316,12 +318,12 @@ QueryTable_t    QueryTable[] = {
       "`ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL, FALSE },
     /* 50 */
     { "SELECT `keyword`, `description` FROM `objectExtraDesc` WHERE "
-      "`vnum` = ? AND `ownerId` = ? AND `roomId` = ? AND `ownerItemId` = ? "
+      "`vnum` = ? AND `ownerId` = ? AND `roomId` = ? AND `ownedItemId` = ? "
       "ORDER BY `seqNum`", NULL, NULL, FALSE },
     /* 51 */
     { "SELECT `location`, `modifier` FROM `objectAffects` WHERE `vnum` = ? "
-      "AND `ownerId` = ? AND `ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL,
-      FALSE },
+      "AND `ownerId` = ? AND `roomId` = ? AND `ownedItemId` = ? "
+      "ORDER BY `seqNum`", NULL, NULL, FALSE },
     /* 52 */
     { "SELECT `vnum` FROM `objects` WHERE `ownerId` = 0 AND `roomId` = -1 AND "
       "ownedItemId = -1 ORDER BY `vnum`", chain_load_object_tree, NULL,
@@ -336,7 +338,7 @@ QueryTable_t    QueryTable[] = {
       FALSE },
     /* 55 */
     { "UPDATE `players` SET `gold` = ?, `totalCost` = ?, `minStay` = ?, "
-      "`lastUpdate` = NOW() WHERE `playerId` = ?", NULL, NULL, FALSE },
+      "`lastUpdate` = ? WHERE `playerId` = ?", NULL, NULL, FALSE },
     /* 56 */
     { "DELETE FROM `objects` WHERE `ownerId` = ? AND `roomId` = ? AND "
       "`ownedItemId` >= ?", NULL, NULL, FALSE },
@@ -358,9 +360,45 @@ QueryTable_t    QueryTable[] = {
     /* 61 */
     { "SELECT `index`, `alias` FROM `playerAliases` WHERE `playerId` = ? "
       "ORDER BY `seqNum`", NULL, NULL, FALSE },
+    /* 62 */
+    { "SELECT `gold`, `totalCost`, `minStay`, `lastUpdate` FROM `players` "
+      "WHERE `playerId` = ?", NULL, NULL, FALSE },
+    /* 63 */
+    { "DELETE FROM `objectAffects` WHERE `ownerId` = ? AND `roomId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
+    /* 64 */
+    { "DELETE FROM `objectExtraDesc` WHERE `ownerId` = ? AND `roomId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
+    /* 65 */
+    { "DELETE FROM `objectFlags` WHERE `ownerId` = ? AND `roomId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
+    /* 66 */
+    { "DELETE FROM `objectKeywords` WHERE `ownerId` = ? AND `roomId` = ? AND "
+      "`ownedItemId` = ? AND `seqNum` >= ?", NULL, NULL, FALSE },
+    /* 67 */
+    { "SELECT `vnum, `ownedItemId`, `shortDescription`, `description`, "
+      "`actionDescription`, `modBy`, `itemType`, `value0`, `value1`, "
+      "`value2`, `value3`, `weight`, `cost`, " "`costPerDay`, `level`, "
+      "`max`, UNIX_TIMESTAMP(`modified`), `speed`, `weaponType`, `tweak`, "
+      "`wearPos` FROM `objects` WHERE `ownerId` = ? AND `roomId` = -1 AND "
+      "`inOwnedItemId` = ?", NULL, NULL, FALSE },
+    /* 68 */
+    { "SELECT `keyword` FROM `objectKeywords` WHERE `ownerId` = ? AND "
+      "`roomId` = -1 AND `ownedItemId` = ? ORDER BY `seqNum`", NULL, NULL, 
+      FALSE },
+    /* 69 */
+    { "SELECT `flagTypeId`, `index`, `value` FROM `objectFlags` " 
+      "WHERE `ownerId` = ? AND `roomId` = -1 AND `ownedItemId` = ? "
+      "ORDER BY `seqNum`", NULL, NULL, FALSE },
+    /* 70 */
+    { "SELECT `keyword`, `description` FROM `objectExtraDesc` WHERE "
+      "`ownerId` = ? AND `roomId` = -1 AND `ownedItemId` = ? "
+      "ORDER BY `seqNum`", NULL, NULL, FALSE },
+    /* 71 */
+    { "SELECT `location`, `modifier` FROM `objectAffects` WHERE "
+      "`ownerId` = ? AND `roomId` = -1 AND `ownedItemId` = ? ORDER BY `seqNum`",
+      NULL, NULL, FALSE },
     { NULL, NULL, NULL, FALSE }
-
-
 };
 
 struct obj_flag_bits {
@@ -1665,20 +1703,22 @@ void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay )
 {
     MYSQL_BIND         *data;
 
-    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
-    memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], gold, MYSQL_TYPE_LONG );
     bind_numeric( &data[1], rentCost, MYSQL_TYPE_LONG );
     bind_numeric( &data[2], minStay, MYSQL_TYPE_LONG );
-    bind_numeric( &data[3], ownerId, MYSQL_TYPE_LONG );
-    db_queue_query( 55, QueryTable, data, 4, NULL, NULL, NULL );
+    bind_numeric( &data[3], time(0), MYSQL_TYPE_LONG );
+    bind_numeric( &data[4], ownerId, MYSQL_TYPE_LONG );
+    db_queue_query( 55, QueryTable, data, 5, NULL, NULL, NULL );
 }
 
 void db_clear_objects( int ownerId, int room, int itemNum )
 {
     MYSQL_BIND         *data;
 
+    /* Clear the objects */
     data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
@@ -1686,6 +1726,42 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
     bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
     db_queue_query( 56, QueryTable, data, 3, NULL, NULL, NULL );
+    
+    /* Clear the affects */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
+    db_queue_query( 63, QueryTable, data, 3, NULL, NULL, NULL );
+    
+    /* Clear the extra descriptions */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
+    db_queue_query( 64, QueryTable, data, 3, NULL, NULL, NULL );
+    
+    /* Clear the flags */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
+    db_queue_query( 65, QueryTable, data, 3, NULL, NULL, NULL );
+    
+    /* Clear the keywords */
+    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
+    bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
+    db_queue_query( 66, QueryTable, data, 3, NULL, NULL, NULL );
 }
 
 void db_write_char_extra(struct char_data *ch)
@@ -1748,7 +1824,7 @@ void db_write_char_extra(struct char_data *ch)
 
 void db_load_char_extra(struct char_data *ch)
 {
-    MYSQL_BIND     *data;
+    MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
     mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
@@ -1771,6 +1847,149 @@ void db_load_char_extra(struct char_data *ch)
     free( mutex );
 }
 
+typedef struct {
+    int        *gold;
+    int        *rentCost;
+    int        *minStay;
+    int        *lastUpdate;
+} GetCharRentArgs_t;
+
+void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
+                       int *lastUpdate )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    GetCharRentArgs_t   args;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
+
+    args.gold       = gold;
+    args.rentCost   = rentCost;
+    args.minStay    = minStay;
+    args.lastUpdate = lastUpdate;
+
+    db_queue_query( 62, QueryTable, data, 1, result_get_char_rent, &args, 
+                    mutex );
+
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+}
+
+struct _LoadCharObjsArgs_t;
+typedef struct _LoadCharObjsArgs_t {
+    int    *parentNum;
+    struct obj_data **parentObj;
+    int     count;
+    int     i;
+    struct _LoadCharObjsArgs_t *prev;
+    struct char_data *ch;
+} LoadCharObjsArgs_t;
+
+void db_load_char_objects( struct char_data *ch )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    volatile LoadCharObjsArgs_t *args;
+    LoadCharObjsArgs_t *keep;
+    LoadCharObjsArgs_t *prev;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    CREATE(args, LoadCharObjsArgs_t, 1);
+    CREATE(args->parentNum, int, 1);
+    CREATE(args->parentObj, struct obj_data *, 1);
+    args->count  = 1;
+    args->i = 0;
+    args->parentNum[0] = -1;
+    args->parentObj[0] = NULL;
+    args->prev = NULL;
+    args->ch = ch;
+
+    while( args ) {
+        for( ; args->i < args->count; args->i++ ) {
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], args->parentNum[args->i], MYSQL_TYPE_LONG );
+
+            /*
+             * Note, this will actually modify args by creating a new one, and
+             * pushing it onto the stack, keep the orig args so we can finish
+             * loading it before "recursing" into items
+             */
+            keep = (LoadCharObjsArgs_t *)args;
+            db_queue_query( 67, QueryTable, data, 2, 
+                            result_load_char_objects_1, &args, mutex );
+            pthread_mutex_unlock( mutex );
+
+            if( keep->parentNum[keep->i] == -1 ) {
+                /* There is no "null" object to load the rest of the data for */
+                continue;
+            }
+
+            /* Get the Keywords */
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], keep->parentNum[keep->i], MYSQL_TYPE_LONG );
+            db_queue_query( 68, QueryTable, data, 2, result_read_object_2, 
+                            &keep->parentObj[keep->i], mutex );
+            pthread_mutex_unlock( mutex );
+
+            /* Get the Flags */
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], keep->parentNum[keep->i], MYSQL_TYPE_LONG );
+            db_queue_query( 69, QueryTable, data, 2, result_read_object_3, 
+                            &keep->parentObj[keep->i], mutex );
+            pthread_mutex_unlock( mutex );
+
+            /* Get the Extra Descriptions */
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], keep->parentNum[keep->i], MYSQL_TYPE_LONG );
+            db_queue_query( 70, QueryTable, data, 2, result_read_object_4, 
+                            &keep->parentObj[keep->i], mutex );
+            pthread_mutex_unlock( mutex );
+
+            /* Get the Affects */
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], keep->parentNum[keep->i], MYSQL_TYPE_LONG );
+            db_queue_query( 71, QueryTable, data, 2, result_read_object_5, 
+                            &keep->parentObj[keep->i], mutex );
+            pthread_mutex_unlock( mutex );
+        }
+
+        /*
+         * We finished that bunch, pop the stack and delete this one
+         */
+        prev = args->prev;
+        free( args->parentNum );
+        free( args->parentObj );
+        free( (void *)args );
+        args = prev;
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+}
 
 /*
  * Query chaining functions
@@ -3205,6 +3424,91 @@ void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         sprintf(temp, "%s %s", row[0], row[1] );
         do_alias(ch, temp, 260);
     }
+}
+
+void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    MYSQL_ROW           row;
+    GetCharRentArgs_t  *args;
+
+    args = (GetCharRentArgs_t *)arg;
+    if( !args || !res || !mysql_num_rows(res) ) {
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+    *args->gold       = atoi(row[0]);
+    *args->rentCost   = atoi(row[1]);
+    *args->minStay    = atoi(row[2]);
+    *args->lastUpdate = atoi(row[3]);
+}
+
+void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    MYSQL_ROW           row;
+    LoadCharObjsArgs_t **argPoint;
+    LoadCharObjsArgs_t *args;
+    LoadCharObjsArgs_t *newargs;
+    struct obj_data    *obj;
+    int                 count;
+    struct char_data   *ch;
+    int                 i;
+
+    argPoint = (LoadCharObjsArgs_t **)arg;
+    args = *argPoint;
+
+    if( !args || !args->ch || !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    ch = args->ch;
+
+    CREATE(newargs, LoadCharObjsArgs_t, 1);
+    CREATE(newargs->parentNum, int, count);
+    CREATE(newargs->parentObj, struct obj_data *, count);
+    newargs->count = count;
+    newargs->i = 0;
+    newargs->prev = args;
+    newargs->ch = ch;
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        CREATE(obj, struct obj_data, 1);
+
+        obj->item_number            = atoi(row[0]);
+        newargs->parentNum[i]       = atoi(row[1]);
+        obj->short_description      = strdup(row[2]);
+        obj->description            = strdup(row[3]);
+        obj->action_description     = strdup(row[4]);
+        obj->modBy                  = strdup(row[5]);
+        obj->type_flag              = atoi(row[6]);
+        obj->value[0]               = atoi(row[7]);
+        obj->value[1]               = atoi(row[8]);
+        obj->value[2]               = atoi(row[9]);
+        obj->value[3]               = atoi(row[10]);
+        obj->weight                 = atoi(row[11]);
+        obj->cost                   = atoi(row[12]);
+        obj->cost_per_day           = atoi(row[13]);
+        obj->level                  = atoi(row[14]);
+        obj->max                    = atoi(row[15]);
+        obj->modified               = atol(row[16]); 
+        obj->speed                  = atoi(row[17]);
+        obj->weapontype             = atoi(row[18]) - 1;
+        obj->tweak                  = atoi(row[19]);
+        obj->eq_pos                 = atoi(row[20]);
+        newargs->parentObj[i] = obj;
+
+        if( obj->eq_pos != -1 ) {
+            equip_char(ch, obj, obj->eq_pos );
+        } else if( args->parentObj[args->i] ) {
+            objectPutInObject( obj, args->parentObj[args->i] );
+        } else {
+            objectGiveToChar( obj, ch );
+        }
+    }
+
+    *argPoint = newargs;
 }
 
 /*

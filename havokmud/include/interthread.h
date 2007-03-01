@@ -265,6 +265,9 @@ void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay );
 void db_clear_objects( int ownerId, int room, int itemNum );
 void db_write_char_extra( struct char_data *ch );
 void db_load_char_extra( struct char_data *ch );
+void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
+                       int *lastUpdate );
+void db_load_char_objects( struct char_data *ch );
 
 /*
  * obj_data.c
@@ -286,12 +289,15 @@ void objectPutInRoom(struct obj_data *object, long room);
 void obj_to_room2(struct obj_data *object, long room);
 void objectTakeFromRoom(struct obj_data *object);
 void save_obj(struct char_data *ch, struct obj_cost *cost, int delete);
+void load_char_objs(struct char_data *ch);
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);
 bool HasBitsInventory(struct char_data *ch, int bits, int offset);
 bool HasBits(struct char_data *ch, int bits, int offset);
 bool HasExtraBits(struct char_data *ch, int bits);
+
+void PrintLimitedItems(void);
 
 /*
  * keywords.c
