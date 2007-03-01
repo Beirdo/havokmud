@@ -499,7 +499,6 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
             act("$n helps $N into $S private chamber.", FALSE, recep, 0,
                 ch, TO_NOTVICT);
             ch->old_exp = 0;
-            save_obj_reimb(ch);
             save_obj(ch, &cost, 1);
             save_room = ch->in_room;
 

@@ -1700,6 +1700,10 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
  * @Author:         Rick Peplinski (Talesian) 
  * @Assigned to:    obj(37821) 
  */
+
+/**
+ * @todo redo as we have no reimb support any more
+ */
 int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
                        struct obj_data *obj, int type)
 {
@@ -1775,6 +1779,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     GET_RINT(mob) = GET_RINT(ch);
     GET_RCHR(mob) = GET_RCHR(ch);
 
+#ifdef REIMB
     sprintf(buf1, "reimb/%s", lower(ch->player.name));
     if (!(fl = fopen(buf1, "r+b"))) {
         act("The figure looks around, and promptly disappears!", TRUE, mob,
@@ -1803,6 +1808,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     }
 
     obj_store_to_char(mob, &st);
+#endif
 
     while (mob->carrying) {
         objectExtract(mob->carrying);

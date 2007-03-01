@@ -752,7 +752,9 @@ CommandDef_t coreCommands[] = {
     { "flowerfist", do_flowerfist, 601, POSITION_FIGHTING, 1 },
     { "sharpen", do_sharpen, 602, POSITION_RESTING, 1 },
     { "eval", do_eval, 603, POSITION_STANDING, 53 },
+#ifdef REIMB
     { "reimburse", do_reimb, 604, POSITION_STANDING, 53 },
+#endif
     { "remort", do_not_here, 605, POSITION_STANDING, 50 },
     { "affects", do_attribute, 606, POSITION_DEAD, 1 },
 /*

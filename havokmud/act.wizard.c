@@ -7816,44 +7816,6 @@ int eval(struct obj_data *object)
     return total;
 }
 
-void do_reimb(struct char_data *ch, char *argument, int cmd)
-{
-    char          *arg;
-    struct char_data *victim;
-
-    dlog("in do_reimb");
-
-    if (IS_NPC(ch)) {
-        return;
-    }
-
-    argument = get_argument(argument, &arg);
-    if (!arg) {
-        send_to_char("Usage: reimb <player name>\n\r", ch);
-        return;
-    }
-
-    if (!(victim = get_char(arg))) {
-        send_to_char("Who didya want to reimburse?\n\r", ch);
-        return;
-    }
-
-    if (IS_NPC(victim)) {
-        send_to_char("Hah, reimburse mobs? Better make em return to character"
-                     " form first!\n\r", ch);
-        return;
-    }
-
-    if (reimb_char_objs(victim)) {
-        Log("%s just granted %s a reimbursement", GET_NAME(ch),
-            GET_NAME(victim));
-
-        oldSendOutput(ch, "You reimbursed %s, resetting his gold and equipment to "
-                      "the point when they last rented.\n\r", GET_NAME(victim));
-        oldSendOutput(victim, "You have been fully reimbursed by %s.\n\r",
-                          GET_NAME(ch));
-    }
-}
 
 
 /*

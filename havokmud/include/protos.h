@@ -1390,12 +1390,6 @@ bool            recep_offer(struct char_data *ch,
                             struct char_data *receptionist,
                             struct obj_cost *cost, int forcerent);
 
-void            update_reimb_file(struct char_data *ch,
-                                  struct obj_file_u *st);
-void            obj_store_to_char(struct char_data *ch,
-                                  struct obj_file_u *st);
-int             reimb_char_objs(struct char_data *ch);
-void            save_obj_reimb(struct char_data *ch);
 void            update_obj_file(void);
 void            CountLimitedItems(struct obj_file_u *st);
 void            PrintLimitedItems(void);
@@ -3427,7 +3421,6 @@ void            spell_blade_barrier(int level, struct char_data *ch,
                                     struct obj_data *obj);
 
 void            do_eval(struct char_data *ch, char *arg, int cmd);
-void            do_reimb(struct char_data *ch, char *argument, int cmd);
 void            do_chtextfile(struct char_data *ch, char *argument,
                               int cmd);
 void            TfdEdit(struct char_data *ch, char *arg);
