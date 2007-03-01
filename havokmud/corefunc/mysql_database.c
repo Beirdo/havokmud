@@ -133,6 +133,8 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 
 
 QueryTable_t    QueryTable[] = {
@@ -338,6 +340,24 @@ QueryTable_t    QueryTable[] = {
     /* 56 */
     { "DELETE FROM `objects` WHERE `ownerId` = ? AND `roomId` = ? AND "
       "`ownedItemId` >= ?", NULL, NULL, FALSE },
+    /* 57 */
+    { "UPDATE `players` SET `bamfin` = ?, `bamfout` = ?, `setsev` = ?, "
+      "`invisLevel` = ?, `editZone` = ?, `prompt` = ?, `battlePrompt` = ?, "
+      "`email` = ?, `clan` = ?, `hostIp` = ?, `rumor` = ? WHERE `playerId` = ?",
+      NULL, NULL, FALSE },
+    /* 58 */
+    { "REPLACE INTO `playerAliases` (`playerId`, `seqNum`, `index`, "
+      "`alias`) VALUES ( ?, ?, ?, ? )", NULL, NULL, FALSE },
+    /* 59 */
+    { "DELETE FROM `playerAliases` WHERE `playerId` = ? AND `seqNum` >= ?",
+      NULL, NULL, FALSE },
+    /* 60 */
+    { "SELECT `bamfout`, `bamfin`, `editZone`, `prompt`, `battlePrompt`, "
+      "`email`, `clan`, `hostIp`, `rumor`, `setsev`, `invisLevel` FROM "
+      "`players` WHERE `playerId` = ?", NULL, NULL, FALSE },
+    /* 61 */
+    { "SELECT `index`, `alias` FROM `playerAliases` WHERE `playerId` = ? "
+      "ORDER BY `seqNum`", NULL, NULL, FALSE },
     { NULL, NULL, NULL, FALSE }
 
 
@@ -1667,6 +1687,90 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
     db_queue_query( 56, QueryTable, data, 3, NULL, NULL, NULL );
 }
+
+void db_write_char_extra(struct char_data *ch)
+{
+    MYSQL_BIND     *data;
+    int             i;
+    int             seq;
+
+    data = (MYSQL_BIND *)malloc(12 * sizeof(MYSQL_BIND));
+    memset( data, 0, 12 * sizeof(MYSQL_BIND) );
+
+    if (IS_IMMORTAL(ch)) {
+        bind_string( &data[0], ch->specials.poofin, MYSQL_TYPE_VAR_STRING );
+        bind_string( &data[1], ch->specials.poofout, MYSQL_TYPE_VAR_STRING );
+        bind_numeric( &data[2], ch->specials.sev, MYSQL_TYPE_LONG );
+        bind_numeric( &data[3], ch->invis_level, MYSQL_TYPE_LONG );
+        bind_numeric( &data[4], GET_ZONE(ch), MYSQL_TYPE_LONG );
+    } else {
+        bind_string( &data[0], NULL, MYSQL_TYPE_VAR_STRING );
+        bind_string( &data[1], NULL, MYSQL_TYPE_VAR_STRING );
+        bind_numeric( &data[2], 0, MYSQL_TYPE_LONG );
+        bind_numeric( &data[3], 0, MYSQL_TYPE_LONG );
+        bind_numeric( &data[4], 0, MYSQL_TYPE_LONG );
+    }
+
+    bind_string( &data[5], ch->specials.prompt, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[6], ch->specials.bprompt, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[7], ch->specials.email, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[8], ch->specials.clan, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[9], ch->specials.hostip, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[10], ch->specials.rumor, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[11], ch->playerId, MYSQL_TYPE_LONG );
+    db_queue_query( 57, QueryTable, data, 12, NULL, NULL, NULL );
+
+    seq = 1;
+    if (ch->specials.A_list) {
+        for (i = 0; i < 10; i++) {
+            if (GET_ALIAS(ch, i)) {
+                data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+                memset( data, 0, 4 * sizeof(MYSQL_BIND) );
+
+                bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+                bind_numeric( &data[1], seq, MYSQL_TYPE_LONG );
+                bind_numeric( &data[2], i, MYSQL_TYPE_LONG );
+                bind_string( &data[3], GET_ALIAS(ch, i), MYSQL_TYPE_VAR_STRING);
+                db_queue_query( 58, QueryTable, data, 4, NULL, NULL, NULL );
+                seq++;
+            }
+        }
+    }
+
+    /* Clean up remaining aliases */
+    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+    bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], seq, MYSQL_TYPE_LONG );
+    db_queue_query( 59, QueryTable, data, 2, NULL, NULL, NULL );
+}
+
+void db_load_char_extra(struct char_data *ch)
+{
+    MYSQL_BIND     *data;
+    pthread_mutex_t    *mutex;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+    bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+    db_queue_query( 60, QueryTable, data, 1, result_load_char_extra_1, ch, 
+                    mutex );
+
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+    bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
+    db_queue_query( 61, QueryTable, data, 1, result_load_char_extra_2, ch, 
+                    mutex );
+
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+}
+
 
 /*
  * Query chaining functions
@@ -3040,6 +3144,66 @@ void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
         index->keywords.words[i] = strdup(row[0]);
         index->keywords.length[i] = strlen(row[0]);
+    }
+}
+
+
+void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    MYSQL_ROW           row;
+    struct char_data   *ch;
+    char                temp[400];
+
+    ch = (struct char_data *)arg;
+    if( !ch || !res || !mysql_num_rows(res) ) {
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+
+    do_bamfout(ch, row[0], 0);
+    do_bamfin(ch, row[1], 0);
+    GET_ZONE(ch) = atoi(row[2]);
+    do_set_prompt(ch, row[3], 0);
+    do_set_bprompt(ch, row[4], 0);
+    if( row[5] ) {
+        sprintf(temp, "email %s", row[5]);
+        do_set_flags(ch, temp, 0);
+    }
+
+    if( row[6] ) {
+        sprintf(temp, "clan %s", row[6]);
+        do_set_flags(ch, temp, 0);
+    }
+
+    ch->specials.hostip = strdup(row[7]);
+
+    if( row[8] ) {
+        ch->specials.rumor = strdup(row[8]);
+    }
+
+    do_setsev(ch, row[9], 0);
+    do_invis(ch, row[10], 242);       
+}
+
+void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    MYSQL_ROW           row;
+    struct char_data   *ch;
+    int                 count;
+    int                 i;
+    char                temp[400];
+
+    ch = (struct char_data *)arg;
+    if( !ch || !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        sprintf(temp, "%s %s", row[0], row[1] );
+        do_alias(ch, temp, 260);
     }
 }
 

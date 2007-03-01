@@ -457,7 +457,7 @@ void do_save(struct char_data *ch, char *argument, int cmd)
          */
         save_char(ch, AUTO_RENT);
 
-        write_char_extra(ch);
+        db_write_char_extra(ch);
         tmp->carrying = tl;
         for (i = 0; i < MAX_WEAR; i++) {
             tmp->equipment[i] = teq[i];
@@ -2694,7 +2694,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
             ch->specials.email = strdup("None");
             if (cmd) {
-                write_char_extra(ch);
+                db_write_char_extra(ch);
                 send_to_char("Email address disabled.\n\r", ch);
             }
             return;
@@ -2717,7 +2717,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 
         ch->specials.email = strdup(field);
         if (cmd) {
-            write_char_extra(ch);
+            db_write_char_extra(ch);
             send_to_char("Email address set.\n\r", ch);
         }
     } else {
@@ -2754,7 +2754,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          */
         temp = finger;
         store_to_char(&tmp_store, finger);
-        load_char_extra(finger);
+        db_load_char_extra(finger);
         /*
          * Load Clan and email fields
          */

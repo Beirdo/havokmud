@@ -1042,7 +1042,7 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
     /*
      * write the aliases and bamfs 
      */
-    write_char_extra(ch);
+    db_write_char_extra(ch);
 }
 
 /**

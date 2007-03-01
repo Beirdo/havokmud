@@ -1106,6 +1106,7 @@ struct char_special_data {
     char           *poofout;
     char           *prompt;
     char           *bprompt;
+    char           *clan;
     char           *email;      /* email address in aux */
     char           *immtitle;
 

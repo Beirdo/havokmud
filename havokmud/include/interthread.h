@@ -263,6 +263,8 @@ int db_find_object_named(char *string, int owner, int ownerItem);
 void db_load_object_tree( BalancedBTree_t *tree );
 void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay );
 void db_clear_objects( int ownerId, int room, int itemNum );
+void db_write_char_extra( struct char_data *ch );
+void db_load_char_extra( struct char_data *ch );
 
 /*
  * obj_data.c

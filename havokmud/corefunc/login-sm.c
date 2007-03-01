@@ -892,7 +892,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                             strdup((char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
 
-                write_char_extra(ch);
+                db_write_char_extra(ch);
                 EnterState(player, STATE_PLAYING);
                 if( IS_IMMORTAL(ch) ) {
                     player->handlingQ = InputImmortQ;
@@ -903,7 +903,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             }
         }
 
-        load_char_extra(ch);
+        db_load_char_extra(ch);
         if (ch->specials.hostip == NULL) {
             if (!IS_IMMORTAL(ch) ||
                 ch->invis_level <= 58) {
@@ -930,7 +930,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         ProtectedDataUnlock(player->connection->hostName);
         ch->last_tell = NULL;
 
-        write_char_extra(ch);
+        db_write_char_extra(ch);
         EnterState(player, STATE_SHOW_MOTD);
         break;
 

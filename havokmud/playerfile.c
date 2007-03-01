@@ -48,7 +48,7 @@ void update_reimb_file(struct char_data *ch, struct obj_file_u *st)
      * write the aliases and bamfs: 
      */
 
-    write_char_extra(ch);
+    db_write_char_extra(ch);
     sprintf(buf, "reimb/%s", lower(ch->player.name));
 
     if (!(fl = fopen(buf, "w"))) {
@@ -171,7 +171,7 @@ void load_char_objs(struct char_data *ch)
     /*
      * load in aliases and poofs first 
      */
-    load_char_extra(ch);
+    db_load_char_extra(ch);
     sprintf(tbuf, "rent/%s", lower(ch->player.name));
 
     /*
@@ -299,7 +299,7 @@ int reimb_char_objs(struct char_data *ch)
      * load in aliases and poofs first 
      */
 #if 0    
-    load_char_extra(ch);
+    db_load_char_extra(ch);
 #endif
     sprintf(tbuf, "reimb/%s", lower(ch->player.name));
 
@@ -679,211 +679,6 @@ void WriteObjs(FILE * fl, struct obj_file_u *st)
     }
 }
 
-void load_char_extra(struct char_data *ch)
-{
-    FILE           *fp;
-    char            buf[80];
-    char            line[260];
-    char            tmp[260];
-    char            tmp2[256];
-    char           *p,
-                   *s,
-                   *chk;
-    int             n;
-
-    sprintf(buf, "rent/%s.aux", GET_NAME(ch));
-
-    /*
-     * open the file.. read in the lines, use them as the aliases and
-     * poofin and outs, depending on tags:
-     * 
-     * format:
-     * 
-     * <id>:string
-     * 
-     */
-
-    if ((fp = fopen(buf, "r")) == '\0') {
-        /* 
-         * nothing to look at 
-         */
-        return;
-    }
-
-    while (!feof(fp)) {
-        chk = fgets(line, 260, fp);
-
-        if (chk) {
-            p = (char *) strtok(line, ":");
-            s = (char *) strtok(NULL, "\0");
-
-            if( s ) {
-                /* eat leading spaces and trailing carriage return/linefeed */
-                s = skip_spaces(s);
-                if( s ) {
-                    while(strchr(s, '\n')) {
-                        *(strchr(s, '\n')) = '\0';
-                    }
-
-                    while(strchr(s, '\r')) {
-                        *(strchr(s, '\r')) = '\0';
-                    }
-                }
-            }
-
-            if (p) {
-                if (!strcmp(p, "out")) {
-                    /* 
-                     * setup bamfout 
-                     */
-                    do_bamfout(ch, s, 0);
-                } else if (!strcmp(p, "in")) {
-                    /* 
-                     * setup bamfin 
-                     */
-                    do_bamfin(ch, s, 0);
-                } else if (!strcmp(p, "zone")) {
-                    /* 
-                     * set zone permisions 
-                     */
-                    GET_ZONE(ch) = atoi(s);
-                } else if (!strcmp(p, "bprompt")) {
-                    /* 
-                     * set upbattleprompt 
-                     */
-                    do_set_bprompt(ch, s, 0);
-                } else if (!strcmp(p, "email")) {
-                    /* 
-                     * set up email finger info 
-                     */
-                    sprintf(tmp, "email %s", s);
-                    do_set_flags(ch, tmp, 0);
-                } else if (!strcmp(p, "clan")) {
-                    /* 
-                     * Clan info 
-                     */
-                    sprintf(tmp2, "clan %s", s);
-                    do_set_flags(ch, tmp2, 0);
-                } else if (!strcmp(p, "hostip")) {
-                    /* 
-                     * hostIP 
-                     */
-                    ch->specials.hostip = strdup(s);
-                } else if (!strcmp(p, "rumored")) {
-                    /* 
-                     * Clan info 
-                     */
-#if 0                    
-                    ch->specials.rumor = s;
-                    strdup(s);
-#endif                
-                } else
-                 if (!strcmp(p, "setsev")) {
-                     /* 
-                      * setup severity level 
-                      */
-                    do_setsev(ch, s, 0);
-                } else
-                    if (!strcmp(p, "invislev") && GetMaxLevel(ch) > MAX_MORT) {
-                    /* 
-                     * setup wizinvis level 
-                     */
-                    do_invis(ch, s, 242);       
-                } else if (!strcmp(p, "prompt")) {
-                    /* 
-                     * setup prompt 
-                     */
-                    do_set_prompt(ch, s, 0);
-                } else if (s) {
-                    n = atoi(p);
-
-                    if (n >= 0 && n <= 9) { 
-                        /* 
-                         * set up alias 
-                         */
-                        sprintf(tmp, "%d %s", n, s);
-                        do_alias(ch, tmp, 260);
-                    }
-                }
-            }
-        }
-    }
-    fclose(fp);
-}
-
-void write_char_extra(struct char_data *ch)
-{
-    FILE           *fp;
-    char            buf[80];
-    int             i;
-
-    sprintf(buf, "rent/%s.aux", GET_NAME(ch));
-
-    /*
-     * open the file.. read in the lines, use them as the aliases and
-     * poofin and outs, depending on tags:
-     * 
-     * format:
-     * 
-     * <id>:string
-     * 
-     */
-
-    if ((fp = fopen(buf, "w")) == NULL) {
-        return;                 
-        /* 
-         * nothing to write 
-         */
-    }
-
-    if (IS_IMMORTAL(ch)) {
-        if (ch->specials.poofin) {
-            fprintf(fp, "in: %s\n", ch->specials.poofin);
-        }
-        if (ch->specials.poofout) {
-            fprintf(fp, "out: %s\n", ch->specials.poofout);
-        }
-
-        if (ch->specials.sev) {
-            fprintf(fp, "setsev: %d\n", ch->specials.sev);
-        }
-        if (ch->invis_level) {
-            fprintf(fp, "invislev: %d\n", ch->invis_level);
-        }
-        fprintf(fp, "zone: %d\n", GET_ZONE(ch));
-    }
-    if (ch->specials.prompt) {
-        fprintf(fp, "prompt: %s\n", ch->specials.prompt);
-    }
-    if (ch->specials.email) {
-        fprintf(fp, "email: %s\n", ch->specials.email);
-    }
-    if (ch->specials.bprompt) {
-        fprintf(fp, "bprompt: %s\n", ch->specials.bprompt);
-    }
-
-    if (ch->specials.clan) {
-        fprintf(fp, "clan: %s\n", ch->specials.clan);
-    }
-    if (ch->specials.hostip) {
-        fprintf(fp, "hostip: %s\n", ch->specials.hostip);
-    }
-
-    if (ch->specials.rumor) {
-#if 0        
-        fprintf(fp, "rumor: %s\n",ch->specials.rumor);
-#endif    
-    }
-
-    if (ch->specials.A_list) {
-        for (i = 0; i < 10; i++) {
-            if (GET_ALIAS(ch, i)) {
-                fprintf(fp, "%d: %s\n", i, GET_ALIAS(ch, i));
-            }
-        }
-    }
-    fclose(fp);
-}
 
 void obj_store_to_room(int room, struct obj_file_u *st)
 {

@@ -6214,13 +6214,13 @@ void do_wizset(struct char_data *ch, char *argument, int cmd)
                 free(ch->specials.immtitle);
             }
             ch->specials.immtitle = strdup(temp);
-            write_char_extra(ch);
+            db_write_char_extra(ch);
             send_to_char("Immort title Field set.\n\r", ch);
         } else {
             if (ch->specials.immtitle) {
                 free(ch->specials.immtitle);
             }
-            write_char_extra(ch);
+            db_write_char_extra(ch);
             send_to_char("Immort title removed.\n\r", ch);
         }
     } else if (!strcmp("home", flag)) {

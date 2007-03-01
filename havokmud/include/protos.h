@@ -1405,8 +1405,6 @@ int             receptionist(struct char_data *ch, int cmd, char *arg,
                              struct char_data *mob, int type);
 void            zero_rent(struct char_data *ch);
 void            ZeroRent(char *n);
-void            load_char_extra(struct char_data *ch);
-void            write_char_extra(struct char_data *ch);
 void            obj_store_to_room(int room, struct obj_file_u *st);
 void            load_room_objs(int room);
 void            save_room(int room);
