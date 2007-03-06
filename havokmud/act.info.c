@@ -1458,7 +1458,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     struct room_data *tmprp;
     struct room_data *rp;
     struct room_data *inroom;
-    Keyword_t      *secret;
+    Keywords_t     *secret;
     char           *temp;
     static char    *keywords[] = {
         "north",

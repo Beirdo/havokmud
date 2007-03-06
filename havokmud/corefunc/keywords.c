@@ -45,7 +45,7 @@ static char ident[] _UNUSED_ =
 
 /**
  * @file
- * @brief Deals with Keyword_t objects
+ * @brief Deals with Keywords_t objects
  */
 
 
