@@ -463,23 +463,17 @@ void do_save(struct char_data *ch, char *argument, int cmd)
             tmp->equipment[i] = teq[i];
             if (ch->equipment[i] && ch->equipment[i]->in_room != -1) {
                 o = ch->equipment[i];
-                ch->equipment[i] = 0;
+                ch->equipment[i] = NULL;
                 objectTakeFromRoom(o);
-#if 0
-                objectGiveToChar(o, ch);
-#endif
                 equip_char(ch, o, i);
-                /*
-                 * equip the correct slot
-                 */
             }
         }
         return;
-    } else {
-        recep_offer(ch, NULL, &cost, FALSE);
-        save_obj(ch, &cost, 0);
-        save_char(ch, AUTO_RENT);
-    }
+    } 
+    
+    recep_offer(ch, NULL, &cost, FALSE);
+    save_obj(ch, &cost, 0);
+    save_char(ch, AUTO_RENT);
 }
 
 void do_not_here(struct char_data *ch, char *argument, int cmd)
@@ -536,69 +530,6 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
     send_to_char("You can only practice at your guildmaster, use \"skills "
                  "class\" to list\n\r"
                  "your skills\n\r", ch );
-}
-
-void do_idea(struct char_data *ch, char *argument, int cmd)
-{
-    dlog("in do_idea");
-
-    if (IS_NPC(ch)) {
-        send_to_char("Monsters can't have ideas - Go away.\n\r", ch);
-        return;
-    }
-
-    argument = skip_spaces(argument);
-    if (!argument) {
-        send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
-                     ch);
-        return;
-    }
-
-    db_report_entry( REPORT_IDEA, ch, argument );
-
-    send_to_char("Ok. Thanks.\n\r", ch);
-}
-
-void do_typo(struct char_data *ch, char *argument, int cmd)
-{
-    dlog("in do_typo");
-
-    if (IS_NPC(ch)) {
-        send_to_char("Monsters can't spell - leave me alone.\n\r", ch);
-        return;
-    }
-
-    argument = skip_spaces(argument);
-    if (!argument) {
-        send_to_char("I beg your pardon?\n\r", ch);
-        return;
-    }
-
-    db_report_entry( REPORT_TYPO, ch, argument );
-
-    send_to_char("Ok. thanks.\n\r", ch);
-}
-
-void do_bug(struct char_data *ch, char *argument, int cmd)
-{
-    dlog("in do_bug");
-
-    if (IS_NPC(ch)) {
-        send_to_char("You are a monster! Bug off!\n\r", ch);
-        return;
-    }
-
-    argument = skip_spaces(argument);
-    if (!argument) {
-        send_to_char("Pardon?\n\r", ch);
-        return;
-    }
-
-    db_report_entry( REPORT_BUG, ch, argument );
-
-    Log("BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room, argument);
-
-    send_to_char("Ok.\n\r", ch);
 }
 
 void do_brief(struct char_data *ch, char *argument, int cmd)

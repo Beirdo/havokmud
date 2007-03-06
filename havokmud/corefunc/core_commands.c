@@ -142,10 +142,10 @@ CommandDef_t coreCommands[] = {
 
 #endif
     { "shutdown", do_shutdown, 79, POSITION_DEAD, SILLYLORD },
-#if 0
     { "idea", do_idea, 80, POSITION_DEAD, 0 },
     { "typo", do_typo, 81, POSITION_DEAD, 0 },
     { "bug", do_bug, 82, POSITION_DEAD, 0 },
+#if 0
     { "whisper", do_whisper, 83, POSITION_RESTING, 0 },
     { "cast", do_cast, 84, POSITION_SITTING, 1 },
     { "at", do_at, 85, POSITION_DEAD, 51 },
@@ -992,6 +992,82 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
     } else {
         SendOutput(player, "Go shut down someone your own size.\n\r");
     }
+}
+
+void do_idea(struct char_data *ch, char *argument, int cmd)
+{
+    PlayerStruct_t     *player; 
+
+    if( !ch || !(player = (PlayerStruct_t *)ch->playerDesc) ) {
+        return;
+    }
+
+    if (IS_NPC(ch)) {
+        SendOutput( player, "Monsters can't have ideas - Go away.\n\r" );
+        return;
+    }
+
+    argument = skip_spaces(argument);
+    if (!argument) {
+        SendOutput( player, "That doesn't sound like a good idea to me.. "
+                            "Sorry.\n\r" );
+        return;
+    }
+
+    db_report_entry( REPORT_IDEA, ch, argument );
+
+    SendOutput( player, "Ok. Thanks.\n\r" );
+}
+
+void do_typo(struct char_data *ch, char *argument, int cmd)
+{
+    PlayerStruct_t     *player; 
+
+    if( !ch || !(player = (PlayerStruct_t *)ch->playerDesc) ) {
+        return;
+    }
+
+    if (IS_NPC(ch)) {
+        SendOutput( player, "Monsters can't spell - leave me alone.\n\r" );
+        return;
+    }
+
+    argument = skip_spaces(argument);
+    if (!argument) {
+        SendOutput( player, "I beg your pardon?\n\r" );
+        return;
+    }
+
+    db_report_entry( REPORT_TYPO, ch, argument );
+
+    SendOutput( player, "Ok. thanks.\n\r" );
+}
+
+void do_bug(struct char_data *ch, char *argument, int cmd)
+{
+    PlayerStruct_t     *player; 
+
+    if( !ch || !(player = (PlayerStruct_t *)ch->playerDesc) ) {
+        return;
+    }
+
+    if (IS_NPC(ch)) {
+        SendOutput( player, "You are a monster! Bug off!\n\r" );
+        return;
+    }
+
+    argument = skip_spaces(argument);
+    if (!argument) {
+        SendOutput( player, "Pardon?\n\r" );
+        return;
+    }
+
+    db_report_entry( REPORT_BUG, ch, argument );
+
+    SysLogPrint( LOG_CRIT, "BUG Report by %s [%ld]: %s", GET_NAME(ch), 
+                           ch->in_room, argument);
+
+    SendOutput( player, "Ok.\n\r" );
 }
 
 
