@@ -154,11 +154,14 @@ void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
 void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
 PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer );
 int GetPlayerCount( void );
+
+/* command_processor.c */
 void JustLoggedIn( PlayerStruct_t *player );
 void CommandParser( PlayerStruct_t *player, char *line );
 void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
+CommandDef_t *FindCommand( char *string );
 
 /*
  * TODO: move these!
@@ -269,6 +272,7 @@ void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
                        int *lastUpdate );
 void db_load_char_objects( struct char_data *ch );
 void db_load_room_objects( int room );
+void db_load_rooms( BalancedBTree_t *tree );
 
 /*
  * obj_data.c
@@ -319,6 +323,14 @@ void GetMonth(int month);
 void ChangeWeather(int change);
 void switch_light(byte why);
 int IsDarkOutside(struct room_data *rp);
+
+/*
+ * room_data.c
+ */
+void initializeRooms( void );
+struct room_data *real_roomp(int virtual);
+void cleanout_room(struct room_data *rp);
+void completely_cleanout_room(struct room_data *rp);
 
 /*************************************************************************
  * Support for different platforms

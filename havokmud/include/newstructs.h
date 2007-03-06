@@ -541,6 +541,156 @@ struct obj_data {
     time_t          modified;           /**< Last modification time */
 };
 
+/*
+ * The following defs are for room_data
+ */
+
+#define NOWHERE    -1           /* nil reference for room-database */
+#define AUTO_RENT  -2           /* other special room, for auto-renting */
+
+/*
+ * Bitvector For 'room_flags'
+ */
+
+#define DARK                    BV(0)
+#define DEATH                   BV(1)
+#define NO_MOB                  BV(2)
+#define INDOORS                 BV(3)
+#define PEACEFUL                BV(4)
+#define NOSTEAL                 BV(5)
+#define NO_SUM                  BV(6)
+#define NO_MAGIC                BV(7)
+#define TUNNEL                  BV(8)
+#define PRIVATE                 BV(9)
+#define SILENCE                 BV(10)
+#define LARGE                   BV(11)
+#define NO_DEATH                BV(12)
+#define SAVE_ROOM               BV(13)
+#define ARENA_ROOM              BV(14)
+#define NO_FLY                  BV(15)
+#define REGEN_ROOM              BV(16)
+#define FIRE_ROOM               BV(17)
+#define ICE_ROOM                BV(18)
+#define WIND_ROOM               BV(19)
+#define EARTH_ROOM              BV(20)
+#define ELECTRIC_ROOM           BV(21)
+#define WATER_ROOM              BV(22)
+#define MOVE_ROOM               BV(23)
+#define MANA_ROOM               BV(24)
+#define NO_FLEE                 BV(25)
+#define NO_SPY                  BV(26)
+#define EVER_LIGHT              BV(27)
+#define ROOM_WILDERNESS         BV(28)
+
+/*
+ * For 'dir_option'
+ */
+
+typedef enum {
+    NORTH = 0,
+    EAST,
+    SOUTH,
+    WEST,
+    UP,
+    DOWN
+} Directions_t;
+
+#define EX_ISDOOR       BV(0)
+#define EX_CLOSED       BV(1)
+#define EX_LOCKED       BV(2)
+#define EX_SECRET       BV(3)
+#define EX_RSLOCKED     BV(4)
+#define EX_PICKPROOF    BV(5)
+#define EX_CLIMB        BV(6)
+
+/*
+ * For 'Sector types'
+ */
+
+typedef enum {
+    SECT_INSIDE = 0,
+    SECT_CITY,
+    SECT_FIELD,
+    SECT_FOREST,
+    SECT_HILLS,
+    SECT_MOUNTAIN,
+    SECT_WATER_SWIM,
+    SECT_WATER_NOSWIM,
+    SECT_AIR,
+    SECT_UNDERWATER,
+    SECT_DESERT,
+    SECT_TREE,
+    SECT_SEA,
+    SECT_BLANK,
+    SECT_ROCK_MOUNTAIN,
+    SECT_SNOW_MOUNTAIN,
+    SECT_RUINS,
+    SECT_JUNGLE,
+    SECT_SWAMP,
+    SECT_LAVA,
+    SECT_ENTRANCE,
+    SECT_FARM,
+    SECT_EMPTY
+} SectorTypes_t;
+
+#define SECT_MAX        SECT_EMPTY
+
+#define TELE_LOOK       BV(0)
+#define TELE_COUNT      BV(1)
+#define TELE_RANDOM     BV(2)
+#define TELE_SPIN       BV(3)
+
+struct auction_data {
+    struct obj_data *obj;
+    int             minbid;
+    struct char_data *taker;
+
+};
+
+struct room_direction_data {
+    char           *general_description;        /* When look DIR.  */
+    char           *keyword;    /* for open/close */
+
+    long            exit_info;  /* Exit info */
+    long            key;        /* Key's number (-1 for no key) */
+    long            to_room;    /* Where direction leeds (NOWHERE) */
+    long            open_cmd;   /* cmd needed to OPEN/CLOSE door */
+};
+
+/*
+ * ========================= Structure for room ==========================
+ */
+struct room_data {
+    int             number;     /* Rooms number */
+    int             zone;       /* Room zone (for resetting) */
+    int             continent;  /* Which continent/mega-zone */
+    SectorTypes_t   sector_type;        /* sector type (move/hide) */
+
+    int             river_dir;  /* dir of flow on river */
+    int             river_speed;        /* speed of flow on river */
+
+    int             tele_time;  /* time to a teleport */
+    int             tele_targ;  /* target room of a teleport */
+    long            tele_mask;  /* flags for use with teleport */
+    int             tele_cnt;   /* countdown teleports */
+
+    int             moblim;     /* # of mobs allowed in room.  */
+
+    char           *name;       /* Rooms name 'You are ...' */
+    char           *description;        /* Shown when entered */
+    Keywords_t     *ex_description;     /* for examine/look */
+    int             ex_description_count;
+    struct room_direction_data *dir_option[6];  /* Directions */
+    long            room_flags; /* DEATH,DARK ... etc */
+    int             light;      /* Number of lightsources in room */
+    int             dark;
+    int             (*funct) ();        /* special procedure */
+
+    struct obj_data *contents;  /* List of items in room */
+    struct char_data *people;   /* List of NPC / PC in room */
+
+    int             special;
+};
 
 #endif
 

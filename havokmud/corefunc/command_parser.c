@@ -60,7 +60,6 @@ char *get_argument_common(char *line_in, char **arg_out, int do_fill,
 int is_number(char *str);
 int special(struct char_data *ch, int cmd, char *arg);
 int fill_word(char *argument);
-CommandDef_t *FindCommand( char *string );
 
 /**
  * @brief Runs when somebody has just logged in (not from linkdead)

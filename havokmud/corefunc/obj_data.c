@@ -52,7 +52,7 @@ static char ident[] _UNUSED_ =
  */
 
 
-BalancedBTree_t *objectTree;
+BalancedBTree_t *objectTree = NULL;
 
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;

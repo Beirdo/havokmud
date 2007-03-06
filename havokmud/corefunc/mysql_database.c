@@ -106,6 +106,7 @@ void chain_load_languages( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_textfiles( MYSQL_RES *res, QueryItem_t *item );
 void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item );
+void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item );
 
 void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
@@ -138,6 +139,10 @@ void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
 
 
 QueryTable_t    QueryTable[] = {
@@ -399,6 +404,25 @@ QueryTable_t    QueryTable[] = {
     { "SELECT `location`, `modifier` FROM `objectAffects` WHERE "
       "`ownerId` = ? AND `roomId` = ? AND `ownedItemId` = ? ORDER BY `seqNum`",
       NULL, NULL, FALSE },
+    /* 72 */
+    { "SELECT `roomId`, `zoneId`, `name`, `description`, `sectorType`, "
+      "`teleportTime`, `teleportTarget`, `teleportCount`, `riverSpeed`, "
+      "`riverDir`, `mobLimit`, `specialFunc`, `light` FROM `rooms`", 
+      chain_load_rooms, NULL, FALSE },
+    /* 73 */
+    { "SELECT `flagTypeId`, `index`, `value` FROM `roomFlags` WHERE "
+      "`roomId` = ?", NULL, NULL, FALSE },
+    /* 74 */
+    { "SELECT `keyword`, `description` FROM `roomExtraDesc` WHERE `roomId` = ? "
+      "ORDER BY `seqNum`", NULL, NULL, FALSE },
+    /* 75 */
+    { "SELECT `direction`, `description`, `keyword`, `key`, `toRoom`, "
+      "`openCommand` FROM `roomExits` WHERE `roomId` = ? AND `direction` = ?", 
+      NULL, NULL, FALSE },
+    /* 76 */
+    { "SELECT `direction`, `flagTypeId`, `index`, `value` FROM `roomExitFlags` "
+      "WHERE `roomId` = ? AND `direction` = ?", NULL, NULL, FALSE },
+    /* END */
     { NULL, NULL, NULL, FALSE }
 };
 
@@ -507,6 +531,69 @@ static struct obj_flags_t obj_flags[] = {
       OFFSETOF(anti_class, struct obj_data) }
 };
 static int obj_flag_count = NELEMENTS(obj_flags);
+
+static struct obj_flag_bits room_flags_flags[] = {
+    { DARK, 0 },
+    { DEATH, 0 },
+    { NO_MOB, 0 },
+    { INDOORS, 0 },
+    { PEACEFUL, 0 },
+    { NOSTEAL, 0 },
+    { NO_SUM, 0 },
+    { NO_MAGIC, 0 },
+    { TUNNEL, 0 },
+    { PRIVATE, 0 },
+    { SILENCE, 0 },
+    { LARGE, 0 },
+    { NO_DEATH, 0 },
+    { SAVE_ROOM, 0 },
+    { ARENA_ROOM, 0 },
+    { NO_FLY, 0 },
+    { REGEN_ROOM, 0 },
+    { FIRE_ROOM, 0 },
+    { ICE_ROOM, 0 },
+    { WIND_ROOM, 0 },
+    { EARTH_ROOM, 0 },
+    { ELECTRIC_ROOM, 0 },
+    { WATER_ROOM, 0 },
+    { MOVE_ROOM, 0 },
+    { MANA_ROOM, 0 },
+    { NO_FLEE, 0 },
+    { NO_SPY, 0 },
+    { EVER_LIGHT, 0 },
+    { ROOM_WILDERNESS, 0 }
+};
+
+static struct obj_flag_bits room_tele_mask_flags[] = {
+    { TELE_LOOK, 0 },
+    { TELE_COUNT, 0 },
+    { TELE_RANDOM, 0 },
+    { TELE_SPIN, 0 }
+};
+
+static struct obj_flags_t room_flags[] = {
+    { room_flags_flags,     NELEMENTS(room_flags_flags), 
+      OFFSETOF(room_flags, struct room_data) },
+    { room_tele_mask_flags, NELEMENTS(room_tele_mask_flags),
+      OFFSETOF(tele_mask, struct room_data) }
+};
+static int room_flag_count = NELEMENTS(room_flags);
+
+static struct obj_flag_bits room_exit_flags[] = {
+    { EX_ISDOOR, 0 },
+    { EX_CLOSED, 0 },
+    { EX_LOCKED, 0 },
+    { EX_SECRET, 0 },
+    { EX_RSLOCKED, 0 },
+    { EX_PICKPROOF, 0 },
+    { EX_CLIMB, 0 }
+};
+
+static struct obj_flags_t exit_flags[] = {
+    { room_exit_flags,     NELEMENTS(room_exit_flags), 
+      OFFSETOF(exit_info, struct room_direction_data) }
+};
+static int exit_flag_count = NELEMENTS(exit_flags);
 
 void db_report_entry(int reportId, struct char_data *ch, char *report)
 {
@@ -2125,6 +2212,25 @@ void db_load_room_objects( int room )
     free( mutex );
 }
 
+void db_load_rooms( BalancedBTree_t *tree )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+    bind_null_blob( &data[0], (void *)tree );
+    db_queue_query( 72, QueryTable, data, 1, NULL, NULL, mutex );
+
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+}
+
 /*
  * Query chaining functions
  */
@@ -2718,7 +2824,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
 
         index = (struct index_data *)malloc(sizeof(struct index_data));
         if( !index ) {
-            return;
+            continue;
         }
 
         vnum = atoi(row[0]);
@@ -2738,6 +2844,112 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
         bitem->key  = &index->vnum;
         bitem->item = (void *)index;
+        BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
+    }
+
+    pthread_mutex_destroy( mutex );
+    free( mutex );
+
+    BalancedBTreeAdd( tree, NULL, LOCKED, TRUE );
+    BalancedBTreeUnlock( tree );
+}
+
+void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
+{
+    BalancedBTree_t        *tree;
+    BalancedBTreeItem_t    *bitem;
+    struct room_data       *room;
+    int                     i,
+                            roomId;
+    int                     count;
+
+    MYSQL_ROW               row;
+    MYSQL_BIND             *data;
+    pthread_mutex_t        *mutex;
+
+    tree = (BalancedBTree_t *)item->queryData[0].buffer;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init( mutex, NULL );
+
+    BalancedBTreeLock( tree );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        room = (struct room_data *)malloc(sizeof(struct room_data));
+        if( !room ) {
+            continue;
+        }
+        memset(room, 0, sizeof(struct room_data));
+
+        roomId = atoi(row[0]);
+
+        room->number = roomId;
+        room->zone = atoi(row[1]);
+        room->name = strdup(row[2]);
+        room->description = strdup(row[3]);
+        room->sector_type = atoi(row[4]);
+        room->tele_time = atoi(row[5]);
+        room->tele_targ = atoi(row[6]);
+        room->tele_cnt = atoi(row[7]);
+        room->river_speed = atoi(row[8]);
+        room->river_dir = atoi(row[9]);
+        room->moblim = atoi(row[10]);
+        room->funct = procGetFuncByName( row[11], PROC_ROOM );
+        room->light = atoi(row[12]);
+
+        /* Load the room_flags and tele_mask */
+        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
+        db_queue_query( 73, QueryTable, data, 1, result_load_rooms_1,
+                        (void *)room, mutex );
+        pthread_mutex_unlock( mutex );
+
+        /* Load the extra descriptions */
+        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        memset( data, 0, 1 * sizeof(MYSQL_BIND) );
+
+        bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
+        db_queue_query( 74, QueryTable, data, 1, result_load_rooms_2,
+                        (void *)room, mutex );
+        pthread_mutex_unlock( mutex );
+
+        /* Load the exits */
+        for( i = 0; i < 6; i++ ) {
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], i, MYSQL_TYPE_LONG );
+            db_queue_query( 75, QueryTable, data, 1, result_load_rooms_3,
+                            (void *)room, mutex );
+            pthread_mutex_unlock( mutex );
+
+            if( !room->dir_option[i] ) {
+                continue;
+            }
+
+            /* Load the exit flags */
+            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+            bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
+            bind_numeric( &data[1], i, MYSQL_TYPE_LONG );
+            db_queue_query( 76, QueryTable, data, 1, result_load_rooms_4,
+                            (void *)room, mutex );
+            pthread_mutex_unlock( mutex );
+        }
+
+        bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        bitem->key  = &room->number;
+        bitem->item = (void *)room;
         BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
     }
 
@@ -3712,6 +3924,158 @@ void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     *argPoint = newargs;
 }
+
+void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct room_data   *room;
+    unsigned int       *var;
+    int                 i;
+    int                 count;
+    int                 type;
+    int                 index;
+    int                 value;
+    struct obj_flags_t *flags;
+
+    MYSQL_ROW           row;
+
+    room = (struct room_data *)arg;
+
+    room->room_flags = 0;
+    room->tele_mask  = 0;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        type = atoi(row[0]) - 12;  /* room flags = 12, teleport mask = 13 */
+        index = atoi(row[1]);
+        value = atoi(row[2]);
+
+        if( !value || type < 0 || type >= room_flag_count ) {
+            continue;
+        }
+
+        flags = &room_flags[type];
+
+        if( index < 0 || index >= flags->count ) {
+            continue;
+        }
+
+        var = (unsigned int *)PTR_AT_OFFSET(flags->offset, room);
+
+        SET_BIT(*var, flags->bits[index].set);
+        REMOVE_BIT(*var, flags->bits[index].clear);
+    }
+}
+
+void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct room_data           *room;
+    Keywords_t                 *descr;
+    int                         count;
+    int                         i;
+
+    MYSQL_ROW                   row;
+
+    room = (struct room_data *)arg;
+
+    room->ex_description = NULL;
+    room->ex_description_count = 0;
+
+    if( res && (count = mysql_num_rows(res)) ) {
+        CREATE(room->ex_description, Keywords_t, count);
+        room->ex_description_count = count;
+
+        for( i = 0; i < count; i++ ) {
+            row = mysql_fetch_row(res);
+            descr = &room->ex_description[i];
+
+            StringToKeywords( row[0], descr );
+            descr->description = strdup(row[1]);
+        }
+    }
+}
+
+void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct room_data           *room;
+    int                         i;
+    struct room_direction_data *dir;
+    CommandDef_t               *command;
+
+    MYSQL_ROW                   row;
+
+    room = (struct room_data *)arg;
+
+    if( !res || !mysql_num_rows(res) ) {
+        return;
+    }
+
+    row = mysql_fetch_row(res);
+    i = atoi(row[0]) - 1;
+
+    CREATE(dir, struct room_direction_data, 1);
+    room->dir_option[i] = dir;
+
+    dir->general_description = strdup(row[1]);
+    dir->keyword = strdup(row[2]);
+    dir->key = atoi(row[3]);
+    dir->to_room = atoi(row[4]);
+    command = FindCommand( row[5] );
+    dir->open_cmd = (command ? command->number : 0);
+    dir->exit_info = 0;
+}
+
+void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+{
+    struct room_data   *room;
+    struct room_direction_data *dir;
+    unsigned int       *var;
+    int                 i;
+    int                 count;
+    int                 type;
+    int                 index;
+    int                 value;
+    struct obj_flags_t *flags;
+
+    MYSQL_ROW           row;
+
+    room = (struct room_data *)arg;
+
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        return;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        dir = room->dir_option[atoi(row[0])];
+
+        type = atoi(row[1]) - 14;  /* exit flags = 14 */
+        index = atoi(row[2]);
+        value = atoi(row[3]);
+
+        if( !value || type < 0 || type >= exit_flag_count ) {
+            continue;
+        }
+
+        flags = &exit_flags[type];
+
+        if( index < 0 || index >= flags->count ) {
+            continue;
+        }
+
+        var = (unsigned int *)PTR_AT_OFFSET(flags->offset, dir);
+
+        SET_BIT(*var, flags->bits[index].set);
+        REMOVE_BIT(*var, flags->bits[index].clear);
+    }
+}
+
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

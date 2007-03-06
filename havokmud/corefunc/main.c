@@ -416,10 +416,7 @@ void boot_db(void)
     boot_saved_zones();
 
     LogPrintNoArg( LOG_CRIT, "Loading rooms.");
-    boot_world();
-
-    LogPrintNoArg( LOG_CRIT, "Loading saved rooms.");
-    boot_saved_rooms();
+    initializeRooms();
 
 #ifdef NOTYET
     LogPrintNoArg( LOG_CRIT, "Generating index table for mobiles.");
@@ -467,17 +464,18 @@ void boot_db(void)
         s = zone_table[i].name;
         d = (i ? (zone_table[i - 1].top + 1) : 0);
         e = zone_table[i].top;
-        fprintf(stderr, "Performing boot-time init of %d:%s (rooms %ld-%ld).\n",
-                zone_table[i].num, s, d, e);
+        LogPrint( LOG_CRIT, "Performing boot-time init of %d:%s "
+                            "(rooms %ld-%ld)", zone_table[i].num, s, d, e);
         zone_table[i].start = 0;
 
         if (i == 0) {
-            fprintf(stderr, "Performing boot-time reload of static mobs\n");
+            LogPrintNoArg( LOG_CRIT, "Performing boot-time reload of static "
+                                     "mobs");
             reset_zone(0, 0);
         }
 
         if (i == 1) {
-            fprintf(stderr, "Automatic initialization of  %s\n", s);
+            LogPrint( LOG_CRIT, "Automatic initialization of  %s\n", s);
             reset_zone(1, 0);
         }
     }
