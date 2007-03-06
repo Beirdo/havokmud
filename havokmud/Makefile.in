@@ -70,17 +70,17 @@ corefunc/libhavokcore.a:
 force:
 
 clean:
-	rm -f ${OBJS} ${EXE}
-	for i in ${SUBDIRS} ; do ${MAKE} -C $$i clean ; done
+	-rm -f ${OBJS} ${EXE}
+	-for i in ${SUBDIRS} ; do ${MAKE} -C $$i clean ; done
 
 cleanall: clean
-	rm -f ${DEPS}
+	-rm -f ${DEPS}
 
 distclean: cleanall
-	rm -f config.status config.log Makefile config.h
+	-rm -f config.status config.log Makefile config.h
 
 cleannew:
-	rm -f ${NEWEXE} make.out undefs
+	-rm -f ${NEWEXE} make.out undefs code-review.ps
 
 configure: configure.ac
 	autoconf
@@ -99,6 +99,12 @@ doxygen-rsync:
 
 undefs:	make.out
 	scripts/make-undefs $+ $@
+
+review:	code-review.ps
+
+code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
+	(for i in ${SUBDIRS} include ; do find $$i -name \*.\[ch\]; done) | \
+		sort | xargs enscript -p$@ -Ec --color -MLetter -U4 -C 
 
 -include ${DEPS}
 
