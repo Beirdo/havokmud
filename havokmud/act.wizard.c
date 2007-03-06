@@ -1271,14 +1271,19 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char("Description:\n\r", ch);
         send_to_char(rm->description, ch);
 
-        oldSendOutput(ch, "Extra description keywords(s): ");
-        if (rm->ex_description) {
-            for (desc = rm->ex_description; desc; desc = desc->next) {
-                oldSendOutput(ch, "\n\r%s", desc->keyword);
+        if (rm->ex_description && rm->ex_description_count) {
+            oldSendOutput(ch, "Extra description keywords(s): \n\r");
+            for (desc = rm->ex_description, i = 0; 
+                 i < rm->ex_description_count; desc++) {
+                objname = KeywordsToString( desc, " " );
+                strcat(buf, objname);
+                free(objname);
+                strcat(buf, "\n\r");
             }
-            oldSendOutput(ch, "\n\r");
+            strcat(buf, "----------\n\r");
+            send_to_char(buf, ch);
         } else {
-            oldSendOutput(ch, "None");
+            oldSendOutput(ch, "Extra description keyword(s): None\n\r");
         }
 
         oldSendOutput(ch, "\n\r------- Chars present -------\n\r");

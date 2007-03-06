@@ -717,6 +717,8 @@ int AddToCharHeap(struct char_data *heap[50], int *top, int total[50],
 int find_door(struct char_data *ch, char *type, char *dir)
 {
     int             door;
+    Keywords_t     *key,
+                   *secret;
 
     struct room_direction_data *exitp;
 
@@ -734,13 +736,22 @@ int find_door(struct char_data *ch, char *type, char *dir)
 
         exitp = EXIT(ch, door);
         if (exitp) {
-            if (!exitp->keyword) {
+            if (!exitp->keywords) {
                 return (door);
             }
 
-            if (isname(type, exitp->keyword) && strcmp(type, "secret")) {
+            key = StringToKeywords( type, NULL );
+            secret = StringToKeywords( "secret", NULL );
+
+            if (KeywordsMatch(key, exitp->keywords) && 
+                !KeywordsMatch(key, secret)) {
+                FreeKeywords( key, TRUE );
+                FreeKeywords( secret, TRUE );
                 return (door);
             } 
+
+            FreeKeywords( key, TRUE );
+            FreeKeywords( secret, TRUE );
 
             if ((door = find_direction(type)) != -1) {
                 send_to_char("Thats a direction, not a portal.\n\r", ch);
@@ -761,13 +772,21 @@ int find_door(struct char_data *ch, char *type, char *dir)
     /* 
      * try to locate the keyword 
      */
-    if (strcmp(type, "secret")) {
+    key = StringToKeywords( type, NULL );
+    secret = StringToKeywords( "secret", NULL );
+
+    if (!KeywordsMatch( key, secret ) ) {
         for (door = 0; door <= 5; door++) {
             if ((exitp = EXIT(ch, door)) &&
-                exitp->keyword && isname(type, exitp->keyword)) {
+                exitp->keywords && KeywordsMatch(key, exitp->keywords)) {
+                FreeKeywords(key, TRUE);
+                FreeKeywords(secret, TRUE);
                 return (door);
             }
         }
+
+        FreeKeywords(key, TRUE);
+        FreeKeywords(secret, TRUE);
 
         if ((door = find_direction(type)) != -1) {
             send_to_char("Thats a direction, not a portal.\n\r", ch);

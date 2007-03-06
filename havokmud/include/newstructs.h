@@ -640,16 +640,9 @@ typedef enum {
 #define TELE_RANDOM     BV(2)
 #define TELE_SPIN       BV(3)
 
-struct auction_data {
-    struct obj_data *obj;
-    int             minbid;
-    struct char_data *taker;
-
-};
-
 struct room_direction_data {
     char           *general_description;        /* When look DIR.  */
-    char           *keyword;    /* for open/close */
+    Keywords_t     *keywords;   /* for open/close */
 
     long            exit_info;  /* Exit info */
     long            key;        /* Key's number (-1 for no key) */

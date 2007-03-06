@@ -4021,7 +4021,11 @@ void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     room->dir_option[i] = dir;
 
     dir->general_description = strdup(row[1]);
-    dir->keyword = strdup(row[2]);
+    if( row[2][0] == '\0' ) {
+        dir->keywords = NULL;
+    } else {
+        dir->keywords = StringToKeywords( row[2], NULL );
+    }
     dir->key = atoi(row[3]);
     dir->to_room = atoi(row[4]);
     command = FindCommand( row[5] );

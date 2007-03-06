@@ -114,9 +114,9 @@ void cleanout_room(struct room_data *rp)
                 free(rp->dir_option[i]->general_description);
                 rp->dir_option[i]->general_description = NULL;
             }
-            if (rp->dir_option[i]->keyword) {
-                free(rp->dir_option[i]->keyword);
-                rp->dir_option[i]->keyword = NULL;
+            if (rp->dir_option[i]->keywords) {
+                FreeKeywords( rp->dir_option[i]->keywords, TRUE );
+                rp->dir_option[i]->keywords = NULL;
             }
             if (rp->dir_option[i]) {
                 free(rp->dir_option[i]);
@@ -125,8 +125,8 @@ void cleanout_room(struct room_data *rp)
         }
     }
 
-    for (i = 0; i < rp->ex_description_count; i++) {
-        exptr = &rp->ex_description[i];
+    for (i = 0, exptr = rp->ex_description; 
+         i < rp->ex_description_count; i++, exptr++) {
         FreeKeywords( exptr, FALSE );
     }
     free( rp->ex_description );

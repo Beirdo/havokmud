@@ -455,8 +455,8 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
 
     for (tmp_obj = real_roomp(key_room)->contents; tmp_obj;
          tmp_obj = tmp_obj->next_content) {
-        descr = find_ex_descr(buf, tmp_obj->ex_description,
-                              tmp_obj->ex_description_count);
+        descr = find_ex_description(buf, tmp_obj->ex_description,
+                                    tmp_obj->ex_description_count);
         if (descr) {
             if (gold == 0) {
                 gold = 1;

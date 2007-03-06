@@ -1696,6 +1696,7 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
     FILE           *fp;
     struct room_data *rp;
     struct room_direction_data *rdd;
+    char           *keyword;
 
     if (!ch->desc) {
         return;
@@ -1812,7 +1813,8 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
          * extra descriptions..
          */
 
-        for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
+        for (j = 0, exptr = rp->ex_description; j < rp->ex_description_count; 
+             exptr++, j++) {
             x = 0;
 
             if (exptr->description) {
@@ -1823,7 +1825,9 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
                 }
                 temp[x] = '\0';
 
-                fprintf(fp, "E\n%s~\n%s~\n", exptr->keyword, temp);
+                keyword = KeywordsToString(exptr," ");
+                fprintf(fp, "E\n%s~\n%s~\n", keyword, temp);
+                free( keyword );
             }
         }
 
@@ -1857,6 +1861,7 @@ void RoomSave(struct char_data *ch, long start, long end)
     FILE           *fp = NULL;
     struct room_data *rp;
     struct room_direction_data *rdd;
+    char           *keyword; 
 
     rstart = start;
     rend = end;
@@ -1989,17 +1994,21 @@ void RoomSave(struct char_data *ch, long start, long end)
          * extra descriptions..
          */
 
-        for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
+        for (j = 0, exptr = rp->ex_description; j < rp->ex_description_count; 
+             exptr++, j++) {
             x = 0;
 
             if (exptr->description) {
                 for (k = 0; k <= strlen(exptr->description); k++) {
-                    if (exptr->description[k] != 13)
+                    if (exptr->description[k] != 13) {
                         temp[x++] = exptr->description[k];
+                    }
                 }
                 temp[x] = '\0';
 
-                fprintf(fp, "E\n%s~\n%s~\n", exptr->keyword, temp);
+                keyword = KeywordsToString(exptr," ");
+                fprintf(fp, "E\n%s~\n%s~\n", keyword, temp);
+                free( keyword );
             }
         }
 

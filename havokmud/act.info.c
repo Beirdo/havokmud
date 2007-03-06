@@ -1457,6 +1457,9 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     struct room_direction_data *exitp;
     struct room_data *tmprp;
     struct room_data *rp;
+    struct room_data *inroom;
+    Keyword_t      *secret;
+    char           *temp;
     static char    *keywords[] = {
         "north",
         "east",
@@ -1476,6 +1479,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+    inroom = real_roomp(ch->in_room);
+
     if (GET_POS(ch) < POSITION_SLEEPING) {
         send_to_char("You can't see anything but stars!\n\r", ch);
     } else if (GET_POS(ch) == POSITION_SLEEPING) {
@@ -1488,7 +1493,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         send_to_char("It is very dark in here.. Find a lightsource to "
                      "see.\n\r", ch);
         if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
-            list_char_in_room(real_roomp(ch->in_room)->people, ch);
+            list_char_in_room(inroom->people, ch);
         }
     } else {
         argument = get_argument_nofill( argument, &arg1 );
@@ -1539,18 +1544,23 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                     }
                 }
 
-                if (IS_SET(exitp->exit_info, EX_CLOSED) && exitp->keyword) {
-                    if ((strcmp(fname(exitp->keyword), "secret")) &&
+                if (IS_SET(exitp->exit_info, EX_CLOSED) && exitp->keywords) {
+                    secret = StringToKeywords("secret", NULL);
+                    if (!KeywordsMatch(secret, exitp->keywords) &&
                         (!IS_SET(exitp->exit_info, EX_SECRET))) {
-                        sprintf(buffer, "The %s is closed.\n\r",
-                                fname(exitp->keyword));
+                        temp = KeywordsToString( exitp->keywords, " " );
+                        sprintf(buffer, "The %s is closed.\n\r", temp );
                         send_to_char(buffer, ch);
+                        free(temp);
                     }
+                    FreeKeywords( secret, TRUE );
                 } else {
-                    if (IS_SET(exitp->exit_info, EX_ISDOOR) && exitp->keyword) {
-                        sprintf(buffer, "The %s is open.\n\r",
-                                fname(exitp->keyword));
+                    if (IS_SET(exitp->exit_info, EX_ISDOOR) && 
+                        exitp->keywords) {
+                        temp = KeywordsToString( exitp->keywords, " " );
+                        sprintf(buffer, "The %s is open.\n\r", temp );
                         send_to_char(buffer, ch);
+                        free(temp);
                     }
                 }
             } else {
@@ -1572,12 +1582,11 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                     rp = real_roomp(exitp->to_room);
                     if (!rp) {
                         send_to_char("You see swirling chaos.\n\r", ch);
-                    } else if (exitp) {
+                    } else {
                         /*
                          * NO_SPY flag on rooms, Lennya 20030602
                          */
-                        if (IS_SET(real_roomp(exitp->to_room)->room_flags,
-                                   NO_SPY)) {
+                        if (IS_SET(rp->room_flags, NO_SPY)) {
                             oldSendOutput(ch, "A strange magic blurs your vision "
                                           "as you attempt to look into %s.\n\r",
                                       rp->short_description);
@@ -1591,8 +1600,6 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                         }
                         sprintf(buffer, "%ld look", exitp->to_room);
                         do_at(ch, buffer, 0);
-                    } else {
-                        send_to_char("You see nothing special.\n\r", ch);
                     }
                 }
             }
@@ -1709,9 +1716,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                  * Extra description in room??
                  */
                 if (!found) {
-                    tmp_desc = find_ex_description(arg2,
-                                  real_roomp(ch->in_room)->ex_description,
-                                  real_roomp(ch->in_room)->ex_description_count);
+                    tmp_desc = find_ex_description(arg2, inroom->ex_description,
+                                  inroom->ex_description_count);
                     if (tmp_desc) {
                         page_string(ch->desc, tmp_desc, 0);
                         return;
@@ -1803,10 +1809,10 @@ void do_look(struct char_data *ch, char *argument, int cmd)
              * look ''
              */
         case 8:
-            oldSendOutput(ch, "$c000W%s\n\r", real_roomp(ch->in_room)->name);
+            oldSendOutput(ch, "$c000W%s\n\r", inroom->name);
 
             if (!IS_SET(ch->specials.act, PLR_BRIEF)) {
-                send_to_char(real_roomp(ch->in_room)->description, ch);
+                send_to_char(inroom->description, ch);
             }
 
             if (!IS_NPC(ch)) {
@@ -1840,14 +1846,14 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             }
 
             if (ValidRoom(ch) == TRUE && !IS_SET(ch->specials.act, PLR_BRIEF) &&
-                IS_SET(real_roomp(ch->in_room)->room_flags, ROOM_WILDERNESS)) {
+                IS_SET(inroom->room_flags, ROOM_WILDERNESS)) {
                 generate_map(ch, GET_RADIUS(ch), 3, 3);
                 print_map(ch);
             }
 
             list_exits_in_room(ch);
-            list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
-            list_char_in_room(real_roomp(ch->in_room)->people, ch);
+            list_obj_in_room(inroom->contents, ch);
+            list_char_in_room(inroom->people, ch);
 
             break;
 
