@@ -1538,7 +1538,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     char            buf[100];
     struct obj_cost cost;
     int             i,
-                    save_room;
+                    save;
     int             count = 0;
 
     if (IS_NPC(ch)) {
@@ -1586,17 +1586,17 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     send_to_char(buf, ch);
 
     save_obj(ch, &cost, 1);
-    save_room = ch->in_room;
+    save = ch->in_room;
 
     if (ch->specials.start_room != 2) {
-        ch->specials.start_room = save_room;
+        ch->specials.start_room = save;
     }
     /*
      * CHARACTERS aren't freed by this
      */
     extract_char(ch);
-    save_char(ch, save_room);
-    ch->in_room = save_room;
+    save_char(ch, save);
+    ch->in_room = save;
     return( TRUE );
 }
 

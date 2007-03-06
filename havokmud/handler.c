@@ -1582,7 +1582,7 @@ void extract_char(struct char_data *ch)
  * Extract a ch completely from the world, and leave his stuff behind 
  */
 
-void extract_char_smarter(struct char_data *ch, long save_room)
+void extract_char_smarter(struct char_data *ch, long saveroom)
 {
     struct obj_data *i;
     struct char_data *k,
@@ -1777,7 +1777,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
         }
 #endif
 
-        save_char(ch, save_room);
+        save_char(ch, saveroom);
     }
 
     t_desc = ch->desc;

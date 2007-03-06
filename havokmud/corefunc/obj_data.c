@@ -66,10 +66,11 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset);
 int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
-int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
-                 int parentItem, int delete);
+int obj_to_store(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                 int roomId, int itemNum, int parentItem, int delete);
 int contained_weight(struct obj_data *container);
 void RecursivePrintLimitedItems(BalancedBTreeItem_t *node);
+void save_room(int room);
 
 
 void initializeObjects( void )
@@ -1005,6 +1006,11 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
     int                 i;
     int                 itemNum;
     struct obj_data    *obj;
+    PlayerStruct_t     *player;
+
+    if( !ch || !(player = (PlayerStruct_t *)ch->playerDesc) ) {
+        return;
+    }
 
     SysLogPrint( LOG_INFO, "Saving %s (%d): %d gold", fname(ch->player.name), 
                            ch->playerId, GET_GOLD(ch) );
@@ -1030,10 +1036,12 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
             unequip_char(ch, i);
         }
 
-        itemNum = obj_to_store(obj, ch, itemNum, -1, delete);
+        itemNum = obj_to_store(obj, player, ch->playerId, -1, itemNum, -1, 
+                               delete);
     }
 
-    itemNum = obj_to_store(ch->carrying, ch, itemNum, -1, delete);
+    itemNum = obj_to_store(ch->carrying, player, ch->playerId, -1, itemNum, -1,
+                           delete);
     if (delete) {
         ch->carrying = NULL;
     }
@@ -1051,28 +1059,22 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
  * @brief Destroy inventory after transferring it to "store inventory" 
  * @todo rename to objectStoreChain
  */
-int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
-                 int parentItem, int delete)
+int obj_to_store(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                 int roomId, int itemNum, int parentItem, int delete)
 {
     int                 weight;
-    PlayerStruct_t     *player;
     struct obj_data    *next;
     int                 newParent;
 
-    if (!obj || !ch) {
+    if (!obj) {
         return( itemNum );
     } 
-
-    player = (PlayerStruct_t *)ch->playerDesc;
-    if( !player ) {
-        return( itemNum );
-    }
 
     for( ; obj; obj = next ) {
         if( (obj->timer < 0 && obj->timer != OBJ_NOTIMER) ||
             (obj->cost_per_day < 0) ) {
 #ifdef DUPLICATES
-            if( delete ) {
+            if( delete && player) {
                 SendOutput(player, "You're told: '%s is just old junk, I'll "
                                    "throw it away for you.'\n\r", 
                                    obj->short_description);
@@ -1083,7 +1085,7 @@ int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
             weight = contained_weight(obj);
 
             GET_OBJ_WEIGHT(obj) -= weight;
-            db_save_object(obj, ch->playerId, -1, itemNum, parentItem);
+            db_save_object(obj, playerId, roomId, itemNum, parentItem);
             GET_OBJ_WEIGHT(obj) += weight;
             newParent = itemNum;
             itemNum++;
@@ -1093,8 +1095,8 @@ int obj_to_store(struct obj_data *obj, struct char_data *ch, int itemNum,
         }
 
         if (obj->contains) {
-            itemNum = obj_to_store(obj->contains, ch, itemNum, newParent, 
-                                   delete);
+            itemNum = obj_to_store(obj->contains, player, playerId, roomId, 
+                                   itemNum, newParent, delete);
         }
 
         next = obj->next_content;
@@ -1284,6 +1286,26 @@ void load_char_objs(struct char_data *ch)
      */
     save_char(ch, AUTO_RENT);
 }
+
+
+void save_room(int room)
+{
+#ifdef SAVEWORLD
+    struct room_data   *rm;
+    int                 itemNum;
+
+    rm = real_roomp(room);
+    if( !rm ) {
+        return;
+    }
+
+    itemNum = obj_to_store(rm->contents, NULL, -1, room, itemNum, -1, FALSE);
+
+    /* Clear out any objects above the last item */
+    db_clear_objects( -1, room, itemNum );
+#endif
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

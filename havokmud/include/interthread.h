@@ -268,6 +268,7 @@ void db_load_char_extra( struct char_data *ch );
 void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
                        int *lastUpdate );
 void db_load_char_objects( struct char_data *ch );
+void db_load_room_objects( int room );
 
 /*
  * obj_data.c

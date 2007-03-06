@@ -539,7 +539,6 @@ void            gr(int s);
 int             workhours(void);
 void            reboot_text(struct char_data *ch, char *arg, int cmd);
 void            InitScripts(void);
-void            ReloadRooms(void);
 void            FreeZone(int zone_nr);
 
 /*
@@ -698,7 +697,7 @@ void            object_list_new_owner(struct obj_data *list,
 void            update_object(struct obj_data *obj, int use);
 void            update_char_objects(struct char_data *ch);
 void            extract_char(struct char_data *ch);
-void            extract_char_smarter(struct char_data *ch, long save_room);
+void            extract_char_smarter(struct char_data *ch, long saveroom);
 struct char_data *get_char_room_vis(struct char_data *ch, char *name);
 struct char_data *get_char_vis_world(struct char_data *ch, char *name,
                                      int *count);
@@ -1397,9 +1396,6 @@ int             receptionist(struct char_data *ch, int cmd, char *arg,
                              struct char_data *mob, int type);
 void            zero_rent(struct char_data *ch);
 void            ZeroRent(char *n);
-void            obj_store_to_room(int room, struct obj_file_u *st);
-void            load_room_objs(int room);
-void            save_room(int room);
 
 /*
  * From security.c 

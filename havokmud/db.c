@@ -86,10 +86,6 @@ int             top_of_sort_mobt = 0;
 int             top_of_alloc_mobt = 99999;
 
 
-/*
- * long saved_rooms[WORLD_SIZE];
- */
-long            number_of_saved_rooms = 0;
 struct index_data *insert_index(struct index_data *index, void *data,
                                 long vnum);
 void            clean_playerfile(void);
@@ -1000,19 +996,9 @@ void load_one_room(FILE * fl, struct room_data *rp)
 #endif
             total_bc += bc;
             room_count++;
-#if 0
-            if(IS_SET(rp->room_flags, SAVE_ROOM)) {
-                saved_rooms[number_of_saved_rooms] = rp->number;
-                number_of_saved_rooms++;
-            }
-#endif
             sprintf(buf, "world/%ld", rp->number);
             fp = fopen(buf, "r");
             if (fp) {
-                /*
-                 * saved_rooms[number_of_saved_rooms] = rp->number;
-                 * number_of_saved_rooms++;
-                 */
                 fclose(fp);
             }
             return;
@@ -5180,17 +5166,6 @@ void InitScripts(void)
 }
 
 
-void ReloadRooms(void)
-{
-    int             i;
-
-    for (i = 0; i < number_of_saved_rooms; i++) {
-#if 0
-         load_room_objs(saved_rooms[i])
-#endif
-    }
-}
-
 void SaveTheWorld( void )
 {
 #ifdef SAVEWORLD
@@ -5427,7 +5402,7 @@ void ReadTextZone(FILE * fl)
                     if (j >= 0 && ((rp = real_roomp(j)) != NULL)) {
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
-                            if ((obj = objectRead(i, REAL)) != NULL) {
+                            if ((obj = objectRead(i, VIRTUAL)) != NULL) {
                                 objectPutInRoom(obj, k);
                                 last_cmd = 1;
                             } else {

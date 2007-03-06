@@ -459,11 +459,6 @@ void boot_db(void)
     LogPrintNoArg( LOG_CRIT, "Updating characters with saved items:");
     update_obj_file();
 
-#ifdef SAVEWORLD
-    LogPrintNoArg( LOG_CRIT, "Loading saved rooms.");
-    ReloadRooms();
-#endif
-
 #ifdef LIMITED_ITEMS
     PrintLimitedItems();
 #endif

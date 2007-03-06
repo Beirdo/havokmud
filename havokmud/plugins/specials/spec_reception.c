@@ -419,7 +419,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     struct char_data *recep = 0;
     struct char_data *temp_char;
     struct room_data *rp;
-    short int       save_room;
+    short int       saveroom;
     short int       action_table[9];
 
     if (!ch->desc) {
@@ -500,14 +500,14 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
                 ch, TO_NOTVICT);
             ch->old_exp = 0;
             save_obj(ch, &cost, 1);
-            save_room = ch->in_room;
+            saveroom = ch->in_room;
 
             if (ch->specials.start_room != 2 && 
                 !IS_SET(ch->specials.act, PLR_HAVEROOM)) {
                 /* 
                  * hell 
                  */
-                ch->specials.start_room = save_room;
+                ch->specials.start_room = saveroom;
             }
 
             /* 
@@ -515,8 +515,8 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
              * when you extract them 
              */
             extract_char(ch);
-            save_char(ch, save_room);
-            ch->in_room = save_room;
+            save_char(ch, saveroom);
+            ch->in_room = saveroom;
         }
     } else {
         /* 
