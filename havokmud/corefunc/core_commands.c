@@ -49,6 +49,8 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 void banHostDepthFirst( PlayerStruct_t *player, BalancedBTreeItem_t *item );
+char *view_newhelp(int reportId);
+char *view_report(int reportId);
 
 CommandDef_t coreCommands[] = {
     { "north", do_move, 1, POSITION_STANDING, 0 },
@@ -322,9 +324,8 @@ CommandDef_t coreCommands[] = {
     { "rload", do_rload, 229, POSITION_DEAD, 53 },
     { "track", do_track, 230, POSITION_STANDING, 1 },
 #endif
-    { "siteban", do_siteban, 231, POSITION_DEAD, 54 }
+    { "siteban", do_siteban, 231, POSITION_DEAD, 54 },
 #if 0
-    ,
     { "highfive", do_highfive, 232, POSITION_DEAD, 0 },
     { "title", do_title, 233, POSITION_DEAD, 20 },
     { "whozone", do_who, 234, POSITION_DEAD, 0 },
@@ -515,7 +516,10 @@ CommandDef_t coreCommands[] = {
     { "notch", do_weapon_load, 385, POSITION_RESTING, 0 },
 
     { "spot", do_spot, 387, POSITION_STANDING, 0 },
-    { "view", do_viewfile, 388, POSITION_DEAD, 51 },
+#endif
+    { "view", do_viewfile, 388, POSITION_DEAD, 51 }
+#if 0
+    ,
     { "afk", do_set_afk, 389, POSITION_DEAD, 1 },
 
 
@@ -1068,6 +1072,169 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
                            ch->in_room, argument);
 
     SendOutput( player, "Ok.\n\r" );
+}
+
+char *view_newhelp(int reportId)
+{
+    struct user_report *report;
+    struct user_report *thisReport;
+    char               *buf;
+    char                buf2[MAX_STRING_LENGTH];
+    int                 length;
+    int                 lengthAvail;
+    int                 i;
+    int                 count;
+
+    buf = NULL;
+    length = 0;
+    lengthAvail = 0;
+    report = NULL;
+
+    report = db_get_report( REPORT_HELP );
+    count = report->resCount;
+    if( !count ) {
+        count++;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        thisReport = &report[i];
+        sprintf( buf2, "**%s: help %s\n\r", thisReport->character, 
+                                            thisReport->report );
+        while( length + strlen(buf2) >= lengthAvail ) {
+            /* Need to grow the buffer */
+            lengthAvail += MAX_STRING_LENGTH;
+            buf = (char *)realloc(buf, lengthAvail);
+            if( !buf ) {
+                LogPrintNoArg( LOG_CRIT, "Out of memory in view_newhelp!");
+                return(NULL);
+            }
+        }
+
+        buf[length] = '\0';
+        strcat(buf, buf2);
+        length += strlen(buf2);
+    }
+    free(report);
+
+    return( buf );
+}
+
+char *view_report(int reportId)
+{
+    struct user_report *report;
+    struct user_report *thisReport;
+    char               *buf;
+    char                buf2[MAX_STRING_LENGTH];
+    int                 length;
+    int                 lengthAvail;
+    int                 i;
+    int                 count;
+
+    buf = NULL;
+    length = 0;
+    lengthAvail = 0;
+    report = NULL;
+
+    if( reportId == REPORT_MOTD ) {
+        return( motd ? strdup( motd ) : NULL );
+    } else if( reportId == REPORT_WMOTD ) {
+        return( wmotd ? strdup( wmotd ) : NULL );
+    }
+
+    report = db_get_report( reportId );
+    count = report->resCount;
+    if( !count ) {
+        count++;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        thisReport = &report[i];
+        sprintf( buf2, "**%s[%d]: %s\n\r", thisReport->character, 
+                                           thisReport->roomNum,
+                                           thisReport->report );
+
+        while( length + strlen(buf2) >= lengthAvail ) {
+            /* Need to grow the buffer */
+            lengthAvail += MAX_STRING_LENGTH;
+            buf = (char *)realloc(buf, lengthAvail);
+            if( !buf ) {
+                LogPrintNoArg( LOG_CRIT, "Out of memory in view_report!");
+                return(NULL);
+            }
+        }
+
+        buf[length] = '\0';
+        strcat(buf, buf2);
+        length += strlen(buf2);
+    }
+    free( report );
+
+    return( buf );
+}
+
+typedef struct {
+    char       *file;
+    int         reportId;
+    char     *(*func)(int);
+    long        bit;
+} Report_t;
+
+Report_t reports[] = {
+    { "help", REPORT_HELP, view_newhelp, 0 },
+    { "quest", REPORT_QUEST, view_report, 0 },
+    { "bug", REPORT_WIZBUG, view_report, 0 },
+    { "idea", REPORT_WIZIDEA, view_report, 0 },
+    { "typo", REPORT_WIZTYPO, view_report, 0 },
+    { "morttypo", REPORT_TYPO, view_report, PLR_WIZREPORT },
+    { "mortbug", REPORT_BUG, view_report, PLR_WIZREPORT },
+    { "mortidea", REPORT_IDEA, view_report, PLR_WIZREPORT },
+    { "motd", REPORT_MOTD, view_report, 0 },
+    { "wmotd", REPORT_WMOTD, view_report, 0 }
+};
+int report_count = NELEMENTS( reports );
+
+/**
+ * @todo this should once again use paged output, but I need to rewrite that
+ *       support
+ */
+void do_viewfile(struct char_data *ch, char *argument, int cmd)
+{
+    char           *namefile;
+    char           *buf = NULL;
+    int             i;
+    PlayerStruct_t *player;
+
+    if( !ch || !(player = (PlayerStruct_t *)ch->playerDesc) ) {
+        return;
+    }
+
+    argument = get_argument(argument, &namefile);
+    if( !namefile ) {
+        SendOutput( player, "Commands: view <bug|typo|idea|mortbug|morttypo|"
+                            "mortidea|motd|wmotd|help>.\n\r");
+        return;
+    }
+
+    for( i = 0; i < report_count && !buf; i++ ) {
+        if (!strcmp(namefile, reports[i].file)) {
+            if( reports[i].bit && !IS_SET(ch->specials.act, reports[i].bit) ) {
+                SendOutput( player, "You do not have the power to do this");
+                return;
+            }
+            buf = (reports[i].func)(reports[i].reportId);
+        }
+    }
+
+    if( i >= report_count ) {
+        SendOutput( player, "Commands: view <bug|typo|idea|mortbug|morttypo|"
+                            "mortidea|motd|wmotd|help>.\n\r");
+        return;
+    }
+
+    if( buf ) {
+        SendOutput( player, buf );
+        free( buf );
+    }
 }
 
 

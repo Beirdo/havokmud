@@ -1995,6 +1995,8 @@ struct lang_def {
 #define REPORT_WIZTYPO      7
 #define REPORT_QUEST        8
 #define REPORT_WIZHELP      9
+#define REPORT_MOTD         10
+#define REPORT_WMOTD        11
 
 struct user_report {
     void               *res;

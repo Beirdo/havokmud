@@ -219,6 +219,10 @@ int dice(int number, int size);
 void            do_siteban(struct char_data *ch, char *argument, int cmd);
 void            do_shutdow(struct char_data *ch, char *argument, int cmd);
 void            do_shutdown(struct char_data *ch, char *argument, int cmd);
+void            do_idea(struct char_data *ch, char *argument, int cmd);
+void            do_typo(struct char_data *ch, char *argument, int cmd);
+void            do_bug(struct char_data *ch, char *argument, int cmd);
+void            do_viewfile(struct char_data *ch, char *argument, int cmd);
 
 /*
  * mysql_handler.c

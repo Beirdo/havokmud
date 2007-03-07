@@ -249,7 +249,6 @@ void            do_remove(struct char_data *ch, char *argument, int cmd);
 void            do_weapon_load(struct char_data *ch, char *argument,
                                int cmd);
 void            do_run(struct char_data *ch, char *argument, int cmd);
-void            do_viewfile(struct char_data *ch, char *argument, int cmd);
 struct char_data *get_char_near_room_vis(struct char_data *ch, char *name,
                                          long next_room);
 void            do_fire(struct char_data *ch, char *argument, int cmd);
@@ -310,9 +309,6 @@ void            do_sneak(struct char_data *ch, char *argument, int cmd);
 void            do_hide(struct char_data *ch, char *argument, int cmd);
 void            do_steal(struct char_data *ch, char *argument, int cmd);
 void            do_practice(struct char_data *ch, char *arg, int cmd);
-void            do_idea(struct char_data *ch, char *argument, int cmd);
-void            do_typo(struct char_data *ch, char *argument, int cmd);
-void            do_bug(struct char_data *ch, char *argument, int cmd);
 void            do_brief(struct char_data *ch, char *argument, int cmd);
 void            do_compact(struct char_data *ch, char *argument, int cmd);
 void            do_group(struct char_data *ch, char *argument, int cmd);
