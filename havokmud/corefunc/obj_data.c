@@ -114,6 +114,7 @@ void objectInsert(struct obj_data *obj, long vnum)
     }
     index->number = 0;
     index->func = NULL;
+    index->list = LinkedListCreate();
 
     item->key = &index->vnum;
     item->item = (void *)index;
@@ -139,7 +140,7 @@ struct obj_data *objectClone(struct obj_data *obj)
     }
 
     keywords = KeywordsToString( &obj->keywords, " " );
-    StringToKeywords( keywords, &obj->keywords );
+    StringToKeywords( keywords, &ocopy->keywords );
     free( keywords );
 
     if (obj->short_description) {
@@ -206,6 +207,7 @@ struct obj_data *objectRead(int nr)
     object_list = obj;
 
     index->number++;
+    LinkedListAdd( index->list, &obj->globalLink, UNLOCKED, AT_HEAD );
     obj_count++;
     
     return (obj);
@@ -262,7 +264,7 @@ void objectFree(struct obj_data *obj)
         }
         free( obj->ex_description[i].words );
         free( obj->ex_description[i].length );
-        free( obj->ex_description[i].length );
+        free( obj->ex_description[i].found );
     }
     free( obj->ex_description );
 
@@ -356,6 +358,7 @@ void objectExtract(struct obj_data *obj)
 
     if (obj->item_number >= 0) {
         obj->index->number--;
+        LinkedListRemove( obj->index->list, &obj->globalLink, UNLOCKED );
         obj_count--;
     }
     objectFree(obj);
@@ -1117,6 +1120,8 @@ int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
             }
             if (IS_RARE(obj)) {
                 obj->index->number++;
+                LinkedListAdd( obj->index->list, &obj->globalLink, UNLOCKED,
+                               AT_HEAD );
             }
             objectExtract(obj);
         }

@@ -480,12 +480,18 @@ struct index_data {
     char           *short_desc;
     char           *long_desc;
     int             MaxObjCount;
+    LinkedList_t   *list;       /**< Linked List of all loaded objects of this
+                                 *   vnum */
 };
 
 /*
  * ======================== Structure for object ========================
  */
 struct obj_data {
+    LinkedListItem_t    globalLink; /**< Linked List linkage for the global
+                                     *   list of items (one list per item
+                                     *   number
+                                     */
     struct index_data *index;       /**< pointer back to the index entry to
                                      *   save calls to objectIndex
                                      */

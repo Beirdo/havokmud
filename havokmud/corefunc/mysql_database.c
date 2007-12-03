@@ -2828,6 +2828,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         index->number = 0;
         index->data = NULL;
         index->func = NULL;
+        index->list = LinkedListCreate();
 
         data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
