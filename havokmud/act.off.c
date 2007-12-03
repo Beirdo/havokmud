@@ -1974,7 +1974,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
             return;
         }
 
-        if(!(prize = objectRead(o->value[2], VIRTUAL))) {
+        if(!(prize = objectRead(o->value[2]))) {
             send_to_char("You dig and dig, but unfornuately, only find a shoe"
                          ,ch);
             /*Print message to all in room*/

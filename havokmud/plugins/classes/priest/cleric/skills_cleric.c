@@ -738,6 +738,9 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->cost = 10;
     tmp_obj->cost_per_day = 1;
 
+    /**
+     * @todo why are we using object_list?
+     */
     tmp_obj->next = object_list;
     object_list = tmp_obj;
 
@@ -785,7 +788,7 @@ void spell_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = objectRead(20, VIRTUAL); /* this is all you have to do */
+    tmp_obj = objectRead(20); /* this is all you have to do */
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
         objectGiveToChar(tmp_obj, ch);
@@ -2184,6 +2187,9 @@ void spell_locate_object(int level, struct char_data *ch,
     }
     buf[0] = '\0';
 
+    /**
+     * @todo let's see if we can't somehow use btrees for this
+     */
     for (i = object_list; i && (j > 0); i = i->next) {
         if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) && 
              KeywordsMatch(key, &i->keywords) ) {
@@ -2962,7 +2968,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = objectRead(EMPTY_SCROLL, VIRTUAL))) {
+    if (!(obj = objectRead(EMPTY_SCROLL))) {
         Log("no default scroll could be found for scribe");
         send_to_char("woops, something's wrong.\n\r", ch);
         return;
@@ -3176,7 +3182,7 @@ void spell_succor(int level, struct char_data *ch,
 {
     struct obj_data *o;
 
-    o = objectRead(3052, VIRTUAL);
+    o = objectRead(3052);
     objectGiveToChar(o, ch);
 
     o->cost = 0;

@@ -465,7 +465,11 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                 act("You notice a faint light in Odin's eye.",
                     FALSE, ch, 0, 0, TO_CHAR);
             }
-            obj = objectRead(tmp_obj->item_number, REAL);
+            /**
+             * @todo make sure this is OK, it used to be a REAL load rather
+             *       than VIRTUAL
+             */
+            obj = objectRead(tmp_obj->item_number);
             objectPutInRoom(obj, ch->in_room);
             act("$p slowly fades into existence.", FALSE, ch, obj, 0,
                 TO_ROOM);
@@ -1180,7 +1184,7 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                              " the %s.", GET_NAME(ch), 
                              object->short_description);
                 act(buf, TRUE, ch, 0, 0, TO_ROOM);
-                object = objectRead(BAHAMUT_SKIN, VIRTUAL);
+                object = objectRead(BAHAMUT_SKIN);
                 objectGiveToChar(object, ch);
                 return (TRUE);
             } else {
@@ -2579,7 +2583,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
             act("$n picks an acorn.", FALSE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
-            if ((obj = objectRead(ACORN, VIRTUAL))) {
+            if ((obj = objectRead(ACORN))) {
                 objectGiveToChar(obj, ch);
             } else {
                 Log("no acorns found for pick_acorns");
@@ -2647,7 +2651,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
             act("$n picks some berries.", FALSE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
-            obj = objectRead(berry, VIRTUAL);
+            obj = objectRead(berry);
             objectGiveToChar(obj, ch);
         } else {
             act("You try to pick some berries, but hurt yourself on a thorn.",

@@ -187,7 +187,7 @@ void CountLimitedItems(struct obj_file_u *st)
              * eek.. read in the object, and then extract it.
              * (all this just to find rent cost.)  *sigh*
              */
-            obj = objectRead(st->objects[i].item_number, VIRTUAL);
+            obj = objectRead(st->objects[i].item_number);
             cost_per_day = obj->cost_per_day;
 
             /*

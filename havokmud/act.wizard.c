@@ -3019,7 +3019,7 @@ void do_load_object(struct char_data *ch, char *argument, int number)
         number = db_find_object_named(argument, -1, -1);
     }
 
-    if (number < 0 || !(obj = objectRead(number, VIRTUAL))) {
+    if (number < 0 || !(obj = objectRead(number))) {
         send_to_char("There is no such object.\n\r", ch);
         return;
     }
@@ -3317,17 +3317,17 @@ void do_start(struct char_data *ch)
     /*
      * bread
      */
-    obj = objectRead(12, VIRTUAL);
+    obj = objectRead(12);
     objectGiveToChar(obj, ch);
-    obj = objectRead(12, VIRTUAL);
+    obj = objectRead(12);
     objectGiveToChar(obj, ch);
 
     /*
      * water
      */
-    obj = objectRead(13, VIRTUAL);
+    obj = objectRead(13);
     objectGiveToChar(obj, ch);
-    obj = objectRead(13, VIRTUAL);
+    obj = objectRead(13);
     objectGiveToChar(obj, ch);
 
     ch->skills[STYLE_STANDARD].learned = 95;
@@ -4006,7 +4006,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = objectRead(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum);
         if (obj) {
             if (eval(obj) < -5) {
                 sprintf(color, "%s", "$c0008");
@@ -4080,7 +4080,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
          item = BalancedBTreeFindNext( objectTree, item, LOCKED ) ) {
         index = (struct index_data *)item->item;
 
-        obj = objectRead(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum);
         if (obj) {
             if (IS_SET(obj->wear_flags, pc_num_class(wearslot))) {
                 if (eval(obj) < -5) {
@@ -4169,7 +4169,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
 
         index = (struct index_data *)item->item;
 
-        obj = objectRead(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum);
         if (obj) {
             if (ITEM_TYPE(obj) == type) {
                 if (eval(obj) < -5) {
@@ -4349,7 +4349,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = objectRead(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum);
         if (obj) {
             sprintbit((unsigned) obj->wear_flags, wear_bits, temp1);
             sprintbit((unsigned) obj->extra_flags, extra_bits, temp2);
@@ -4512,7 +4512,7 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
             continue;
         }
 
-        obj = objectRead(index->vnum, VIRTUAL);
+        obj = objectRead(index->vnum);
         if (obj && obj->max != 0) {
             objname = KeywordsToString( &index->keywords, " " );
             sprintf(buf, "%5ld  %3d/%3d  %s \n\r", index->vnum, 

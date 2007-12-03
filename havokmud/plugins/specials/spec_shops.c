@@ -229,7 +229,7 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     for( count = 0; num > 0; num--, count++ ) {
         if (shop_producing(temp1, shop_nr)) {
-            temp1 = objectRead(temp1->item_number, VIRTUAL);
+            temp1 = objectRead(temp1->item_number);
         } else {
             if (!(temp1 = get_obj_in_list_vis(ch, newarg, keeper->carrying))) {
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);

@@ -96,11 +96,47 @@ typedef unsigned long long int uint64;
 
 #define BOOL(x)  ((x) ? TRUE : FALSE)
 
+/**
+ * @brief Returns the number of elements in an array
+ * @param x the structure
+ * @return the number of elements in the structure
+ */
 #define NELEMENTS(x)                (sizeof((x)) / sizeof((x)[0]))
+
+/**
+ * @brief Returns the byte offset of a given element within a struct
+ * @param elem the structure element
+ * @param StructType the type definition of the structure (e.g. struct blah)
+ * @return the byte offset of elem within StructType
+ */
 #define OFFSETOF(elem,StructType)   ((char *)&(((StructType *)NULL)->elem) - \
                                        (char *)((StructType *)NULL))
+
+/**
+ * @brief Returns the size (in bytes) of a given element within a struct
+ * @param elem the structure element
+ * @param StructType the type definition of the structure (e.g. struct blah)
+ * @return the size (in bytes) of elem within StructType
+ */
 #define ELEMSIZE(elem,StructType)   (sizeof(((StructType *)NULL)->elem))
+
+/**
+ * @brief Does a forced conversion to uint32 (can be an lval as well as rval)
+ * @param x the data item to treat as a uint32
+ * @return an entity at the same address as x, but as a uint32
+ */
 #define FORCE_UINT32(x)             (*(uint32 *)&(x))
+
+/**
+ * @brief Gives a pointer to the element within a structure by offset
+ * @param offset the byte offset within the buffer to point at
+ * @param buffer a structure (usually) that we need an element in
+ * @return void pointer to the element at offset within the buffer
+ *
+ * This is useful to take the output of OFFSETOF() which is a byte offset of an
+ * element in a structure, and get a pointer to that element later by offset.
+ * This is the converse of OFFSETOF()
+ */
 #define PTR_AT_OFFSET(offset,buffer)    ((void *)((char *)(buffer) + \
                                                   (int)(offset)))
 
@@ -114,6 +150,10 @@ typedef unsigned long long int uint64;
 
 #define IS_OBJ_STAT(obj,elem,stat) (IS_SET((obj)->elem,stat))
 
+/**
+ * @todo create a "macros.h" with these macros
+ */
+
 #define WEAR_FLAG(o,f)  IS_SET(o->wear_flags, f)
 #define EXTRA_FLAG(o,f) IS_SET(o->extra_flags, f)
 #define CLASS_FLAG(o,f) IS_SET(o->anti_class, f)
@@ -123,6 +163,13 @@ typedef unsigned long long int uint64;
 #define ANTI_CLASS_FLAG(o,f)  (CLASS_FLAG(o, f) && \
                                !CLASS_FLAG(o, ITEM_ONLY_CLASS))
 
+/**
+ * @brief Returns the maximum level this player has on any class
+ * @param ch the character structure
+ * @return the maximum level of that player
+ * @todo implement the setting of max_level on gain and on char load
+ */
+#define GetMaxLevel(ch) ( ch == NULL ? 0 : ch->player.max_level )
 
 
 #endif

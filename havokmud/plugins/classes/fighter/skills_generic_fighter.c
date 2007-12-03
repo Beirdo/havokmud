@@ -1125,7 +1125,7 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
                 "roots and berries.", TRUE, ch, 0, 0, TO_CHAR);
             act("$n searches the area for something to eat and manages to find "
                 "something.", TRUE, ch, 0, 0, TO_ROOM);
-            obj = objectRead(FOUND_FOOD, VIRTUAL);
+            obj = objectRead(FOUND_FOOD);
             objectGiveToChar(obj, ch);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
@@ -1178,7 +1178,7 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
                 TRUE, ch, 0, 0, TO_CHAR);
             act("$n searches the area for something to drink and manages to "
                 "find a small amount of water.", TRUE, ch, 0, 0, TO_ROOM);
-            obj = objectRead(FOUND_WATER, VIRTUAL);
+            obj = objectRead(FOUND_WATER);
             objectGiveToChar(obj, ch);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience "
                          "for using your abilities.$c0007\n\r", ch);
@@ -1686,19 +1686,19 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             acapply = 0;
         }
         if (!strcmp(itemtype, "shield")) {
-            hide = objectRead(TAN_SHIELD, VIRTUAL);
+            hide = objectRead(TAN_SHIELD);
             objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " shield");
         } else if (!strcmp(itemtype, "jacket")) {
-            hide = objectRead(TAN_JACKET, VIRTUAL);
+            hide = objectRead(TAN_JACKET);
             objectGiveToChar(hide, ch);
             acapply += 5;
             acbonus += 2;
             strcat(hidetype, " jacket");
         } else if (!strcmp(itemtype, "boots")) {
-            hide = objectRead(TAN_BOOTS, VIRTUAL);
+            hide = objectRead(TAN_BOOTS);
             objectGiveToChar(hide, ch);
             acapply--;
             if (acapply < 0) {
@@ -1710,7 +1710,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " pair of boots");
         } else if (!strcmp(itemtype, "gloves")) {
-            hide = objectRead(TAN_GLOVES, VIRTUAL);
+            hide = objectRead(TAN_GLOVES);
             objectGiveToChar(hide, ch);
 
             acapply--;
@@ -1723,19 +1723,19 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " pair of gloves");
         } else if (!strcmp(itemtype, "leggings")) {
-            hide = objectRead(TAN_LEGGINGS, VIRTUAL);
+            hide = objectRead(TAN_LEGGINGS);
             objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of leggings");
         } else if (!strcmp(itemtype, "sleeves")) {
-            hide = objectRead(TAN_SLEEVES, VIRTUAL);
+            hide = objectRead(TAN_SLEEVES);
             objectGiveToChar(hide, ch);
             acapply++;
             acbonus++;
             strcat(hidetype, " set of sleeves");
         } else if (!strcmp(itemtype, "helmet")) {
-            hide = objectRead(TAN_HELMET, VIRTUAL);
+            hide = objectRead(TAN_HELMET);
             objectGiveToChar(hide, ch);
             acapply--;
             if (acapply < 0) {
@@ -1747,7 +1747,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
             strcat(hidetype, " helmet");
         } else if (!strcmp(itemtype, "bag")) {
-            hide = objectRead(TAN_BAG, VIRTUAL);
+            hide = objectRead(TAN_BAG);
             objectGiveToChar(hide, ch);
             strcat(hidetype, " bag");
         } else {

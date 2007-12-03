@@ -2226,7 +2226,8 @@ void affect_update(int pulse)
         }
     }
 
-    /*
+    /**
+     * @todo get rid of the object_list
      *  update the objects
      */
     for (j = object_list; j; j = next_thing) {

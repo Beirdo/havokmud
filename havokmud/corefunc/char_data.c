@@ -38,15 +38,6 @@ static char ident[] _UNUSED_ =
 
 /**
  * @todo replace this with a macro
- * @todo implement the setting of max_level on gain and on char load
- */
-int GetMaxLevel( struct char_data *ch )
-{
-    return( ch->player.max_level );
-}
-
-/**
- * @todo replace this with a macro
  * @todo see what that NPC block is all about, seems pointless
  */
 int HasClass(struct char_data *ch, int clss)
@@ -70,7 +61,7 @@ int HasClass(struct char_data *ch, int clss)
 
 /**
  * @todo replace this with a macro
- * @todo implement the setting of max_level on char creation, char load
+ * @todo implement the setting of class_count on char creation, char load
  */
 int HowManyClasses( struct char_data *ch )
 {
@@ -113,6 +104,8 @@ static Descrip_t align_desc[] = {
  * @param table a pointer to a Descrip_t table indicating maxval and 
  *        descriptions.  Table is terminated by a NULL desc.
  * @return The appropriate description text
+ * @todo Maybe reimplement this using a btree or similar device to speed up 
+ *       searching?
  *
  * The values in the table give a maximum value and a description.  The table 
  * is terminated by a NULL description.  The table MUST be in numerically

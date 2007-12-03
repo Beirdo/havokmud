@@ -2444,7 +2444,7 @@ void zone_update(void)
                         }
                     }
                 }
-                if (!(travelqp = objectRead(TRAVELQP, VIRTUAL))) {
+                if (!(travelqp = objectRead(TRAVELQP))) {
                     Log("no tqp item could be loaded");
                     return;
                 }
@@ -2663,7 +2663,7 @@ void reset_zone(int zone, int cmd)
                          ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                         (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
                             (-ZCMD.if_flag) + 1)) {
-                        if ((obj = objectRead(ZCMD.arg1, REAL)) != NULL) {
+                        if ((obj = objectRead(ZCMD.arg1)) != NULL) {
                             index = objectIndex(ZCMD.arg1);
                             index->MaxObjCount = ZCMD.arg2;
 
@@ -2697,7 +2697,7 @@ void reset_zone(int zone, int cmd)
                     } else {
                         last_cmd = 0;
                     }
-                } else if ((obj = objectRead(ZCMD.arg1, REAL))) {
+                } else if ((obj = objectRead(ZCMD.arg1))) {
                     Log("Error finding room #%d", ZCMD.arg3);
                     last_cmd = 1;
                 } else {
@@ -2711,7 +2711,7 @@ void reset_zone(int zone, int cmd)
                  *
                  * object to object
                  */
-                obj = objectRead(ZCMD.arg1, REAL);
+                obj = objectRead(ZCMD.arg1);
                 obj_to = get_obj_num(ZCMD.arg3);
                 if (obj_to && obj) {
                     index = objectIndex( ZCMD.arg1 );
@@ -2750,7 +2750,7 @@ void reset_zone(int zone, int cmd)
                 /**
                  * @todo make 'G' work with VIRTUAL
                  */
-                if ((obj = objectRead(ZCMD.arg1, REAL)) && mob) {
+                if ((obj = objectRead(ZCMD.arg1)) && mob) {
                     index = objectIndex( ZCMD.arg1 );
                     index->MaxObjCount = ZCMD.arg2;
 
@@ -2811,7 +2811,7 @@ void reset_zone(int zone, int cmd)
              * @todo make 'E' work with VIRTUAL
              * object to equipment list
              */
-                if ((obj = objectRead(ZCMD.arg1, REAL))) {
+                if ((obj = objectRead(ZCMD.arg1))) {
                     if (!mob->equipment[ZCMD.arg3]) {
                         index = objectIndex( ZCMD.arg1 );
                         index->MaxObjCount = ZCMD.arg2;
@@ -3028,7 +3028,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'O':
-                /*
+                /**
+                 * @todo make 'P' work with VIRTUAL
                  * read an object
                  */
                 if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
@@ -3038,7 +3039,7 @@ void reset_zone(int zone, int cmd)
                              ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                             (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1, rp) <
                                 (-ZCMD.if_flag) + 1)) {
-                            if ((obj = objectRead(ZCMD.arg1, REAL)) != NULL) {
+                            if ((obj = objectRead(ZCMD.arg1)) != NULL) {
                                 if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                                     tweakroll = number(1, 100);
                                     if (obj->tweak < tweakmin) {
@@ -3059,7 +3060,7 @@ void reset_zone(int zone, int cmd)
                         } else {
                             last_cmd = 0;
                         }
-                    } else if (obj = objectRead(ZCMD.arg1, REAL)) {
+                    } else if (obj = objectRead(ZCMD.arg1)) {
                         Log("Error finding room #%d", ZCMD.arg3);
                         last_cmd = 1;
                     } else {
@@ -3069,11 +3070,12 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'P':
-                /*
+                /**
+                 * @todo make 'P' work with VIRTUAL
                  * object to object
                  */
                 if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
-                    obj = objectRead(ZCMD.arg1, REAL);
+                    obj = objectRead(ZCMD.arg1);
                     obj_to = get_obj_num(ZCMD.arg3);
                     if (obj_to && obj) {
                         if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -3099,8 +3101,11 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'G':
+                /** 
+                 * @todo make 'G' work with VIRTUAL
+                 */
                 if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
-                    (obj = objectRead(ZCMD.arg1, REAL))) {
+                    (obj = objectRead(ZCMD.arg1))) {
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
                         if (obj->tweak < tweakmin) {
@@ -3145,11 +3150,12 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'E':
-                /*
+                /**
+                 * @todo make 'E' work with VIRTUAL
                  * object to equipment list
                  */
                 if ((ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) &&
-                    (obj = objectRead(ZCMD.arg1, REAL))) {
+                    (obj = objectRead(ZCMD.arg1))) {
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -4999,7 +5005,7 @@ void ReadTextZone(FILE * fl)
                     if (j >= 0 && ((rp = real_roomp(j)) != NULL)) {
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
-                            if ((obj = objectRead(i, VIRTUAL)) != NULL) {
+                            if ((obj = objectRead(i)) != NULL) {
                                 objectPutInRoom(obj, k);
                                 last_cmd = 1;
                             } else {
@@ -5008,7 +5014,7 @@ void ReadTextZone(FILE * fl)
                         } else {
                             last_cmd = 0;
                         }
-                    } else if ((obj = objectRead(i, VIRTUAL))) {
+                    } else if ((obj = objectRead(i))) {
                         Log("Error finding room #%d", k);
                         last_cmd = 1;
                     } else {
@@ -5022,7 +5028,7 @@ void ReadTextZone(FILE * fl)
                  * object to object
                  */
                 if (i < j) {
-                    obj = objectRead(i, VIRTUAL);
+                    obj = objectRead(i);
                     obj_to = get_obj_num(k);
                     if (obj_to && obj) {
                         objectPutInObject(obj, obj_to);
@@ -5036,11 +5042,11 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'G':
-                /*
+                /**
+                 * @todo make 'G' work with VIRTUAL
                  * objectGiveToChar
                  */
-                if (i < j &&
-                    (obj = objectRead(i, REAL)) && mob) {
+                if (i < j && (obj = objectRead(i)) && mob) {
                     objectGiveToChar(obj, mob);
                     last_cmd = 1;
 #ifndef NEW_RENT
@@ -5075,11 +5081,11 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'E':
-                /*
+                /**
+                 * @todo make 'E' work with virtual
                  * object to equipment list
                  */
-                if (i < j &&
-                    (obj = objectRead(i, REAL))) {
+                if (i < j && (obj = objectRead(i))) {
                     if (!mob->equipment[k]) {
                         equip_char(mob, obj, k);
                     } else {

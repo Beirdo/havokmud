@@ -74,7 +74,8 @@ void MakeSound(int pulse)
     struct obj_data *obj;
     struct char_data *ch;
 
-    /*
+    /**
+     * @todo get rid of the object_list!
      *  objects
      */
 

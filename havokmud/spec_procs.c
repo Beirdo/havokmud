@@ -1452,7 +1452,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
          */
         if (chalice == get_obj_in_list_num(achl, ch->carrying)) {
             objectExtract(chalice);
-            chalice = objectRead(chl, VIRTUAL);
+            chalice = objectRead(chl);
             objectGiveToChar(chalice, ch);
         }
         return (TRUE);
@@ -1470,7 +1470,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         if (buf1 && buf2 && !strcasecmp(buf1, "chalice") && 
             !strcasecmp(buf2, "altar")) {
             objectExtract(chalice);
-            chalice = objectRead(achl, VIRTUAL);
+            chalice = objectRead(achl);
             objectPutInRoom(chalice, ch->in_room);
             send_to_char("Ok.\n\r", ch);
         }
@@ -1891,10 +1891,10 @@ int delivery_beast(struct char_data *ch, int cmd, char *arg,
         command_interpreter(ch, "drop all.biscuit");
     } else if (time_info.hours < 2) {
         if (!number(0, 1)) {
-            o = objectRead(3012, VIRTUAL);
+            o = objectRead(3012);
             objectGiveToChar(o, ch);
         } else {
-            o = objectRead(3013, VIRTUAL);
+            o = objectRead(3013);
             objectGiveToChar(o, ch);
         }
     } else if (GET_POS(ch) > POSITION_SLEEPING) {
@@ -2325,7 +2325,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                         !(strcmp(mem->names[mem->index], GET_NAME(t)))) {
                         act("$n crawls under the large table.",
                             FALSE, ch, 0, 0, TO_ROOM);
-                        obj = objectRead(PostKey, VIRTUAL);
+                        obj = objectRead(PostKey);
                         if ((IS_CARRYING_N(t) + 1) < CAN_CARRY_N(t)) {
                             act("$N emerges with $p, and gives it to you.",
                                 FALSE, t, obj, ch, TO_CHAR);
@@ -7576,7 +7576,7 @@ int generate_legend_statue(void)
                 /*
                  * load the generic item 
                  */
-                if ((obj = objectRead(itype, VIRTUAL))) {
+                if ((obj = objectRead(itype))) {
                     /*
                      * and string it up a bit 
                      */
@@ -7738,7 +7738,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (!(cmp = objectRead(obj->item_number, VIRTUAL))) {
+                if (!(cmp = objectRead(obj->item_number))) {
                     Log("Could not load comparison weapon in do_sharpen");
                     return;
                 }

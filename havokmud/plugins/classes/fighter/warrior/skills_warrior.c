@@ -102,7 +102,11 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 
-            cmp = objectRead(obj->item_number, REAL);
+            /**
+             * @todo make sure this works, it used to be a REAL load, not
+             *       VIRTUAL
+             */
+            cmp = objectRead(obj->item_number);
             if (cmp->value[2] == 0) {
                 sprintf(buf, "%s tried to mend an weapon with invalid "
                              "value: %s, vnum %d.",

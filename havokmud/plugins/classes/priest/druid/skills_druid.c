@@ -1143,6 +1143,9 @@ void spell_flame_blade(int level, struct char_data *ch,
     SET_BIT(tmp_obj->extra_flags, ITEM_MAGIC);
     tmp_obj->affected[0].location = APPLY_DAMROLL;
     tmp_obj->affected[0].modifier = 4 + GET_LEVEL(ch, DRUID_LEVEL_IND) / 8;
+    /**
+     * @todo Yuck, object_list!
+     */
     tmp_obj->next = object_list;
     object_list = tmp_obj;
     equip_char(ch, tmp_obj, WIELD);
@@ -1441,7 +1444,8 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     key = StringToKeywords( arg, NULL );
 
-    /*
+    /**
+     * @todo get rid of object_list... use a btree or something
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {
@@ -1909,7 +1913,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
 
     key = StringToKeywords( name, NULL );
 
-    /*
+    /**
+     * @todo get rid of object_list... use a btree or something
      * find the target tree
      */
     for (i = object_list; i; i = i->next) {

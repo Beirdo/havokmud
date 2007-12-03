@@ -576,7 +576,7 @@ void spell_cold_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = objectRead(COLD_LIGHT, VIRTUAL);
+    tmp_obj = objectRead(COLD_LIGHT);
     if (tmp_obj) {
         tmp_obj->value[2] = 24 + level;
         objectGiveToChar(tmp_obj, ch);
@@ -1979,7 +1979,7 @@ void spell_scourge_warlock(int level, struct char_data *ch,
         /*
          * give him a tongue to wear on his face
          */
-        if ((obj = objectRead(TONGUE_ITEM, VIRTUAL))) {
+        if ((obj = objectRead(TONGUE_ITEM))) {
             /*
              * add a random Dark Lord's boon to it
              */
@@ -2457,6 +2457,9 @@ void spell_trace_corpse(int level, struct char_data *ch,
     found = 0;
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
+    /**
+     * @todo get rid of object_list, we need btrees or something
+     */
     for (i = object_list; i && !found; i = i->next) {
         if (IS_CORPSE(i) && KeywordsMatch(key, &i->keywords)) {
             found = 1;

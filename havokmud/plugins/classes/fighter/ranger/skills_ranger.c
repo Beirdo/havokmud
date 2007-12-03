@@ -69,7 +69,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         corpse, 0, TO_ROOM);
     send_to_char("You carve up a fat ration.\n\r", ch);
 
-    food = objectRead(FOUND_FOOD, VIRTUAL);
+    food = objectRead(FOUND_FOOD);
 
     StringToKeywords( "ration slice filet food", &food->keywords );
     sprintf(buffer, "a Ration%s", corpse->short_description + 10);

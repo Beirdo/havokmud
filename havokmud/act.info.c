@@ -3324,6 +3324,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     if (GetMaxLevel(ch) >= SAINT) {
         key = StringToKeywords( name, NULL );
+        /**
+         * @todo get rid of object_list, use a btree or something
+         */
         for (k = object_list; k; k = k->next) {
             if ( CAN_SEE_OBJ(ch, k) && KeywordsMatch(key, &k->keywords)) {
                 if (number == 0 || (--count) == 0) {

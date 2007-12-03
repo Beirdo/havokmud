@@ -3331,6 +3331,9 @@ struct obj_data *find_tqp(int tqp_nr)
     struct obj_data *tqp = 0;
     int             nr = 0;
 
+    /**
+     * @todo get rid of the object_list
+     */
     for (t = object_list; t; t = t->next) {
         if (t->item_number == TRAVELQP) {
             nr++;
@@ -3348,6 +3351,9 @@ int count_tqp(void)
     register struct obj_data *t;
     int             tqp_nr = 0;
 
+    /**
+     * @todo get rid of the object_list
+     */
     for (t = object_list; t; t = t->next) {
         if (t->item_number == TRAVELQP) {
             tqp_nr++;
@@ -3387,7 +3393,7 @@ void traveling_qp(int pulse)
             send_to_char("You found yourself some booty, and are rewarded by"
                          " the gods with a $c000Rq$c000Yu$c000Ge$c000Bs"
                          "$c000Ct$c000w token.\n\r", ch);
-            if ((qt = objectRead(QUEST_POTION, VIRTUAL))) {
+            if ((qt = objectRead(QUEST_POTION))) {
                 objectGiveToChar(qt, ch);
             }
             Log("carried by player, gained a QT");

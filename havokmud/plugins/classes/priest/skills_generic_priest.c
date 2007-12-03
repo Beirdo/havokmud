@@ -605,7 +605,7 @@ void spell_cont_light(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-    tmp_obj = objectRead(20, VIRTUAL);
+    tmp_obj = objectRead(20);
     if (tmp_obj) {
         objectGiveToChar(tmp_obj, ch);
     } else {
@@ -2405,6 +2405,9 @@ void spell_goodberry(int level, struct char_data *ch,
     SET_BIT(tmp_obj->extra_flags, ITEM_MAGIC);
     tmp_obj->affected[0].location = APPLY_EAT_SPELL;
     tmp_obj->affected[0].modifier = SPELL_CURE_LIGHT;
+    /**
+     * @todo Yuck, object_list
+     */
     tmp_obj->next = object_list;
     object_list = tmp_obj;
     objectGiveToChar(tmp_obj, ch);

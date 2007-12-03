@@ -572,7 +572,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
                 FALSE, ch, obj, 0, TO_CHAR);
             act("$n drops $p, and it shatters!", FALSE, ch, obj, 0, TO_ROOM);
 
-            i = objectRead(30, VIRTUAL);
+            i = objectRead(30);
             sprintf(buf, "Scraps from %s lie in a pile here.",
                     obj->short_description);
             i->description = (char *) strdup(buf);
@@ -975,13 +975,13 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
         objectTakeFromRoom(obj);
         objectExtract(obj);
 
-        obj = objectRead(51831, VIRTUAL);
+        obj = objectRead(51831);
         objectPutInRoom(obj, ch->in_room);
 
         /*
          * Load up the prize 
          */
-        win = objectRead(randomitem(), VIRTUAL);
+        win = objectRead(randomitem());
         if (!win) {
             Log("Invalid item in lennyas altar proc");
             return (FALSE);
@@ -1467,7 +1467,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
 
             if (time_info.hours > 6) {
                 if (time_info.hours < 20) {
-                    obj = objectRead(PEN_MIGHT, VIRTUAL);
+                    obj = objectRead(PEN_MIGHT);
                     objectGiveToChar(obj, ch);
                     send_to_char("Elamin's Pen of Might bursts out of thin"
                                  " air and lands in your hands.\n\r", ch);
@@ -1528,7 +1528,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
             objectExtract(obj);
 
             if (time_info.hours < 7 || time_info.hours > 19) {
-                obj = objectRead(PEN_MIGHT, VIRTUAL);
+                obj = objectRead(PEN_MIGHT);
                 objectGiveToChar(obj, ch);
                 send_to_char("Elamin's Pen of Might bursts out of thin air"
                              " and lands in your hands.\n\r", ch);
@@ -1584,7 +1584,7 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         objectExtract(obj1);
         objectExtract(obj2);
 
-        obj = objectRead(DRAGON_SCEPTRE_TWO, VIRTUAL);
+        obj = objectRead(DRAGON_SCEPTRE_TWO);
         objectGiveToChar(obj, ch);
         return (TRUE);
     }
@@ -1637,12 +1637,12 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         objectExtract(obj1);
         objectExtract(obj2);
 
-        obj = objectRead(DRAGON_SCEPTRE_ONE, VIRTUAL);
+        obj = objectRead(DRAGON_SCEPTRE_ONE);
         objectPutInRoom(obj, ch->in_room);
 
-        obj = objectRead(EYE_DRAGON, VIRTUAL);
+        obj = objectRead(EYE_DRAGON);
         objectPutInRoom(obj, ch->in_room);
-        obj = objectRead(EYE_DRAGON, VIRTUAL);
+        obj = objectRead(EYE_DRAGON);
         objectPutInRoom(obj, ch->in_room);
 
         room = real_roomp(ch->in_room);

@@ -205,7 +205,6 @@ int get_number(char **name);
 /*
  * char_data.c
  */
-int GetMaxLevel( struct char_data *ch );
 int HasClass(struct char_data *ch, int clss);
 int HowManyClasses( struct char_data *ch );
 int pc_num_class(int clss);
@@ -287,7 +286,7 @@ void objectInsert(struct obj_data *obj, long vnum);
 void objectClear(struct obj_data *obj);
 struct obj_data *objectClone(struct obj_data *obj);
 void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
-struct obj_data *objectRead(int nr, int type);
+struct obj_data *objectRead(int nr);
 void objectFree(struct obj_data *obj);
 void objectExtract(struct obj_data *obj);
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);

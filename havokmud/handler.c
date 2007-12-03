@@ -1523,7 +1523,8 @@ struct char_data *get_char_num(int nr)
     return (0);
 }
 
-/*
+/**
+ * @todo this uses object_list-like behavior and needs rethinking
  * Set all carried_by to point to new owner 
  */
 void object_list_new_owner(struct obj_data *list, struct char_data *ch)
@@ -1934,9 +1935,9 @@ struct obj_data *create_money(int amount)
     }
 
     if (amount == 1) {
-        obj = objectRead(OBJ_VNUM_MONEY_ONE, VIRTUAL);
+        obj = objectRead(OBJ_VNUM_MONEY_ONE);
     } else {
-        obj = objectRead(OBJ_VNUM_MONEY_SOME, VIRTUAL);
+        obj = objectRead(OBJ_VNUM_MONEY_SOME);
         sprintf(buf, obj->short_description, amount);
         if (obj->short_description) {
             free(obj->short_description);

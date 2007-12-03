@@ -126,7 +126,7 @@ struct obj_data *objectClone(struct obj_data *obj)
     struct obj_data *ocopy;
     char            *keywords;
     
-    ocopy = objectRead(obj->item_number, VIRTUAL);
+    ocopy = objectRead(obj->item_number);
 
     FreeKeywords( &ocopy->keywords, FALSE );
 
@@ -169,7 +169,7 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj)
 /**
  * @todo what is object_list being used for?!
  */
-struct obj_data *objectRead(int nr, int type)
+struct obj_data *objectRead(int nr)
 {
     struct obj_data    *obj;
     struct index_data  *index;
@@ -179,11 +179,6 @@ struct obj_data *objectRead(int nr, int type)
         return( NULL );
     }
     
-    if( type != 1 ) {
-        LogPrint( LOG_CRIT, "objectRead(%d, %d) failed", nr, type );
-        return( NULL );
-    }
-
     CREATE(obj, struct obj_data, 1);
     if (!obj) {
         LogPrintNoArg( LOG_CRIT, "Cannot create obj?!");
@@ -435,6 +430,9 @@ struct obj_data *get_obj_in_list(char *name, struct obj_data *list)
 }
 
 
+/**
+ * @todo check if object_list can be done in a better way... like btrees
+ */
 struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
                                    int *count)
 {
@@ -444,6 +442,9 @@ struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
                              steps ) );
 }
 
+/**
+ * @todo check if object_list can be done in a better way... like btrees
+ */
 struct obj_data *get_obj(char *name)
 {
     static int  offset = OFFSETOF(next, struct obj_data);
@@ -452,6 +453,9 @@ struct obj_data *get_obj(char *name)
                              steps ) );
 }
 
+/**
+ * @todo check if object_list can be done in a better way... like btrees
+ */
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  struct obj_data *list, int nextOffset,
                                  int *count, bool visible, int steps)
@@ -518,12 +522,18 @@ struct obj_data *get_obj_in_list_num(int num, struct obj_data *list)
     return( GetObjectNumInList( num, list, offset ) );
 }
 
+/**
+ * @todo check if object_list can be done in a better way... like btrees
+ */
 struct obj_data *get_obj_num(int num)
 {
     static int  offset = OFFSETOF(next, struct obj_data);
     return( GetObjectNumInList( num, object_list, offset ) );
 }
 
+/**
+ * @todo check if object_list can be done in a better way... like btrees
+ */
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset)
 {
