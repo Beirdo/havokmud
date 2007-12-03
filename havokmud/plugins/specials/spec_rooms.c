@@ -1292,8 +1292,8 @@ int ChurchBell(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &buf);   /* buf == object */
 
         if (buf && !strcmp("rope", buf)) {
-            send_to_all("The bells of Karsynia's church sound 'GONG! GONG! "
-                        "GONG! GONG!'\n");
+            SendToAll("The bells of Karsynia's church sound 'GONG! GONG! "
+                      "GONG! GONG!'\n");
             return (TRUE);
         }
     }

@@ -2035,7 +2035,8 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                     case 'c':
                         if (IS_SET(to->player.user_flags, USE_ANSI)) {
                             KLUDGE = TRUE;
-                            str2ansi(tmp, strp, 1, 4);
+                            strncpy( tmp, &strp[1], 4 );
+                            tmp[4] = '\0';
                             i = ansi_parse(tmp);
                         } else
                             i = "";
@@ -2198,7 +2199,8 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                     case 'c':
                         if (IS_SET(to->player.user_flags, USE_ANSI)) {
                             KLUDGE = TRUE;
-                            str2ansi(tmp, strp, 1, 4);
+                            strncpy( tmp, &strp[1], 4 );
+                            tmp[4] = '\0';
                             i = ansi_parse(tmp);
                         } else
                             i = "";

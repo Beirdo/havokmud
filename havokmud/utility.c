@@ -1711,7 +1711,7 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
 
     sprintf(buf, "%s resorts the world (The game will pause for a few "
                  "moments).\r\n", ch->player.name);
-    send_to_all(buf);
+    SendToAll(buf);
 
     sprintf(buf, "Saving World (%ld rooms)\n\r", (long) top_of_world);
     send_to_char(buf, ch);
@@ -1838,7 +1838,7 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
 
     sprintf(buf, "The world returns to normal as %s finishes the job.\r\n",
             ch->player.name);
-    send_to_all(buf);
+    SendToAll(buf);
     send_to_char("\n\rDone\n\r", ch);
 
     return;
@@ -3477,7 +3477,7 @@ void ArenaPulseStuff(int pulse)
                     }
                     sprintf(buf, "%s has been declared winner of this "
                                  "Arena!!\n\r", GET_NAME(ch));
-                    send_to_all(buf);
+                    SendToAll(buf);
                 }
             }
         }
@@ -3504,13 +3504,13 @@ void AuctionPulseStuff(int pulse)
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c.  Minimum bid set at "
                      "$c000w%d$c000c coins.\n\r",
                 auctionobj->short_description, minbid);
-        send_to_all(buf);
+        SendToAll(buf);
         auct_loop++;
         break;
     case 3:
         sprintf(buf, "$c000cAuction:  No interest in $c000w%s$c000c.  Item "
                      "withdrawn.\n\r", auctionobj->short_description);
-        send_to_all(buf);
+        SendToAll(buf);
         auct_loop = 0;
         intbid = 0;
         minbid = 0;
@@ -3543,7 +3543,7 @@ void AuctionPulseStuff(int pulse)
                      "$c000w%ld$c000c coins, to $c000w%s$c000c.  Going "
                      "once..\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
-        send_to_all(buf);
+        SendToAll(buf);
         auct_loop++;
         break;
 
@@ -3552,7 +3552,7 @@ void AuctionPulseStuff(int pulse)
                      "$c000w%ld$c000c coins, to $c000w%s$c000c.  Going "
                      "twice...\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
-        send_to_all(buf);
+        SendToAll(buf);
         auct_loop++;
         break;
 
@@ -3560,7 +3560,7 @@ void AuctionPulseStuff(int pulse)
         sprintf(buf, "$c000cAuction:  Gone!  $c000w%s$c000c was sold for "
                      "$c000w%ld$c000c coins to $c000w%s$c000c.\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
-        send_to_all(buf);
+        SendToAll(buf);
 
         /*
          * return money to auctioneer
@@ -3923,7 +3923,7 @@ void CheckLegendStatus(struct char_data *ch)
         SET_BIT(ch->specials.act, PLR_LEGEND);
         sprintf(buf, "The Gods have seen fit to raise %s to the status of "
                 "Legend!\n\r", GET_NAME(ch));
-        send_to_all(buf);
+        SendToAll(buf);
     }
 }
 
@@ -5847,7 +5847,7 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
 
     sprintf(buf, "%s resorts the mobiles (The game will pause for a few "
                  "moments).\r\n", ch->player.name);
-    send_to_all(buf);
+    SendToAll(buf);
 
     sprintf(buf, "Saving Mobiles (%ld mobiles)\n\r", (long) m_end);
     send_to_char(buf, ch);
@@ -5884,7 +5884,7 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
 
     sprintf(buf, "The world returns to normal as %s finishes the job.\r\n",
             ch->player.name);
-    send_to_all(buf);
+    SendToAll(buf);
     send_to_char("\n\rDone.\n\r", ch);
     sprintf(buf, "(%d) mobiles saved!\n\r", count);
     send_to_char(buf, ch);

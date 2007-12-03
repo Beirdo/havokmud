@@ -44,7 +44,6 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-void str2ansi(char *p2, char *p1, int start, int stop);
 int ansi_parse(char *code, char *buf);
 
 /**
@@ -114,26 +113,6 @@ int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf)
     return( strlen(buf) );
 }
 
-
-/**
- * @todo this function should not be necessary
- *
- * Seems to be a simple strcpy at an start offset with an end offset.
- */
-void str2ansi(char *p2, char *p1, int start, int stop)
-{
-    int         len;
-
-    len = stop - start + 1;
-
-    if( start < 0 || len < 1 ) {
-        p2[0] = '\0';
-        return;
-    }
-
-    strncpy(p2, &p1[start], stop - start + 1);
-    p2[len] = '\0';
-}
 
 /**
  * Table of ANSI color modifiers

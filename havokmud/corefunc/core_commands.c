@@ -984,12 +984,12 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
 
     if (!arg) {
         sprintf(buf, "Shutdown by %s.", GET_NAME(ch));
-        send_to_all(buf);
+        SendToAll(buf);
         LogPrintNoArg( LOG_CRIT, buf );
         mudshutdown = 1;
     } else if (!strcasecmp(arg, "reboot")) {
         sprintf(buf, "Reboot by %s.", GET_NAME(ch));
-        send_to_all(buf);
+        SendToAll(buf);
         LogPrintNoArg( LOG_CRIT, buf );
         mudshutdown = 1;
         reboot_now = 1;

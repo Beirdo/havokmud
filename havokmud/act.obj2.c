@@ -1597,7 +1597,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     sprintf(buf, "$c000cAuction:  $c000w%s$c000c auctions $c000w%s$c000c. "
                  "Minimum bid set at $c000w%ld$c000c coins.\n\r",
             GET_NAME(ch), auctionobj->short_description, minbid);
-    send_to_all(buf);
+    SendToAll(buf);
 
     send_to_char("Your item is taken away from you.\n\r", ch);
 
@@ -1763,7 +1763,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c places a bid of "
                      "$c000w%d$c000c coins for $c000w%s$c000c.\n\r",
                 GET_NAME(ch), intbid, auctionobj->short_description);
-        send_to_all(buf);
+        SendToAll(buf);
         /*
          * reset auction loop to 4 
          */
@@ -1780,7 +1780,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
             /*
              * cancel this auction 
              */
-            send_to_all("$c000cAuction: the auction has been cancelled.\n\r");
+            SendToAll("$c000cAuction: the auction has been cancelled.\n\r");
 
             /*
              * reset previous bidder, if any 

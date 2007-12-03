@@ -2255,7 +2255,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                         sprintf(buf, "%s killed by %s in ARENA!\n\r",
                                 GET_NAME(victim), ch->player.short_descr);
                     }
-                    send_to_all(buf);
+                    SendToAll(buf);
                 } else {
                     /*
                      * killed by PC
@@ -2275,7 +2275,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                                ARENA_ROOM)) {
                         sprintf(buf, "%s killed by %s in ARENA\n\r",
                                 GET_NAME(victim), GET_NAME(ch));
-                        send_to_all(buf);
+                        SendToAll(buf);
                     }
 
                     if ((IS_GOOD(ch) && !IS_EVIL(victim)) ||
@@ -5026,7 +5026,7 @@ void NailThisSucker(struct char_data *ch)
 
     if (IS_SET(RM_FLAGS(ch->in_room), ARENA_ROOM)) {
         sprintf(buf, "%s has been thrown out of the ARENA!\n\r", GET_NAME(ch));
-        send_to_all(buf);
+        SendToAll(buf);
         raw_kill_arena(ch);
         return;
     }

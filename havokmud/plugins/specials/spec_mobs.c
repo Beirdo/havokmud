@@ -8682,8 +8682,8 @@ int Slavalis(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        send_to_all("The chruch bells of Karsynia sound off in a chorus of "
-                    "happiness!\n");
+        SendToAll("The church bells of Karsynia sound off in a chorus of "
+                  "happiness!\n");
 
         return (TRUE);
     }

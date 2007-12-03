@@ -485,10 +485,10 @@ void do_move(struct char_data *ch, char *argument, int cmd)
         if (RideCheck(RIDDEN(ch), 0)) {
             do_move(RIDDEN(ch), argument, cmd);
             return;
-        } else {
-            FallOffMount(RIDDEN(ch), ch);
-            Dismount(RIDDEN(ch), ch, POSITION_SITTING);
-        }
+        } 
+        
+        FallOffMount(RIDDEN(ch), ch);
+        Dismount(RIDDEN(ch), ch, POSITION_SITTING);
     }
 
     if (cmd > 1000) {
@@ -496,6 +496,7 @@ void do_move(struct char_data *ch, char *argument, int cmd)
     } else {
         cmd -= 1;
     }
+
     /*
      ** the move is valid, check for follower/master conflicts.
      */
@@ -506,12 +507,10 @@ void do_move(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!ch->followers && !ch->master) {
-        MoveOne(ch, cmd);
-    } else if (!ch->followers) {
-        MoveOne(ch, cmd);
-    } else {
+    if (ch->followers) {
         MoveGroup(ch, cmd);
+    } else {
+        MoveOne(ch, cmd);
     }
 }
 

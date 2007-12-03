@@ -1585,7 +1585,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     sprintf(buf, "It will cost you %d coins per day\n\r", cost.total_cost);
     send_to_char(buf, ch);
 
-    save_obj(ch, &cost, 1);
+    objectSaveForChar(ch, &cost, 1);
     save = ch->in_room;
 
     if (ch->specials.start_room != 2) {

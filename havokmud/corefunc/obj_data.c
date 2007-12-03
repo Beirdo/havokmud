@@ -66,8 +66,8 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset);
 int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
-int obj_to_store(struct obj_data *obj, PlayerStruct_t *player, int playerId,
-                 int roomId, int itemNum, int parentItem, int delete);
+int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                     int roomId, int itemNum, int parentItem, int delete);
 int contained_weight(struct obj_data *container);
 void RecursivePrintLimitedItems(BalancedBTreeItem_t *node);
 void save_room(int room);
@@ -217,7 +217,6 @@ struct obj_data *objectRead(int nr, int type)
 }
 
 /**
- * @todo rename to objectFree
  * @todo does this get it out of the object_list or does the caller do that?
  * @brief release memory allocated for an obj struct
  */
@@ -999,9 +998,8 @@ void objectTakeFromRoom(struct obj_data *object)
 
 /**
  * @brief write the vital data of a player to the player file 
- * @todo rename to objectSaveForChar
  */
-void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
+void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
 {
     int                 i;
     int                 itemNum;
@@ -1036,12 +1034,12 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
             unequip_char(ch, i);
         }
 
-        itemNum = obj_to_store(obj, player, ch->playerId, -1, itemNum, -1, 
-                               delete);
+        itemNum = objectStoreChain(obj, player, ch->playerId, -1, itemNum, -1, 
+                                   delete);
     }
 
-    itemNum = obj_to_store(ch->carrying, player, ch->playerId, -1, itemNum, -1,
-                           delete);
+    itemNum = objectStoreChain(ch->carrying, player, ch->playerId, -1, itemNum,
+                               -1, delete);
     if (delete) {
         ch->carrying = NULL;
     }
@@ -1057,10 +1055,9 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 
 /**
  * @brief Destroy inventory after transferring it to "store inventory" 
- * @todo rename to objectStoreChain
  */
-int obj_to_store(struct obj_data *obj, PlayerStruct_t *player, int playerId,
-                 int roomId, int itemNum, int parentItem, int delete)
+int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                     int roomId, int itemNum, int parentItem, int delete)
 {
     int                 weight;
     struct obj_data    *next;
@@ -1095,8 +1092,8 @@ int obj_to_store(struct obj_data *obj, PlayerStruct_t *player, int playerId,
         }
 
         if (obj->contains) {
-            itemNum = obj_to_store(obj->contains, player, playerId, roomId, 
-                                   itemNum, newParent, delete);
+            itemNum = objectStoreChain(obj->contains, player, playerId, roomId, 
+                                       itemNum, newParent, delete);
         }
 
         next = obj->next_content;
@@ -1299,7 +1296,8 @@ void save_room(int room)
         return;
     }
 
-    itemNum = obj_to_store(rm->contents, NULL, -1, room, itemNum, -1, FALSE);
+    itemNum = objectStoreChain(rm->contents, NULL, -1, room, itemNum, -1, 
+                               FALSE);
 
     /* Clear out any objects above the last item */
     db_clear_objects( -1, room, itemNum );

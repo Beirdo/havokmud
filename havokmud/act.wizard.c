@@ -521,7 +521,7 @@ void do_highfive(struct char_data *ch, char *argument, int cmd)
                 sprintf(mess, "Time stops for a moment as %s and %s high "
                               "five.\n\r",
                         ch->player.name, tch->player.name);
-                send_to_all(mess);
+                SendToAll(mess);
             } else {
                 act("$n gives you a high five", TRUE, ch, 0, tch, TO_VICT);
                 act("You give a hearty high five to $N", TRUE, ch, 0, tch,
@@ -5440,7 +5440,7 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
                     victim->desc = 0;
                     if (recep_offer(victim, NULL, &cost, TRUE)) {
                         cost.total_cost = 100;
-                        save_obj(victim, &cost, 1);
+                        objectSaveForChar(victim, &cost, 1);
                     } else {
                         Log("%s had a failed recp_offer, they are losing EQ!",
                             GET_NAME(victim));
@@ -5482,7 +5482,7 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
 
     if (recep_offer(victim, NULL, &cost, TRUE)) {
         cost.total_cost = 100;
-        save_obj(victim, &cost, 1);
+        objectSaveForChar(victim, &cost, 1);
     } else {
         Log("%s had a failed recp_offer, they are losing EQ!",
             GET_NAME(victim));

@@ -1126,7 +1126,7 @@ void check_idling(struct char_data *ch)
              * if above fails we lose their EQ! 
              */
             cost.total_cost = 100;
-            save_obj(ch, &cost, 1);
+            objectSaveForChar(ch, &cost, 1);
         } else {
             sprintf(buf, "%s had a failed recp_offer, they are losing EQ!",
                     GET_NAME(ch));

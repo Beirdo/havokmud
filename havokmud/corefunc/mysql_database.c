@@ -614,10 +614,6 @@ void db_report_entry(int reportId, struct char_data *ch, char *report)
     db_queue_query( 0, QueryTable, data, 4, NULL, NULL, NULL );
 }
 
-/**
- * @todo make the calling functions expect all of the report lines at once
- *       rather than one at a time with repeated calls like it was before.
- */
 struct user_report *db_get_report(int reportId)
 {
     MYSQL_BIND         *data;

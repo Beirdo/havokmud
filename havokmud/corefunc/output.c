@@ -166,9 +166,8 @@ void SendToAllCond( char *messg, int (*condfunc)(PlayerStruct_t *, void *),
 
 /**
  * @brief Sends a message to all playing players
- * @todo rename to SendToAll
  */
-void send_to_all(char *messg)
+void SendToAll(char *messg)
 {
     SendToAllCond(messg, NULL, NULL);
 }
@@ -178,7 +177,10 @@ int CondIsAwake( PlayerStruct_t *player, void *arg )
     return( (AWAKE(player->charData)) ? 1 : 0 );
 }
 
-void send_to_all_awake(char *messg)
+/**
+ * @brief Sends a message to all awake players
+ */
+void SendToAllAwake(char *messg)
 {
     SendToAllCond(messg, CondIsAwake, NULL);
 }

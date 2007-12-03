@@ -450,7 +450,7 @@ void do_save(struct char_data *ch, char *argument, int cmd)
         GET_GOLD(tmp) = GET_GOLD(ch);
         GET_ALIGNMENT(tmp) = GET_ALIGNMENT(ch);
         recep_offer(tmp, NULL, &cost, FALSE);
-        save_obj(tmp, &cost, 0);
+        objectSaveForChar(tmp, &cost, 0);
 
         /*
          * we can't save tmp because they don't have a desc.
@@ -472,7 +472,7 @@ void do_save(struct char_data *ch, char *argument, int cmd)
     } 
     
     recep_offer(ch, NULL, &cost, FALSE);
-    save_obj(ch, &cost, 0);
+    objectSaveForChar(ch, &cost, 0);
     save_char(ch, AUTO_RENT);
 }
 
@@ -2851,7 +2851,7 @@ void do_arena(struct char_data *ch, char *argument, int cmd)
     }
 
     sprintf(buf, "%s just entered the ARENA!\n\r", GET_NAME(ch));
-    send_to_all(buf);
+    SendToAll(buf);
     stop_follower(ch);
     spell_dispel_magic(60, ch, ch, 0);
     GET_MANA(ch) = GET_MAX_MANA(ch);

@@ -499,7 +499,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
             act("$n helps $N into $S private chamber.", FALSE, recep, 0,
                 ch, TO_NOTVICT);
             ch->old_exp = 0;
-            save_obj(ch, &cost, 1);
+            objectSaveForChar(ch, &cost, 1);
             saveroom = ch->in_room;
 
             if (ch->specials.start_room != 2 && 

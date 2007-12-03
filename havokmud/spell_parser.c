@@ -3546,7 +3546,7 @@ int check_falling(struct char_data *ch)
 
                 sprintf(buf, "%s killed by burning in ARENA!\n\r",
                         GET_NAME(ch));
-                send_to_all(buf);
+                SendToAll(buf);
                 raw_kill_arena(ch);
                 return (TRUE);
             }

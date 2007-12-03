@@ -3434,7 +3434,6 @@ void list_append(struct descriptor_data *d, char *fmt, ...);
 void list_end(struct descriptor_data *d);
 int fwrite_string(FILE * fl, char *buf);
 char           *strip_cr(char *newbuf, const char *orig, size_t maxlen);
-void            str2ansi(char *p2, char *p1, int start, int stop);
 void             construct_prompt(char *buf, struct char_data *ch);
 void ReadTextZone(FILE * fl);
 int CheckKillFile(long virtual);

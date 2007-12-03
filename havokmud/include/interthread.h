@@ -175,8 +175,8 @@ int procIsRegistered( int_func func, proc_type type );
  */
 void SendOutput( PlayerStruct_t *player, char *fmt, ... );
 void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len );
-void send_to_all(char *messg);
-void send_to_all_awake(char *messg);
+void SendToAll(char *messg);
+void SendToAllAwake(char *messg);
 void send_to_outdoor(char *messg);
 void send_to_desert(char *messg);
 void send_to_out_other(char *messg);
@@ -297,7 +297,7 @@ void objectTakeFromChar(struct obj_data *object);
 void objectPutInRoom(struct obj_data *object, long room);
 void obj_to_room2(struct obj_data *object, long room);
 void objectTakeFromRoom(struct obj_data *object);
-void save_obj(struct char_data *ch, struct obj_cost *cost, int delete);
+void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete);
 void load_char_objs(struct char_data *ch);
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);

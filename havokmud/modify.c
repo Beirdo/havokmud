@@ -1067,7 +1067,7 @@ void night_watchman(void)
 
     extern int      mudshutdown;
 
-    void            send_to_all(char *messg);
+    void            SendToAll(char *messg);
 
     tc = time(0);
     t_info = localtime(&tc);
@@ -1075,12 +1075,12 @@ void night_watchman(void)
     if (t_info->tm_hour == 8 && t_info->tm_wday > 0 && t_info->tm_wday < 6) {
         if (t_info->tm_min > 50) {
             Log("Leaving the scene for the serious folks.");
-            send_to_all("Closing down. Thank you for flying HavokMUD.\n\r");
+            SendToAll("Closing down. Thank you for flying HavokMUD.\n\r");
             mudshutdown = 1;
         } else if (t_info->tm_min > 40) {
-            send_to_all("ATTENTION: HavokMUD will shut down in 10 minutes.\n\r");
+            SendToAll("ATTENTION: HavokMUD will shut down in 10 minutes.\n\r");
         } else if (t_info->tm_min > 30) {
-            send_to_all("Warning: The game will close in 20 minutes.\n\r");
+            SendToAll("Warning: The game will close in 20 minutes.\n\r");
         }
     }
 }
@@ -1104,7 +1104,7 @@ void check_reboot()
                     Log("Reboot is nonempty.");
                     if (system("./reboot")) {
                         Log("Reboot script terminated abnormally");
-                        send_to_all("The reboot was cancelled.\n\r");
+                        SendToAll("The reboot was cancelled.\n\r");
                         rename("./reboot", "reboot.FAILED");
                         fclose(boot);
                         return;
@@ -1113,20 +1113,20 @@ void check_reboot()
                     }
                 }
 
-                send_to_all("Automatic reboot. Come back in a little "
+                SendToAll("Automatic reboot. Come back in a little "
                             "while.\n\r");
                 raw_force_all("return");
                 raw_force_all("save");
                 mudshutdown = reboot_now = 1;
             } else if (t_info->tm_min > 49) {
-                send_to_all("MUD WILL REBOOT IN 1 MINUTE!\n\r");
+                SendToAll("MUD WILL REBOOT IN 1 MINUTE!\n\r");
             } else if (t_info->tm_min > 45) {
-                send_to_all("MUD WILL REBOOT IN 5 MINUTES.\n\r");
+                SendToAll("MUD WILL REBOOT IN 5 MINUTES.\n\r");
             } else if (t_info->tm_min > 40) {
-                send_to_all("ATTENTION: DikuMUD will reboot in 10 "
+                SendToAll("ATTENTION: DikuMUD will reboot in 10 "
                             "minutes.\n\r");
             } else if (t_info->tm_min > 30) {
-                send_to_all("Warning: The game will close and reboot in 20 "
+                SendToAll("Warning: The game will close and reboot in 20 "
                             "minutes.\n\r");
             }
 
@@ -1235,7 +1235,7 @@ void gr(int s)
     extern int      slow_death,
                     mudshutdown;
 
-    void            send_to_all(char *messg);
+    void            SendToAll(char *messg);
 
     void            coma(int s);
 
@@ -1243,19 +1243,19 @@ void gr(int s)
         if (ld >= 6) {
             sprintf(buf, "The system load is greater than 6.0 (%d)\n\r",
                     ld);
-            send_to_all(buf);
+            SendToAll(buf);
         } else if (slow_death)
-            send_to_all("The game is dying.\n\r");
+            SendToAll("The game is dying.\n\r");
         else {
             strcpy(buf,
                    "Game playing is no longer permitted on this machine:\n\r");
             strcat(buf, txt);
             strcat(buf, "\n\r");
-            send_to_all(buf);
+            SendToAll(buf);
         }
 
         if (wnr < 3)
-            send_to_all(warnings[wnr++]);
+            SendToAll(warnings[wnr++]);
         else if (ld >= 6) {
             coma(s);
             wnr = 0;
@@ -1264,8 +1264,7 @@ void gr(int s)
     } else if (workhours())
         mudshutdown = 1;        /* this shouldn't happen */
     else if (wnr) {
-        send_to_all
-            ("Things look brighter now - you can continue playing.\n\r");
+        SendToAll("Things look brighter now - you can continue playing.\n\r");
         wnr = 0;
     }
 }
