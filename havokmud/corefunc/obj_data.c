@@ -949,28 +949,6 @@ void objectPutInRoom(struct obj_data *object, long room)
     }
 }
 
-void obj_to_room2(struct obj_data *object, long room)
-{
-
-    if (room == -1) {
-        room = 4;
-    }
-
-    if(object->equipped_by || object->eq_pos != -1) {
-        return;
-    }
-
-    if (object->in_room > NOWHERE) {
-        objectTakeFromRoom(object);
-    }
-
-    object->next_content = real_roomp(room)->contents;
-    real_roomp(room)->contents = object;
-    object->in_room = room;
-    object->carried_by = NULL;
-    object->equipped_by = NULL;
-}
-
 /*
  * Take an object from a room 
  */

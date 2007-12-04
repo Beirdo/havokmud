@@ -294,7 +294,6 @@ void objectTakeFromObject(struct obj_data *obj);
 void objectGiveToChar(struct obj_data *object, struct char_data *ch);
 void objectTakeFromChar(struct obj_data *object);
 void objectPutInRoom(struct obj_data *object, long room);
-void obj_to_room2(struct obj_data *object, long room);
 void objectTakeFromRoom(struct obj_data *object);
 void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete);
 void load_char_objs(struct char_data *ch);
