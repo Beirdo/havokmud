@@ -95,6 +95,7 @@ extern int      rev_dir[];
 
 /**
  * @todo Fix for 64bit
+ * @todo Is this even necessary?
  */
 int is_target_room_p(int room, void *tgt_room)
 {
@@ -102,10 +103,13 @@ int is_target_room_p(int room, void *tgt_room)
     return( room == (int)(long) tgt_room );
 }
 
+/**
+ * @todo Is this even necessary?
+ */
 int named_object_on_ground(int room, void *c_data)
 {
     char           *name = c_data;
-    return( 0 != get_obj_in_list(name, real_roomp(room)->contents) );
+    return( (objectGetInRoom(name, real_roomp(room))) != NULL );
 }
 
 /*
@@ -266,8 +270,7 @@ void exec_social(struct char_data *npc, char *cmd, int next_line,
          * Find object in room
          */
         if (arg) {
-            *thing = get_obj_in_list_vis(npc, arg,
-                                         real_roomp(npc->in_room)->contents);
+            *thing = objectGetInRoom(npc, arg, real_roomp(npc->in_room));
             ok = (*thing != NULL);
         }
         break;
@@ -1350,8 +1353,8 @@ int zombie_master(struct char_data *ch, int cmd, char *arg,
             return TRUE;
         }
 
-        temp1 = get_obj_in_list_vis(zmaster, "corpse",
-                                    real_roomp(zmaster->in_room)->contents);
+        temp1 = objectGetInRoom(zmaster, "corpse", 
+                                real_roomp(zmaster->in_room));
 
         if (temp1) {
             if (GET_MANA(zmaster) < ZM_MANA) {
@@ -2357,8 +2360,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
         }
     } else if (cmd == 72) {
         arg = get_argument(arg, &obj_name);
-        if (!obj_name ||
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!obj_name || !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 
@@ -2640,8 +2642,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 72) {
         arg = get_argument(arg, &obj_name);
-        if (!obj_name ||
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!obj_name || !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 
@@ -7671,7 +7672,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((obj = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if ((obj = objectGetOnChar(ch, arg, ch))) {
         if ((ITEM_TYPE(obj) == ITEM_TYPE_WEAPON)) {
             /*
              * can only sharpen edged weapons 
@@ -7961,7 +7962,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         i = 1;
 
         while (i <= num && stop == 0) {
-            if ((obj = get_obj_in_list_vis(ch, itemname, shopkeep->carrying))) {
+            if ((obj = objectGetOnChar(ch, itemname, shopkeep))) {
                 cost = (int) obj->cost * modifier;
                 if (cost < 0) {
                     cost = 0;
@@ -8031,14 +8032,14 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
+        if ((obj = objectGetOnChar(ch, itemname, ch))) {
             cost = (int) obj->cost / (3 * modifier);
             /*
              * lets not have shops buying non-rentables
              */
             if (obj->cost_per_day == -1) {
-                oldSendOutput(ch, "%s doesn't buy items that cannot be rented.\n\r",
-                          shopkeep->player.short_descr);
+                oldSendOutput(ch, "%s doesn't buy items that cannot be "
+                                  "rented.\n\r", shopkeep->player.short_descr);
                 return (TRUE);
             }
 
@@ -8078,17 +8079,17 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
+        if ((obj = objectGetOnChar(ch, itemname, ch))) {
             cost = (int) obj->cost / (3 * modifier);
             if (cost < 400) {
-                oldSendOutput(ch, "%s doesn't buy worthless junk like that.\n\r",
-                          shopkeep->player.short_descr);
+                oldSendOutput(ch, "%s doesn't buy worthless junk like "
+                                  "that.\n\r", shopkeep->player.short_descr);
                 return (TRUE);
             }
             
             oldSendOutput(ch, "%s is willing to pay you %d coins for %s.\n\r",
-                      shopkeep->player.short_descr, cost,
-                      obj->short_description);
+                          shopkeep->player.short_descr, cost,
+                          obj->short_description);
             return (TRUE);
         }
         

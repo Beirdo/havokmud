@@ -1993,8 +1993,7 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    corpse = get_obj_in_list_vis(ch, "corpse",
-                                 real_roomp(ch->in_room)->contents);
+    corpse = objectGetInRoom(ch, "corpse", real_roomp(ch->in_room));
 
     if (corpse) {
         command_interpreter(ch, "get corpse");
@@ -2298,7 +2297,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
              */
             arg = get_argument(arg, &obj_name);
             if (!obj_name ||
-                !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))
+                !(obj = objectGetOnChar(ch, obj_name, ch)))
                 return (FALSE);
 
             vict_name = skip_spaces(arg);
@@ -2699,7 +2698,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!(obj = objectGetOnChar(ch, obj_name, ch))) {
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
@@ -4521,8 +4520,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
     if (IS_NPC(ch)) {
         if (cmd == 72) {
             arg = get_argument(arg, &obj_name);
-            if (!obj_name || !(obj = get_obj_in_list_vis(ch, obj_name,
-                                                         ch->carrying))) {
+            if (!obj_name || !(obj = objectGetOnChar(ch, obj_name, ch))) {
                 return (FALSE);
             }
 
@@ -4548,8 +4546,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
          * determine the correct obj 
          */
         arg = get_argument(arg, &obj_name);
-        if (!obj_name || !(obj = get_obj_in_list_vis(ch, obj_name,
-                                                     ch->carrying))){
+        if (!obj_name || !(obj = objectGetOnChar(ch, obj_name, ch))){
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
@@ -6271,7 +6268,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
     } else if (cmd == 72) {
         arg = get_argument(arg, &obj_name);
         if (!obj_name || 
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+            !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 
@@ -6686,7 +6683,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     } else if (cmd == 72) {
         arg = get_argument(arg, &obj_name);
         if (!obj_name || 
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+            !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 
@@ -7096,7 +7093,7 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if object in inventory but not visible to pc 
          */
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!(obj = objectGetOnChar(ch, obj_name, ch))) {
             send_to_char("You do not seem to have anything like that.\n\r", ch);
             return (TRUE);
         }
@@ -7139,8 +7136,7 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if object IS NOT the head of Matron Singh 
          */
-        if (obj != get_obj_in_list_vis(ch, "head of Matron Singh",
-                                       ch->carrying)) {
+        if (obj != objectGetOnChar(ch, "head of Matron Singh", ch)) {
             sprintf(buf, "give %s %s", obj_name, tgt_name);
             command_interpreter(ch, buf);
             sprintf(buf, "Why, thank you very much, that will make a nice "
@@ -7959,7 +7955,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
         if (!obj_name) {
             return (FALSE);
         }
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 
@@ -8165,7 +8161,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+        if (!(obj = objectGetOnChar(ch, obj_name, ch))) {
             send_to_char("Give what?\n\r", ch);
             return (TRUE);
         }
@@ -8994,7 +8990,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &obj_name);
 
         if (!obj_name || 
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+            !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
         arg = get_argument(arg, &vict_name);
@@ -9774,12 +9770,12 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
     if ((cmd) || (mob->in_room != 51837)) {
         return (FALSE);
     }
-    obj = get_obj_in_list_vis(ch, "stash", real_roomp(ch->in_room)->contents);
+    obj = objectGetInRoom(ch, "stash", real_roomp(ch->in_room));
 
     if (!obj) {
         return (FALSE);
     }
-    trinket = get_obj_in_list_vis(ch, "trinket", obj->contains);
+    trinket = objectGetInObject(ch, "trinket", obj);
 
     if (!trinket) {
         /*
@@ -10851,7 +10847,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &obj_name);
         if (!obj_name || 
-            !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+            !(obj = objectGetOnChar(ch, obj_name, ch))) {
             return (FALSE);
         }
 

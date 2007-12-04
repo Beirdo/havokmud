@@ -2033,15 +2033,14 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
                 return (FIND_OBJ_INV);
             }
         } else {
-            if ((*tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))) {
+            if ((*tar_obj = objectGetOnChar(ch, name, ch))) {
                 return (FIND_OBJ_INV);
             }
         }
     }
 
     if (IS_SET(bitvector, FIND_OBJ_ROOM) &&
-        (*tar_obj = get_obj_in_list_vis(ch, name,
-                                        real_roomp(ch->in_room)->contents))) {
+        (*tar_obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
         return (FIND_OBJ_ROOM);
     }
 

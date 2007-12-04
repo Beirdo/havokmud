@@ -417,19 +417,32 @@ struct obj_data *GetObjectInEquip(struct char_data *ch, char *arg,
     return (NULL);
 }
 
-struct obj_data *get_obj_in_list_vis(struct char_data *ch, char *name,
-                                     struct obj_data *list)
+
+struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
+                                  struct room_data *rm )
 {
-    static int  offset = OFFSETOF(next_content, struct obj_data);
-    static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( ch, name, list, offset, NULL, TRUE, steps ) );
+    static int  offset  = OFFSETOF(next_content, struct obj_data);
+    static int  steps   = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
+    return( GetObjectInList( ch, name, rm->contents, offset, NULL, 
+                             BOOL(ch != NULL), steps ) );
 }
 
-struct obj_data *get_obj_in_list(char *name, struct obj_data *list)
+struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
+                                  struct char_data *onch )
 {
-    static int  offset = OFFSETOF(next_content, struct obj_data);
-    static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( NULL, name, list, offset, NULL, FALSE, steps ) );
+    static int  offset  = OFFSETOF(next_content, struct obj_data);
+    static int  steps   = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
+    return( GetObjectInList( ch, name, onch->carrying, offset, NULL, 
+                             BOOL(ch != NULL), steps ) );
+}
+
+struct obj_data *objectGetInObject( struct char_data *ch, char *name,
+                                    struct obj_data *obj )
+{
+    static int  offset  = OFFSETOF(next_content, struct obj_data);
+    static int  steps   = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
+    return( GetObjectInList( ch, name, obj->contains, offset, NULL, 
+                             BOOL(ch != NULL), steps ) );
 }
 
 
@@ -562,14 +575,13 @@ struct obj_data *get_obj_vis(struct char_data *ch, char *name)
     /*
      * scan items carried 
      */
-    if ((obj = get_obj_in_list_vis(ch, name, ch->carrying))) {
+    if ((obj = objectGetOnChar(ch, name, ch))) {
         return(obj);
     }
     /*
      * scan room 
      */
-    if ((obj = get_obj_in_list_vis(ch, name, 
-                                 real_roomp(ch->in_room)->contents))) {
+    if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
         return(obj);
     }
     return( get_obj_vis_world(ch, name, NULL) );

@@ -2058,7 +2058,7 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
      * object
      */
 
-    if ((j = (struct obj_data *) get_obj_in_list_vis(ch, item, ch->carrying))) {
+    if ((j = objectGetOnChar(ch, item, ch))) {
         virtual = MAX( 0, j->item_number );
 
         if (!strcmp(field, "name")) {
@@ -3202,8 +3202,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             } else {
                 extract_char(vict);
             }
-        } else if ((obj = get_obj_in_list_vis(ch, name,
-                                         real_roomp(ch->in_room)->contents))) {
+        } else if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
             act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
             objectExtract(obj);
         } else if (!strcasecmp("room", name)) {
@@ -5724,10 +5723,9 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
             act("You clone $N.", FALSE, ch, 0, mob, TO_CHAR);
         }
     } else if (is_abbrev(type, "object")) {
-        if ((obj = get_obj_in_list_vis(ch, name, ch->carrying)) != NULL) {
+        if ((obj = objectGetOnChar(ch, name, ch))) {
             where = 1;
-        } else if ((obj = get_obj_in_list_vis(ch, name,
-                                      real_roomp(ch->in_room)->contents)) ) {
+        } else if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
             where = 2;
         } else {
             send_to_char("Can't find such object\r\n", ch);
@@ -6628,7 +6626,7 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+    if (!(obj = objectGetOnChar(ch, objec, ch))) {
         send_to_char("Where is that?\n\r", ch);
         return;
     }
@@ -6662,7 +6660,7 @@ void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
         send_to_char("Give what?\n\r", ch);
         return;
     }
-    if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+    if (!(obj = objectGetOnChar(ch, objec, ch))) {
         send_to_char("where is that?\n\r", ch);
         return;
     }
@@ -6703,7 +6701,7 @@ void do_setwtype(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+    if (!(obj = objectGetOnChar(ch, objec, ch))) {
         send_to_char("Where is that?\n\r", ch);
         return;
     }

@@ -476,7 +476,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
 
     if (strcasecmp(obj_name, "coins") && strcasecmp(obj_name, "gold")) {
         key = StringToKeywords( obj_name, NULL );
-        if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
+        if (!(obj = objectGetOnChar(victim, obj_name, victim))) {
             for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
                 if (victim->equipment[eq_pos] &&
                     KeywordsMatch(key, &victim->equipment[eq_pos]->keywords) &&

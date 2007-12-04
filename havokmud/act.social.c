@@ -102,7 +102,7 @@ void do_action(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(vict = get_char_room_vis(ch, buf))) {
-        if ((objx = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        if ((objx = objectGetOnChar(ch, buf, ch))) {
             act(action->msg[MSG_SOCIAL_ARG_OBJ_SELF], action->hide, ch, objx,
                 objx, TO_CHAR);
             act(action->msg[MSG_SOCIAL_ARG_OBJ_ROOM], action->hide, ch, objx,
@@ -313,7 +313,7 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(vict = get_char_vis_world(ch, name, NULL))) {
-        if ((objx = get_obj_in_list_vis(ch, name, ch->carrying))) {
+        if ((objx = objectGetOnChar(ch, name, ch))) {
             sprintf(buf2, "%s %s\n\r", command, 
                     action->msg[MSG_SOCIAL_ARG_ROOM]);
             act(buf2, action->hide, ch, objx, objx, TO_CHAR);

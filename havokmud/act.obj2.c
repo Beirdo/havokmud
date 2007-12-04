@@ -98,7 +98,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &arg);
 
-    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if (!arg || !(temp = objectGetOnChar(ch, arg, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -231,7 +231,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &buf);
 
-    if (!buf || !(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+    if (!buf || !(temp = objectGetOnChar(ch, buf, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -311,7 +311,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(from_obj = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+    if (!(from_obj = objectGetOnChar(ch, arg1, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -345,7 +345,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(to_obj = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+    if (!(to_obj = objectGetOnChar(ch, arg2, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -417,7 +417,7 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &arg);
 
-    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if (!arg || !(temp = objectGetOnChar(ch, arg, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -505,7 +505,7 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &arg);
 
-    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if (!arg || !(temp = objectGetOnChar(ch, arg, ch))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -1212,7 +1212,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                 }
             }
         } else {
-            obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
+            obj_object = objectGetOnChar(ch, arg1, ch);
             if (obj_object) {
                 if (arg2) {
                     /* 
@@ -1303,7 +1303,7 @@ void do_wield(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg2);
 
     if (arg1) {
-        obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
+        obj_object = objectGetOnChar(ch, arg1, ch);
         if (obj_object) {
             wear(ch, obj_object, keyword);
         } else {
@@ -1328,7 +1328,7 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg2);
 
     if (arg1) {
-        obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
+        obj_object = objectGetOnChar(ch, arg1, ch);
         if (obj_object) {
             if (ch->equipment[WIELD]) {
                 if (IS_OBJ_STAT(ch->equipment[WIELD], extra_flags, 
@@ -1367,7 +1367,7 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg2);
 
     if (arg1) {
-        obj_object = get_obj_in_list(arg1, ch->carrying);
+        obj_object = objectGetOnChar(NULL, arg1, ch);
         if (obj_object) {
             if (obj_object->type_flag == ITEM_TYPE_LIGHT) {
                 wear(ch, obj_object, WEAR_LIGHT);
@@ -1559,7 +1559,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &item);
     bid = skip_spaces(argument);
 
-    if (!item || !(auctionobj = get_obj_in_list_vis(ch, item, ch->carrying))) {
+    if (!item || !(auctionobj = objectGetOnChar(ch, item, ch))) {
         send_to_char("You don't seem to have that item.\n\r", ch);
         return;
     }

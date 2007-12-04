@@ -1412,7 +1412,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    ms = get_obj_in_list_vis(ch, arg1, ch->carrying);
+    ms = objectGetOnChar(ch, arg1, ch);
     if (!ms) {
         send_to_char("You don't seem to have that.\n\r", ch);
         return;
@@ -1531,7 +1531,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    throw = get_obj_in_list_vis(ch, arg1, ch->carrying);
+    throw = objectGetOnChar(ch, arg1, ch);
     /*
      * Check if second argument is a character or direction
      */

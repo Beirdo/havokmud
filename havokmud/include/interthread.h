@@ -298,6 +298,14 @@ void obj_to_room2(struct obj_data *object, long room);
 void objectTakeFromRoom(struct obj_data *object);
 void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete);
 void load_char_objs(struct char_data *ch);
+struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
+                                  struct room_data *rm );
+struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
+                                  struct char_data *onch );
+struct obj_data *objectGetInObject( struct char_data *ch, char *name,
+                                    struct obj_data *obj );
+
+
 
 bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);

@@ -118,7 +118,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
     }
     count = 0;
     while (num != 0) {
-        tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
+        tmp_object = objectGetOnChar(ch, arg, ch);
         if (tmp_object) {
             if (IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 send_to_char("You can't let go of it, it must be CURSED!\n\r",
@@ -927,7 +927,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+    if (!(temp = objectGetOnChar(ch, buf, ch))) {
         temp = ch->equipment[HOLD];
         equipped = TRUE;
         key = StringToKeywords( buf, NULL );
@@ -1037,7 +1037,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(scroll = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+    if (!(scroll = objectGetOnChar(ch, buf, ch))) {
         scroll = ch->equipment[HOLD];
         equipped = TRUE;
         key = StringToKeywords(buf, NULL);
@@ -1105,15 +1105,14 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_INV)) {
-            if ((obj = get_obj_in_list_vis(ch, buf2, ch->carrying))) {
+            if ((obj = objectGetOnChar(ch, buf2, ch))) {
                 target = TAR_OBJ_INV;
                 target_ok = TRUE;
             }
         }
 
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_ROOM)) {
-            if ((obj = get_obj_in_list_vis(ch, buf2,
-                                     real_roomp(ch->in_room)->contents))) {
+            if ((obj = objectGetInRoom(ch, buf2, real_roomp(ch->in_room)))) {
                 target_ok = TRUE;
                 target = TAR_OBJ_ROOM;
             }
@@ -3016,8 +3015,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * Find Corpse
      */
-    if (!(j = get_obj_in_list_vis(ch, itemname,
-                                  real_roomp(ch->in_room)->contents))) {
+    if (!(j = objectGetInRoom(ch, itemname, real_roomp(ch->in_room)))) {
         send_to_char("Where did that bloody corpse go?\n\r", ch);
         return;
     } 

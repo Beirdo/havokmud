@@ -578,9 +578,8 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
                     return;
                 }
 
-                if (!(trap = get_obj_in_list_vis(ch, name, 
-                                         real_roomp(ch->in_room)->contents)) &&
-                    !(trap = get_obj_in_list_vis(ch, name, ch->carrying))) {
+                if (!(trap = objectGetInRoom(ch, name, ch->in_room)) &&
+                    !(trap = objectGetOnChar(ch, name, ch))) {
                     send_to_char("Disarm what?\n\r", ch);
                     return;
                 }
@@ -1308,8 +1307,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    if (!(j = get_obj_in_list_vis(ch, itemname, 
-                                  real_roomp(ch->in_room)->contents))) {
+    if (!(j = objectGetInRoom(ch, itemname, ch->in_room))) {
         send_to_char("Where did it go?\n\r", ch);
         return;
     }

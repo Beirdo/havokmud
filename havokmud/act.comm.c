@@ -474,12 +474,12 @@ void do_write(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(paper = get_obj_in_list_vis(ch, papername, ch->carrying))) {
+    if (!(paper = objectGetOnChar(ch, papername, ch))) {
         oldSendOutput(ch, "You have no %s.\n\r", papername);
         return;
     }
 
-    if (!(pen = get_obj_in_list_vis(ch, penname, ch->carrying))) {
+    if (!(pen = objectGetOnChar(ch, penname, ch))) {
         oldSendOutput(ch, "You have no %s.\n\r", penname);
         return;
     }

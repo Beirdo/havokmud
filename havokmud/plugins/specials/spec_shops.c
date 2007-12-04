@@ -173,7 +173,7 @@ void shopping_buy(char *arg, struct char_data *ch,
     if (num == 0) {
         num = 1;
     }
-    if (!(temp1 = get_obj_in_list_vis(ch, argm, keeper->carrying))) {
+    if (!(temp1 = objectGetOnChar(ch, argm, keeper))) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
@@ -231,7 +231,7 @@ void shopping_buy(char *arg, struct char_data *ch,
         if (shop_producing(temp1, shop_nr)) {
             temp1 = objectRead(temp1->item_number);
         } else {
-            if (!(temp1 = get_obj_in_list_vis(ch, newarg, keeper->carrying))) {
+            if (!(temp1 = objectGetOnChar(ch, newarg, keeper))) {
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);
                 break;
             }
@@ -296,7 +296,7 @@ void shopping_sell(char *arg, struct char_data *ch,
         return;
     }
 
-    if (!(temp1 = get_obj_in_list_vis(ch, argm, ch->carrying))) {
+    if (!(temp1 = objectGetOnChar(ch, argm, ch))) {
         sprintf(buf, shop_index[shop_nr].no_such_item2, GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
@@ -360,7 +360,7 @@ void shopping_sell(char *arg, struct char_data *ch,
 
     objectTakeFromChar(temp1);
 
-    if (get_obj_in_list(argm, keeper->carrying) || 
+    if (objectGetOnChar(NULL, argm, keeper) || 
         ITEM_TYPE(temp1) == ITEM_TYPE_TRASH) {
         objectExtract(temp1);
     } else {
@@ -411,7 +411,7 @@ void shopping_value(char *arg, struct char_data *ch,
         return;
     }
 
-    if (!(temp1 = get_obj_in_list_vis(ch, argm, ch->carrying))) {
+    if (!(temp1 = objectGetOnChar(ch, argm, ch))) {
         sprintf(buf, shop_index[shop_nr].no_such_item2, GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;

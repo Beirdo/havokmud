@@ -714,8 +714,7 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
         }
         arg = get_argument(arg, &obj_name);
         if (!obj_name ||
-            !(port = get_obj_in_list_vis(ch, obj_name,
-                                         real_roomp(ch->in_room)->contents))) {
+            !(port = objectGetInRoom(ch, obj_name, ch->in_room))) {
             return (FALSE);
         }
 
@@ -1153,7 +1152,7 @@ int applepie(struct char_data *ch, int cmd, char *argument,
         }
 
         do_put(ch, argument, 67);
-        apple = get_obj_in_list_vis(ch, "apple rotten poisoned", obj->contains);
+        apple = objectGetInObject(ch, "apple rotten poisoned", obj);
 
         if (!apple) {
             return (TRUE);
@@ -1446,11 +1445,14 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &buf);
 
-        if (!buf || !(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        if (!buf || !(obj = objectGetOnChar(ch, buf, ch))) {
             act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
             return (TRUE);
         }
 
+        /**
+         * @todo un-list this nonsense
+         */
         for (i = ch->carrying; i && !has_pill; i = i->next_content) {
             if (i->item_number == BLUE_PILL) {
                 has_pill = 1;
@@ -1508,11 +1510,14 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
     if (cmd == 12) {
         /* Eat */
         arg = get_argument(arg, &buf);
-        if (!buf || !(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        if (!buf || !(obj = objectGetOnChar(ch, buf, ch))) {
             act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
             return (TRUE);
         }
 
+        /**
+         * @todo un-list this nonsense
+         */
         for (i = ch->carrying; i && !has_pill; i = i->next_content) {
             if (i->item_number == BLACK_PILL) {
                 has_pill = 1;
@@ -1565,10 +1570,10 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &arg1);
         arg = get_argument(arg, &arg2);
 
-        if (!arg1 || !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+        if (!arg1 || !(obj1 = objectGetOnChar(ch, arg1, ch))) {
             return (FALSE);
         }
-        if (!arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+        if (!arg2 || !(obj2 = objectGetOnChar(ch, arg2, ch))) {
             return (FALSE);
         }
         if (obj1->item_number != EYE_DRAGON) {
@@ -1609,10 +1614,10 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &arg1);
         arg = get_argument(arg, &arg2);
 
-        if (!arg1 || !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+        if (!arg1 || !(obj1 = objectGetOnChar(ch, arg1, ch))) {
             return (FALSE);
         }
-        if (!arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+        if (!arg2 || !(obj2 = objectGetOnChar(ch, arg2, ch))) {
             return (FALSE);
         }
 
@@ -2035,7 +2040,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 
     arg = get_argument(arg, &arg1);
 
-    if (!arg1 || !(obj = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+    if (!arg1 || !(obj = objectGetOnChar(ch, arg1, ch))) {
         act("You do not have that item.", FALSE, ch, 0, 0, TO_CHAR);
         return (TRUE);
     }
@@ -2178,7 +2183,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
 
         argument = get_argument(argument, &arg1);
         if( arg1 ) {
-            tmp_obj = get_obj_in_list(arg1, ch->carrying);
+            tmp_obj = objectGetOnChar(NULL, arg1, ch);
             if( obj != tmp_obj && strncasecmp(arg1, "all", 3)) {
                 free(arg);
                 return(FALSE);

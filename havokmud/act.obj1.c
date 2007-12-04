@@ -226,16 +226,11 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
 
         while (num != 0) {
-            obj_object =
-                get_obj_in_list_vis(ch, arg1,
-                                    real_roomp(ch->in_room)->contents);
+            obj_object = objectGetInRoom(ch, arg1, real_roomp(ch->in_room));
             if (obj_object) {
                 if (IS_CORPSE(obj_object) && num != 1) {
-                    send_to_char("You can only get one corpse at a "
-                                 "time.\n\r", ch);
-                    fail = TRUE;
-                    num = 0;
-                    /* no need for num and fail above I guess */
+                    send_to_char("You can only get one corpse at a time.\n\r", 
+                                 ch);
                     return;
                 }
 
@@ -295,7 +290,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
         if (sub_object) {
             if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
-                if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+                if ((blah = objectGetOnChar(ch, arg2, ch))) {
                     has = TRUE;
                 }
 
@@ -367,7 +362,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
         if (sub_object) {
             if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
-                if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying)))
+                if ((blah = objectGetOnChar(ch, arg2, ch)))
                     has = TRUE;
                 if (getall(arg1, newarg) == TRUE) {
                     num = -1;
@@ -380,8 +375,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                 }
 
                 while (num != 0) {
-                    obj_object =
-                        get_obj_in_list_vis(ch, arg1, sub_object->contains);
+                    obj_object = objectGetInObject(ch, arg1, sub_object);
                     if (obj_object) {
                         if (CheckForInsideTrap(ch, sub_object)) {
                             return;
@@ -529,7 +523,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     }
 
     while (num != 0) {
-        tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
+        tmp_object = objectGetOnChar(ch, arg, ch);
         if (tmp_object) {
             if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 oldSendOutput(ch, "You drop %s.\n\r",
@@ -763,7 +757,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    obj = get_obj_in_list_vis(ch, obj_name, ch->carrying);
+    obj = objectGetOnChar(ch, obj_name, ch);
     if (!obj && is_number(obj_name)) {
         if (strnlen(obj_name, 10) == 10) {
             obj_name[10] = '\0';
@@ -837,8 +831,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
 
         count = 0;
         while (num != 0) {
-            if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)) &&
-                num >= -1) {
+            if (!(obj = objectGetOnChar(ch, obj_name, ch)) && num >= -1) {
                 send_to_char("You do not seem to have anything like that.\n\r",
                              ch);
                 return;
@@ -979,7 +972,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
 
         value = 0;
         while (num != 0) {
-            tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
+            tmp_object = objectGetOnChar(ch, arg, ch);
             if (tmp_object) {
                 if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                     oldSendOutput(ch, "%s disappears from your hands! A "

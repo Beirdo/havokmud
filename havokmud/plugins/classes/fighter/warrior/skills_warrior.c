@@ -42,7 +42,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    obj = get_obj_in_list_vis(ch, arg, ch->carrying);
+    obj = objectGetOnChar(ch, arg, ch);
     perc = number(1, 101);
     if (obj) {
         if (ITEM_TYPE(obj) == ITEM_TYPE_ARMOR) {

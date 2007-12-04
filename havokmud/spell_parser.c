@@ -2993,8 +2993,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                      */
                     if (!target_ok && 
                         IS_SET(spell_info[index].targets, TAR_OBJ_INV) &&
-                        (tar_obj = 
-                             get_obj_in_list_vis(ch, name, ch->carrying))) {
+                        (tar_obj = objectGetOnChar(ch, name, ch))) {
                         target_ok = TRUE;
                     }
 
@@ -3003,8 +3002,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                      */
                     if (!target_ok && 
                         IS_SET(spell_info[index].targets, TAR_OBJ_ROOM) &&
-                        (tar_obj = get_obj_in_list_vis(ch, name,
-                                        real_roomp(ch->in_room)->contents))) {
+                        (tar_obj = objectGetInRoom(ch, name,
+                                                   real_roomp(ch->in_room)))) {
                         target_ok = TRUE;
                     }
 

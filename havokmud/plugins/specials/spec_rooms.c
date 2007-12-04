@@ -164,7 +164,7 @@ int Donation(struct char_data *ch, int cmd, char *arg,
 
     if (arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
         if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
-            if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+            if ((sub_object = objectGetOnChar(ch, arg2, ch))) {
                 return (FALSE);
             } else {
                 send_to_char("Now now, that would be greedy!\n\r", ch);
@@ -1139,8 +1139,8 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (!(object = get_obj_in_list_vis(ch, itemname,
-                                        real_roomp(ch->in_room)->contents))) {
+        if (!(object = objectGetInRoom(ch, itemname, 
+                                       real_roomp(ch->in_room)))) {
             send_to_char("Where did that carcass go?\n\r", ch);
             return (TRUE);
         }
@@ -1263,7 +1263,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
     /*
      * get obj in list vis 
      */
-    obj = get_obj_in_list_vis(ch, "book", ch->carrying);
+    obj = objectGetOnChar(ch, "book", ch);
     if (!obj) {
         return (FALSE);
     }
@@ -2922,7 +2922,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
 
         arg = get_argument(arg, &buf);
 
-        if (buf && (tossitem = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        if (buf && (tossitem = objectGetOnChar(ch, buf, ch))) {
             act("You toss $p towards the gaping jaws and they crash down "
                 "suddenly on it, smashing it to pieces.", FALSE, ch, tossitem,
                 0, TO_CHAR);

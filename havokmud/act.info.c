@@ -3822,13 +3822,13 @@ void do_value(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = get_obj_in_list_vis(ch, name, ch->carrying))) {
+    if (!(obj = objectGetOnChar(ch, name, ch))) {
         if (!(vict = get_char_room_vis(ch, name))) {
             send_to_char("Who, or what are you talking about?\n\r", ch);
             return;
         } 
         
-        if (!(obj = get_obj_in_list_vis(ch, argument, vict->carrying))) {
+        if (!(obj = objectGetOnChar(ch, argument, vict))) {
             act("You can't see that on $M", FALSE, ch, obj, vict, TO_CHAR);
             act("$n looks you over", FALSE, ch, 0, vict, TO_VICT);
             act("$n looks $N over", FALSE, ch, 0, vict, TO_NOTVICT);

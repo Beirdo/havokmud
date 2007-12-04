@@ -35,8 +35,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg1);
 
     if( !arg1 || 
-        !(corpse = get_obj_in_list_vis(ch, arg1, 
-                                       real_roomp(ch->in_room)->contents))) {
+        !(corpse = objectGetInRoom(ch, arg1, real_roomp(ch->in_room)))) {
         send_to_char("That's not here.\n\r", ch);
         return;
     }
