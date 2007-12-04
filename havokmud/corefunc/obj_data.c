@@ -62,7 +62,6 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  int *count, bool visible, int steps);
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset);
-bool objectIsVisible(struct char_data *ch, struct obj_data *obj);
 int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
                      int roomId, int itemNum, int parentItem, int delete);
 int contained_weight(struct obj_data *container);
@@ -429,28 +428,15 @@ struct obj_data *objectGetInObject( struct char_data *ch, char *name,
                              BOOL(ch != NULL), steps ) );
 }
 
-
 /**
  * @todo check if object_list can be done in a better way... like btrees
  */
-struct obj_data *get_obj_vis_world(struct char_data *ch, char *name,
-                                   int *count)
+struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count)
 {
     static int  offset = OFFSETOF(next, struct obj_data);
     static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( ch, name, object_list, offset, count, TRUE, 
-                             steps ) );
-}
-
-/**
- * @todo check if object_list can be done in a better way... like btrees
- */
-struct obj_data *get_obj(char *name)
-{
-    static int  offset = OFFSETOF(next, struct obj_data);
-    static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( NULL, name, object_list, offset, NULL, FALSE, 
-                             steps ) );
+    return( GetObjectInList( ch, name, object_list, offset, count, 
+                             BOOL(ch != NULL), steps ) );
 }
 
 /**
@@ -568,7 +554,7 @@ struct obj_data *get_obj_vis(struct char_data *ch, char *name)
     if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
         return(obj);
     }
-    return( get_obj_vis_world(ch, name, NULL) );
+    return( objectGetGlobal(ch, name, NULL) );
 }
 
 struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)

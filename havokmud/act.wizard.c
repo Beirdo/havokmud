@@ -1021,7 +1021,7 @@ void do_at(struct char_data *ch, char *argument, int cmd)
         location = loc_nr;
     } else if ((target_mob = get_char_vis(ch, loc_str)) != NULL) {
         location = target_mob->in_room;
-    } else if ((target_obj = get_obj_vis_world(ch, loc_str, NULL)) != NULL) {
+    } else if ((target_obj = objectGetGlobal(ch, loc_str, NULL)) != NULL) {
         if (target_obj->in_room != NOWHERE) {
             location = target_obj->in_room;
         } else {
@@ -1100,7 +1100,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
         location = loc_nr;
     } else if ((target_mob = get_char_vis_world(ch, buf, NULL))) {
         location = target_mob->in_room;
-    } else if ((target_obj = get_obj_vis_world(ch, buf, NULL))) {
+    } else if ((target_obj = objectGetGlobal(ch, buf, NULL))) {
         if (target_obj->in_room != NOWHERE) {
             location = target_obj->in_room;
         } else {
@@ -1729,7 +1729,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
     /*
      * stat on object
      */
-    if ((j = get_obj_vis_world(ch, arg1, &count)) != NULL) {
+    if ((j = objectGetGlobal(ch, arg1, &count)) != NULL) {
         virtual = MAX( 0, j->item_number );
         objname = KeywordsToString( &j->keywords, " " );
         sprintf(buf, "Object name: [%s]\n\r R-number: [%d], "

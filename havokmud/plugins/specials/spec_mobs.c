@@ -9268,7 +9268,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
          * is the holy symbol in game? 
          */
         if (location == -1) {
-            if ((target_obj = get_obj_vis_world(ch, "baabaabowie", NULL)) && 
+            if ((target_obj = objectGetGlobal(ch, "baabaabowie", NULL)) && 
                 target_obj->in_room != NOWHERE) {
                 /*
                  * items already loaded! 
@@ -10116,15 +10116,15 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (FALSE);
         }
 
-        if (get_obj_vis_world(ch, "black pill thunder mountain", NULL)) {
+        if (objectGetGlobal(ch, "black pill thunder mountain", NULL)) {
             test = 1;
         }
 
-        if (get_obj_vis_world(ch, "blue pill thunder mountain", NULL)) {
+        if (objectGetGlobal(ch, "blue pill thunder mountain", NULL)) {
             test = 1;
         }
 
-        if (get_obj_vis_world(ch, "elamin pen might", NULL)) {
+        if (objectGetGlobal(ch, "elamin pen might", NULL)) {
             test = 1;
         }
 
