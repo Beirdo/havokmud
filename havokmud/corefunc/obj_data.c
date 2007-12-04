@@ -508,13 +508,25 @@ struct obj_data *get_obj_in_list_num(int num, struct obj_data *list)
     return( GetObjectNumInList( num, list, offset ) );
 }
 
-/**
- * @todo check if object_list can be done in a better way... like btrees
- */
-struct obj_data *get_obj_num(int num)
+struct obj_data *objectGetNumLastCreated(int num)
 {
-    static int  offset = OFFSETOF(next, struct obj_data);
-    return( GetObjectNumInList( num, object_list, offset ) );
+    struct index_data  *index;
+    struct obj_data    *obj;
+    LinkedListItem_t   *item;
+
+    index = objectIndex(num);
+    if( !index ) {
+        return( NULL );
+    }
+
+    LinkedListLock( index->list );
+
+    item = index->list->head;
+    obj = (struct obj_data *)item;
+
+    LinkedListUnlock( index->list );
+
+    return( obj );
 }
 
 /**

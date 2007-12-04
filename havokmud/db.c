@@ -2712,7 +2712,7 @@ void reset_zone(int zone, int cmd)
                  * object to object
                  */
                 obj = objectRead(ZCMD.arg1);
-                obj_to = get_obj_num(ZCMD.arg3);
+                obj_to = objectGetNumLastCreated(ZCMD.arg3);
                 if (obj_to && obj) {
                     index = objectIndex( ZCMD.arg1 );
                     index->MaxObjCount = ZCMD.arg2;
@@ -3076,7 +3076,7 @@ void reset_zone(int zone, int cmd)
                  */
                 if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
                     obj = objectRead(ZCMD.arg1);
-                    obj_to = get_obj_num(ZCMD.arg3);
+                    obj_to = objectGetNumLastCreated(ZCMD.arg3);
                     if (obj_to && obj) {
                         if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                             tweakroll = number(1, 100);
@@ -5029,7 +5029,7 @@ void ReadTextZone(FILE * fl)
                  */
                 if (i < j) {
                     obj = objectRead(i);
-                    obj_to = get_obj_num(k);
+                    obj_to = objectGetNumLastCreated(k);
                     if (obj_to && obj) {
                         objectPutInObject(obj, obj_to);
                         last_cmd = 1;

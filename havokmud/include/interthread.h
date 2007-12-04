@@ -307,6 +307,8 @@ struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
                                   struct obj_data *equipment[], int *j,
                                   bool visible );
 struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count);
+struct obj_data *objectGetInCharOrRoom(struct char_data *ch, char *name);
+struct obj_data *objectGetNumLastCreated(int num);
 
 bool objectIsVisible(struct char_data *ch, struct obj_data *obj);
 
