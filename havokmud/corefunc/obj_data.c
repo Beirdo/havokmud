@@ -499,13 +499,16 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
     return (NULL);
 }
 
-/*
- * Search a given list for an object number, and return a ptr to that obj 
- */
-struct obj_data *get_obj_in_list_num(int num, struct obj_data *list)
+struct obj_data *objectGetOnCharNum(int num, struct char_data *ch)
 {
     static int  offset = OFFSETOF(next_content, struct obj_data);
-    return( GetObjectNumInList( num, list, offset ) );
+    return( GetObjectNumInList( num, ch->carrying, offset ) );
+}
+
+struct obj_data *objectGetInRoomNum(int num, struct room_data *rm)
+{
+    static int  offset = OFFSETOF(next_content, struct obj_data);
+    return( GetObjectNumInList( num, rm->contents, offset ) );
 }
 
 struct obj_data *objectGetNumLastCreated(int num)

@@ -3118,7 +3118,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
     }
 
     ventroom = real_roomp(VENTROOMVNUM);
-    ventobj = get_obj_in_list_num(VENTOBJVNUM, ventroom->contents);
+    ventobj = objectGetInRoomNum(VENTOBJVNUM, ventroom);
 
     if (!ventobj) {
         return (FALSE);

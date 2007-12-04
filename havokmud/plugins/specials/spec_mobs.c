@@ -11607,7 +11607,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     realcorpseid = CORPSEOBJVNUM;
     ventroom = real_roomp(VENTROOMVNUM);
     ventobjrnum = VENTOBJVNUM;
-    ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
+    ventobj = objectGetInRoomNum(ventobjrnum, ventroom);
 
     if (mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
         if (!number(0, 3)) {

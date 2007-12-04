@@ -1435,10 +1435,8 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * get
          */
-        if ((!(chalice = get_obj_in_list_num(chl, 
-                                        real_roomp(ch->in_room)->contents)) &&
-             !(chalice = get_obj_in_list_num(achl,
-                                        real_roomp(ch->in_room)->contents))) ||
+        if ((!(chalice = objectGetInRoomNum(chl, real_roomp(ch->in_room))) &&
+             !(chalice = objectGetInRoomNum(achl, real_roomp(ch->in_room)))) ||
             !objectIsVisible(ch, chalice)) {
             return (FALSE);
         }
@@ -1451,7 +1449,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * if got the altar one, switch her
          */
-        if (chalice == get_obj_in_list_num(achl, ch->carrying)) {
+        if (chalice == objectGetOnCharNum(achl, ch)) {
             objectExtract(chalice);
             chalice = objectRead(chl);
             objectGiveToChar(chalice, ch);
@@ -1462,7 +1460,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * put
          */
-        if (!(chalice = get_obj_in_list_num(chl, ch->carrying))) {
+        if (!(chalice = objectGetOnCharNum(chl, ch))) {
             return (FALSE);
         }
         arg = get_argument(arg, &buf1);
@@ -1481,8 +1479,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * pray
          */
-        if (!(chalice = get_obj_in_list_num(achl, 
-                                        real_roomp(ch->in_room)->contents))) {
+        if (!(chalice = objectGetInRoomNum(achl, real_roomp(ch->in_room)))) {
             return (FALSE);
         }
 
