@@ -2022,7 +2022,7 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     }
 
     if (IS_SET(bitvector, FIND_OBJ_EQUIP)) {
-        if( (*tar_obj = get_object_in_equip( ch, name, name, &i ) ) ) {
+        if( (*tar_obj = objectGetInEquip( ch, name, name, &i, FALSE ) ) ) {
             return( FIND_OBJ_EQUIP );
         }
     }

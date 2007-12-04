@@ -2230,8 +2230,8 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
         if( obj->carried_by ) {
             objectTakeFromChar(obj);
         } else if( obj->equipped_by ) {
-            tmp_obj = get_object_in_equip(ch, obj->name, 
-                                          obj->equipped_by->equipment, &i );
+            tmp_obj = objectGetInEquip(ch, obj->name, 
+                                       obj->equipped_by->equipment, &i, FALSE );
             unequip_char(obj->equipped_by, i);
         } else if( obj->in_obj ) {
             objectTakeFromObject(obj);

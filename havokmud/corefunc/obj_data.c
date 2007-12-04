@@ -57,7 +57,7 @@ BalancedBTree_t *objectTree = NULL;
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
 
-struct obj_data *GetObjectInEquip(struct char_data *ch, char *arg,
+struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
                                   struct obj_data *equipment[], int *j,
                                   bool visible );
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
@@ -364,20 +364,7 @@ void objectExtract(struct obj_data *obj)
     objectFree(obj);
 }
 
-
-struct obj_data *get_object_in_equip_vis(struct char_data *ch, char *arg,
-                                         struct obj_data *equipment[], int *j)
-{
-    return( GetObjectInEquip(ch, arg, equipment, j, TRUE) );
-}
-
-struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
-                                     struct obj_data *equipment[], int *j)
-{
-    return( GetObjectInEquip(ch, arg, equipment, j, FALSE) );
-}
-
-struct obj_data *GetObjectInEquip(struct char_data *ch, char *arg,
+struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
                                   struct obj_data *equipment[], int *j,
                                   bool visible )
 {

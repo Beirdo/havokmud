@@ -1485,7 +1485,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                 }
             }
         } else {
-            obj_object = get_object_in_equip_vis(ch, arg1, ch->equipment, &j);
+            obj_object = objectGetInEquip(ch, arg1, ch->equipment, &j, TRUE);
             if (obj_object) {
                 if (IS_OBJ_STAT(obj_object, extra_flags, ITEM_NODROP)) {
                     send_to_char("You can't let go of it, it must be "
