@@ -303,6 +303,9 @@ struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
                                   struct char_data *onch );
 struct obj_data *objectGetInObject( struct char_data *ch, char *name,
                                     struct obj_data *obj );
+struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
+                                  struct obj_data *equipment[], int *j,
+                                  bool visible );
 
 
 

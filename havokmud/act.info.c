@@ -301,7 +301,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
     cond_top = 0;
 
     for (i = list; i; i = i->next_content) {
-        if (CAN_SEE_OBJ(ch, i)) {
+        if (objectIsVisible(ch, i)) {
             if (cond_top < 50) {
                 found = FALSE;
                 for (k = 0; (k < cond_top && !found); k++) {
@@ -323,7 +323,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
             } else {
                 if ((ITEM_TYPE(i) == ITEM_TYPE_TRAP) || 
                     (GET_TRAP_CHARGES(i) > 0)) {
-                    if (CAN_SEE_OBJ(ch, i)) {
+                    if (objectIsVisible(ch, i)) {
                         show_obj_to_char(i, ch, 0);
                     }
                 } else {
@@ -337,7 +337,7 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
         for (k = 0; k < cond_top; k++) {
             if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TYPE_TRAP)
                 && (GET_TRAP_CHARGES(cond_ptr[k]) > 0)) {
-                if (CAN_SEE_OBJ(ch, cond_ptr[k])) {
+                if (objectIsVisible(ch, cond_ptr[k])) {
                     if (cond_tot[k] > 1) {
                         oldSendOutput(ch, "[%2d] ", Inventory_Num++);
                         show_mult_obj_to_char(cond_ptr[k], ch, 0,
@@ -371,7 +371,7 @@ void list_obj_in_heap(struct obj_data *list, struct char_data *ch)
     cond_top = 0;
 
     for (i = list; i; i = i->next_content) {
-        if (CAN_SEE_OBJ(ch, i)) {
+        if (objectIsVisible(ch, i)) {
             if (cond_top < 50) {
                 found = FALSE;
                 for (k = 0; (k < cond_top && !found); k++) {
@@ -424,7 +424,7 @@ void list_obj_to_char(struct obj_data *list, struct char_data *ch,
 
     found = FALSE;
     for (i = list; i; i = i->next_content) {
-        if (CAN_SEE_OBJ(ch, i)) {
+        if (objectIsVisible(ch, i)) {
             oldSendOutput(ch, "[%2d] ", Num_In_Bag++);
             show_obj_to_char(i, ch, mode);
             found = TRUE;
@@ -790,7 +790,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
         found = FALSE;
         for (j = 0; j < MAX_WEAR; j++) {
             if (i->equipment[j]) {
-                if (CAN_SEE_OBJ(ch, i->equipment[j])) {
+                if (objectIsVisible(ch, i->equipment[j])) {
                     found = TRUE;
                 }
             }
@@ -817,7 +817,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                         /*
                          * see through cloak -Lennya
                          */
-                    } else if (CAN_SEE_OBJ(ch, i->equipment[j])) {
+                    } else if (objectIsVisible(ch, i->equipment[j])) {
                         send_to_char(where[j], ch);
                         show_obj_to_char(i->equipment[j], ch, 1);
                     }
@@ -829,7 +829,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             send_to_char("\n\rYou attempt to peek at the inventory:\n\r", ch);
             for (tmp_obj = i->carrying; tmp_obj;
                  tmp_obj = tmp_obj->next_content) {
-                if (CAN_SEE_OBJ(ch, tmp_obj) &&
+                if (objectIsVisible(ch, tmp_obj) &&
                     (number(0, MAX_MORT) < GetMaxLevel(ch))) {
                     show_obj_to_char(tmp_obj, ch, 1);
                     found = TRUE;
@@ -1254,7 +1254,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
         found = FALSE;
         for (j = 0; j < MAX_WEAR; j++) {
             if (i->equipment[j]) {
-                if (CAN_SEE_OBJ(ch, i->equipment[j])) {
+                if (objectIsVisible(ch, i->equipment[j])) {
                     found = TRUE;
                 }
             }
@@ -1265,7 +1265,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
 
             for (j = 0; j < MAX_WEAR; j++) {
                 if (i->equipment[j]) {
-                    if (CAN_SEE_OBJ(ch, i->equipment[j])) {
+                    if (objectIsVisible(ch, i->equipment[j])) {
                         send_to_char(where[j], ch);
                         show_obj_to_char(i->equipment[j], ch, 1);
                     }
@@ -1278,7 +1278,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
             send_to_char("\n\rYou attempt to peek at the inventory:\n\r", ch);
             for (tmp_obj = i->carrying; tmp_obj;
                  tmp_obj = tmp_obj->next_content) {
-                if (CAN_SEE_OBJ(ch, tmp_obj) && 
+                if (objectIsVisible(ch, tmp_obj) && 
                     number(0, MAX_MORT) < GetMaxLevel(ch)) {
                     show_obj_to_char(tmp_obj, ch, 1);
                     found = TRUE;
@@ -1730,7 +1730,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                 if (!found) {
                     for (j = 0; j < MAX_WEAR && !found; j++) {
                         if (ch->equipment[j] &&
-                            CAN_SEE_OBJ(ch, ch->equipment[j])) {
+                            objectIsVisible(ch, ch->equipment[j])) {
                             tmp_desc = find_ex_description(arg2,
                                         ch->equipment[j]->ex_description,
                                         ch->equipment[j]->ex_description_count);
@@ -1749,7 +1749,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                     for (tmp_object = ch->carrying;
                          tmp_object && !found;
                          tmp_object = tmp_object->next_content) {
-                        if (CAN_SEE_OBJ(ch, tmp_object)) {
+                        if (objectIsVisible(ch, tmp_object)) {
                             tmp_desc = find_ex_description(arg2,
                                            tmp_object->ex_description,
                                            tmp_object->ex_description_count);
@@ -1768,7 +1768,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                     for (tmp_object = real_roomp(ch->in_room)->contents;
                          tmp_object && !found;
                          tmp_object = tmp_object->next_content) {
-                        if (CAN_SEE_OBJ(ch, tmp_object)) {
+                        if (objectIsVisible(ch, tmp_object)) {
                             tmp_desc = find_ex_description(arg2,
                                            tmp_object->ex_description,
                                            tmp_object->ex_description_count);
@@ -3078,7 +3078,7 @@ void do_equipment(struct char_data *ch, char *argument, int cmd)
     for (Worn_Index = j = 0; j < (MAX_WEAR - 1); j++) {
         oldSendOutput(ch, "%s\n\r", where[j]);
         if (ch->equipment[j]) {
-            if (CAN_SEE_OBJ(ch, ch->equipment[j])) {
+            if (objectIsVisible(ch, ch->equipment[j])) {
                 show_obj_to_char(ch->equipment[j], ch, 1);
                 found = TRUE;
             } else {
@@ -3328,7 +3328,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
          * @todo get rid of object_list, use a btree or something
          */
         for (k = object_list; k; k = k->next) {
-            if ( CAN_SEE_OBJ(ch, k) && KeywordsMatch(key, &k->keywords)) {
+            if ( objectIsVisible(ch, k) && KeywordsMatch(key, &k->keywords)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);

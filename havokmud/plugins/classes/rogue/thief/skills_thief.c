@@ -480,7 +480,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
                 if (victim->equipment[eq_pos] &&
                     KeywordsMatch(key, &victim->equipment[eq_pos]->keywords) &&
-                    CAN_SEE_OBJ(ch, victim->equipment[eq_pos])) {
+                    objectIsVisible(ch, victim->equipment[eq_pos])) {
                     obj = victim->equipment[eq_pos];
                     break;
                 }

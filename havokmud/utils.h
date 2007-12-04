@@ -245,7 +245,7 @@
 
 #define CAN_GET_OBJ(ch, obj)   \
    (CAN_WEAR((obj), ITEM_TAKE) && CAN_CARRY_OBJ((ch),(obj)) &&          \
-    CAN_SEE_OBJ((ch),(obj)))
+    objectIsVisible((ch),(obj)))
 
 /*
  * char name/short_desc(for mobs) or someone? 
@@ -260,10 +260,10 @@
           (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr) : \
           "")
 
-#define OBJS(obj, vict) (CAN_SEE_OBJ((vict), (obj)) ? \
+#define OBJS(obj, vict) (objectIsVisible((vict), (obj)) ? \
         (obj)->short_description  : "something")
 
-#define OBJN(obj, vict) (CAN_SEE_OBJ((vict), (obj)) ? \
+#define OBJN(obj, vict) (objectIsVisible((vict), (obj)) ? \
         fname((obj)->name) : "something")
 
 #define OUTSIDE(ch) (!IS_SET(real_roomp((ch)->in_room)->room_flags,INDOORS))

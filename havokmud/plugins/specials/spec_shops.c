@@ -474,7 +474,7 @@ void shopping_list(char *arg, struct char_data *ch,
     found_obj = FALSE;
     if (keeper->carrying) {
         for (temp1 = keeper->carrying; temp1; temp1 = temp1->next_content) {
-            if (CAN_SEE_OBJ(ch, temp1) && temp1->cost > 0) {
+            if (objectIsVisible(ch, temp1) && temp1->cost > 0) {
                 found_obj = TRUE;
                 cost = (temp1->cost * 
                         shop_index[shop_nr].profit_buy) -

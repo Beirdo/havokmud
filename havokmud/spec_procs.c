@@ -1435,14 +1435,12 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * get
          */
-        if (!(chalice = get_obj_in_list_num(chl, 
+        if ((!(chalice = get_obj_in_list_num(chl, 
                                         real_roomp(ch->in_room)->contents)) &&
-            CAN_SEE_OBJ(ch, chalice)) {
-            if (!(chalice = get_obj_in_list_num(achl,
-                                        real_roomp(ch->in_room)->contents)) &&
-                CAN_SEE_OBJ(ch, chalice)) {
-                return (0);
-            }
+             !(chalice = get_obj_in_list_num(achl,
+                                        real_roomp(ch->in_room)->contents))) ||
+            !objectIsVisible(ch, chalice)) {
+            return (FALSE);
         }
 
         /*
@@ -7892,7 +7890,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         }
         
         for (obj = shopkeep->carrying; obj; obj = obj->next_content) {
-            if (CAN_SEE_OBJ(ch, obj)) {
+            if (objectIsVisible(ch, obj)) {
                 if (cond_top < 50) {
                     found = FALSE;
                     for (k = 0; (k < cond_top && !found); k++) {

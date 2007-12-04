@@ -177,7 +177,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
             if (CheckForAnyTrap(ch, obj_object)) {
                 return;
             }
-            if (CAN_SEE_OBJ(ch, obj_object)) {
+            if (objectIsVisible(ch, obj_object)) {
                 if (IS_CARRYING_N(ch) + 1 <= CAN_CARRY_N(ch)) {
                     if (IS_CARRYING_W(ch) + obj_object->weight <=
                         CAN_CARRY_W(ch)) {
@@ -303,7 +303,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                         return;
                     }
                     next_obj = obj_object->next_content;
-                    if (CAN_SEE_OBJ(ch, obj_object)) {
+                    if (objectIsVisible(ch, obj_object)) {
                         if (IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)) {
                             if (has || IS_CARRYING_W(ch) + 
                                        obj_object->weight <
@@ -489,7 +489,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                 objectPutInRoom(tmp_object, ch->in_room);
                 check_falling_obj(tmp_object, ch->in_room);
                 test = TRUE;
-            } else if (CAN_SEE_OBJ(ch, tmp_object)) {
+            } else if (objectIsVisible(ch, tmp_object)) {
                 if (singular(tmp_object)) {
                     oldSendOutput(ch, "You can't drop %s, it must be CURSED!\n\r",
                                   tmp_object->short_description);
@@ -934,7 +934,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     value += ((tmp_object->cost) * 10 / 100);
                     test = TRUE;
                 } else {
-                    if (CAN_SEE_OBJ(ch, tmp_object)) {
+                    if (objectIsVisible(ch, tmp_object)) {
                         if (singular(tmp_object)) {
                             oldSendOutput(ch, "You can't donate %s, it must be "
                                           "CURSED!\n\r",

@@ -57,15 +57,12 @@ BalancedBTree_t *objectTree = NULL;
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
 
-struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
-                                  struct obj_data *equipment[], int *j,
-                                  bool visible );
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  struct obj_data *list, int nextOffset,
                                  int *count, bool visible, int steps);
 struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
                                     int nextOffset);
-int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
+bool objectIsVisible(struct char_data *ch, struct obj_data *obj);
 int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
                      int roomId, int itemNum, int parentItem, int delete);
 int contained_weight(struct obj_data *container);
@@ -379,7 +376,7 @@ struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
     for (i = 0; i < MAX_WEAR; i++) {
         obj = equipment[i];
 
-        if (obj && (!visible || CAN_SEE_OBJ(ch, obj)) && 
+        if (obj && (!visible || objectIsVisible(ch, obj)) && 
             KeywordsMatch(key, &obj->keywords)) {
             *j = i;
             FreeKeywords( key, TRUE );
@@ -392,7 +389,7 @@ struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
     for (i = 0; i < MAX_WEAR; i++) {
         obj = equipment[i];
 
-        if (obj && (!visible || CAN_SEE_OBJ(ch, obj)) && 
+        if (obj && (!visible || objectIsVisible(ch, obj)) && 
             KeywordsMatch(key, &obj->keywords)) {
             *j = i;
             FreeKeywords( key, TRUE );
@@ -482,7 +479,7 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
         for (obj = list, i = count ? *count : 1; 
              obj && i <= number; 
              obj = (struct obj_data *)PTR_AT_OFFSET(nextOffset, obj) ) {
-            if ((!visible || CAN_SEE_OBJ(ch, obj)) && 
+            if ((!visible || objectIsVisible(ch, obj)) && 
                 KeywordsMatch(key, &obj->keywords)) {
                 if (i == number) {
                     return(obj);
@@ -498,7 +495,7 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
         for (obj = list, i = count ? *count : 1; 
              obj && i <= number; 
              obj = (struct obj_data *)PTR_AT_OFFSET(nextOffset, obj) ) {
-            if ((!visible || CAN_SEE_OBJ(ch, obj)) && 
+            if ((!visible || objectIsVisible(ch, obj)) && 
                 KeywordsMatch(key, &obj->keywords)) {
                 if (i == number) {
                     return(obj);
@@ -607,7 +604,7 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
     return( obj );
 }
 
-int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
+bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
 {
     int             num = 0;
 

@@ -192,7 +192,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
                 fname(k->short_description));
         for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
-            if (CAN_SEE_OBJ(tmp_char, k)) {
+            if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
             }
         }
@@ -212,7 +212,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
                 fname(k->short_description));
         for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
-            if (CAN_SEE_OBJ(tmp_char, k)) {
+            if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
             }
         }
