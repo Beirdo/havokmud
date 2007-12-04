@@ -289,6 +289,7 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
 struct obj_data *objectRead(int nr);
 void objectFree(struct obj_data *obj);
 void objectExtract(struct obj_data *obj);
+void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked );
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
 void objectTakeFromObject(struct obj_data *obj);
 void objectGiveToChar(struct obj_data *object, struct char_data *ch);

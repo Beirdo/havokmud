@@ -3327,39 +3327,37 @@ void DarknessPulseStuff(int pulse)
 
 struct obj_data *find_tqp(int tqp_nr)
 {
-    register struct obj_data *t;
-    struct obj_data *tqp = 0;
-    int             nr = 0;
+    struct obj_data    *tqp;
+    struct index_data  *index;
+    LinkedListItem_t   *item;
 
-    /**
-     * @todo get rid of the object_list
-     */
-    for (t = object_list; t; t = t->next) {
-        if (t->item_number == TRAVELQP) {
-            nr++;
-            if (nr == tqp_nr) {
-                tqp = t;
-                return (tqp);
-            }
+    index = objectIndex( TRAVELQP );
+    if( !index ) {
+        return( NULL );
+    }
+
+    LinkedListLock( index->list );
+    for( item = index->list->head, nr = 1, tqp = NULL; item && !tqp; 
+         item = item->next, nr++ ) {
+        if( nr == tqp_nr ) {
+            tqp = (struct obj_data *)item;
         }
     }
-    return (NULL);
+    LinkedListUnlock( index->list );
+
+    return( tqp );
 }
 
 int count_tqp(void)
 {
-    register struct obj_data *t;
-    int             tqp_nr = 0;
+    struct index_data  *index;
 
-    /**
-     * @todo get rid of the object_list
-     */
-    for (t = object_list; t; t = t->next) {
-        if (t->item_number == TRAVELQP) {
-            tqp_nr++;
-        }
+    index = objectIndex( TRAVELQP );
+    if( !index ) {
+        return( 0 );
     }
-    return (tqp_nr);
+
+    return( index->number );
 }
 
 void traveling_qp(int pulse)

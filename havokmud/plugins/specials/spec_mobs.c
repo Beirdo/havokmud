@@ -77,7 +77,6 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
 int ReadObjs(FILE * fl, struct obj_file_u *st);
 
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
-extern struct obj_data *object_list;
 
 struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
 {
@@ -11083,12 +11082,12 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                    *obj3,
                    *obj4,
                    *obj5;
-    int             found = 0;
-    int             found1 = 0;
-    int             found2 = 0;
-    int             found3 = 0;
-    int             found4 = 0;
-    int             found5 = 0;
+    bool            found = FALSE;
+    bool            found1 = FALSE;
+    bool            found2 = FALSE;
+    bool            found3 = FALSE;
+    bool            found4 = FALSE;
+    bool            found5 = FALSE;
 
     if (!ch || !cmd || IS_NPC(ch)) {
         return (FALSE);
@@ -11132,62 +11131,54 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
         send_to_char("\n\r", ch);
 
         /**
-         * @todo get rid of object_list, use a btree!
          * check items 
          */
-        for (i = object_list; i; i = i->next) {
-            if (i->item_number == ING_1) {
-                obj = i;
-
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    found1 = 1;
-                }
-            }   
-
-            if (i->item_number == ING_2) {
-                obj = i;
-
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    found2 = 1;
-                }
-            }
-
-            if (i->item_number == ING_3) {
-                obj = i;
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    found3 = 1;
-                }
-            }
-
-            if (i->item_number == ING_4) {
-                obj = i;
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    found4 = 1;
-                }
-            }
-
-            if (i->item_number == ING_5) {
-                obj = i;
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    found5 = 1;
-                }
-            }
+        obj = objectGetNumLastCreated(ING_1);
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
         }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            found1 = TRUE;
+        }
+
+        obj = objectGetNumLastCreated(ING_2);
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            found2 = TRUE;
+        }
+
+        obj = objectGetNumLastCreated(ING_3);
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            found3 = TRUE;
+        }
+
+
+        obj = objectGetNumLastCreated(ING_4);
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            found4 = TRUE;
+        }
+
+        obj = objectGetNumLastCreated(ING_5);
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            found5 = TRUE;
+        }
+
 
         if (!found1 && !found2 && !found3 && !found4 && !found5) {
             /* 
@@ -11309,89 +11300,137 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 56) {
         /**
-         * @todo get rid of object_list, use a btree
          * buy 
          */
-        obj1 = obj2 = obj3 = obj4 = obj5 = 0;
-        for (i = object_list; i; i = i->next) {
-            if (i->item_number == ING_1) {
-                obj = i;
 
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    obj1 = i;
-                    found = 1;
-                }
-            }
+        obj1 = objectGetNumLastCreated(ING_1);
+        obj = obj1;
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
 
-            if (i->item_number == ING_2) {
-                obj = i;
-                
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }    
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    obj2 = i;
-                    found = 1;
-                }
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            /* 
+             * transfer item to inventory for easy work later 
+             */
+            if (obj1->equipped_by) {
+                obj = unequip_char(ch, obj1->eq_pos);
+                objectGiveToChar(obj, ch);
+            } else if (!obj1->carried_by && obj1->in_obj) {
+                objectTakeFromObject(obj1);
+                objectGiveToChar(obj1, ch);
+            } else {
+                Log("where is this item!?! bad spot in master_smith");
+                send_to_char("Ugh, something wrong with this proc, "
+                             "sorry.\n\r", ch);
+                return (TRUE);
             }
-            
-            if (i->item_number == ING_3) {
-                obj = i;
-            
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    obj3 = i;
-                    found = 1;
-                }
+        } else {
+            obj1 = NULL;
+        }
+
+        obj2 = objectGetNumLastCreated(ING_2);
+        obj = obj2;
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            /* 
+             * transfer item to inventory for easy work later 
+             */
+            if (obj2->equipped_by) {
+                obj = unequip_char(ch, obj2->eq_pos);
+                objectGiveToChar(obj, ch);
+            } else if (!obj2->carried_by && obj2->in_obj) {
+                objectTakeFromObject(obj2);
+                objectGiveToChar(obj2, ch);
+            } else {
+                Log("where is this item!?! bad spot in master_smith");
+                send_to_char("Ugh, something wrong with this proc, "
+                             "sorry.\n\r", ch);
+                return (TRUE);
             }
-            
-            if (i->item_number == ING_4) {
-                obj = i;
-                
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    obj4 = i;
-                    found = 1;
-                }
+        } else {
+            obj2 = NULL;
+        }
+        
+        obj3 = objectGetNumLastCreated(ING_3);
+        obj = obj3;
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            /* 
+             * transfer item to inventory for easy work later 
+             */
+            if (obj3->equipped_by) {
+                obj = unequip_char(ch, obj3->eq_pos);
+                objectGiveToChar(obj, ch);
+            } else if (!obj3->carried_by && obj3->in_obj) {
+                objectTakeFromObject(obj3);
+                objectGiveToChar(obj3, ch);
+            } else {
+                Log("where is this item!?! bad spot in master_smith");
+                send_to_char("Ugh, something wrong with this proc, "
+                             "sorry.\n\r", ch);
+                return (TRUE);
             }
-            
-            if (i->item_number == ING_5) {
-                obj = i;
-            
-                while (obj->in_obj) {
-                    obj = obj->in_obj;
-                }    
-                if (obj->carried_by == ch || obj->equipped_by == ch) {
-                    obj5 = i;
-                    found = 1;
-                }
+        } else {
+            obj3 = NULL;
+        }
+
+        obj4 = objectGetNumLastCreated(ING_4);
+        obj = obj4;
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            /* 
+             * transfer item to inventory for easy work later 
+             */
+            if (obj4->equipped_by) {
+                obj = unequip_char(ch, obj4->eq_pos);
+                objectGiveToChar(obj, ch);
+            } else if (!obj4->carried_by && obj4->in_obj) {
+                objectTakeFromObject(obj4);
+                objectGiveToChar(obj4, ch);
+            } else {
+                Log("where is this item!?! bad spot in master_smith");
+                send_to_char("Ugh, something wrong with this proc, "
+                             "sorry.\n\r", ch);
+                return (TRUE);
             }
-            
-            if (found) {
-                /* 
-                 * transfer items to inventory for easy work later 
-                 */
-                if (i->equipped_by) {
-                    obj = unequip_char(ch, i->eq_pos);
-                    objectGiveToChar(obj, ch);
-                } else if (!i->carried_by && i->in_obj) {
-                    objectTakeFromObject(i);
-                    objectGiveToChar(i, ch);
-                } else {
-                    Log("where is this item!?! bad spot in master_smith");
-                    send_to_char("Ugh, something wrong with this proc, "
-                                 "sorry.\n\r", ch);
-                    return (TRUE);
-                }
+        } else {
+            obj4 = NULL;
+        }
+
+        obj5 = objectGetNumLastCreated(ING_5);
+        obj = obj5;
+        while( obj && obj->in_obj ) {
+            obj = obj->in_obj;
+        }
+
+        if( obj->carried_by == ch || obj->equipped_by == ch ) {
+            /* 
+             * transfer item to inventory for easy work later 
+             */
+            if (obj5->equipped_by) {
+                obj = unequip_char(ch, obj5->eq_pos);
+                objectGiveToChar(obj, ch);
+            } else if (!obj5->carried_by && obj5->in_obj) {
+                objectTakeFromObject(obj5);
+                objectGiveToChar(obj5, ch);
+            } else {
+                Log("where is this item!?! bad spot in master_smith");
+                send_to_char("Ugh, something wrong with this proc, "
+                             "sorry.\n\r", ch);
+                return (TRUE);
             }
-            found = 0;
+        } else {
+            obj5 = NULL;
         }
 
         if (obj1 && obj2 && obj3 && obj4 && obj5) {
@@ -11440,7 +11479,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 send_to_char("heats it some more. More hammering melds the "
                              "silver with the shield and bone,\n\r", ch);
                 send_to_char("making it look rather impressive. Then, Yeelorn "
-                             "places it in a barrel ot brine,\n\r", ch);
+                             "places it in a barrel of brine,\n\r", ch);
                 send_to_char("causing great clouds of noxious fumes to fill "
                              "the air. Next he orates the prayer\n\r", ch);
                 send_to_char("from the scroll, which bursts into flame while "
@@ -11582,32 +11621,24 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     struct obj_data *curritem;
     struct obj_data *theitem = NULL;
     struct obj_data *ventobj;
-    struct room_data *ventroom;
     struct obj_data *corpse;
     struct obj_data *tempobj;
     struct obj_data *nextobj;
     struct char_data *tempchar;
     struct room_data *currroom;
+    struct index_data *index;
+    LinkedListItem_t  *item;
+    LinkedListItem_t  *next;
     int             k = 1;
     struct obj_data *remobj;
     struct obj_data *parentobj;
-    int             GoodItemReal = -1;
     int             whatundead = 1;
-    int             realcorpseid = -1;
-    int             ventobjrnum = -1;
 
     if (cmd) {
         return (FALSE);
     }
 
-    /* 
-     * For the corpse that we toss around
-     */
-    GoodItemReal = PHYLOBJVNUM;
-    realcorpseid = CORPSEOBJVNUM;
-    ventroom = real_roomp(VENTROOMVNUM);
-    ventobjrnum = VENTOBJVNUM;
-    ventobj = objectGetInRoomNum(ventobjrnum, ventroom);
+    ventobj = objectGetInRoomNum(VENTOBJVNUM, real_roomp(VENTROOMVNUM));
 
     if (mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
         if (!number(0, 3)) {
@@ -11775,14 +11806,12 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         return (necromancer(mob, cmd, arg, mob, type));
     }
 
-    /**
-     * @todo get rid of object_list, use a btree
-     */
-    for (curritem = object_list; curritem; curritem = curritem->next) {
-        if (curritem->item_number == GoodItemReal) {
-            theitem = curritem;
-            i++;
-        }
+    index = objectIndex(PHYLOBJVNUM);
+    if( index ) {
+        i = index->number;
+        LinkedListLock( index->list );
+        theitem = index->list->tail;
+        LinkedListUnlock( index->list );
     }
 
     if (!number(0, 2)) {
@@ -11833,16 +11862,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
              */
             if (mob->generic == WAITTOGOHOME) {
                 currroom = real_roomp(mob->in_room);
-                temp = 0;
-                for (corpse = currroom->contents; corpse;
-                     corpse = corpse->next_content) {
-                    if (corpse->item_number == realcorpseid) {
-                        temp = 1;
-                        break;
-                    }
-                }
-
-                if (temp) {
+                corpse = objectGetInRoomNum( CORPSEOBJVNUM, currroom );
+                if (corpse) {
                     /* 
                      * remove the corpse, head back for home;
                      */
@@ -11881,11 +11902,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * and get item, then return home
                  */
                 mob->generic = theitem->in_room;
-                for (tempobj = real_roomp(theitem->in_room)->contents;
-                     tempobj; tempobj = tempobj->next) {
-                    if (tempobj->item_number == realcorpseid) {
-                        return (TRUE);
-                    }
+                if( objectGetInRoomNum( CORPSEOBJVNUM, 
+                                        real_roomp(theitem->in_room)) ) {
+                    return( TRUE );
                 }
 
                 corpse = objectRead(CORPSEOBJVNUM);
@@ -11903,18 +11922,15 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * go to room, send item to storage, wait a pulse, 
                  * set ch->generic to go home again
                  */
-                temp = 0;
-                for (tempobj = real_roomp(theitem->in_room)->contents;
-                     tempobj; tempobj = tempobj->next) {
-                    if (tempobj->item_number == realcorpseid) {
-                        temp = 1;
-                    }
-                }
-                /* Even though the generic and in_room match, there is no corpse
-                 * so we need to drop one, and that will be our action this time.
-                 * If the corpse is there, then we will take the next step.
+                tempobj = objectGetInRoomNum( CORPSEOBJVNUM, 
+                                              real_roomp(theitem->in_room) );
+
+                /* Even though the generic and in_room match, there is no 
+                 * corpse so we need to drop one, and that will be our action 
+                 * this time.  If the corpse is there, then we will take the 
+                 * next step.
                  */
-                if(!temp) {
+                if(!tempobj) {
                     corpse = objectRead(CORPSEOBJVNUM);
                     objectPutInRoom(corpse, theitem->in_room);
                     currroomnum = mob->in_room;
@@ -11927,6 +11943,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     char_to_room(mob, currroomnum);
                     return(TRUE);
                 }
+
                 if(theitem->in_room != mob->in_room) {
                 act("$n waves $s hands, and a pair of rotted hands "
                     "reaches up through the ground and drags $m under.",
@@ -12006,11 +12023,11 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
                 return (FALSE);
             }
+
             if (mob->in_room == tempchar->in_room &&
                 mob->generic != INPEACEROOM) {
 
-                if (!IS_SET(real_roomp(mob->in_room)->room_flags,
-                            PEACEFUL)) {
+                if (!IS_SET(real_roomp(mob->in_room)->room_flags, PEACEFUL)) {
                     act("$n glares at you, and launches to the attack!",
                         TRUE, mob, 0, tempchar, TO_VICT);
                     act("$n suddenly launches $mself at $N!", TRUE, mob,
@@ -12020,14 +12037,13 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     return (FALSE);
                 }
             }
+
             if(mob->in_room == tempchar->in_room &&
                 mob->generic == INPEACEROOM) {
 
                 if(!number(0,2)) {
-                    act("$n glares at you!",
-                        TRUE, mob, 0, tempchar, TO_VICT);
-                    act("$n glares at $N!", TRUE, mob,
-                        0, tempchar, TO_NOTVICT);
+                    act("$n glares at you!", TRUE, mob, 0, tempchar, TO_VICT);
+                    act("$n glares at $N!", TRUE, mob, 0, tempchar, TO_NOTVICT);
                 }
                 return(FALSE);
             }
@@ -12038,11 +12054,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * room yet
                  */
                 mob->generic = tempchar->in_room;
-                for (tempobj = real_roomp(tempchar->in_room)->contents;
-                     tempobj; tempobj = tempobj->next) {
-                    if (tempobj->item_number == realcorpseid) {
-                        return (TRUE);
-                    }
+                if( objectGetInRoomNum( CORPSEOBJVNUM, 
+                                        real_roomp(tempchar->in_room) ) ) {
+                    return( TRUE );
                 }
                 corpse = objectRead(CORPSEOBJVNUM);
                 objectPutInRoom(corpse, mob->generic);
@@ -12064,61 +12078,55 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
              * so use corpse to transfer mob, then attack if not 
              * peace room
              */
-                temp = 0;
-                for (tempobj = real_roomp(tempchar->in_room)->contents;
-                     tempobj; tempobj = tempobj->next) {
-                    if (tempobj->item_number == realcorpseid) {
-                        temp = 1;
-                    }
-                }
-                if(!temp) {
+                tempobj = objectGetInRoomNum( CORPSEOBJVNUM,
+                                              real_roomp(tempchar->in_room) );
+                if(!tempobj) {
                     mob->generic = -1;
                     return(FALSE);
                 }
-            act("$n waves $s hands, and a pair of rotted hands reaches "
-                "up through the ground and drags $m under.", TRUE, mob,
-                0, 0, TO_ROOM);
-            char_from_room(mob);
-            char_to_room(mob, mob->generic);
 
-            act("The rotting corpse suddenly sits up, it reaches down "
-                "into the ground like it was water, and pulls up "
-                "another being.", FALSE, mob, 0, 0, TO_ROOM);
-            act("$n points at you, that can't be good.",
-                TRUE, mob, 0, tempchar, TO_VICT);
-            act("$n slowly points at $N, which bodes ill for $N.",
-                TRUE, mob, 0, tempchar, TO_NOTVICT);
+                act("$n waves $s hands, and a pair of rotted hands reaches "
+                    "up through the ground and drags $m under.", TRUE, mob,
+                    0, 0, TO_ROOM);
+                char_from_room(mob);
+                char_to_room(mob, mob->generic);
 
-            if (mob->in_room == tempchar->in_room &&
-                mob->generic != INPEACEROOM) {
-                if (!IS_SET(real_roomp(mob->in_room)->room_flags,
-                            PEACEFUL)) {
-                    act("$n glares at you, and launches to the attack!",
-                        TRUE, mob, 0, tempchar, TO_VICT);
-                    act("$n suddenly launches $mself at $N!", TRUE, mob,
-                        0, tempchar, TO_NOTVICT);
-                    MobHit(mob, tempchar, 0);
-                    mob->generic = WAITTOGOHOME;
+                act("The rotting corpse suddenly sits up, it reaches down "
+                    "into the ground like it was water, and pulls up "
+                    "another being.", FALSE, mob, 0, 0, TO_ROOM);
+                act("$n points at you, that can't be good.",
+                    TRUE, mob, 0, tempchar, TO_VICT);
+                act("$n slowly points at $N, which bodes ill for $N.",
+                    TRUE, mob, 0, tempchar, TO_NOTVICT);
+
+                if (mob->in_room == tempchar->in_room &&
+                    mob->generic != INPEACEROOM) {
+                    if (!IS_SET(real_roomp(mob->in_room)->room_flags,
+                                PEACEFUL)) {
+                        act("$n glares at you, and launches to the attack!",
+                            TRUE, mob, 0, tempchar, TO_VICT);
+                        act("$n suddenly launches $mself at $N!", TRUE, mob,
+                            0, tempchar, TO_NOTVICT);
+                        MobHit(mob, tempchar, 0);
+                        mob->generic = WAITTOGOHOME;
+                        return (TRUE);
+                    } 
+
+                    sprintf(buf, "I will wait for you, %s.",
+                            GET_NAME(tempchar));
+                    do_say(mob, buf, 0);
+                    act("$n becomes completely motionless.", TRUE, mob, 0,
+                        0, TO_ROOM);
+                    mob->generic = INPEACEROOM;
                     return (TRUE);
-                } 
-
-                sprintf(buf, "I will wait for you, %s.",
-                        GET_NAME(tempchar));
-                do_say(mob, buf, 0);
-                act("$n becomes completely motionless.", TRUE, mob, 0,
-                    0, TO_ROOM);
-                mob->generic = INPEACEROOM;
-                return (TRUE);
+                }
+                return (FALSE);
             }
-            return (FALSE);
-        }
         }
         
         /* 
-         * in container, in room -> how about
-         * moving outermost container to room,
-         * then moving some items out of it, until 
-         * the item is out
+         * in container, in room -> how about moving outermost container to 
+         * room, then moving some items out of it, until the item is out
          */
         if (theitem->in_obj != NULL && theitem->in_obj != ventobj) {
             parentobj = theitem->in_obj;
@@ -12159,22 +12167,18 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     
     if (i > 1) {
         /**
-         * @todo get rid of object_list, use a btree or something
          * I say randomly remove all but one, then hunt it
          */
         j = number(1, i);
-        for (curritem = object_list; curritem;) {
-            if (curritem->item_number == GoodItemReal) {
-                remobj = curritem;
-                curritem = curritem->next;
-                if (k != j) {
-                    objectExtract(remobj);
-                }
-                k++;
-            } else {
-                curritem = curritem->next;
+        LinkedListLock( index->list );
+        for( k = 1, item = index->list->head; item; item = next, k++ ) {
+            next = item->next;
+            if( k != j ) {
+                remobj = (struct obj_data *)item;
+                objectExtractLocked( remobj, LOCKED );
             }
         }
+        LinkedListUnlock( index->list );
     }
 
     return (necromancer(mob, cmd, arg, mob, type));

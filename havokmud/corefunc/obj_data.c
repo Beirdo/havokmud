@@ -280,6 +280,11 @@ void objectClear(struct obj_data *obj)
  */
 void objectExtract(struct obj_data *obj)
 {
+    objectExtractLocked( obj, UNLOCKED );
+}
+
+void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked )
+{
     struct obj_data *temp1,
                    *temp2;
     extern long     obj_count;
@@ -325,7 +330,7 @@ void objectExtract(struct obj_data *obj)
     /*
      * leaves nothing ! 
      */
-    for (; obj->contains; objectExtract(obj->contains)) {
+    for (; obj->contains; objectExtractLocked(obj->contains, locked)) {
         /* 
          * Empty loop 
          */
@@ -354,7 +359,7 @@ void objectExtract(struct obj_data *obj)
 
     if (obj->item_number >= 0) {
         obj->index->number--;
-        LinkedListRemove( obj->index->list, &obj->globalLink, UNLOCKED );
+        LinkedListRemove( obj->index->list, &obj->globalLink, locked );
         obj_count--;
     }
     objectFree(obj);
@@ -762,7 +767,8 @@ void objectTakeFromObject(struct obj_data *obj)
         tmp->next_content = obj->next_content;
     }
 
-    /*
+    /**
+     * @todo this looks funky
      * Subtract weight from containers container 
      */
     for (tmp = obj->in_obj; tmp->in_obj; tmp = tmp->in_obj) {
