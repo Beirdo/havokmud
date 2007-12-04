@@ -162,7 +162,7 @@ int Donation(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
-    if (arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
+    if (arg2 && (sub_object = objectGetInCharOrRoom(ch, arg2))) {
         if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
             if ((sub_object = objectGetOnChar(ch, arg2, ch))) {
                 return (FALSE);
@@ -1107,6 +1107,8 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                     percent = 0;
     struct obj_data *object,
                    *bahamut;
+    static const char  *corpse = "corpse corpse of Bahamut, The Ancient "
+                                 "Platinum Dragon is");
     char           *itemname,
                    *itemtype,
                     buf[256];
@@ -1123,8 +1125,10 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        bahamut = get_obj_vis(ch, "corpse corpse of Bahamut, The Ancient "
-                                  "Platinum Dragon is");
+        bahamut = objectGetInCharOrRoom(ch, corpse);
+        if( !bahamut ) {
+            bahamut = objectGetGlobal( ch, corpse, NULL );
+        }
 
         arg = get_argument(arg, &itemname);
         arg = get_argument(arg, &itemtype);
@@ -1148,9 +1152,11 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
         if (bahamut != object) {
             return (FALSE);
         }
+        
         if (strcmp(itemtype, "jacket")) {
             return (FALSE);
         }
+
         if (object->affected[0].modifier != 0 && 
             object->affected[1].modifier != 0) {
 

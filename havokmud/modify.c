@@ -399,7 +399,8 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         /*
          * locate the object 
          */
-        if (!(obj = get_obj_vis(ch, name))) {
+        if (!(obj = objectGetInCharOrRoom(ch, name)) &&
+            !(obj = objectGetGlobal(ch, name, NULL))) {
             send_to_char("Can't find such a thing here..\n\r", ch);
             return;
         }

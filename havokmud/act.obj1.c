@@ -287,7 +287,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         found = FALSE;
         fail = FALSE;
         has = FALSE;
-        sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
+        sub_object = objectGetInCharOrRoom(ch, arg2);
         if (sub_object) {
             if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
                 if ((blah = objectGetOnChar(ch, arg2, ch))) {
@@ -359,7 +359,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         found = FALSE;
         fail = FALSE;
         has = FALSE;
-        sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
+        sub_object = objectGetInCharOrRoom(ch, arg2);
         if (sub_object) {
             if (ITEM_TYPE(sub_object) == ITEM_TYPE_CONTAINER) {
                 if ((blah = objectGetOnChar(ch, arg2, ch)))

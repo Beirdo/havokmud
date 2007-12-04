@@ -2029,7 +2029,7 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
 
     if (IS_SET(bitvector, FIND_OBJ_INV)) {
         if (IS_SET(bitvector, FIND_OBJ_ROOM)) {
-            if ((*tar_obj = get_obj_vis_accessible(ch, name))) {
+            if ((*tar_obj = objectGetInCharOrRoom(ch, name))) {
                 return (FIND_OBJ_INV);
             }
         } else {
@@ -2045,7 +2045,8 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     }
 
     if (IS_SET(bitvector, FIND_OBJ_WORLD) && 
-        (*tar_obj = get_obj_vis(ch, name))) {
+        ((*tar_obj = objectGetInCharOrRoom(ch, name)) ||
+         (*tar_obj = objectGetGlobal(ch, name, NULL)))) {
         return (FIND_OBJ_WORLD);
     }
 

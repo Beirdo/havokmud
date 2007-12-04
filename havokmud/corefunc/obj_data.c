@@ -535,60 +535,31 @@ struct obj_data *GetObjectNumInList(int num, struct obj_data *list,
 }
 
 
-/*
- * search the entire world for an object, and return a pointer 
+/**
+ * @todo the old get_obj_vis_accessible did full match on char, full match on
+ *       room, then partial match on char, partial match on room.  Here we do
+ *       full then partial on char, then full then partial on room.  Make sure
+ *       this new behavior is OK
  */
-struct obj_data *get_obj_vis(struct char_data *ch, char *name)
+struct obj_data *objectGetInCharOrRoom(struct char_data *ch, char *name)
 {
     struct obj_data *obj;
 
     /*
      * scan items carried 
      */
-    if ((obj = objectGetOnChar(ch, name, ch))) {
+    obj = objectGetOnChar(ch, name, ch);
+    if( obj ) {
         return(obj);
     }
+
     /*
      * scan room 
      */
-    if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
-        return(obj);
-    }
-    return( objectGetGlobal(ch, name, NULL) );
+    obj = objectGetInRoom(ch, name, real_roomp(ch->in_room));
+    return(obj);
 }
 
-struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
-{
-    static int          offset = OFFSETOF(next_content, struct obj_data);
-    int                 count;
-    struct obj_data    *obj;
-
-    count = 1;
-
-    obj = GetObjectInList( ch, name, ch->carrying, offset, &count, TRUE, 
-                           KEYWORD_FULL_MATCH );
-    if( obj ) {
-        return( obj );
-    }
-
-    obj = GetObjectInList( ch, name, real_roomp(ch->in_room)->contents, offset,
-                           &count, TRUE, KEYWORD_FULL_MATCH );
-    if( obj ) {
-        return( obj );
-    }
-
-    count = 1;
-
-    obj = GetObjectInList( ch, name, ch->carrying, offset, &count, TRUE, 
-                           KEYWORD_PARTIAL_MATCH );
-    if( obj ) {
-        return( obj );
-    }
-
-    obj = GetObjectInList( ch, name, real_roomp(ch->in_room)->contents, offset,
-                           &count, TRUE, KEYWORD_PARTIAL_MATCH );
-    return( obj );
-}
 
 bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
 {

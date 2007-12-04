@@ -240,7 +240,7 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = (struct obj_data *) get_obj_vis_accessible(ch, name))) {
+    if (!(obj = objectGetInCharOrRoom(ch, name))) {
         send_to_char("I don't see that object here.\n\r", ch);
         return;
     }

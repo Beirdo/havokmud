@@ -5881,7 +5881,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(obj = get_obj_vis_accessible(ch, oname))) {
+    if (!(obj = objectGetInCharOrRoom(ch, oname))) {
         send_to_char("Hum, I do not know where that is?!?!?\n\r", ch);
         return;
     }
