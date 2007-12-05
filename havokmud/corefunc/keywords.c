@@ -330,6 +330,7 @@ struct obj_data *KeywordFindNext( Keywords_t *key, struct obj_data *lastobj )
 
     treeA    = NULL;
     objItemA = NULL;
+    obj      = lastobj;
 
     for( i = 0; i < key->count; i++ ) {
         if( i == 0 ) {
