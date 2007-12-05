@@ -3321,8 +3321,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     if (GetMaxLevel(ch) >= SAINT) {
         key = StringToKeywords( name, NULL );
-        for (k = objectKeywordFindFirst( key ); k; 
-             k = objectKeywordFindNext( key, k )) {
+        BalancedBTreeLock( objectKeywordTree );
+        for (k = objectKeywordFindFirst( objectKeywordTree, key ); k; 
+             k = objectKeywordFindNext( objectKeywordTree, key, k )) {
             if ( objectIsVisible(ch, k) && (number == 0 || (--count) == 0) ) {
                 if (number == 0) {
                     sprintf(buf, "[%2d] ", ++count);
@@ -3335,6 +3336,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
+        BalancedBTreeUnlock( objectKeywordTree );
         FreeKeywords(key, TRUE);
     }
 

@@ -2185,8 +2185,8 @@ void spell_locate_object(int level, struct char_data *ch,
     buf[0] = '\0';
 
     BalancedBTreeLock( objectKeywordTree );
-    for (i = objectKeywordFindFirst( key ); i && (j > 0); 
-         i = objectKeywordFindNext( key, i ) ) {
+    for (i = objectKeywordFindFirst( objectKeywordTree, key ); i && (j > 0); 
+         i = objectKeywordFindNext( objectKeywordTree, key, i ) ) {
         if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             /*
              * we found at least one item

@@ -56,9 +56,11 @@ BalancedBTree_t *objectMasterTree  = NULL;
 BalancedBTree_t *objectKeywordTree = NULL;
 BalancedBTree_t *objectTypeTree    = NULL;
 
-struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
 
+struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
+                                        BalancedBTree_t *tree, int *count, 
+                                        int steps);
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  struct obj_data *list, int nextOffset,
                                  int *count, bool visible, int steps);
@@ -415,15 +417,73 @@ struct obj_data *objectGetInObject( struct char_data *ch, char *name,
                              BOOL(ch != NULL), steps ) );
 }
 
-/**
- * @todo check if object_list can be done in a better way... like btrees
- */
 struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count)
 {
-    static int  offset = OFFSETOF(next, struct obj_data);
     static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( ch, name, object_list, offset, count, 
-                             BOOL(ch != NULL), steps ) );
+    return( GetObjectInKeywordTree( ch, name, objectKeywordTree, count, 
+                                    steps ) );
+}
+
+struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
+                                        BalancedBTree_t *tree, int *count, 
+                                        int steps)
+{
+    int                 number;
+    struct obj_data    *obj;
+    Keywords_t         *key;
+    char               *arg;
+    bool                visible;
+    int                 i = 0;
+
+    arg = name;
+    if (!(number = get_number(&arg))) {
+        return(NULL);
+    }
+    key = StringToKeywords( arg, NULL );
+    visible = BOOL(ch != NULL);
+
+    BalancedBTreeLock( tree );
+
+    /* First do a full word match */
+    if( steps & KEYWORD_FULL_MATCH ) {
+        i = count ? *count : 1;
+        key->partial = FALSE;
+        for( obj = objectKeywordFindFirst( tree, key ); obj && i <= number; 
+             obj = objectKeywordFindNext( tree, key, obj ) ) {
+            if (!visible || objectIsVisible(ch, obj)) {
+                if (i == number) {
+                    BalancedBTreeUnlock( tree );
+                    return(obj);
+                }
+                i++;
+            }
+        }
+    }
+
+    /* full word match failed, try a partial word match */
+    if( steps & KEYWORD_PARTIAL_MATCH ) {
+        key->partial = TRUE;
+        i = count ? *count : 1;
+        for( obj = objectKeywordFindFirst( tree, key ); obj && i <= number; 
+             obj = objectKeywordFindNext( tree, key, obj ) ) {
+            if (!visible || objectIsVisible(ch, obj)) {
+                if (i == number) {
+                    BalancedBTreeUnlock( tree );
+                    return(obj);
+                }
+                i++;
+            }
+        }
+    }
+
+    BalancedBTreeUnlock( tree );
+
+    if (count) {
+        *count = i;
+    }
+
+    FreeKeywords( key, TRUE );
+    return (NULL);
 }
 
 /**
@@ -1330,19 +1390,20 @@ void objectKeywordTreeRemove( struct obj_data *obj )
     BalancedBTreeUnlock( objectKeywordTree );
 }
 
-struct obj_data *objectKeywordFindFirst( Keywords_t *key )
+struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
+                                         Keywords_t *key )
 {
-    return( objectKeywordFindNext( key, NULL ) );
+    return( objectKeywordFindNext( tree, key, NULL ) );
 }
 
-struct obj_data *objectKeywordFindNext( Keywords_t *key, 
+struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, Keywords_t *key, 
                                         struct obj_data *lastobj )
 {
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *objItem;
     BalancedBTreeItem_t    *objItemA;
-    BalancedBTree_t        *tree;
     BalancedBTree_t        *treeA;
+    BalancedBTree_t        *treeB;
     struct obj_data        *obj;
     int                     i;
 
@@ -1353,8 +1414,8 @@ struct obj_data *objectKeywordFindNext( Keywords_t *key,
     for( i = 0; i < key->count; i++ ) {
         if( i == 0 ) {
             if( !treeA ) {
-                item = BalancedBTreeFind( objectKeywordTree, &key->words[i],
-                                          LOCKED, key->partial );
+                item = BalancedBTreeFind( tree, &key->words[i], LOCKED, 
+                                          key->partial );
                 if( !item ) {
                     return( NULL );
                 }
@@ -1377,7 +1438,7 @@ struct obj_data *objectKeywordFindNext( Keywords_t *key,
 
             obj = (struct obj_data *)objItemA->item;
         } else {
-            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], LOCKED,
+            item = BalancedBTreeFind( tree, &key->words[i], LOCKED,
                                       key->partial );
             if( !item ) {
                 /* This objA is useless, try again with the next one */
@@ -1385,8 +1446,8 @@ struct obj_data *objectKeywordFindNext( Keywords_t *key,
                 continue;
             }
 
-            tree = (BalancedBTree_t *)item->item;
-            objItem = BalancedBTreeFind( tree, &obj, UNLOCKED, key->partial );
+            treeB = (BalancedBTree_t *)item->item;
+            objItem = BalancedBTreeFind( treeB, &obj, UNLOCKED, key->partial );
             if( !objItem ) {
                 i = -1;
                 continue;

@@ -2457,8 +2457,9 @@ void spell_trace_corpse(int level, struct char_data *ch,
     found = 0;
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
-    for (i = objectKeywordFindFirst( key ); i && !found; 
-         i = objectKeywordFindNext( key, i )) {
+    BalancedBTreeLock( objectKeywordTree );
+    for (i = objectKeywordFindFirst( objectKeywordTree, key ); i && !found; 
+         i = objectKeywordFindNext( objectKeywordTree, key, i )) {
         if( IS_CORPSE(i) ) {
             found = 1;
             /*
@@ -2488,6 +2489,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
             corpse = i;
         }
     }
+    BalancedBTreeUnlock( objectKeywordTree );
     send_to_char(buf, ch);
 
     FreeKeywords(key, TRUE);

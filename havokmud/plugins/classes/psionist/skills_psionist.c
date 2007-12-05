@@ -2471,8 +2471,9 @@ void mind_sense_object(int level, struct char_data *ch,
 
     key = StringToKeywords( arg, NULL );
     
-    for (i = objectKeywordFindFirst(key); i; 
-         i = objectKeywordFindNext(key, i) ) {
+    BalancedBTreeLock( objectKeywordTree );
+    for (i = objectKeywordFindFirst( objectKeywordTree, key ); i; 
+         i = objectKeywordFindNext( objectKeywordTree, key, i ) ) {
         if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             continue;
         }
@@ -2514,6 +2515,7 @@ void mind_sense_object(int level, struct char_data *ch,
             room = (i->in_room);
         }
     }
+    BalancedBTreeUnlock( objectKeywordTree );
 
     if (room == 0 || room == NOWHERE) {
         send_to_char("You cannot sense that item.\n\r", ch);
