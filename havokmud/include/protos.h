@@ -682,8 +682,7 @@ struct obj_data *unequip_char(struct char_data *ch, int pos);
 struct char_data *get_char_room(char *name, int room);
 struct char_data *get_char(char *name);
 struct char_data *get_char_num(int nr);
-void            object_list_new_owner(struct obj_data *list,
-                                      struct char_data *ch);
+void object_list_new_owner(struct obj_data *list, struct char_data *ch);
 void            update_object(struct obj_data *obj, int use);
 void            update_char_objects(struct char_data *ch);
 void            extract_char(struct char_data *ch);

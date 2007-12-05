@@ -495,6 +495,8 @@ struct obj_data {
     struct index_data *index;       /**< pointer back to the index entry to
                                      *   save calls to objectIndex
                                      */
+    BalancedBTreeItem_t typeItem;   /**< The btree item in the objectTypeTree
+                                     */
     int             item_number;    /**< Where in database */
     int             in_room;        /**< In what room, -1 when contained
                                      *   or carried */

@@ -3318,24 +3318,20 @@ void do_where(struct char_data *ch, char *argument, int cmd)
             }
         }
     }
-    /*
-     * count = number;
-     */
 
     if (GetMaxLevel(ch) >= SAINT) {
         key = StringToKeywords( name, NULL );
-        for (k = KeywordFindFirst( key ); k; k = KeywordFindNext( key, k )) {
-            if ( objectIsVisible(ch, k) ) {
-                if (number == 0 || (--count) == 0) {
-                    if (number == 0) {
-                        sprintf(buf, "[%2d] ", ++count);
-                        append_to_string_block(&sb, buf);
-                    }
-                    do_where_object(ch, k, number != 0, &sb);
-                    *buf = 1;
-                    if (number != 0) {
-                        break;
-					}
+        for (k = objectKeywordFindFirst( key ); k; 
+             k = objectKeywordFindNext( key, k )) {
+            if ( objectIsVisible(ch, k) && (number == 0 || (--count) == 0) ) {
+                if (number == 0) {
+                    sprintf(buf, "[%2d] ", ++count);
+                    append_to_string_block(&sb, buf);
+                }
+                do_where_object(ch, k, number != 0, &sb);
+                *buf = '\0';
+                if (number != 0) {
+                    break;
                 }
             }
         }

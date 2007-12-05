@@ -15,7 +15,6 @@
  * extern variables 
  */
 
-extern struct obj_data *object_list;
 extern struct char_data *character_list;
 
 int RecGetObjRoom(struct obj_data *obj)
@@ -75,14 +74,13 @@ void MakeSound(int pulse)
     struct char_data *ch;
 
     /**
-     * @todo get rid of the object_list!
      *  objects
      */
 
-    for (obj = object_list; obj; obj = obj->next) {
-        if (ITEM_TYPE(obj) == ITEM_TYPE_AUDIO && 
-            ((obj->value[0] && !(pulse % obj->value[0])) || !number(0, 5))) {
-
+    BalancedBTreeLock( objectTypeTree );
+    for (obj = objectTypeFindFirst(ITEM_TYPE_AUDIO); obj; 
+         obj = objectTypeFindNext(ITEM_TYPE_AUDIO, obj)) {
+        if ((obj->value[0] && !(pulse % obj->value[0])) || !number(0, 5)) {
             if (obj->carried_by) {
                 room = obj->carried_by->in_room;
             } else if (obj->equipped_by) {
@@ -102,6 +100,7 @@ void MakeSound(int pulse)
             }
         }
     }
+    BalancedBTreeUnlock( objectTypeTree );
 
     /*
      *   mobiles

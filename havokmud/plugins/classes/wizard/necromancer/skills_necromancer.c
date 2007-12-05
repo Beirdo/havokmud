@@ -2457,8 +2457,8 @@ void spell_trace_corpse(int level, struct char_data *ch,
     found = 0;
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
-    for (i = KeywordFindFirst( key ); i && !found; 
-         i = KeywordFindNext( key, i )) {
+    for (i = objectKeywordFindFirst( key ); i && !found; 
+         i = objectKeywordFindNext( key, i )) {
         if( IS_CORPSE(i) ) {
             found = 1;
             /*

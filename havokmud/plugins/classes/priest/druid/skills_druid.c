@@ -1144,7 +1144,8 @@ void spell_flame_blade(int level, struct char_data *ch,
     tmp_obj->affected[0].location = APPLY_DAMROLL;
     tmp_obj->affected[0].modifier = 4 + GET_LEVEL(ch, DRUID_LEVEL_IND) / 8;
 
-    KeywordTreeAdd( tmp_obj );
+    objectKeywordTreeAdd( tmp_obj );
+    objectTypeTreeAdd( tmp_obj );
 
     equip_char(ch, tmp_obj, WIELD);
     tmp_obj->item_number = -1;
@@ -1442,7 +1443,8 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     key = StringToKeywords( arg, NULL );
 
-    for( i = KeywordFindFirst( key ); i; i = KeywordFindNext( key, i ) ) {
+    for( i = objectKeywordFindFirst( key ); i; 
+         i = objectKeywordFindNext( key, i ) ) {
         if (ITEM_TYPE(i) == ITEM_TYPE_TREE) {
             /*
              * we found a druid tree with the right name
@@ -1906,7 +1908,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
 
     key = StringToKeywords( name, NULL );
 
-    for( i = KeywordFindFirst( key ); i; i = KeywordFindNext( key, i ) ) {
+    for( i = objectKeywordFindFirst( key ); i; 
+         i = objectKeywordFindNext( key, i ) ) {
         if (ITEM_TYPE(i) == ITEM_TYPE_TREE) {
             /*
              * we found a druid tree with the right name

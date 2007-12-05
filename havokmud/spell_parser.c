@@ -2227,15 +2227,12 @@ void affect_update(int pulse)
     }
 
     /**
-     * @todo get rid of the object_list
      *  update the objects
      */
-    for (j = object_list; j; j = next_thing) {
-        next_thing = j->next;   
-        /* 
-         * Next in object list 
-         */
-
+    BalancedBTreeLock( objectTypeTree );
+    for (j = objectTypeFindFirst(ITEM_TYPE_CONTAINER); j; 
+         j = next_thing ) {
+        next_thing = objectTypeFindNext(ITEM_TYPE_CONTAINER, j);   
         /*
          * If this is a corpse 
          */
@@ -2246,6 +2243,7 @@ void affect_update(int pulse)
             if (j->timer > 0) {
                 j->timer--;
             }
+
             if (!j->timer) {
                 if (j->carried_by) {
                     act("$p biodegrades in your hands. Everything in it falls "
@@ -2259,10 +2257,21 @@ void affect_update(int pulse)
                 }
                 ObjFromCorpse(j);
             }
-        } else if (j->item_number == EMPTY_SCROLL) {
+        }
+    }
+    BalancedBTreeUnlock( objectTypeTree );
+
+    index = objectIndex( EMPTY_SCROLL );
+    if( index ) {
+        LinkedListLock( index->list );
+        for( objIitem = index->list->head; objIitem; objIitem = next_item ) {
+            next_item = objIitem->next;
+            j = (struct obj_data *)objIitem;
+
             if (j->timer > 0) {
                 j->timer--;
             }
+
             if (!j->timer) {
                 if (j->carried_by)  {
                     act("$p crumbles to dust.", FALSE, j->carried_by, j, 0,
@@ -2276,10 +2285,21 @@ void affect_update(int pulse)
                 }
                 objectExtract(j);
             }
-        } else if (j->item_number == EMPTY_POTION) {
+        }
+        LinkedListLock( index->list );
+    }
+
+    index = objectIndex( EMPTY_POTION );
+    if( index ) {
+        LinkedListLock( index->list );
+        for( objItem = index->list->head; objItem; objItem = next_item ) {
+            next_item = objIitem->next;
+            j = (struct obj_data *)objIitem;
+
             if (j->timer > 0) {
                 j->timer--;
             }
+
             if (!j->timer) {
                 if (j->carried_by) {
                     act("$p dissolves into nothingness.", FALSE,
@@ -2293,38 +2313,49 @@ void affect_update(int pulse)
                 }
                 objectExtract(j);
             }
-        } else {
-            /*
-             *  Sound objects
-             */
-            if (ITEM_TYPE(j) == ITEM_TYPE_AUDIO) {
-                if ((j->value[0] && pulse % j->value[0] == 0) || 
-                    !number(0, 5)) {
-                    if (j->carried_by) {
-                        room = j->carried_by->in_room;
-                    } else if (j->equipped_by) {
-                        room = j->equipped_by->in_room;
-                    } else if (j->in_room != NOWHERE) {
-                        room = j->in_room;
-                    } else {
-                        room = RecGetObjRoom(j);
-                    }
-                    /*
-                     *  broadcast to room
-                     */
+        }
+        LinkedListUnlock( index->list );
+    }
 
-                    if (j->action_description) {
-                        MakeNoise(room, j->action_description,
-                                  j->action_description);
-                    }
-                }
+    BalancedBTreeLock( objectTypeTree );
+    for( j = objectTypeFindFirst( ITEM_TYPE_AUDIO ); j;
+         j = objectTypeFindNext( ITEM_TYPE_AUDIO, j ) ) {
+
+        if ((j->value[0] && pulse % j->value[0] == 0) || !number(0, 5)) {
+            if (j->carried_by) {
+                room = j->carried_by->in_room;
+            } else if (j->equipped_by) {
+                room = j->equipped_by->in_room;
+            } else if (j->in_room != NOWHERE) {
+                room = j->in_room;
             } else {
-                if ( j->index->func && j->item_number >= 0) {
-                    (*j->index->func) (0, 0, 0, j, PULSE_TICK);
-                }
+                room = RecGetObjRoom(j);
+            }
+
+            if (j->action_description) {
+                MakeNoise(room, j->action_description, j->action_description);
             }
         }
     }
+    BalancedBTreeUnlock( objectTypeTree );
+
+    BalancedBTreeLock( objectMasterTree );
+    for( item = BalancedBTreeFindLeast( objectMasterTree->root ); index;
+         item = BalancedBTreeFindNext( objectMasterTree, item, LOCKED ) ) {
+        index = (struct index_data *)item->item;
+        if( !index->func ) {
+            continue;
+        }
+
+        LinkedListLock( index->list );
+        for( objItem = index->list->head ; objItem; objItem = objItem->next ) {
+            j = (struct obj_data *)objItem;
+
+            (*j->index->func) (0, 0, 0, j, PULSE_TICK);
+        }
+        LinkedListUnlock( index->list );
+    }
+    BalancedBTreeUnlock( objectMasterTree );
 }
 
 void update_mem(int pulse)

@@ -389,8 +389,10 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
             sprintf(buf, "head severed %s", 
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+            objectKeywordTreeRemove( cp );
             FreeKeywords( &cp->keywords, FALSE );
             StringToKeywords( buf, &cp->keywords );
+            objectKeywordTreeAdd( cp );
 
             sprintf(buf, "the severed head of %s",
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
@@ -411,6 +413,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
             cp->description = strdup(buf);
 
             cp->type_flag = ITEM_TYPE_CONTAINER;
+            objectTypeTreeAdd( cp );
             cp->wear_flags = ITEM_TAKE;
 
             /*
@@ -490,6 +493,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
         sprintf(buf, "corpse %s", 
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+        objectKeywordTreeRemove( corpse );
         FreeKeywords( &corpse->keywords, FALSE );
         StringToKeywords( buf, &corpse->keywords );
 
@@ -516,6 +520,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
         ADeadBody = TRUE;
     } else if (IsUndead(ch)) {
+        objectKeywordTreeRemove( corpse );
         FreeKeywords( &corpse->keywords, FALSE );
         
         if (corpse->description) {
@@ -599,7 +604,8 @@ void make_corpse(struct char_data *ch, int killedbytype)
     corpse->carried_by = 0;
     corpse->equipped_by = 0;
 
-    KeywordTreeAdd( corpse );
+    objectKeywordTreeAdd( corpse );
+    objectTypeTreeAdd( corpse );
 
     for (o = corpse->contains; o; o = o->next_content) {
         o->in_obj = corpse;
@@ -615,6 +621,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     if (GET_POS(ch) != POSITION_DEAD) {
         GET_POS(ch) = POSITION_DEAD;
     }
+
     /*
      * remove spells
      */

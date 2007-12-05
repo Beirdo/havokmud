@@ -2471,7 +2471,8 @@ void mind_sense_object(int level, struct char_data *ch,
 
     key = StringToKeywords( arg, NULL );
     
-    for (i = KeywordFindFirst(key); i; i = KeywordFindNext(key, i) ) {
+    for (i = objectKeywordFindFirst(key); i; 
+         i = objectKeywordFindNext(key, i) ) {
         if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             continue;
         }

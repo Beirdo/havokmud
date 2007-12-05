@@ -738,7 +738,8 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->cost = 10;
     tmp_obj->cost_per_day = 1;
 
-    KeywordTreeAdd( tmp_obj );
+    objectKeywordTreeAdd( tmp_obj );
+    objectTypeTreeAdd( tmp_obj );
 
     objectPutInRoom(tmp_obj, ch->in_room);
 
@@ -2184,8 +2185,8 @@ void spell_locate_object(int level, struct char_data *ch,
     buf[0] = '\0';
 
     BalancedBTreeLock( objectKeywordTree );
-    for (i = KeywordFindFirst( key ); i && (j > 0); 
-         i = KeywordFindNext( key, i ) ) {
+    for (i = objectKeywordFindFirst( key ); i && (j > 0); 
+         i = objectKeywordFindNext( key, i ) ) {
         if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             /*
              * we found at least one item
@@ -3068,9 +3069,11 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "a scroll of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
+        objectKeywordTreeRemove( obj );
         FreeKeywords( &obj->keywords, FALSE );
         sprintf(buf, "scroll %s", spells[sn]);
         StringToKeywords( buf, &obj->keywords );
+        objectKeywordTreeAdd( obj );
 
         if (obj->description) {
             free(obj->description);
