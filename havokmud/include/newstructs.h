@@ -461,13 +461,14 @@ struct obj_affected_type {
 #define KEYWORD_PARTIAL_MATCH   BV(1)
 
 typedef struct {
-    char          **words;
-    int            *length;
-    int            *found;
-    char           *description;
-    int             count;
-    bool            exact;
-    bool            partial;
+    char                  **words;
+    BalancedBTreeItem_t    *keywordItem;
+    int                    *length;
+    int                    *found;
+    char                   *description;
+    int                     count;
+    bool                    exact;
+    bool                    partial;
 } Keywords_t;
 
 struct index_data {
