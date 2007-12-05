@@ -214,11 +214,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
 
         db_delete_mail_message(messageNum[i]);
 
-        /**
-         * @todo YUCK, object_list!
-         */
-        tmp_obj->next = object_list;
-        object_list = tmp_obj;
+        KeywordTreeAdd( tmp_obj );
 
         objectGiveToChar(tmp_obj, ch);
 

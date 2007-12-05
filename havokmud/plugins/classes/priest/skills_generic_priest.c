@@ -2405,11 +2405,9 @@ void spell_goodberry(int level, struct char_data *ch,
     SET_BIT(tmp_obj->extra_flags, ITEM_MAGIC);
     tmp_obj->affected[0].location = APPLY_EAT_SPELL;
     tmp_obj->affected[0].modifier = SPELL_CURE_LIGHT;
-    /**
-     * @todo Yuck, object_list
-     */
-    tmp_obj->next = object_list;
-    object_list = tmp_obj;
+
+    KeywordTreeAdd( tmp_obj );
+
     objectGiveToChar(tmp_obj, ch);
     tmp_obj->item_number = -1;
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_ROOM);

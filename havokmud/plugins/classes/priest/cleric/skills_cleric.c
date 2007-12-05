@@ -738,11 +738,7 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->cost = 10;
     tmp_obj->cost_per_day = 1;
 
-    /**
-     * @todo why are we using object_list?
-     */
-    tmp_obj->next = object_list;
-    object_list = tmp_obj;
+    KeywordTreeAdd( tmp_obj );
 
     objectPutInRoom(tmp_obj, ch->in_room);
 
@@ -2187,12 +2183,10 @@ void spell_locate_object(int level, struct char_data *ch,
     }
     buf[0] = '\0';
 
-    /**
-     * @todo let's see if we can't somehow use btrees for this
-     */
-    for (i = object_list; i && (j > 0); i = i->next) {
-        if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) && 
-             KeywordsMatch(key, &i->keywords) ) {
+    BalancedBTreeLock( objectKeywordTree );
+    for (i = KeywordFindFirst( key ); i && (j > 0); 
+         i = KeywordFindNext( key, i ) ) {
+        if ( !IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             /*
              * we found at least one item
              */
@@ -2252,6 +2246,7 @@ void spell_locate_object(int level, struct char_data *ch,
             }
         }
     }
+    BalancedBTreeUnlock( objectKeywordTree );
     FreeKeywords(key, TRUE);
     page_string(ch->desc, buf, 0);
 

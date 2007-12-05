@@ -41,7 +41,8 @@ typedef enum
 {
     BTREE_KEY_INT,
     BTREE_KEY_STRING,
-    BTREE_KEY_PTHREAD
+    BTREE_KEY_PTHREAD,
+    BTREE_KEY_POINTER
 } BalancedBTreeKeyType_t;
 
 struct _BalancedBTree_t;

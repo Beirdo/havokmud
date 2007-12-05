@@ -599,11 +599,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
     corpse->carried_by = 0;
     corpse->equipped_by = 0;
 
-    /**
-     * @todo Yuck, object_list
-     */
-    corpse->next = object_list;
-    object_list = corpse;
+    KeywordTreeAdd( corpse );
 
     for (o = corpse->contains; o; o = o->next_content) {
         o->in_obj = corpse;

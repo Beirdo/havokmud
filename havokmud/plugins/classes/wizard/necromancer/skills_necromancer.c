@@ -2457,11 +2457,9 @@ void spell_trace_corpse(int level, struct char_data *ch,
     found = 0;
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
-    /**
-     * @todo get rid of object_list, we need btrees or something
-     */
-    for (i = object_list; i && !found; i = i->next) {
-        if (IS_CORPSE(i) && KeywordsMatch(key, &i->keywords)) {
+    for (i = KeywordFindFirst( key ); i && !found; 
+         i = KeywordFindNext( key, i )) {
+        if( IS_CORPSE(i) ) {
             found = 1;
             /*
              * we found a REAL corpse

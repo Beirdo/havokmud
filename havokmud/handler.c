@@ -14,7 +14,6 @@ extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
 #endif
-extern struct obj_data *object_list;
 extern struct char_data *character_list;
 extern struct index_data *mob_index;
 extern struct descriptor_data *descriptor_list;

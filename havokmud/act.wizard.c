@@ -3994,12 +3994,12 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
 
     key = StringToKeywords(zonenum, NULL);
     append_to_string_block(&sb, "VNUM  count e-value names\n\r");
-    BalancedBTreeLock(objectTree);
-    for (item = BalancedBTreeFindLeastInRange( objectTree, LOCKED, &bottom,
-                                               &top );
+    BalancedBTreeLock(objectMasterTree);
+    for (item = BalancedBTreeFindLeastInRange( objectMasterTree, LOCKED, 
+                                               &bottom, &top );
          item;
-         item = BalancedBTreeFindNextInRange( objectTree, item, LOCKED, &bottom,
-                                              &top )) {
+         item = BalancedBTreeFindNextInRange( objectMasterTree, item, LOCKED, i
+                                              &bottom, &top )) {
         index = (struct index_data *)item->item;
         if( !index || (zone < 0 && !KeywordsMatch(key, &index->keywords))) {
             continue;
@@ -4023,7 +4023,7 @@ void do_show_objects( struct char_data *ch, struct string_block *sb,
             objectExtract(obj);
         }
     }
-    BalancedBTreeUnlock(objectTree);
+    BalancedBTreeUnlock(objectMasterTree);
     FreeKeywords(key, TRUE);
 }
 
@@ -4071,12 +4071,12 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
     wearslot = atoi(arg);
     append_to_string_block(sb, "VNUM  count e-value names\n\r");
 
-    BalancedBTreeLock( objectTree );
-    BalancedBTreeClearVisited( objectTree, LOCKED );
+    BalancedBTreeLock( objectMasterTree );
+    BalancedBTreeClearVisited( objectMasterTree, LOCKED );
 
-    for (item = BalancedBTreeFindLeast( objectTree->root );
+    for (item = BalancedBTreeFindLeast( objectMasterTree->root );
          item;
-         item = BalancedBTreeFindNext( objectTree, item, LOCKED ) ) {
+         item = BalancedBTreeFindNext( objectMasterTree, item, LOCKED ) ) {
         index = (struct index_data *)item->item;
 
         obj = objectRead(index->vnum);
@@ -4098,7 +4098,7 @@ void do_show_wearslot( struct char_data *ch, struct string_block *sb,
             objectExtract(obj);
         }
     }
-    BalancedBTreeUnlock( objectTree );
+    BalancedBTreeUnlock( objectMasterTree );
 }
 
 /** 
@@ -4159,12 +4159,12 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
     type = atoi(arg);
     append_to_string_block(sb, "VNUM  count e-value names\n\r");
 
-    BalancedBTreeLock( objectTree );
-    BalancedBTreeClearVisited( objectTree, LOCKED );
+    BalancedBTreeLock( objectMasterTree );
+    BalancedBTreeClearVisited( objectMasterTree, LOCKED );
     
-    for (item = BalancedBTreeFindLeast( objectTree->root );
+    for (item = BalancedBTreeFindLeast( objectMasterTree->root );
          item;
-         item = BalancedBTreeFindNext( objectTree, item, LOCKED ) ) {
+         item = BalancedBTreeFindNext( objectMasterTree, item, LOCKED ) ) {
 
         index = (struct index_data *)item->item;
 
@@ -4187,7 +4187,7 @@ void do_show_itemtype( struct char_data *ch, struct string_block *sb,
             objectExtract(obj);
         }
     }
-    BalancedBTreeUnlock( objectTree );
+    BalancedBTreeUnlock( objectMasterTree );
 }
 
 void do_show_mobiles( struct char_data *ch, struct string_block *sb, 
@@ -4334,13 +4334,13 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
     key = StringToKeywords(zonenum, NULL);
     append_to_string_block(&sb, "VNUM  count names\n\r");
 
-    BalancedBTreeLock( objectTree );
+    BalancedBTreeLock( objectMasterTree );
 
-    for (item = BalancedBTreeFindLeastInRange( objectTree, LOCKED, &bottom, 
-                                               &top );
+    for (item = BalancedBTreeFindLeastInRange( objectMasterTree, LOCKED, 
+                                               &bottom, &top );
          item;
-         item = BalancedBTreeFindNextInRange( objectTree, item, LOCKED, &bottom,
-                                              &top ) ) {
+         item = BalancedBTreeFindNextInRange( objectMasterTree, item, LOCKED, 
+                                              &bottom, &top ) ) {
 
         index = (struct index_data *)item->item;
 
@@ -4465,7 +4465,7 @@ void do_show_report( struct char_data *ch, struct string_block *sb,
             objectExtract(obj);
         }
     }
-    BalancedBTreeUnlock(objectTree);
+    BalancedBTreeUnlock(objectMasterTree);
     FreeKeywords(key, TRUE);
 }
 
@@ -4499,12 +4499,12 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
     key = StringToKeywords(zonenum, NULL);
     append_to_string_block(&sb, "VNUM  count/max names\n\r");
 
-    BalancedBTreeLock( objectTree );
-    for (item = BalancedBTreeFindLeastInRange( objectTree, LOCKED, &bottom, 
-                                               &top );
+    BalancedBTreeLock( objectMasterTree );
+    for (item = BalancedBTreeFindLeastInRange( objectMasterTree, LOCKED, 
+                                               &bottom, &top );
          item;
-         item = BalancedBTreeFindNextInRange( objectTree, item, LOCKED, &bottom,
-                                              &top ) ) {
+         item = BalancedBTreeFindNextInRange( objectMasterTree, item, LOCKED, 
+                                              &bottom, &top ) ) {
 
         index = (struct index_data *)item->item;
         if( zone < 0 && !KeywordsMatch(key, &index->keywords)) {
@@ -4521,7 +4521,7 @@ void do_show_maxxes( struct char_data *ch, struct string_block *sb,
         }
         objectExtract(obj);
     }
-    BalancedBTreeUnlock( objectTree );
+    BalancedBTreeUnlock( objectMasterTree );
     FreeKeywords(key, TRUE);
 }
 

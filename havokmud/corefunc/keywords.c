@@ -239,6 +239,143 @@ char *find_ex_description(char *word, Keywords_t *list, int count)
     return (NULL);
 }
 
+void KeywordTreeAdd( struct obj_data *obj )
+{
+    int                     i;
+    Keywords_t             *key;
+    BalancedBTreeItem_t    *item;
+    BalancedBTreeItem_t    *objItem;
+    BalancedBTree_t        *tree;
+
+    BalancedBTreeLock( objectKeywordTree );
+
+    key = &obj->keywords;
+    for( i = 0; i < key->count; i++ ) {
+        if( key->words[i] ) {
+            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], 
+                                      LOCKED, FALSE );
+            if( !item ) {
+                tree = BalancedBTreeCreate( BTREE_KEY_POINTER );
+                CREATE(item, BalancedBTreeItem_t, 1);
+                item->item = tree;
+                item->key  = &key->words[i];
+                BalancedBTreeAdd( objectKeywordTree, item, LOCKED, TRUE );
+            } else {
+                tree = (BalancedBTree_t *)item->item;
+            }
+
+            CREATE(objItem, BalancedBTreeItem_t, 1);
+            objItem->item = obj;
+            objItem->key  = &obj;
+            BalancedBTreeAdd( tree, objItem, UNLOCKED, TRUE );
+        }
+    }
+
+    BalancedBTreeUnlock( objectKeywordTree );
+}
+
+void KeywordTreeRemove( struct obj_data *obj )
+{
+    int                     i;
+    Keywords_t             *key;
+    BalancedBTreeItem_t    *item;
+    BalancedBTreeItem_t    *objItem;
+    BalancedBTree_t        *tree;
+
+    BalancedBTreeLock( objectKeywordTree );
+
+    key = &obj->keywords;
+    for( i = 0; i < key->count; i++ ) {
+        if( key->words[i] ) {
+            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], 
+                                      LOCKED, FALSE );
+            if( !item ) {
+                continue;
+            }
+
+            tree = (BalancedBTree_t *)item->item;
+
+            objItem = BalancedBTreeFind( tree, &obj, UNLOCKED, FALSE );
+            if( !objItem ) {
+                continue;
+            }
+            BalancedBTreeRemove( tree, objItem, UNLOCKED, TRUE );
+            free( objItem );
+
+            if( tree->root == NULL ) {
+                BalancedBTreeRemove( objectKeywordTree, item, LOCKED, TRUE );
+                BalancedBTreeDestroy( tree );
+                free( item );
+            }
+        }
+    }
+
+    BalancedBTreeUnlock( objectKeywordTree );
+}
+
+struct obj_data *KeywordFindFirst( Keywords_t *key )
+{
+    return( KeywordFindNext( key, NULL ) );
+}
+
+struct obj_data *KeywordFindNext( Keywords_t *key, struct obj_data *lastobj )
+{
+    BalancedBTreeItem_t    *item;
+    BalancedBTreeItem_t    *objItem;
+    BalancedBTreeItem_t    *objItemA;
+    BalancedBTree_t        *tree;
+    BalancedBTree_t        *treeA;
+    struct obj_data        *obj;
+    int                     i;
+
+    treeA    = NULL;
+    objItemA = NULL;
+
+    for( i = 0; i < key->count; i++ ) {
+        if( i == 0 ) {
+            if( !treeA ) {
+                item = BalancedBTreeFind( objectKeywordTree, &key->words[i],
+                                          LOCKED, key->partial );
+                if( !item ) {
+                    return( NULL );
+                }
+
+                treeA = (BalancedBTree_t *)item->item;
+            }
+
+            if( !obj ) {
+                BalancedBTreeClearVisited( treeA, UNLOCKED );
+                objItemA = BalancedBTreeFindLeast( treeA->root );
+            } else {
+                objItemA = BalancedBTreeFindNext( treeA, objItemA, UNLOCKED );
+            }
+
+            if( !objItemA ) {
+                return( NULL );
+            }
+
+            obj = (struct obj_data *)objItemA->item;
+        } else {
+            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], LOCKED,
+                                      key->partial );
+            if( !item ) {
+                /* This objA is useless, try again with the next one */
+                i = -1;
+                continue;
+            }
+
+            tree = (BalancedBTree_t *)item->item;
+            objItem = BalancedBTreeFind( tree, &obj, UNLOCKED, key->partial );
+            if( !objItem ) {
+                i = -1;
+                continue;
+            }
+        }
+    }
+
+    return( obj );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

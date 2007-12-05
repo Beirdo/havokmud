@@ -11,7 +11,6 @@
 
 #include "protos.h"
 
-extern struct obj_data *object_list;
 extern struct char_data *character_list;
 extern long     SystemFlags;
 extern int      ArenaNoGroup,
@@ -2472,12 +2471,8 @@ void mind_sense_object(int level, struct char_data *ch,
 
     key = StringToKeywords( arg, NULL );
     
-    /**
-     * @todo get rid of object_list, we need btree or something
-     */
-    for (i = object_list; i; i = i->next) {
-        if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ||
-             !KeywordsMatch(key, &i->keywords) ) {
+    for (i = KeywordFindFirst(key); i; i = KeywordFindNext(key, i) ) {
+        if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             continue;
         }
 

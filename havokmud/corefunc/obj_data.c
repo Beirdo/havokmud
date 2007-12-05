@@ -52,7 +52,8 @@ static char ident[] _UNUSED_ =
  */
 
 
-BalancedBTree_t *objectTree = NULL;
+BalancedBTree_t *objectMasterTree = NULL;
+BalancedBTree_t *objectKeywordTree = NULL;
 
 struct obj_data *object_list = NULL;       /* the global linked list of obj's */
 long            obj_count = 0;
@@ -71,8 +72,9 @@ void save_room(int room);
 
 void initializeObjects( void )
 {
-    objectTree = BalancedBTreeCreate( BTREE_KEY_INT );
-    db_load_object_tree( objectTree );
+    objectMasterTree = BalancedBTreeCreate( BTREE_KEY_INT );
+    objectKeywordTree = BalancedBTreeCreate( BTREE_KEY_STRING );
+    db_load_object_tree( objectMasterTree );
 }
 
 /**
@@ -84,7 +86,7 @@ struct index_data *objectIndex( int vnum )
     struct index_data      *index;
     BalancedBTreeItem_t    *item;
 
-    item = BalancedBTreeFind( objectTree, &vnum, UNLOCKED, FALSE );
+    item = BalancedBTreeFind( objectMasterTree, &vnum, UNLOCKED, FALSE );
     if( !item ) {
         return( NULL );
     }
@@ -114,7 +116,7 @@ void objectInsert(struct obj_data *obj, long vnum)
 
     item->key = &index->vnum;
     item->item = (void *)index;
-    BalancedBTreeAdd( objectTree, item, UNLOCKED, TRUE );
+    BalancedBTreeAdd( objectMasterTree, item, UNLOCKED, TRUE );
 }
 
 
@@ -163,9 +165,6 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj)
     }
 }
 
-/**
- * @todo what is object_list being used for?!
- */
 struct obj_data *objectRead(int nr)
 {
     struct obj_data    *obj;
@@ -199,8 +198,7 @@ struct obj_data *objectRead(int nr)
     obj->index = index;
     obj->in_obj = NULL;
 
-    obj->next = object_list;
-    object_list = obj;
+    KeywordTreeAdd( obj );
 
     index->number++;
     LinkedListAdd( index->list, &obj->globalLink, UNLOCKED, AT_HEAD );
@@ -210,7 +208,6 @@ struct obj_data *objectRead(int nr)
 }
 
 /**
- * @todo does this get it out of the object_list or does the caller do that?
  * @brief release memory allocated for an obj struct
  */
 void objectFree(struct obj_data *obj)
@@ -336,26 +333,7 @@ void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked )
          */
     }
 
-    if (object_list == obj) {
-        /* 
-         * head of list 
-         */
-        object_list = obj->next;
-    } else {
-        for (temp1 = object_list;
-             temp1 && (temp1->next != obj); temp1 = temp1->next) {
-            /* 
-             * Empty loop 
-             */
-        }
-
-        if (temp1) {
-            temp1->next = obj->next;
-        } else {
-            LogPrintNoArg( LOG_CRIT, "Couldn't find object in object list.");
-            assert(0);
-        }
-    }
+    KeywordTreeRemove( obj );
 
     if (obj->item_number >= 0) {
         obj->index->number--;
@@ -1095,9 +1073,9 @@ int contained_weight(struct obj_data *container)
 
 void PrintLimitedItems(void)
 {
-    BalancedBTreeLock( objectTree );
-    RecursivePrintLimitedItems( objectTree->root );
-    BalancedBTreeUnlock( objectTree );
+    BalancedBTreeLock( objectMasterTree );
+    RecursivePrintLimitedItems( objectMasterTree->root );
+    BalancedBTreeUnlock( objectMasterTree );
 }
 
 void RecursivePrintLimitedItems(BalancedBTreeItem_t *node)

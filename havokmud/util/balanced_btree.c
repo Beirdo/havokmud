@@ -45,6 +45,7 @@ int KeyCompareInt( void *left, void *right );
 int KeyCompareString( void *left, void *right );
 int KeyComparePartialString( void *left, void *right );
 int KeyComparePthread( void *left, void *right );
+int KeyComparePointer( void *left, void *right );
 BalancedBTreeItem_t *BalancedBTreeFindParent( BalancedBTree_t *btree,
                                               BalancedBTreeItem_t *item );
 int BalancedBTreeWeight( BalancedBTreeItem_t *root );
@@ -106,6 +107,10 @@ BalancedBTree_t *BalancedBTreeCreate( BalancedBTreeKeyType_t type )
     case BTREE_KEY_PTHREAD:
         btree->keyCompare    = KeyComparePthread;
         btree->keyCompareAlt = KeyComparePthread;
+        break;
+    case BTREE_KEY_POINTER:
+        btree->keyCompare    = KeyComparePointer;
+        btree->keyCompareAlt = KeyComparePointer;
         break;
     default:
         btree->keyCompare    = NULL;
@@ -364,6 +369,29 @@ int KeyComparePthread( void *left, void *right )
     r = *(pthread_t *)right;
 
     res = (long int)(l - r);
+    
+    if( res > 1 ) {
+        res = 1;
+    } else if( res < -1 ) {
+        res = -1;
+    }
+
+    return( (int)res );
+}
+
+int KeyComparePointer( void *left, void *right )
+{
+    long long int   res;
+    char          *l, *r;
+
+    if( !left || !right ) {
+        return( 0 );
+    }
+
+    l = *(char **)left;
+    r = *(char **)right;
+
+    res = (long long int)(l - r);
     
     if( res > 1 ) {
         res = 1;

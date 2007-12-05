@@ -127,6 +127,7 @@ extern struct hash_header room_db;
 extern struct room_data *room_db[];
 #endif
 
+extern BalancedBTree_t *objectKeywordTree;
 
 /*
  * Prototypes of the thread entry points
@@ -333,6 +334,10 @@ Keywords_t *StringToKeywords( char *string, Keywords_t *key );
 void FreeKeywords( Keywords_t *key, bool freeRoot );
 bool KeywordsMatch(Keywords_t *tofind, Keywords_t *keywords);
 char *find_ex_description(char *word, Keywords_t *list, int count);
+void KeywordTreeAdd( struct obj_data *obj );
+void KeywordTreeRemove( struct obj_data *obj );
+struct obj_data *KeywordFindFirst( Keywords_t *key );
+struct obj_data *KeywordFindNext( Keywords_t *key, struct obj_data *lastobj );
 
 /*
  * weather.c
