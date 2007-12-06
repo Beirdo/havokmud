@@ -2473,7 +2473,8 @@ void mind_sense_object(int level, struct char_data *ch,
     
     BalancedBTreeLock( objectKeywordTree );
     for (i = objectKeywordFindFirst( objectKeywordTree, key ); i; 
-         i = objectKeywordFindNext( objectKeywordTree, key, i ) ) {
+         i = objectKeywordFindNext( objectKeywordTree, KEYWORD_ITEM_OFFSET,
+                                    key, i ) ) {
         if ( IS_OBJ_STAT(i, extra_flags, ITEM_QUEST) ) {
             continue;
         }

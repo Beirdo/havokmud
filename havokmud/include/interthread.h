@@ -321,7 +321,8 @@ void objectKeywordTreeAdd( struct obj_data *obj );
 void objectKeywordTreeRemove( struct obj_data *obj );
 struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
                                          Keywords_t *key );
-struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, Keywords_t *key, 
+struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, int offset,
+                                        Keywords_t *key, 
                                         struct obj_data *lastobj );
 
 void objectTypeTreeAdd( struct obj_data *obj );

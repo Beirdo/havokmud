@@ -2266,7 +2266,7 @@ void affect_update(int pulse)
         LinkedListLock( index->list );
         for( objIitem = index->list->head; objIitem; objIitem = next_item ) {
             next_item = objIitem->next;
-            j = (struct obj_data *)objIitem;
+            j = GLOBAL_LINK_TO_OBJ(objIitem);
 
             if (j->timer > 0) {
                 j->timer--;
@@ -2294,7 +2294,7 @@ void affect_update(int pulse)
         LinkedListLock( index->list );
         for( objItem = index->list->head; objItem; objItem = next_item ) {
             next_item = objIitem->next;
-            j = (struct obj_data *)objIitem;
+            j = GLOBAL_LINK_TO_OBJ(objIitem);
 
             if (j->timer > 0) {
                 j->timer--;
@@ -2349,7 +2349,7 @@ void affect_update(int pulse)
 
         LinkedListLock( index->list );
         for( objItem = index->list->head ; objItem; objItem = objItem->next ) {
-            j = (struct obj_data *)objItem;
+            j = GLOBAL_LINK_TO_OBJ(objItem);
 
             (*j->index->func) (0, 0, 0, j, PULSE_TICK);
         }

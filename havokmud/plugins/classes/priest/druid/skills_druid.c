@@ -1445,7 +1445,8 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     BalancedBTreeLock( objectKeywordTree );
     for( i = objectKeywordFindFirst( objectKeywordTree, key ); i; 
-         i = objectKeywordFindNext( objectKeywordTree, key, i ) ) {
+         i = objectKeywordFindNext( objectKeywordTree, KEYWORD_ITEM_OFFSET,
+                                    key, i ) ) {
         if (ITEM_TYPE(i) == ITEM_TYPE_TREE) {
             /*
              * we found a druid tree with the right name
@@ -1912,7 +1913,8 @@ void spell_transport_via_plant(int level, struct char_data *ch,
 
     BalancedBTreeLock( objectKeywordTree );
     for( i = objectKeywordFindFirst( objectKeywordTree, key ); i; 
-         i = objectKeywordFindNext( objectKeywordTree, key, i ) ) {
+         i = objectKeywordFindNext( objectKeywordTree, KEYWORD_ITEM_OFFSET,
+                                    key, i ) ) {
         if (ITEM_TYPE(i) == ITEM_TYPE_TREE) {
             /*
              * we found a druid tree with the right name

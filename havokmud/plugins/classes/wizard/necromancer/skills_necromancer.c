@@ -2459,7 +2459,8 @@ void spell_trace_corpse(int level, struct char_data *ch,
 
     BalancedBTreeLock( objectKeywordTree );
     for (i = objectKeywordFindFirst( objectKeywordTree, key ); i && !found; 
-         i = objectKeywordFindNext( objectKeywordTree, key, i )) {
+         i = objectKeywordFindNext( objectKeywordTree, KEYWORD_ITEM_OFFSET,
+                                    key, i )) {
         if( IS_CORPSE(i) ) {
             found = 1;
             /*

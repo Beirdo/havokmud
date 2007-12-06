@@ -490,16 +490,38 @@ struct index_data {
 struct obj_data {
     LinkedListItem_t    globalLink; /**< Linked List linkage for the global
                                      *   list of items (one list per item
-                                     *   number
+                                     *   number)
                                      */
+    LinkedListItem_t    containLink; /**< Linked List linkage for 
+                                      *   obj::containList.  This linkage is all
+                                      *   of the items contained in the same
+                                      *   object
+                                      */
     struct index_data *index;       /**< pointer back to the index entry to
                                      *   save calls to objectIndex
                                      */
     BalancedBTreeItem_t typeItem;   /**< The btree item in the objectTypeTree
                                      */
-    BalancedBTreeItem_t *keywordItem; /**< The btree item in the 
-                                       *   objectKeywordTree
+    BalancedBTreeItem_t *keywordItem; /**< The btree items in the 
+                                       *   objectKeywordTree (one per keyword
+                                       *   entry)
                                        */
+    BalancedBTreeItem_t *containItem; /**< The btree items in the 
+                                       *   obj_data::containKeywordTree (one per
+                                       *   keyword entry) if this item is
+                                       *   contained in another
+                                       */
+    BalancedBTree_t    *containKeywordTree; /**< The double binary tree of all 
+                                             *   items contained in this one 
+                                             *   (same structure as the 
+                                             *   objectKeywordTree)
+                                             */
+    LinkedList_t       *containList;        /**< Linked list of all items
+                                             *   contained in this one.  The
+                                             *   linkage is at 
+                                             *   obj_data::containLink
+                                             */
+
     int             item_number;    /**< Where in database */
     int             in_room;        /**< In what room, -1 when contained
                                      *   or carried */
@@ -538,9 +560,13 @@ struct obj_data {
     int             eq_pos;             /**< what is the equip. pos? */
     struct char_data *equipped_by;      /**< equipped by :NULL in room/conta */
     struct obj_data *in_obj;            /**< In what object NULL when none */
+#if 1  /* These will be disappearing very shortly */
     struct obj_data *contains;          /**< Contains objects */
     struct obj_data *next_content;      /**< For 'contains' lists */
+#endif
+#if 0
     struct obj_data *next;              /**< For the object list */
+#endif
 
     int             level;              /**< Level ego of the item */
     int             max;                /**< max of the object */
@@ -551,6 +577,16 @@ struct obj_data {
     char           *modBy;              /**< Last modified by */
     time_t          modified;           /**< Last modification time */
 };
+
+#define KEYWORD_ITEM_OFFSET (OFFSETOF(keywordItem, struct obj_data))
+
+#define GLOBAL_LINK_OFFSET  (OFFSETOF(globalLink, struct obj_data))
+#define GLOBAL_LINK_TO_OBJ(x)   \
+    ((struct obj_data *)PTR_AT_OFFSET(-GLOBAL_LINK_OFFSET,(x)))
+
+#define CONTAIN_LINK_OFFSET  (OFFSETOF(containLink, struct obj_data))
+#define CONTAIN_LINK_TO_OBJ(x)  \
+    ((struct obj_data *)PTR_AT_OFFSET(-CONTAIN_LINK_OFFSET,(x)))
 
 /*
  * The following defs are for room_data

@@ -11810,7 +11810,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     if( index ) {
         i = index->number;
         LinkedListLock( index->list );
-        theitem = index->list->tail;
+        theitem = GLOBAL_LINK_TO_OBJ(index->list->tail);
         LinkedListUnlock( index->list );
     }
 
@@ -12174,7 +12174,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         for( k = 1, item = index->list->head; item; item = next, k++ ) {
             next = item->next;
             if( k != j ) {
-                remobj = (struct obj_data *)item;
+                remobj = GLOBAL_LINK_TO_OBJ(item);
                 objectExtractLocked( remobj, LOCKED );
             }
         }

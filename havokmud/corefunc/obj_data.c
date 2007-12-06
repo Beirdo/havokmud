@@ -59,8 +59,8 @@ BalancedBTree_t *objectTypeTree    = NULL;
 long            obj_count = 0;
 
 struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
-                                        BalancedBTree_t *tree, int *count, 
-                                        int steps);
+                                        BalancedBTree_t *tree, int offset,
+                                        int *count, int steps);
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  struct obj_data *list, int nextOffset,
                                  int *count, bool visible, int steps);
@@ -197,6 +197,7 @@ struct obj_data *objectRead(int nr)
     obj->carried_by = NULL;
     obj->equipped_by = NULL;
     obj->eq_pos = -1;
+    obj->containList = LinkedListCreate();
     obj->contains = NULL;
     obj->item_number = nr;
     obj->index = index;
@@ -266,6 +267,7 @@ void objectFree(struct obj_data *obj)
     }
     free( obj->ex_description );
 
+    LinkedListDestroy( obj->containList );
     free(obj);
 }
 
@@ -420,13 +422,13 @@ struct obj_data *objectGetInObject( struct char_data *ch, char *name,
 struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count)
 {
     static int  steps  = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInKeywordTree( ch, name, objectKeywordTree, count, 
-                                    steps ) );
+    return( GetObjectInKeywordTree( ch, name, objectKeywordTree, 
+                                    KEYWORD_ITEM_OFFSET, count, steps ) );
 }
 
 struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
-                                        BalancedBTree_t *tree, int *count, 
-                                        int steps)
+                                        BalancedBTree_t *tree, int offset,
+                                        int *count, int steps)
 {
     int                 number;
     struct obj_data    *obj;
@@ -449,7 +451,7 @@ struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
         i = count ? *count : 1;
         key->partial = FALSE;
         for( obj = objectKeywordFindFirst( tree, key ); obj && i <= number; 
-             obj = objectKeywordFindNext( tree, key, obj ) ) {
+             obj = objectKeywordFindNext( tree, offset, key, obj ) ) {
             if (!visible || objectIsVisible(ch, obj)) {
                 if (i == number) {
                     BalancedBTreeUnlock( tree );
@@ -465,7 +467,7 @@ struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
         key->partial = TRUE;
         i = count ? *count : 1;
         for( obj = objectKeywordFindFirst( tree, key ); obj && i <= number; 
-             obj = objectKeywordFindNext( tree, key, obj ) ) {
+             obj = objectKeywordFindNext( tree, offset, key, obj ) ) {
             if (!visible || objectIsVisible(ch, obj)) {
                 if (i == number) {
                     BalancedBTreeUnlock( tree );
@@ -572,7 +574,7 @@ struct obj_data *objectGetNumLastCreated(int num)
     LinkedListLock( index->list );
 
     item = index->list->head;
-    obj = (struct obj_data *)item;
+    obj = GLOBAL_LINK_TO_OBJ(item);
 
     LinkedListUnlock( index->list );
 
@@ -1401,10 +1403,11 @@ void objectKeywordTreeRemove( struct obj_data *obj )
 struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
                                          Keywords_t *key )
 {
-    return( objectKeywordFindNext( tree, key, NULL ) );
+    return( objectKeywordFindNext( tree, 0, key, NULL ) );
 }
 
-struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, Keywords_t *key, 
+struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, int offset,
+                                        Keywords_t *key, 
                                         struct obj_data *lastobj )
 {
     BalancedBTreeItem_t    *item;
@@ -1436,9 +1439,8 @@ struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, Keywords_t *key,
                 BalancedBTreeClearVisited( treeA, LOCKED );
                 objItemA = BalancedBTreeFindLeast( treeA->root );
             } else {
-                objItemA = BalancedBTreeFindNext( treeA, 
-                                                  &lastobj->keywordItem[i], 
-                                                  LOCKED );
+                item = (BalancedBTreeItem_t *)PTR_AT_OFFSET(offset, obj);
+                objItemA = BalancedBTreeFindNext( treeA, &item[i], LOCKED );
             }
             BalancedBTreeUnlock( treeA );
 

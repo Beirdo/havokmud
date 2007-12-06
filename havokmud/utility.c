@@ -3340,7 +3340,7 @@ struct obj_data *find_tqp(int tqp_nr)
     for( item = index->list->head, nr = 1, tqp = NULL; item && !tqp; 
          item = item->next, nr++ ) {
         if( nr == tqp_nr ) {
-            tqp = (struct obj_data *)item;
+            tqp = GLOBAL_LINK_TO_OBJ(item);
         }
     }
     LinkedListUnlock( index->list );

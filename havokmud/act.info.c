@@ -3323,7 +3323,8 @@ void do_where(struct char_data *ch, char *argument, int cmd)
         key = StringToKeywords( name, NULL );
         BalancedBTreeLock( objectKeywordTree );
         for (k = objectKeywordFindFirst( objectKeywordTree, key ); k; 
-             k = objectKeywordFindNext( objectKeywordTree, key, k )) {
+             k = objectKeywordFindNext( objectKeywordTree, KEYWORD_ITEM_OFFSET,
+                                        key, k )) {
             if ( objectIsVisible(ch, k) && (number == 0 || (--count) == 0) ) {
                 if (number == 0) {
                     sprintf(buf, "[%2d] ", ++count);
