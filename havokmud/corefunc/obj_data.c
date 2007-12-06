@@ -1324,9 +1324,14 @@ void objectKeywordTreeAdd( struct obj_data *obj )
     BalancedBTreeItem_t    *objItem;
     BalancedBTree_t        *tree;
 
+    key = &obj->keywords;
+
+    if( obj->keywordItem == NULL ) {
+        CREATE( obj->keywordItem, BalancedBTreeItem_t, key->count );
+    }
+
     BalancedBTreeLock( objectKeywordTree );
 
-    key = &obj->keywords;
     for( i = 0; i < key->count; i++ ) {
         if( key->words[i] ) {
             item = BalancedBTreeFind( objectKeywordTree, &key->words[i], 
@@ -1341,7 +1346,7 @@ void objectKeywordTreeAdd( struct obj_data *obj )
                 tree = (BalancedBTree_t *)item->item;
             }
 
-            objItem = &key->keywordItem[i];
+            objItem = &obj->keywordItem[i];
             objItem->item = obj;
             objItem->key  = &obj;
             BalancedBTreeAdd( tree, objItem, UNLOCKED, TRUE );
@@ -1388,6 +1393,9 @@ void objectKeywordTreeRemove( struct obj_data *obj )
     }
 
     BalancedBTreeUnlock( objectKeywordTree );
+
+    free( obj->keywordItem );
+    obj->keywordItem = NULL;
 }
 
 struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
@@ -1428,7 +1436,8 @@ struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, Keywords_t *key,
                 BalancedBTreeClearVisited( treeA, LOCKED );
                 objItemA = BalancedBTreeFindLeast( treeA->root );
             } else {
-                objItemA = BalancedBTreeFindNext( treeA, &key->keywordItem[i], 
+                objItemA = BalancedBTreeFindNext( treeA, 
+                                                  &lastobj->keywordItem[i], 
                                                   LOCKED );
             }
             BalancedBTreeUnlock( treeA );

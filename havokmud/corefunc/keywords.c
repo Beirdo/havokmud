@@ -111,8 +111,6 @@ Keywords_t *StringToKeywords( char *string, Keywords_t *key )
 
         key->count++;
         key->words = (char **)realloc(key->words, key->count * sizeof(char *));
-        key->keywordItem = (BalancedBTreeItem_t *)realloc(key->keywordItem,
-                            key->count * sizeof(BalancedBTreeItem_t));
         key->length = (int *)realloc(key->length, key->count * sizeof(int));
         key->found = NULL;
 
@@ -152,10 +150,6 @@ void FreeKeywords( Keywords_t *key, bool freeRoot )
 
     if( key->words ) {
         free( key->words );
-    }
-
-    if( key->keywordItem ) {
-        free( key->keywordItem );
     }
 
     if( key->length ) {

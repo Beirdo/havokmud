@@ -462,7 +462,6 @@ struct obj_affected_type {
 
 typedef struct {
     char                  **words;
-    BalancedBTreeItem_t    *keywordItem;
     int                    *length;
     int                    *found;
     char                   *description;
@@ -498,6 +497,9 @@ struct obj_data {
                                      */
     BalancedBTreeItem_t typeItem;   /**< The btree item in the objectTypeTree
                                      */
+    BalancedBTreeItem_t *keywordItem; /**< The btree item in the 
+                                       *   objectKeywordTree
+                                       */
     int             item_number;    /**< Where in database */
     int             in_room;        /**< In what room, -1 when contained
                                      *   or carried */
