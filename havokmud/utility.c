@@ -234,7 +234,7 @@ int exit_ok(struct room_direction_data *exit, struct room_data **rpp)
         *rpp = NULL;
         return FALSE;
     }
-    *rpp = real_roomp(exit->to_room);
+    *rpp = roomFindNum(exit->to_room);
     return (*rpp != NULL);
 }
 
@@ -295,7 +295,7 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
     struct index_data *index;
 
     for (i = start_room; i <= end_room; i++) {
-        room = real_roomp(i);
+        room = roomFindNum(i);
         if (!room) {
             continue;
         }
@@ -476,7 +476,7 @@ void CleanZone(int zone)
     end = zone_table[zone].top;
 
     for (i = start; i <= end; i++) {
-        rp = real_roomp(i);
+        rp = roomFindNum(i);
         if (!rp) {
             continue;
         }
@@ -519,7 +519,7 @@ int ZoneCleanable(int zone)
     end = zone_table[zone].top;
 
     for (i = start; i <= end; i++) {
-        rp = real_roomp(i);
+        rp = roomFindNum(i);
         if (!rp) {
             return (TRUE);
         }
@@ -1614,23 +1614,24 @@ void down_river(int pulse)
     if (pulse < 0) {
         return;
     }
+
     for (ch = character_list; ch; ch = tmp) {
         tmp = ch->next;
         if (!IS_NPC(ch) && ch->in_room != NOWHERE &&
-            real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM &&
-            !(pulse % (real_roomp(ch->in_room))->river_speed) &&
-            real_roomp(ch->in_room)->river_dir <= 5 &&
-            real_roomp(ch->in_room)->river_dir >= 0) {
+            (rp = roomFindNum(ch->in_room)) &&
+            rp->sector_type == SECT_WATER_NOSWIM &&
+            !(pulse % rp->river_speed) &&
+            rp->river_dir <= 5 && rp->river_dir >= 0) {
 
-            rd = (real_roomp(ch->in_room))->river_dir;
-            for (obj_object = real_roomp(ch->in_room)->contents;
+            rd = rp->river_dir;
+            for (obj_object = rp->contents;
                  obj_object; obj_object = next_obj) {
 
                 next_obj = obj_object->next_content;
-                if ((real_roomp(ch->in_room))->dir_option[rd]) {
+                if (rp->dir_option[rd]) {
                     objectTakeFromRoom(obj_object);
                     objectPutInRoom(obj_object,
-                            real_roomp(ch->in_room)->dir_option[rd]->to_room);
+                                    rp->dir_option[rd]->to_room);
                 }
             }
 
@@ -1638,7 +1639,6 @@ void down_river(int pulse)
              * flyers don't get moved
              */
             if (!IS_AFFECTED(ch, AFF_FLYING) && !MOUNTED(ch)) {
-                rp = real_roomp(ch->in_room);
                 if (rp && rp->dir_option[rd] &&
                     rp->dir_option[rd]->to_room &&
                     (EXIT(ch, rd)->to_room != NOWHERE)) {
@@ -1657,16 +1657,14 @@ void down_river(int pulse)
                             send_to_char(buf, RIDDEN(ch));
                         }
 
-                        or = ch->in_room;
                         char_from_room(ch);
                         if (RIDDEN(ch)) {
                             char_from_room(RIDDEN(ch));
                             char_to_room(RIDDEN(ch),
-                                    real_roomp(or)->dir_option[rd]->to_room);
+                                         rp->dir_option[rd]->to_room);
                         }
 
-                        char_to_room(ch,
-                                     real_roomp(or)->dir_option[rd]->to_room);
+                        char_to_room(ch, rp->dir_option[rd]->to_room);
 
                         do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
@@ -1674,7 +1672,7 @@ void down_river(int pulse)
                         }
                     }
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                        IS_IMMORTAL(ch)) {
+                        !IS_IMMORTAL(ch)) {
                         if (RIDDEN(ch)) {
                             NailThisSucker(RIDDEN(ch));
                         }
@@ -1721,7 +1719,7 @@ void do_WorldSave(struct char_data *ch, char *argument, int cmd)
     send_to_char(buf, ch);
 
     for (i = rstart; i <= rend; i++) {
-        rp = real_roomp(i);
+        rp = roomFindNum(i);
         if (rp == NULL) {
             continue;
         }
@@ -1883,7 +1881,7 @@ void RoomSave(struct char_data *ch, long start, long end)
     strcpy(dots, "\0");
 
     for (i = rstart; i <= rend; i++) {
-        rp = real_roomp(i);
+        rp = roomFindNum(i);
         if (rp == NULL) {
             continue;
         }
@@ -2044,7 +2042,7 @@ void RoomLoad(struct char_data *ch, int start, int end)
         }
 
         fscanf(fp, "#%*d\n");
-        if (!(rp = real_roomp(vnum))) {
+        if (!(rp = roomFindNum(vnum))) {
             /*
              * empty room
              */
@@ -2644,8 +2642,9 @@ int IsDragon(struct char_data *ch)
 
 void SetHunting(struct char_data *ch, struct char_data *tch)
 {
-    int             persist,
-                    dist;
+    int                 persist,
+                        dist;
+    struct room_data   *rp;
 
 #ifndef USE_TRACK
     return;
@@ -2675,13 +2674,16 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
 
 #if 0
     if (IS_IMMORTAL(tch)) {
-        sprintf(buf, ">>%s is hunting you from %s\n\r",
-                (ch->player.short_descr[0] ? ch->player.
-                 short_descr : "(null)"),
-                (real_roomp(ch->in_room)->
-                 name[0] ? real_roomp(ch->in_room)->name : "(null)"));
+        rp = roomFindNum(ch->in_room);
+        if( rp ) {
+            sprintf(buf, ">>%s is hunting you from %s\n\r",
+                    (ch->player.short_descr[0] ? ch->player.short_descr : 
+                     "(null)"),
+                    (rp->name[0] ? rp->name : "(null)"));
         send_to_char(buf, tch);
     }
+#else
+    (void)rp;
 #endif
 }
 
@@ -3121,11 +3123,11 @@ void TeleportPulseStuff(int pulse)
                 mobile_activity(ch);
             }
         } else if (IS_PC(ch)) {
-            rp = real_roomp(ch->in_room);
+            rp = roomFindNum(ch->in_room);
             if (rp && rp->tele_targ > 0 && rp->tele_targ != rp->number &&
                 rp->tele_time > 0 && !(pulse % rp->tele_time)) {
 
-                dest = real_roomp(rp->tele_targ);
+                dest = roomFindNum(rp->tele_targ);
                 if (!dest) {
                     Log("invalid tele_targ");
                     continue;
@@ -3429,7 +3431,7 @@ void traveling_qp(int pulse)
                  * this may cause endless loop, maybe use for(1..100)
                  */
                 to_room = number(0, top_of_world);
-                room = real_roomp(to_room);
+                room = roomFindNum(to_room);
                 if (room && (newch = room->people) &&
                     (IS_PC(newch) || newch == ch || newch->specials.fighting ||
                      IS_SET(newch->specials.act, ACT_POLYSELF))) {
@@ -3473,7 +3475,7 @@ void ArenaPulseStuff(int pulse)
                     Log("Weirdness. Found a char in arena, but now he's gone?");
                 }
 
-                if (IS_PC(ch) && real_roomp(ch->in_room)->zone == ARENA_ZONE) {
+                if (IS_PC(ch) && roomFindNum(ch->in_room)->zone == ARENA_ZONE) {
                     /*
                      * we have a winner - move and declare
                      */
@@ -3640,32 +3642,28 @@ void RiverPulseStuff(int pulse)
                     buffer[100];
     struct room_data *rp;
 
-    /*
-     * down_river(pulse); MakeSound();
-     */
-
     if (pulse < 0) {
         return;
     }
+
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected) {
             ch = i->character;
             if ((IS_PC(ch) || RIDDEN(ch)) && ch->in_room != NOWHERE &&
-                (real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM ||
-                 real_roomp(ch->in_room)->sector_type == SECT_UNDERWATER) &&
-                real_roomp(ch->in_room)->river_speed > 0 &&
-                !(pulse % real_roomp(ch->in_room)->river_speed) &&
-                real_roomp(ch->in_room)->river_dir <= 5 &&
-                real_roomp(ch->in_room)->river_dir >= 0) {
+                (rp = roomFindNum(ch->in_room) &&
+                (rp->sector_type == SECT_WATER_NOSWIM ||
+                 rp->sector_type == SECT_UNDERWATER) &&
+                rp->river_speed > 0 && !(pulse % rp->river_speed) &&
+                rp->river_dir <= 5 && rp->river_dir >= 0) {
 
-                rd = real_roomp(ch->in_room)->river_dir;
-                for (obj_object = real_roomp(ch->in_room)->contents;
+                rd = rp->river_dir;
+                for (obj_object = rp->contents;
                      obj_object; obj_object = next_obj) {
                     next_obj = obj_object->next_content;
-                    if (real_roomp(ch->in_room)->dir_option[rd]) {
+                    if (rp->dir_option[rd]) {
                         objectTakeFromRoom(obj_object);
                         objectPutInRoom(obj_object,
-                            real_roomp(ch->in_room)->dir_option[rd]->to_room);
+                                        rp->dir_option[rd]->to_room);
                     }
                 }
 
@@ -3676,9 +3674,8 @@ void RiverPulseStuff(int pulse)
                     send_to_char("The waters swirl and eddy about you.\n\r",
                                  ch);
                 } else if ((!IS_AFFECTED(ch, AFF_FLYING) ||
-                            real_roomp(ch->in_room)->sector_type ==
+                            roomFindNum(ch->in_room)->sector_type ==
                                SECT_UNDERWATER) && !MOUNTED(ch)) {
-                    rp = real_roomp(ch->in_room);
                     if (rp && rp->dir_option[rd] &&
                         rp->dir_option[rd]->to_room &&
                         EXIT(ch, rd)->to_room != NOWHERE) {
@@ -3690,15 +3687,14 @@ void RiverPulseStuff(int pulse)
                         if (RIDDEN(ch)) {
                             send_to_char(buf, RIDDEN(ch));
                         }
-                        or = ch->in_room;
+
                         char_from_room(ch);
                         if (RIDDEN(ch)) {
                             char_from_room(RIDDEN(ch));
                             char_to_room(RIDDEN(ch),
-                                     real_roomp(or)->dir_option[rd]->to_room);
+                                         rp->dir_option[rd]->to_room);
                         }
-                        char_to_room(ch,
-                                     real_roomp(or)->dir_option[rd]->to_room);
+                        char_to_room(ch, rp->dir_option[rd]->to_room);
                         do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
                             do_look(RIDDEN(ch), NULL, 15);
@@ -3769,7 +3765,7 @@ int apply_soundproof(struct char_data *ch)
         return (TRUE);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return (FALSE);
@@ -3801,7 +3797,7 @@ int check_soundproof(struct char_data *ch)
         return (TRUE);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return (FALSE);
@@ -4365,7 +4361,7 @@ int check_nomagic(struct char_data *ch, char *msg_ch, char *msg_rm)
 {
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp && rp->room_flags & NO_MAGIC) {
         if (msg_ch) {
             send_to_char(msg_ch, ch);
@@ -4384,7 +4380,7 @@ int NumCharmedFollowersInRoom(struct char_data *ch)
     long            count = 0;
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp) {
         count = 0;
         for (t = rp->people; t; t = t->next_in_room) {
@@ -4409,8 +4405,8 @@ struct char_data *FindMobDiffZoneSameRace(struct char_data *ch)
 
     for (t = character_list; t; t = t->next, num--) {
         if (GET_RACE(t) == GET_RACE(ch) && IS_NPC(t) && !IS_PC(t) && !num) {
-            rp1 = real_roomp(ch->in_room);
-            rp2 = real_roomp(t->in_room);
+            rp1 = roomFindNum(ch->in_room);
+            rp2 = roomFindNum(t->in_room);
             if (rp1->zone != rp2->zone) {
                 return (t);
             }
@@ -4423,7 +4419,7 @@ int NoSummon(struct char_data *ch)
 {
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return (TRUE);
     }
@@ -4677,9 +4673,10 @@ int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
  */
 int IsOnPmp(int room_nr)
 {
-    if (real_roomp(room_nr) &&
-        !IS_SET(zone_table[real_roomp(room_nr)->zone].reset_mode,
-                ZONE_ASTRAL)) {
+    struct room_data   *rp;
+
+    rp = roomFindNum(room_nr);
+    if (rp && !IS_SET(zone_table[rp->zone].reset_mode, ZONE_ASTRAL)) {
         return (TRUE);
     }
 
@@ -4692,7 +4689,7 @@ int GetSumRaceMaxLevInRoom(struct char_data *ch)
     struct char_data *i;
     int             sum = 0;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return (0);
@@ -5311,7 +5308,7 @@ int IS_UNDERGROUND(struct char_data *ch)
 {
     struct room_data *rp;
 
-    if ((rp = real_roomp(ch->in_room)) &&
+    if ((rp = roomFindNum(ch->in_room)) &&
         IS_SET(zone_table[rp->zone].reset_mode, ZONE_UNDER_GROUND)) {
         return (TRUE);
     }
@@ -5525,9 +5522,9 @@ int CanFightEachOther(struct char_data *ch, struct char_data *ch2)
     if (IS_SET(SystemFlags, SYS_NOKILL)) {
         return (FALSE);
     }
-    if (real_roomp(ch->in_room) && real_roomp(ch2->in_room)) {
-        if (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM) &&
-            IS_SET(real_roomp(ch2->in_room)->room_flags, ARENA_ROOM)) {
+    if (roomFindNum(ch->in_room) && roomFindNum(ch2->in_room)) {
+        if (IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM) &&
+            IS_SET(roomFindNum(ch2->in_room)->room_flags, ARENA_ROOM)) {
             return (TRUE);
         }
     } else {
@@ -5555,7 +5552,7 @@ int fighting_in_room(int room_n)
     struct char_data *ch;
     struct room_data *r;
 
-    r = real_roomp(room_n);
+    r = roomFindNum(room_n);
 
     if (!r) {
         return FALSE;
@@ -5572,30 +5569,38 @@ int fighting_in_room(int room_n)
 
 int CheckSquare(struct char_data *ch, int dir)
 {
-    int             room = 0;
+    int                 room = 0;
+    struct room_data   *rm;
+    struct room_data   *rp;
+
+    rm = roomFindNum(ch->in_room);
 
     if (dir == 0 || dir == 2) {
         /*
          * go east and check
          */
-        if ((real_roomp(ch->in_room)->dir_option[1])) {
-            room = real_roomp(ch->in_room)->dir_option[1]->to_room;
-            if ((real_roomp(room)->dir_option[dir])) {
-                room = real_roomp(room)->dir_option[dir]->to_room;
-                if ((real_roomp(room)->dir_option[3])) {
-                    room = real_roomp(room)->dir_option[3]->to_room;
-                    return room;
+        if (rm->dir_option[1]) {
+            room = rm->dir_option[1]->to_room;
+            rp = roomFindNum(room);
+            if (rp->dir_option[dir]) {
+                room = rp->dir_option[dir]->to_room;
+                rp = roomFindNum(room);
+                if (rp->dir_option[3]) {
+                    room = rp->dir_option[3]->to_room;
+                    return( room );
                 }
             }
         }
 
-        if ((real_roomp(ch->in_room)->dir_option[3])) {
-            room = real_roomp(ch->in_room)->dir_option[3]->to_room;
-            if ((real_roomp(room)->dir_option[dir])) {
-                room = real_roomp(room)->dir_option[dir]->to_room;
-                if ((real_roomp(room)->dir_option[1])) {
-                    room = real_roomp(room)->dir_option[1]->to_room;
-                    return room;
+        if (rm->dir_option[3]) {
+            room = rm->dir_option[3]->to_room;
+            rp = roomFindNum(room);
+            if (rp->dir_option[dir]) {
+                room = rp->dir_option[dir]->to_room;
+                rp = roomFindNum(room);
+                if (rp->dir_option[1]) {
+                    room = rp->dir_option[1]->to_room;
+                    return( room );
                 }
             }
         }
@@ -5605,30 +5610,34 @@ int CheckSquare(struct char_data *ch, int dir)
         /*
          * go north and check
          */
-        if ((real_roomp(ch->in_room)->dir_option[0])) {
-            room = real_roomp(ch->in_room)->dir_option[0]->to_room;
-            if ((real_roomp(room)->dir_option[dir])) {
-                room = real_roomp(room)->dir_option[dir]->to_room;
-                if ((real_roomp(room)->dir_option[2])) {
-                    room = real_roomp(room)->dir_option[2]->to_room;
-                    return room;
+        if (rm->dir_option[0])) {
+            room = rm->dir_option[0]->to_room;
+            rp = roomFindNum(room);
+            if (rp->dir_option[dir]) {
+                room = rp->dir_option[dir]->to_room;
+                rp = roomFindNum(room);
+                if (rp->dir_option[2]) {
+                    room = rp->dir_option[2]->to_room;
+                    return( room );
                 }
             }
         }
 
-        if ((real_roomp(ch->in_room)->dir_option[2])) {
-            room = real_roomp(ch->in_room)->dir_option[2]->to_room;
-            if ((real_roomp(room)->dir_option[dir])) {
-                room = real_roomp(room)->dir_option[dir]->to_room;
-                if ((real_roomp(room)->dir_option[0])) {
-                    room = real_roomp(room)->dir_option[0]->to_room;
-                    return room;
+        if (rm->dir_option[2])) {
+            room = rm->dir_option[2]->to_room;
+            rp = roomFindNum(room);
+            if (rp->dir_option[dir]) {
+                room = rp->dir_option[dir]->to_room;
+                rp = roomFindNum(room);
+                if (rp->dir_option[0]) {
+                    room = rp->dir_option[0]->to_room;
+                    return( room );
                 }
             }
         }
     }
 
-    return NOWHERE;
+    return( NOWHERE );
 }
 
 /*
@@ -5650,7 +5659,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
         return (FALSE);
 
     current = ch->in_room;
-    rm = real_roomp(ch->in_room);
+    rm = roomFindNum(current);
     /*
      * lets find valid room..
      */
@@ -5684,7 +5693,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
             do_edit(ch, buf, 0);
             send_to_char("Reconnecting to existing room\n\r", ch);
 
-            new_rm = real_roomp(ch->in_room);
+            new_rm = roomFindNum(ch->in_room);
             new_rm->room_flags = ROOM_WILDERNESS;
 
             do_look(ch, NULL, 15);
@@ -5697,7 +5706,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
     zd = zone_table + rm->zone;
 
     for (x = x + 1; x < zd->top; x++) {
-        if (real_roomp(x) == NULL) {
+        if (roomFindNum(x) == NULL) {
             CreateOneRoom(x);
             sprintf(buf, "$c0001Room exit created from room %d to %d.\n\r",
                     current, x);
@@ -5719,10 +5728,10 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
              */
             dir = opdir(dir);
 
-            if (real_roomp(current) == NULL) {
+            if (roomFindNum(current) == NULL) {
                 CreateOneRoom(current);
             }
-            new_rm = real_roomp(ch->in_room);
+            new_rm = roomFindNum(ch->in_room);
             /*
              * let's set the sector to match the room we came from
              */
@@ -5734,7 +5743,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
              * If wizset map is enabled, set the roomflag MAP_ROOM -Lennya
              */
             if (IS_SET(ch->player.user_flags, FAST_MAP_EDIT)) {
-                new_rm = real_roomp(ch->in_room);
+                new_rm = roomFindNum(ch->in_room);
                 new_rm->room_flags = ROOM_WILDERNESS;
             }
             do_look(ch, NULL, 15);
@@ -6213,7 +6222,7 @@ int MobCastCheck(struct char_data *ch, int psi)
         return (FALSE);
     }
 
-    if (!(real_roomp(ch->in_room))) {
+    if (!(roomFindNum(ch->in_room))) {
         Log("non-existant room for MobCastCheck");
         return (FALSE);
     }
@@ -6267,8 +6276,8 @@ int countPeople(int zonenr)
     for (d = descriptor_list; d; d = d->next) {
         person = (d->original ? d->original : d->character);
 
-        if (person && real_roomp(person->in_room) &&
-            real_roomp(person->in_room)->zone == zonenr) {
+        if (person && roomFindNum(person->in_room) &&
+            roomFindNum(person->in_room)->zone == zonenr) {
             count++;
         }
     }
@@ -6281,8 +6290,8 @@ int count_People_in_room(int room)
     struct char_data *i;
     int             count = 0;
 
-    if (real_roomp(room)) {
-        for (i = real_roomp(room)->people; i; i = i->next_in_room) {
+    if (roomFindNum(room)) {
+        for (i = roomFindNum(room)->people; i; i = i->next_in_room) {
             if (i) {
                 /*
                  * this counts the number of people in just this room.

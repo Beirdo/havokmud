@@ -41,7 +41,7 @@ void MakeNoise(int room, char *local_snd, char *distant_snd)
     struct room_data *rp,
                    *orp;
 
-    rp = real_roomp(room);
+    rp = roomFindNum(room);
 
     if (!rp) {
         return;
@@ -55,7 +55,7 @@ void MakeNoise(int room, char *local_snd, char *distant_snd)
 
     for (door = 0; door <= 5; door++) {
         if (rp->dir_option[door] &&
-            (orp = real_roomp(rp->dir_option[door]->to_room))) {
+            (orp = roomFindNum(rp->dir_option[door]->to_room))) {
             for (ch = orp->people; ch; ch = ch->next_in_room) {
                 if (!IS_NPC(ch) && !IS_SET(ch->specials.act, PLR_DEAF) && 
                     !IS_AFFECTED(ch, AFF_SILENCE)) {

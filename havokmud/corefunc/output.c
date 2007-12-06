@@ -202,7 +202,7 @@ int CondIsInDesert( PlayerStruct_t *player, void *arg )
 
     return( (OUTSIDE(player->charData) && 
              !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
-             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             (rp = roomFindNum(player->charData->in_room)) != NULL && 
              (IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) || 
               rp->sector_type == SECT_DESERT)) ? 1 : 0 );
 }
@@ -218,7 +218,7 @@ int CondIsOutdoorsOther( PlayerStruct_t *player, void *arg )
 
     return( (OUTSIDE(player->charData) && 
              !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
-             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             (rp = roomFindNum(player->charData->in_room)) != NULL && 
              !IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) && 
              !IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC) && 
              rp->sector_type != SECT_DESERT) ? 1 : 0 );
@@ -235,7 +235,7 @@ int CondIsInArctic( PlayerStruct_t *player, void *arg )
 
     return( (OUTSIDE(player->charData) && 
              !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
-             (rp = real_roomp(player->charData->in_room)) != NULL && 
+             (rp = roomFindNum(player->charData->in_room)) != NULL && 
              IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC)) ? 1 : 0 );
 }
 
@@ -273,7 +273,7 @@ int CondInZone( PlayerStruct_t *player, void *arg )
         return( 0 );
     }
 
-    rp = real_roomp(player->charData->in_room);
+    rp = roomFindNum(player->charData->in_room);
 
     return( (player->charData != args->ch && rp && 
              rp->zone == args->zone) ? 1 : 0);
@@ -283,7 +283,7 @@ void send_to_zone(char *messg, struct char_data *ch)
 {
     SendToZoneArgs_t    args;
 
-    args.zone = real_roomp(ch->in_room)->zone;
+    args.zone = roomFindNum(ch->in_room)->zone;
     args.ch   = ch;
 
     SendToAllCond(messg, CondInZone, (void *)&args);
@@ -301,7 +301,7 @@ void send_to_room(char *messg, int room)
         return;
     }
 
-    for (ch = real_roomp(room)->people; ch; ch = ch->next_in_room) {
+    for (ch = roomFindNum(room)->people; ch; ch = ch->next_in_room) {
         player = (PlayerStruct_t *)ch->playerDesc;
         if (player && GET_POS(ch) > POSITION_SLEEPING) {
             SendOutput(player, messg);
@@ -318,7 +318,7 @@ void send_to_room_except(char *messg, int room, struct char_data *ch)
         return;
     }
 
-    for (ch2 = real_roomp(room)->people; ch2; ch2 = ch2->next_in_room) {
+    for (ch2 = roomFindNum(room)->people; ch2; ch2 = ch2->next_in_room) {
         player = (PlayerStruct_t *)ch2->playerDesc;
         if (ch2 != ch && player && GET_POS(ch2) > POSITION_SLEEPING) {
             SendOutput( player, messg );
@@ -336,7 +336,7 @@ void send_to_room_except_two(char *messg, int room, struct char_data *ch1,
         return;
     }
 
-    for (ch3 = real_roomp(room)->people; ch3; ch3 = ch3->next_in_room) {
+    for (ch3 = roomFindNum(room)->people; ch3; ch3 = ch3->next_in_room) {
         player = (PlayerStruct_t *)ch3->playerDesc;
         if (ch3 != ch1 && ch3 != ch2 && player && 
             GET_POS(ch3) > POSITION_SLEEPING) {

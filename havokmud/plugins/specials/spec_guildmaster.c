@@ -1271,7 +1271,7 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
 
     if (!AWAKE(ch) || IS_NPC(ch) || !ch->in_room ||
-        !(rp = real_roomp(ch->in_room))) {
+        !(rp = roomFindNum(ch->in_room))) {
         return (FALSE);
     }
 

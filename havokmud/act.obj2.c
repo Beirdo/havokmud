@@ -700,7 +700,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     switch (keyword) {
     case 0:
@@ -719,7 +719,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("You can't light that underwater!\n\r", ch);
         } else {
             if (obj_object->value[2]) {
-                real_roomp(ch->in_room)->light++;
+                roomFindNum(ch->in_room)->light++;
             }
             oldSendOutput(ch, "You light %s and hold it.\n\r",
                           obj_object->short_description);
@@ -1412,7 +1412,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                                     obj_object, 0, TO_CHAR);
                                 if (obj_object->type_flag == ITEM_TYPE_LIGHT && 
                                     obj_object->value[2]) {
-                                    real_roomp(ch->in_room)->light--;
+                                    roomFindNum(ch->in_room)->light--;
                                 }
 
                             }
@@ -1467,7 +1467,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
                             if (obj_object->type_flag == ITEM_TYPE_LIGHT &&
                                 obj_object->value[2]) {
-                                real_roomp(ch->in_room)->light--;
+                                roomFindNum(ch->in_room)->light--;
                             }
                         }
                     } else {
@@ -1497,7 +1497,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
                     if (obj_object->type_flag == ITEM_TYPE_LIGHT &&
                         obj_object->value[2]) {
-                        real_roomp(ch->in_room)->light--;
+                        roomFindNum(ch->in_room)->light--;
                     }
 
                     act("You stop using $p.", FALSE, ch, obj_object, 0,

@@ -495,7 +495,7 @@ void do_zclean(struct char_data *ch, char *argument, int cmdnum)
     /*
      * make some permission checks
      */
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (GetMaxLevel(ch) < 56 && rp->zone != GET_ZONE(ch)) {
         send_to_char("Sorry, you are not authorized to clean this zone.\n\r",
                      ch);
@@ -1014,7 +1014,7 @@ void do_at(struct char_data *ch, char *argument, int cmd)
 
     if (isdigit((int)*loc_str)) {
         loc_nr = atoi(loc_str);
-        if (NULL == real_roomp(loc_nr)) {
+        if (NULL == roomFindNum(loc_nr)) {
             send_to_char("No room exists with that number.\n\r", ch);
             return;
         }
@@ -1043,7 +1043,7 @@ void do_at(struct char_data *ch, char *argument, int cmd)
     /*
      * check if the guy's still there
      */
-    for (target_mob = real_roomp(location)->people; target_mob;
+    for (target_mob = roomFindNum(location)->people; target_mob;
          target_mob = target_mob->next_in_room) {
         if (ch == target_mob) {
             char_from_room(ch);
@@ -1077,7 +1077,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
     }
     if (isdigit((int)*buf) && !index(buf, '.')) {
         loc_nr = atoi(buf);
-        if (!real_roomp(loc_nr)) {
+        if (!roomFindNum(loc_nr)) {
             if (GetMaxLevel(ch) < CREATOR || loc_nr < 0) {
                 send_to_char("No room exists with that number.\n\r", ch);
                 return;
@@ -1117,14 +1117,14 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
      * a location has been found.
      */
 
-    if (!real_roomp(location)) {
+    if (!roomFindNum(location)) {
         Log("Massive error in do_goto. Everyone Off NOW.");
         return;
     }
 
-    if (IS_SET(real_roomp(location)->room_flags, PRIVATE)) {
-        for (i = 0, pers = real_roomp(location)->people; pers; pers =
-                pers->next_in_room, i++) {
+    if (IS_SET(roomFindNum(location)->room_flags, PRIVATE)) {
+        for (i = 0, pers = roomFindNum(location)->people; pers; 
+             pers = pers->next_in_room, i++) {
             /*
              * Empty loop
              */
@@ -1142,7 +1142,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_SET(ch->specials.act, PLR_STEALTH)) {
-        for (v = real_roomp(ch->in_room)->people; v; v = v->next_in_room) {
+        for (v = roomFindNum(ch->in_room)->people; v; v = v->next_in_room) {
             if ((ch != v) && (CAN_SEE(v, ch))) {
                 if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) ||
                     !ch->specials.poofout) {
@@ -1172,10 +1172,10 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
     char_to_room(ch, location);
 
     if (IS_SET(ch->specials.act, PLR_STEALTH)) {
-        for (v = real_roomp(ch->in_room)->people; v; v = v->next_in_room) {
+        for (v = roomFindNum(ch->in_room)->people; v; v = v->next_in_room) {
             if ((ch != v) && (CAN_SEE(v, ch))) {
-                if (!IS_SET(ch->specials.pmask, BIT_POOF_IN)
-                    || !ch->specials.poofin) {
+                if (!IS_SET(ch->specials.pmask, BIT_POOF_IN) || 
+                    !ch->specials.poofin) {
                     act("$n appears with an explosion of rose-petals.",
                         FALSE, ch, 0, v, TO_VICT);
                 } else {
@@ -1256,7 +1256,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         /*
          * stats on room
          */
-        rm = real_roomp(ch->in_room);
+        rm = roomFindNum(ch->in_room);
         oldSendOutput(ch, "Room name: %s, Of zone : %ld. V-Number : %ld, "
                       "R-number : %ld (%d)\n\r",
                       rm->name, rm->zone, rm->number, ch->in_room, rm->special);
@@ -3207,7 +3207,8 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             } else {
                 extract_char(vict);
             }
-        } else if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
+        } else if ((obj = objectGetInRoom(ch, name, 
+                                          roomFindNum(ch->in_room)))) {
             act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
             objectExtract(obj);
         } else if (!strcasecmp("room", name)) {
@@ -3244,7 +3245,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             for (i = range[0]; i <= range[1]; i++) {
-                if ((rp = real_roomp(i)) != 0) {
+                if ((rp = roomFindNum(i)) != 0) {
                     purge_one_room(i, rp, range);
                 }
             }
@@ -3271,7 +3272,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             " bubbles!", FALSE, ch, 0, 0, TO_ROOM);
         send_to_room("The world seems a little cleaner.\n\r", ch->in_room);
 
-        for (vict = real_roomp(ch->in_room)->people; vict; vict = next_v) {
+        for (vict = roomFindNum(ch->in_room)->people; vict; vict = next_v) {
             next_v = vict->next_in_room;
             if (IS_NPC(vict) &&
                 !IS_SET(vict->specials.act, ACT_POLYSELF)) {
@@ -3279,7 +3280,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             }
         }
 
-        for (obj = real_roomp(ch->in_room)->contents; obj; obj = next_o) {
+        for (obj = roomFindNum(ch->in_room)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
             objectExtract(obj);
         }
@@ -4673,7 +4674,7 @@ void do_create(struct char_data *ch, char *argument, int cmd)
     }
 
     for (i = start; i <= end; i++) {
-        if (!real_roomp(i)) {
+        if (!roomFindNum(i)) {
             CreateOneRoom(i);
         }
     }
@@ -4689,7 +4690,7 @@ void CreateOneRoom(int loc_nr)
     int             zone;
 
     allocate_room(loc_nr);
-    rp = real_roomp(loc_nr);
+    rp = roomFindNum(loc_nr);
     memset(rp, 0, sizeof(struct room_data));
 
     rp->number = loc_nr;
@@ -5581,7 +5582,7 @@ void do_mforce(struct char_data *ch, char *argument, int cmd)
         /*
          * force all
          */
-        for (vict = real_roomp(ch->in_room)->people; vict;
+        for (vict = roomFindNum(ch->in_room)->people; vict;
              vict = vict->next_in_room) {
             if (vict != ch && !IS_PC(vict)) {
                 sprintf(buf, "$n has forced you to '%s'.", to_force);
@@ -5730,7 +5731,8 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
     } else if (is_abbrev(type, "object")) {
         if ((obj = objectGetOnChar(ch, name, ch))) {
             where = 1;
-        } else if ((obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
+        } else if ((obj = objectGetInRoom(ch, name, 
+                                          roomFindNum(ch->in_room)))) {
             where = 2;
         } else {
             send_to_char("Can't find such object\r\n", ch);
@@ -5951,7 +5953,7 @@ void do_home(struct char_data *ch, char *argument, int cmd)
 
     if (ch->player.hometown > 0) {
         if (IS_SET(ch->specials.act, PLR_STEALTH)) {
-            for (v = real_roomp(ch->in_room)->people; v;
+            for (v = roomFindNum(ch->in_room)->people; v;
                  v = v->next_in_room) {
                 if ((ch != v) && (CAN_SEE(v, ch))) {
                     if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) ||
@@ -5982,7 +5984,7 @@ void do_home(struct char_data *ch, char *argument, int cmd)
         char_to_room(ch, ch->specials.start_room);
 
         if (IS_SET(ch->specials.act, PLR_STEALTH)) {
-            for (v = real_roomp(ch->in_room)->people; v;
+            for (v = roomFindNum(ch->in_room)->people; v;
                  v = v->next_in_room) {
                 if ((ch != v) && (CAN_SEE(v, ch))) {
                     if (!IS_SET(ch->specials.pmask, BIT_POOF_IN) ||
@@ -6249,14 +6251,14 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
                      * gossip in zone only
                      */
                     if (i->character->in_room != NOWHERE) {
-                        if (real_roomp(ch->in_room)->zone ==
-                            real_roomp(i->character->in_room)->zone &&
+                        if (roomFindNum(ch->in_room)->zone ==
+                            roomFindNum(i->character->in_room)->zone &&
                             !IS_IMMORTAL(i->character)) {
                             act(buf1, 0, ch, 0, i->character, TO_VICT);
                         } else if (IS_IMMORTAL(i->character)) {
                             sprintf(buf2, "$c0011[$c0015$n$c0011] yells from "
                                     "zone %ld '%s'",
-                                    real_roomp(ch->in_room)->zone, argument);
+                                    roomFindNum(ch->in_room)->zone, argument);
                             act(buf2, 0, ch, 0, i->character, TO_VICT);
                         }
                     }

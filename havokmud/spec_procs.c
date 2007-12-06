@@ -109,7 +109,7 @@ int is_target_room_p(int room, void *tgt_room)
 int named_object_on_ground(int room, void *c_data)
 {
     char           *name = c_data;
-    return( (objectGetInRoom(name, real_roomp(room))) != NULL );
+    return( (objectGetInRoom(name, roomFindNum(room))) != NULL );
 }
 
 /*
@@ -130,7 +130,7 @@ struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
     targ = 0;
 
     if (room > NOWHERE) {
-        for (temp_char = real_roomp(room)->people; (!targ) && (temp_char);
+        for (temp_char = roomFindNum(room)->people; (!targ) && (temp_char);
              temp_char = temp_char->next_in_room) {
             if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
                 targ = temp_char;
@@ -148,7 +148,7 @@ struct char_data *find_mobile_here_with_spec_proc(int (*fcn) (), int rnumber)
 {
     struct char_data *temp_char;
 
-    for (temp_char = real_roomp(rnumber)->people; temp_char;
+    for (temp_char = roomFindNum(rnumber)->people; temp_char;
          temp_char = temp_char->next_in_room) {
         if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == fcn) {
             return temp_char;
@@ -270,7 +270,7 @@ void exec_social(struct char_data *npc, char *cmd, int next_line,
          * Find object in room
          */
         if (arg) {
-            *thing = objectGetInRoom(npc, arg, real_roomp(npc->in_room));
+            *thing = objectGetInRoom(npc, arg, roomFindNum(npc->in_room));
             ok = (*thing != NULL);
         }
         break;
@@ -416,8 +416,8 @@ int GreyParamedic(struct char_data *ch, int cmd, char *arg,
                  * Find a dude to do good things upon !
                  */
 
-                most_hurt = real_roomp(ch->in_room)->people;
-                for (vict = real_roomp(ch->in_room)->people; vict;
+                most_hurt = roomFindNum(ch->in_room)->people;
+                for (vict = roomFindNum(ch->in_room)->people; vict;
                      vict = vict->next_in_room) {
                     if (((float) GET_HIT(vict) / (float) hit_limit(vict) <
                          (float) GET_HIT(most_hurt) /
@@ -496,8 +496,8 @@ int AmberParamedic(struct char_data *ch, int cmd, char *arg,
                  * Find a dude to do good things upon !
                  */
 
-                most_hurt = real_roomp(ch->in_room)->people;
-                for (vict = real_roomp(ch->in_room)->people; vict;
+                most_hurt = roomFindNum(ch->in_room)->people;
+                for (vict = roomFindNum(ch->in_room)->people; vict;
                      vict = vict->next_in_room) {
                     if (((float) GET_HIT(vict) / (float) hit_limit(vict) <
                          (float) GET_HIT(most_hurt) /
@@ -608,7 +608,7 @@ int WizardGuard(struct char_data *ch, int cmd, char *arg,
     max_evil = 1000;
     evil = 0;
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (tch->specials.fighting && GET_ALIGNMENT(tch) < max_evil &&
             (IS_NPC(tch) || IS_NPC(tch->specials.fighting))) {
@@ -829,7 +829,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
         break;
     case 21:
-        for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
             if (!IS_NPC(i) && !number(0, 3)) {
                 sprintf(buf, "say Pardon me, %s, but are those bugle boy jeans "
                              "you are wearing?", GET_NAME(i));
@@ -839,7 +839,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
         break;
     case 22:
-        for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
             if (!IS_NPC(i) && !number(0, 3)) {
                 sprintf(buf, "say Pardon me, %s, but do you have any Grey "
                              "Poupon?", GET_NAME(i));
@@ -919,7 +919,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         command_interpreter(ch, "say Are you crazy, is that your problem?");
         return (TRUE);
     case 36:
-        for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
             if (!IS_NPC(i) && !number(0, 3)) {
                 sprintf(buf, "say %s, do you think I'm going bald?", 
                         GET_NAME(i));
@@ -1164,7 +1164,7 @@ int Whirlwind(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
 
     if (cmd == 0 && ch->generic == WW_LOOSE) {
-        for (tmp = real_roomp(ch->in_room)->people; tmp;
+        for (tmp = roomFindNum(ch->in_room)->people; tmp;
              tmp = tmp->next_in_room) {
             while (names[i]) {
                 if (!strcmp(GET_NAME(tmp), names[i])
@@ -1213,7 +1213,7 @@ int WarrenGuard(struct char_data *ch, int cmd, char *arg,
     if (check_peaceful(ch, "")) {
         return FALSE;
     }
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (tch->specials.fighting && GET_ALIGNMENT(tch) > max_good &&
             (IS_NPC(tch) || IS_NPC(tch->specials.fighting))) {
@@ -1354,7 +1354,7 @@ int zombie_master(struct char_data *ch, int cmd, char *arg,
         }
 
         temp1 = objectGetInRoom(zmaster, "corpse", 
-                                real_roomp(zmaster->in_room));
+                                roomFindNum(zmaster->in_room));
 
         if (temp1) {
             if (GET_MANA(zmaster) < ZM_MANA) {
@@ -1435,8 +1435,8 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * get
          */
-        if ((!(chalice = objectGetInRoomNum(chl, real_roomp(ch->in_room))) &&
-             !(chalice = objectGetInRoomNum(achl, real_roomp(ch->in_room)))) ||
+        if ((!(chalice = objectGetInRoomNum(chl, roomFindNum(ch->in_room))) &&
+             !(chalice = objectGetInRoomNum(achl, roomFindNum(ch->in_room)))) ||
             !objectIsVisible(ch, chalice)) {
             return (FALSE);
         }
@@ -1479,7 +1479,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * pray
          */
-        if (!(chalice = objectGetInRoomNum(achl, real_roomp(ch->in_room)))) {
+        if (!(chalice = objectGetInRoomNum(achl, roomFindNum(ch->in_room)))) {
             return (FALSE);
         }
 
@@ -1552,7 +1552,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     /*
      * verify the owner
      */
-    if (strncmp(GET_NAME(ch), real_roomp(ch->in_room)->name,
+    if (strncmp(GET_NAME(ch), roomFindNum(ch->in_room)->name,
                 strlen(GET_NAME(ch)))) {
         send_to_char("Sorry, you'll have to find your own house.\n\r", ch);
         return (FALSE);
@@ -1675,8 +1675,8 @@ int paramedics(struct char_data *ch, int cmd, char *arg,
             /*
              * Find a dude to do good things upon !
              */
-            most_hurt = real_roomp(ch->in_room)->people;
-            for (vict = real_roomp(ch->in_room)->people; vict;
+            most_hurt = roomFindNum(ch->in_room)->people;
+            for (vict = roomFindNum(ch->in_room)->people; vict;
                  vict = vict->next_in_room) {
                 if (((float) GET_HIT(vict) / (float) hit_limit(vict) <
                      (float) GET_HIT(most_hurt) /
@@ -2317,7 +2317,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                 } else
                     go_direction(ch, dir);
             } else {
-                for (t = real_roomp(ch->in_room)->people; t;
+                for (t = roomFindNum(ch->in_room)->people; t;
                      t = t->next_in_room) {
                     if (!IS_NPC(t) && CAN_SEE(ch, t) &&
                         !(strcmp(mem->names[mem->index], GET_NAME(t)))) {
@@ -2530,7 +2530,8 @@ int keystone(struct char_data *ch, int cmd, char *arg,
         }
 
         for (t = character_list; t; t = t->next) {
-            if (real_roomp(ch->in_room)->zone == real_roomp(t->in_room)->zone) {
+            if (roomFindNum(ch->in_room)->zone == 
+                roomFindNum(t->in_room)->zone) {
                 act("You hear a strange cry that fills your soul with fear!",
                     FALSE, t, 0, 0, TO_CHAR);
             }
@@ -2692,7 +2693,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                  */
                 act("$N opens the gate and guides you through.",
                     FALSE, ch, 0, g, TO_CHAR);
-                rp = real_roomp(ch->in_room);
+                rp = roomFindNum(ch->in_room);
 
                 char_from_room(ch);
                 char_to_room(ch, rp->dir_option[2]->to_room);
@@ -2709,7 +2710,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                         if (fol->follower->specials.fighting) {
                             continue;
                         }
-                        if (real_roomp(fol->follower->in_room) &&
+                        if (roomFindNum(fol->follower->in_room) &&
                             EXIT(fol->follower, 2)->to_room != NOWHERE &&
                             GET_POS(fol->follower) >= POSITION_STANDING) {
                             char_from_room(fol->follower);
@@ -2736,7 +2737,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
          */
         while (j < gstruct->num_names) {
             if (!strcmp(gstruct->names[j], GET_NAME(ch))) {
-                if (real_roomp(ch->in_room) && 
+                if (roomFindNum(ch->in_room) && 
                     EXIT(ch, 2)->to_room != NOWHERE) {
                     if (ch->specials.fighting) {
                         return (FALSE);
@@ -2745,7 +2746,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                         FALSE, ch, 0, g, TO_CHAR);
                     act("$N recognizes $n, and escorts them through the gate.",
                         FALSE, ch, 0, g, TO_ROOM);
-                    rp = real_roomp(ch->in_room);
+                    rp = roomFindNum(ch->in_room);
                     char_from_room(ch);
                     char_to_room(ch, rp->dir_option[2]->to_room);
                     do_look(ch, NULL, 0);
@@ -2761,7 +2762,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                             if (fol->follower->specials.fighting) {
                                 continue;
                             }
-                            if (real_roomp(fol->follower->in_room) &&
+                            if (roomFindNum(fol->follower->in_room) &&
                                 EXIT(fol->follower, 2)->to_room != NOWHERE &&
                                 GET_POS(fol->follower) >= POSITION_STANDING) {
 
@@ -3242,7 +3243,7 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
              */
             while (!room) {
                 to_room = number(0, top_of_world);
-                room = real_roomp(to_room);
+                room = roomFindNum(to_room);
                 if (room && (IS_SET(room->room_flags, INDOORS) || 
                              IS_SET(room->room_flags, NO_MAGIC) || 
                              !IsOnPmp(to_room))) {
@@ -3314,14 +3315,14 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
      */
     if (GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && lspell > 7 && 
         !IS_SET(ch->specials.act, ACT_AGGRESSIVE) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS) &&
-        real_roomp(ch->in_room)->sector_type != SECT_AIR && !number(0, 2)) {
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS) &&
+        roomFindNum(ch->in_room)->sector_type != SECT_AIR && !number(0, 2)) {
         /* 
          * cool, we're outtie! 
          */
         while (!room) {
             to_room = number(0, top_of_world);
-            room = real_roomp(to_room);
+            room = roomFindNum(to_room);
             if (room && (IS_SET(room->room_flags, INDOORS) || 
                          IS_SET(room->room_flags, NO_MAGIC) || 
                          !IsOnPmp(to_room))) {
@@ -3485,8 +3486,8 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                  */
                 if (!affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                     OUTSIDE(ch) && !ch->followers && 
-                    !IS_SET(real_roomp((ch)->in_room)->room_flags, PEACEFUL) &&
-                    !IS_SET(real_roomp((ch)->in_room)->room_flags, TUNNEL)) {
+                    !IS_SET(roomFindNum((ch)->in_room)->room_flags, PEACEFUL) &&
+                    !IS_SET(roomFindNum((ch)->in_room)->room_flags, TUNNEL)) {
                     act("$n whistles loudly.", FALSE, ch, 0, 0, TO_ROOM);
                     cast_animal_summon_3(GetMaxLevel(ch), ch, "",
                                          SPELL_TYPE_SPELL, ch, 0);
@@ -3617,7 +3618,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         return (FALSE);
     }
 
-    if (!real_roomp(vict->in_room)) {
+    if (!roomFindNum(vict->in_room)) {
         Log("vict in bad room");
         return (FALSE);
     }
@@ -3846,7 +3847,7 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     int             purge_nr;
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return (FALSE);
     }
@@ -4095,7 +4096,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     static int      timehere;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp)
         return (FALSE);
 
@@ -4390,13 +4391,13 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
     /*
      * end was cmd 
      */
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (!IsHumanoid(tch) && !IS_PC(tch) && IS_NPC(tch) && 
             CAN_SEE(ch, tch)) {
 
 #if 0                           /* always true, find out why! */
-            rp = real_roomp(HOLDING_TANK);
+            rp = roomFindNum(HOLDING_TANK);
             if (MobCountInRoom(rp->people) >= HOLDING_MAX) {
                 Log("Catcher room was full");
                 return (FALSE);
@@ -4610,13 +4611,13 @@ int             side = WHITE;   /* to avoid having to pass side with each
 
 #define EXIT_ROOM(roomp,dir) ((roomp)?((roomp)->dir_option[dir]):NULL)
 #define CAN_GO_ROOM(roomp,dir) (EXIT_ROOM(roomp,dir) && \
-                               real_roomp(EXIT_ROOM(roomp,dir)->to_room))
+                               roomFindNum(EXIT_ROOM(roomp,dir)->to_room))
 
 /*
  * get pointer to room in the given direction 
  */
 #define ROOMP(roomp,dir) ((CAN_GO_ROOM(roomp,dir)) ? \
-                          real_roomp(EXIT_ROOM(roomp,dir)->to_room) : NULL)
+                          roomFindNum(EXIT_ROOM(roomp,dir)->to_room) : NULL)
 
 struct room_data *forward_square(struct room_data *room)
 {
@@ -4701,7 +4702,7 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
     struct room_data *rp = NULL,
-                   *crp = real_roomp(ch->in_room);
+                   *crp = roomFindNum(ch->in_room);
     struct char_data *ep = NULL;
     int             move_dir = 0,
                     move_amount = 0,
@@ -4768,8 +4769,8 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
             rp = forward_square(crp);
             break;
         case 3:
-            if (real_roomp(ch->in_room) &&
-                real_roomp(ch->in_room)->number == mob_index[ch->nr].vnum) {
+            if (roomFindNum(ch->in_room) &&
+                roomFindNum(ch->in_room)->number == mob_index[ch->nr].vnum) {
                 rp = forward_square(crp);
                 if (rp && square_empty(rp) && ON_BOARD(rp->number)) {
                     crp = rp;
@@ -5036,7 +5037,7 @@ int AcidBlob(struct char_data *ch, int cmd, char *arg,
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
         if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) && 
             !strncmp(i->keywords.words[0], "corpse", 6)) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
@@ -5085,16 +5086,16 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
     Keywords_t     *key;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
-        (!real_roomp(ch->in_room))) {
+        (!roomFindNum(ch->in_room))) {
         return (FALSE);
     }
-    for (obj = real_roomp(ch->in_room)->contents;
+    for (obj = roomFindNum(ch->in_room)->contents;
          obj; obj = obj->next_content) {
         if (obj->index->func == EvilBlade) {
             /*
              * I am on the floor 
              */
-            for (joe = real_roomp(ch->in_room)->people; joe;
+            for (joe = roomFindNum(ch->in_room)->people; joe;
                  joe = joe->next_in_room) {
                 if ((GET_ALIGNMENT(joe) <= -400) && (!IS_IMMORTAL(joe))) {
                     if (lowjoe) {
@@ -5140,7 +5141,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    for (holder = real_roomp(ch->in_room)->people; holder;
+    for (holder = roomFindNum(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
             if (obj->index->func && obj->index->func != board) {
@@ -5321,7 +5322,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            for (joe = real_roomp(holder->in_room)->people; joe;
+            for (joe = roomFindNum(holder->in_room)->people; joe;
                  joe = joe->next_in_room) {
                 if (GET_ALIGNMENT(joe) >= 500 && IS_MOB(joe) && 
                     CAN_SEE(holder, joe) && holder != joe) {
@@ -5388,20 +5389,20 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
     Keywords_t     *key;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
-        (!real_roomp(ch->in_room))) {
+        (!roomFindNum(ch->in_room))) {
         return (FALSE);
     }
     return (FALSE);
     /*
      * disabled
      */
-    for (obj = real_roomp(ch->in_room)->contents;
+    for (obj = roomFindNum(ch->in_room)->contents;
          obj; obj = obj->next_content) {
         if (obj->index->func == GoodBlade) {
             /*
              * I am on the floor 
              */
-            for (joe = real_roomp(ch->in_room)->people; joe;
+            for (joe = roomFindNum(ch->in_room)->people; joe;
                  joe = joe->next_in_room) {
                 if (GET_ALIGNMENT(joe) >= 350 && !IS_IMMORTAL(joe)) {
                     if (lowjoe) {
@@ -5444,7 +5445,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    for (holder = real_roomp(ch->in_room)->people; holder;
+    for (holder = roomFindNum(ch->in_room)->people; holder;
          holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
             if (obj->index->func && obj->index->func != board) {
@@ -5690,7 +5691,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                     }
                 }
 
-                for (joe = real_roomp(holder->in_room)->people; joe;
+                for (joe = roomFindNum(holder->in_room)->people; joe;
                      joe = joe->next_in_room) {
                     if (GET_ALIGNMENT(joe) <= -350 && IS_MOB(joe) && 
                         CAN_SEE(holder, joe) && holder != joe) {
@@ -6481,7 +6482,7 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        for (tch = real_roomp(ch->in_room)->people; tch;
+        for (tch = roomFindNum(ch->in_room)->people; tch;
              tch = tch->next_in_room) {
             if (!IS_NPC(tch) && !number(0, 4)) {
                 if (IS_SET(ch->specials.act, ACT_GREET) && 
@@ -6997,7 +6998,7 @@ int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 if (GetMaxLevel(ch) > 29 &&
                     !affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                     OUTSIDE(ch) && !ch->followers && 
-                    !IS_SET(real_roomp((ch)->in_room)->room_flags, TUNNEL)) {
+                    !IS_SET(roomFindNum((ch)->in_room)->room_flags, TUNNEL)) {
                     /*
                      * let's give ranger some pets 
                      */
@@ -7112,7 +7113,7 @@ int bahamut_prayer(struct char_data *ch, struct char_data *vict)
             ch->mult_att = 4;
         }
 
-        for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
             GET_HIT(i) -= 25;
             send_to_char("$c0011A blinding holy light engulfs the room and" 
                          "sears your life away!\n\r", i);
@@ -7819,7 +7820,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
      * define the shopkeep 
      */
     if (ch->in_room) {
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
     } else {
         Log("weirdness in shopkeeper, char not in a room");
         return (FALSE);

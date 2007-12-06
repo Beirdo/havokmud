@@ -170,7 +170,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         sub_object = 0;
         found = FALSE;
         fail = FALSE;
-        for (obj_object = real_roomp(ch->in_room)->contents;
+        for (obj_object = roomFindNum(ch->in_room)->contents;
              obj_object; obj_object = next_obj) {
             next_obj = obj_object->next_content;
             /*
@@ -228,7 +228,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
 
         while (num != 0) {
-            obj_object = objectGetInRoom(ch, arg1, real_roomp(ch->in_room));
+            obj_object = objectGetInRoom(ch, arg1, roomFindNum(ch->in_room));
             if (obj_object) {
                 if (IS_CORPSE(obj_object) && num != 1) {
                     send_to_char("You can only get one corpse at a time.\n\r", 

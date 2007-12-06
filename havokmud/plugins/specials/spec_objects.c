@@ -481,7 +481,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
      * Look in the room first, in get case
      */
     if (cmd == 10) {
-        for (i = real_roomp(ch->in_room)->contents, j = 1; 
+        for (i = roomFindNum(ch->in_room)->contents, j = 1; 
              i && (j <= num);
              i = i->next_content) {
             if (i->item_number >= 0 && 
@@ -739,11 +739,11 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
     } else {
         obj->value[0]--;
         if (obj->value[0] == 0) {
-            if (obj->in_room != NOWHERE && real_roomp(obj->in_room)->people) {
+            if (obj->in_room != NOWHERE && roomFindNum(obj->in_room)->people) {
                 act("$p vanishes in a cloud of smoke!", FALSE,
-                    real_roomp(obj->in_room)->people, obj, 0, TO_ROOM);
+                    roomFindNum(obj->in_room)->people, obj, 0, TO_ROOM);
                 act("$p vanishes in a cloud of smoke!", FALSE,
-                    real_roomp(obj->in_room)->people, obj, 0, TO_CHAR);
+                    roomFindNum(obj->in_room)->people, obj, 0, TO_CHAR);
             }
             objectExtract(obj);
         }
@@ -761,11 +761,11 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
             obj->value[0]--;
         }
         if (obj->value[0] == 0 && obj->in_room) {
-            if (obj->in_room != NOWHERE && real_roomp(obj->in_room)->people) {
+            if (obj->in_room != NOWHERE && roomFindNum(obj->in_room)->people) {
                 act("$p disintegrates into atomic particles!", FALSE,
-                    real_roomp(obj->in_room)->people, obj, 0, TO_ROOM);
+                    roomFindNum(obj->in_room)->people, obj, 0, TO_ROOM);
                 act("$p disintegrates into atomic particles!", FALSE,
-                    real_roomp(obj->in_room)->people, obj, 0, TO_CHAR);
+                    roomFindNum(obj->in_room)->people, obj, 0, TO_CHAR);
             }
             objectExtract(obj);
         }
@@ -1659,7 +1659,7 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         obj = objectRead(EYE_DRAGON);
         objectPutInRoom(obj, ch->in_room);
 
-        room = real_roomp(ch->in_room);
+        room = roomFindNum(ch->in_room);
         for (tmp = room->people; tmp; tmp = tmp2) {
             tmp2 = tmp->next_in_room;
             if (in_group(ch, tmp) && !tmp->specials.fighting &&

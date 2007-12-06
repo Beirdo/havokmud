@@ -1646,7 +1646,7 @@ void construct_who_list(char *buf, int cmd,
     for (d = descriptor_list; d; d = d->next) {
         if ((person = (d->original ? d->original : d->character)))
             if (godlevel >= person->invis_level && 
-                real_roomp(person->in_room)) {
+                roomFindNum(person->in_room)) {
                 count++;
                 /* range 1 to 9 */
                 color_cnt = (color_cnt++ % 9);

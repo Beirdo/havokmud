@@ -91,7 +91,7 @@ int ValidMove(struct char_data *ch, int cmd)
      * Wizset fast.. (GH)
      */
     if ((!exit_ok(exitp, NULL))) {
-        if ((rp = real_roomp(ch->in_room))) {
+        if ((rp = roomFindNum(ch->in_room))) {
 
             if (!make_exit_ok(ch, &rp, cmd)) {
                 NotLegalMove(ch);
@@ -122,7 +122,7 @@ int ValidMove(struct char_data *ch, int cmd)
                      "get there!\n\r", ch);
         return (FALSE);
     } else {
-        rp = real_roomp(exitp->to_room);
+        rp = roomFindNum(exitp->to_room);
         if (IS_SET(rp->room_flags, TUNNEL) &&
             MobCountInRoom(rp->people) >= rp->moblim && !IS_IMMORTAL(ch)) {
             send_to_char("Sorry, there is no room to get in there.\n\r", ch);
@@ -178,8 +178,8 @@ int RawMove(struct char_data *ch, int dir)
         return (FALSE);
     }
 
-    from_here = real_roomp(ch->in_room);
-    to_here = real_roomp(from_here->dir_option[dir]->to_room);
+    from_here = roomFindNum(ch->in_room);
+    to_here = roomFindNum(from_here->dir_option[dir]->to_room);
     new_r = from_here->dir_option[dir]->to_room;
 
     if (to_here == NULL) {
@@ -524,7 +524,7 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
     struct char_data *tmp_ch;
     char            tmp[256];
 
-    for (tmp_ch = real_roomp(was_in)->people; tmp_ch;
+    for (tmp_ch = roomFindNum(was_in)->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if ((!IS_AFFECTED(ch, AFF_SNEAK) || IS_IMMORTAL(tmp_ch)) &&
             (ch != tmp_ch && AWAKE(tmp_ch) && CAN_SEE(tmp_ch, ch)) &&
@@ -580,7 +580,7 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
         }
     }
 
-    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch;
+    for (tmp_ch = roomFindNum(ch->in_room)->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (tmp_ch != ch && CAN_SEE(tmp_ch, ch) && AWAKE(tmp_ch) && 
             (!IS_AFFECTED(ch, AFF_SNEAK) || IS_IMMORTAL(tmp_ch)) &&
@@ -804,7 +804,7 @@ int open_door(struct char_data *ch, int dir)
     struct room_data *rp;
     char            buf[MAX_INPUT_LENGTH + 40];
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp == NULL) {
         Log("NULL rp in open_door() for %s.", PERS(ch, ch));
     }
@@ -850,7 +850,7 @@ int raw_open_door(struct char_data *ch, int dir)
     struct room_data *rp;
     char            buf[MAX_INPUT_LENGTH + 40];
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp == NULL) {
         Log("NULL rp in open_door() for %s.", PERS(ch, ch));
     }
@@ -1136,7 +1136,7 @@ void raw_unlock_door(struct char_data *ch,
     /*
      * now for unlocking the other side, too 
      */
-    rp = real_roomp(exitp->to_room);
+    rp = roomFindNum(exitp->to_room);
     if (rp && (back = rp->dir_option[direction[door].rev]) &&
         back->to_room == ch->in_room) {
         REMOVE_BIT(back->exit_info, EX_LOCKED);
@@ -1156,7 +1156,7 @@ void raw_lock_door(struct char_data *ch,
     /*
      * now for locking the other side, too 
      */
-    rp = real_roomp(exitp->to_room);
+    rp = roomFindNum(exitp->to_room);
     if (rp && (back = rp->dir_option[direction[door].rev]) &&
         back->to_room == ch->in_room) {
         SET_BIT(back->exit_info, EX_LOCKED);
@@ -1443,7 +1443,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
             }
         }
         oldSendOutput(ch, "There is no %s here.\n\r", buf);
-    } else if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    } else if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You are already indoors.\n\r", ch);
     } else {
         /*
@@ -1810,7 +1810,7 @@ void do_run(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    exitdata = (real_roomp(ch->in_room)->dir_option[keyno]);
+    exitdata = (roomFindNum(ch->in_room)->dir_option[keyno]);
     if (exitdata->to_room == ch->in_room) {
         send_to_char("To run in that direction seems futile.\n\r", ch);
         return;
@@ -1849,7 +1849,7 @@ void do_land(struct char_data *ch, char *argument, int cmd)
 
     if (IS_AFFECTED(ch, AFF_FLYING)) {  
         /* Put in something about trying to land in an air room */
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
         if (!rp) {
             return;
         }

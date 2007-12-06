@@ -32,7 +32,7 @@ int CheckForMoveTrap(struct char_data *ch, int dir)
 {
     struct obj_data *i;
 
-    for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
         if (ITEM_TYPE(i) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(i) > 0 &&
             IS_SET(GET_TRAP_EFF(i), direction[dir].trap) &&
             IS_SET(GET_TRAP_EFF(i), TRAP_EFF_MOVE)) {
@@ -95,7 +95,7 @@ int TriggerTrap(struct char_data *ch, struct obj_data *i)
          * make sure room fire off works! 
          */
         if (IS_SET(GET_TRAP_EFF(i), TRAP_EFF_ROOM)) {
-            for (v = real_roomp(ch->in_room)->people; v;
+            for (v = roomFindNum(ch->in_room)->people; v;
                  v = v->next_in_room) {
                 FindTrapDamage(v, i);
             }
@@ -147,9 +147,9 @@ void TrapDamage(struct char_data *v, int damtype, int amnt,
 
     InformMess(v);
     if (GET_POS(v) == POSITION_DEAD) {
-        if (!IS_NPC(v) && real_roomp(v->in_room)->name) {
+        if (!IS_NPC(v) && roomFindNum(v->in_room)->name) {
             Log("%s killed by a trap at %s", GET_NAME(v),
-                real_roomp(v->in_room)->name);
+                roomFindNum(v->in_room)->name);
         }
         die(v, '\0');
     }
@@ -240,7 +240,7 @@ void TrapTeleport(struct char_data *v)
     do {
         /* do .. while bug fixed, msw */
         to_room = number(0, top_of_world);
-        room = real_roomp(to_room);
+        room = roomFindNum(to_room);
         if (room && (IS_SET(room->room_flags, PRIVATE) ||
                      IS_SET(room->room_flags, TUNNEL) ||
                      IS_SET(room->room_flags, NO_SUM) ||
@@ -263,7 +263,7 @@ void TrapTeleport(struct char_data *v)
 
     do_look(v, NULL, 0);
 
-    if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
+    if (IS_SET(roomFindNum(to_room)->room_flags, DEATH) &&
         !IS_IMMORTAL(v)) {
         NailThisSucker(v);
     }

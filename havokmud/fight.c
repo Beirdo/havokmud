@@ -226,7 +226,7 @@ int check_peaceful(struct char_data *ch, char *msg)
     if (!ch) {
         return (FALSE);
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp && rp->room_flags & PEACEFUL) {
         send_to_char(msg, ch);
         return 1;
@@ -858,7 +858,7 @@ void death_cry(struct char_data *ch)
 
     for (door = 0; door <= 5; door++) {
         if (CAN_GO(ch, door)) {
-            ch->in_room = (real_roomp(was_in))->dir_option[door]->to_room;
+            ch->in_room = (roomFindNum(was_in))->dir_option[door]->to_room;
             act("$c0005Your blood freezes as you hear someones death cry.",
                 FALSE, ch, 0, 0, TO_ROOM);
             ch->in_room = was_in;
@@ -874,7 +874,7 @@ void raw_kill(struct char_data *ch, int killedbytype)
     char            buf[256];
 #endif
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         raw_kill_arena(ch);
         return;
     }
@@ -938,7 +938,7 @@ void die(struct char_data *ch, int killedbytype)
         return;
 
     }
-    if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+    if (!IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         /*
          * This  crash??
          * need at least 1/fraction worth of exp for the minimum needed for
@@ -1519,7 +1519,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
         return (TRUE);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp && (rp->room_flags & PEACEFUL) && type != SPELL_POISON &&
         type != SPELL_DISEASE && type != SPELL_DECAY &&
         type != SPELL_HEAT_STUFF && type != TYPE_SUFFERING) {
@@ -2225,7 +2225,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
         /*
          * special for no-death rooms
          */
-        rp = real_roomp(victim->in_room);
+        rp = roomFindNum(victim->in_room);
         if (rp && IS_SET(rp->room_flags, NO_DEATH)) {
             GET_HIT(victim) = 1;
             GET_POS(victim) = POSITION_STANDING;
@@ -2282,11 +2282,11 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                     if (IS_STEALER(victim)) {
                         REMOVE_BIT(victim->player.user_flags, STOLE_1);
                     }
-                    if (!IS_SET(real_roomp(victim->in_room)->room_flags,
+                    if (!IS_SET(roomFindNum(victim->in_room)->room_flags,
                                 ARENA_ROOM)) {
                         sprintf(buf, "%s killed by %s at %s\n\r",
                                 GET_NAME(victim), ch->player.short_descr,
-                                (real_roomp(victim->in_room))->name);
+                                (roomFindNum(victim->in_room))->name);
                     } else {
                         sprintf(buf, "%s killed by %s in ARENA!\n\r",
                                 GET_NAME(victim), ch->player.short_descr);
@@ -2307,7 +2307,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                         }
                     }
                     if (IS_PC(ch) && IS_PC(victim) &&
-                        IS_SET(real_roomp(victim->in_room)->room_flags,
+                        IS_SET(roomFindNum(victim->in_room)->room_flags,
                                ARENA_ROOM)) {
                         sprintf(buf, "%s killed by %s in ARENA\n\r",
                                 GET_NAME(victim), GET_NAME(ch));
@@ -2319,11 +2319,11 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                         sprintf(buf, "%s killed by %s at %s -- <Player kill,"
                                      " Illegal>",
                                 GET_NAME(victim), ch->player.name,
-                                (real_roomp(victim->in_room))->name);
+                                (roomFindNum(victim->in_room))->name);
                     } else {
                         sprintf(buf, "%s killed by %s at %s",
                                 GET_NAME(victim), GET_NAME(ch),
-                                (real_roomp(victim->in_room))->name);
+                                (roomFindNum(victim->in_room))->name);
 
                     }
                 }
@@ -2334,7 +2334,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
             log_sev(buf, 6);
         }
 
-        if (IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
+        if (IS_SET(roomFindNum(victim->in_room)->room_flags, ARENA_ROOM)) {
             if (IS_PC(ch)) {
                 ch->specials.a_kills = ch->specials.a_kills + 1;
             }
@@ -2538,7 +2538,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
     struct room_data *rp;
     extern char     PeacefulWorks;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp && rp->room_flags & PEACEFUL && PeacefulWorks) {
         Log("hit() called in PEACEFUL room");
         stop_fighting(ch);
@@ -3114,7 +3114,7 @@ void perform_violence(int pulse)
 
     for (ch = combat_list; ch; ch = combat_next_dude) {
         combat_next_dude = ch->next_fighting;
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
 
         if (!ch->specials.fighting) {
             Log("!ch->specials.fighting in perform violence fight.c");
@@ -3636,7 +3636,7 @@ struct char_data *FindVictim(struct char_data *ch)
         return (NULL);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
 #if 0
         Log("/* No room??? Crash??? */");
@@ -3760,7 +3760,7 @@ struct char_data *FindVictim(struct char_data *ch)
             (mjump * mtot) + (djump * dtot) + (kjump * ktot);
     total = (int) number(1, (int) total);
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (CAN_SEE(ch, tmp_ch) &&
             !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
@@ -3824,7 +3824,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
 
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
 #if 0
         Log("No room data in FindMetaVictim ??Crash???");
@@ -3834,7 +3834,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
     if (ch->in_room < 0) {
         return (NULL);
     }
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (CAN_SEE(ch, tmp_ch) &&
             !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
@@ -3933,7 +3933,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
 
     total = number(1, (int) total);
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (CAN_SEE(ch, tmp_ch) &&
             !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
@@ -4028,7 +4028,7 @@ struct char_data *AttackRandomChar(struct char_data *mob)
     int             pctoattack;
     int             k = 1;
 
-    for (tempchar = real_roomp(mob->in_room)->people; tempchar;
+    for (tempchar = roomFindNum(mob->in_room)->people; tempchar;
          tempchar = tempchar->next_in_room) {
         if (IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
             i++;
@@ -4036,7 +4036,7 @@ struct char_data *AttackRandomChar(struct char_data *mob)
     }
     if (i > 0) {
         pctoattack = number(1, i);
-        for (tempchar = real_roomp(mob->in_room)->people;
+        for (tempchar = roomFindNum(mob->in_room)->people;
              tempchar; tempchar = tempchar->next_in_room) {
             if (IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
                 if (pctoattack == k) {
@@ -4151,7 +4151,7 @@ void BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
     }
     if (ch->equipment[WIELD] &&
         IS_OBJ_STAT(ch->equipment[WIELD], extra_flags, ITEM_BRITTLE) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM) &&
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM) &&
         ((obj = unequip_char(ch, WIELD)) != NULL)) {
         sprintf(buf, "%s shatters.\n\r", obj->short_description);
         send_to_char(buf, ch);
@@ -4301,7 +4301,7 @@ int DamageOneItem(struct char_data *ch, int dam_type, struct obj_data *obj)
     char            buf[256];
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!IS_SET(rp->room_flags, ARENA_ROOM)) {
         num = DamagedByAttack(obj, dam_type);
         if (num != 0) {
@@ -4339,7 +4339,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     if (ValidRoom(ch) == FALSE) {
         return;
     }
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         return;
     }
     act("$p falls to the ground in scraps.", TRUE, ch, obj, 0, TO_CHAR);
@@ -4849,7 +4849,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
         return (NULL);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return (NULL);
     }
@@ -4957,7 +4957,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
 
     total = number(1, (int) total);
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (tmp_ch->specials.fighting == ch) {
             if (IS_NPC(tmp_ch)) {
@@ -5001,7 +5001,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
         return (NULL);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
 #if 0
         Log("No room data in FindMetaVictim ??Crash???");
@@ -5009,7 +5009,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
         return (NULL);
     }
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (CAN_SEE(ch, tmp_ch) &&
             !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
@@ -5031,7 +5031,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
 
     total = number(1, (int) total);
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch;
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (CAN_SEE(ch, tmp_ch) &&
             !IS_SET(tmp_ch->specials.act, PLR_NOHASSLE) &&
@@ -5062,7 +5062,7 @@ void NailThisSucker(struct char_data *ch)
     struct obj_data *obj,
                    *next_o;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     room_num = ch->in_room;
 
     if (IS_SET(RM_FLAGS(ch->in_room), ARENA_ROOM)) {
@@ -5093,9 +5093,9 @@ void NailThisSucker(struct char_data *ch)
      */
     if (IS_SET(rp->room_flags, DEATH)) {
         Log("%s hit a DeathTrap in room %s[%ld]\r\n", GET_NAME(ch),
-            real_roomp(room_num)->name, room_num);
+            roomFindNum(room_num)->name, room_num);
 
-        for (obj = real_roomp(room_num)->contents; obj; obj = next_o) {
+        for (obj = roomFindNum(room_num)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
             objectExtract(obj);
         }

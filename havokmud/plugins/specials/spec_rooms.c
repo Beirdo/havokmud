@@ -186,11 +186,11 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     struct char_data *tmp_char;
     int             value = 0;
 
-    for (k = real_roomp(ch->in_room)->contents; k;
-         k = real_roomp(ch->in_room)->contents) {
+    for (k = roomFindNum(ch->in_room)->contents; k;
+         k = roomFindNum(ch->in_room)->contents) {
         sprintf(buf, "The %s vanish in a puff of smoke.\n\r",
                 fname(k->short_description));
-        for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
+        for (tmp_char = roomFindNum(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
@@ -206,11 +206,11 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
     value = 0;
 
-    for (k = real_roomp(ch->in_room)->contents; k;
-         k = real_roomp(ch->in_room)->contents) {
+    for (k = roomFindNum(ch->in_room)->contents; k;
+         k = roomFindNum(ch->in_room)->contents) {
         sprintf(buf, "The %s vanish in a puff of smoke.\n\r", 
                 fname(k->short_description));
-        for (tmp_char = real_roomp(ch->in_room)->people; tmp_char;
+        for (tmp_char = roomFindNum(ch->in_room)->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
@@ -361,7 +361,7 @@ int pet_shops(struct char_data *ch, int cmd, char *arg,
          * List
          */
         send_to_char("Available pets are:\n\r", ch);
-        for (pet = real_roomp(pet_room)->people; pet;
+        for (pet = roomFindNum(pet_room)->people; pet;
              pet = pet->next_in_room) {
             sprintf(buf, "%8d - %s\n\r", 24 * GET_EXP(pet),
                     pet->player.short_descr);
@@ -453,7 +453,7 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
     gold = 0;
     found = FALSE;
 
-    for (tmp_obj = real_roomp(key_room)->contents; tmp_obj;
+    for (tmp_obj = roomFindNum(key_room)->contents; tmp_obj;
          tmp_obj = tmp_obj->next_content) {
         descr = find_ex_description(buf, tmp_obj->ex_description,
                                     tmp_obj->ex_description_count);
@@ -770,7 +770,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
 
     rm = ch->in_room;
 
-    me = real_roomp(ch->in_room);
+    me = roomFindNum(ch->in_room);
     if ((!me) || (!me->river_speed)) {
         return (FALSE);
     }
@@ -843,11 +843,11 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
                    *next_obj;
     struct char_data *mob;
 
-    me = real_roomp(ch->in_room);
+    me = roomFindNum(ch->in_room);
     if (!me) {
         return (FALSE);
     }
-    chal = real_roomp(MONK_CHALLENGE_ROOM);
+    chal = roomFindNum(MONK_CHALLENGE_ROOM);
     if (!chal) {
         send_to_char("The challenge room is gone.. please contact a god\n\r",
                      ch);
@@ -930,11 +930,11 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
                    *next_obj;
     struct char_data *mob;
 
-    me = real_roomp(ch->in_room);
+    me = roomFindNum(ch->in_room);
     if (!me) {
         return (FALSE);
     }
-    chal = real_roomp(DRUID_CHALLENGE_ROOM);
+    chal = roomFindNum(DRUID_CHALLENGE_ROOM);
     if (!chal) {
         send_to_char("The challenge room is gone.. please contact a god\n\r",
                      ch);
@@ -1016,7 +1016,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
     struct room_data *me;
     int             rm;
 
-    me = real_roomp(ch->in_room);
+    me = roomFindNum(ch->in_room);
     if (!me) {
         return (FALSE);
     }
@@ -1144,7 +1144,7 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!(object = objectGetInRoom(ch, itemname, 
-                                       real_roomp(ch->in_room)))) {
+                                       roomFindNum(ch->in_room)))) {
             send_to_char("Where did that carcass go?\n\r", ch);
             return (TRUE);
         }
@@ -2066,7 +2066,7 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
         doordir = 3;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     exitp = rp->dir_option[doordir];
 
     if (IS_SET(exitp->exit_info, EX_CLOSED)) {
@@ -2218,7 +2218,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                 /*
                  * unlock and open chest 
                  */
-                rp = real_roomp(CHESTS_ROOM);
+                rp = roomFindNum(CHESTS_ROOM);
                 if (!rp) {
                     Log("no room found for chest storage in cog_room proc");
                     return (TRUE);
@@ -2270,7 +2270,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return (FALSE);
@@ -2716,7 +2716,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
 
         randnum = number(0, count - 1);
 
-        for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
             if (i && x == randnum) {
                 send_to_char("You pull the rope of the gong.\n\r", ch);
                 send_to_zone("$c000BThe gong sounds as someone new gets pushed"
@@ -2776,7 +2776,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
         doordir = 0;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     exitp = rp->dir_option[doordir];
     if (!IS_SET(exitp->exit_info, EX_CLOSED)) {
         /* 
@@ -2841,7 +2841,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
             /*
              * open the exit in this room 
              */
-            rp = real_roomp(ch->in_room);
+            rp = roomFindNum(ch->in_room);
             exitp = rp->dir_option[doordir];
             REMOVE_BIT(exitp->exit_info, EX_CLOSED);
             act("$n whispers something in a low voice, and the light in "
@@ -3117,7 +3117,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    ventroom = real_roomp(VENTROOMVNUM);
+    ventroom = roomFindNum(VENTROOMVNUM);
     ventobj = objectGetInRoomNum(VENTOBJVNUM, ventroom);
 
     if (!ventobj) {

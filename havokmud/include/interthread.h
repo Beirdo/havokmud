@@ -363,7 +363,7 @@ int IsDarkOutside(struct room_data *rp);
  * room_data.c
  */
 void initializeRooms( void );
-struct room_data *real_roomp(int virtual);
+struct room_data *roomFindNum(int virtual);
 void cleanout_room(struct room_data *rp);
 void completely_cleanout_room(struct room_data *rp);
 

@@ -2425,7 +2425,7 @@ void zone_update(void)
                      * may have to go for(1..100)
                      */
                     to_room = number(0, top_of_world);
-                    room = real_roomp(to_room);
+                    room = roomFindNum(to_room);
                     if (room && (newch = room->people)) {
                         if (IS_PC(newch) ||
                             IS_SET(newch->specials.act, ACT_POLYSELF)) {
@@ -2658,7 +2658,7 @@ void reset_zone(int zone, int cmd)
                  */
 
                 if (ZCMD.arg3 >= 0 &&
-                    ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
+                    ((rp = roomFindNum(ZCMD.arg3)) != NULL)) {
                     if ((ZCMD.if_flag > 0 &&
                          ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                         (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
@@ -2855,7 +2855,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * set state of door
                  */
-                rp = real_roomp(ZCMD.arg1);
+                rp = roomFindNum(ZCMD.arg1);
                 if (rp && rp->dir_option[ZCMD.arg2]) {
                     switch (ZCMD.arg3) {
                     case 0:
@@ -3034,7 +3034,7 @@ void reset_zone(int zone, int cmd)
                  */
                 if (ZCMD.arg1 <= ZCMD.arg2 || ZCMD.arg1 >= ZCMD.arg2) {
                     if (ZCMD.arg3 >= 0 &&
-                        (rp = real_roomp(ZCMD.arg3)) != NULL) {
+                        (rp = roomFindNum(ZCMD.arg3)) != NULL) {
                         if ((ZCMD.if_flag > 0 &&
                              ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                             (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1, rp) <
@@ -3188,7 +3188,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * set state of door
                  */
-                rp = real_roomp(ZCMD.arg1);
+                rp = roomFindNum(ZCMD.arg1);
                 if (rp && rp->dir_option[ZCMD.arg2]) {
                     switch (ZCMD.arg3) {
                     case 0:
@@ -3260,7 +3260,7 @@ int is_empty(int zone_nr)
 
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected &&
-            real_roomp(i->character->in_room)->zone == zone_nr) {
+            roomFindNum(i->character->in_room)->zone == zone_nr) {
             return (0);
         }
     }
@@ -4803,7 +4803,7 @@ void SaveTheWorld( void )
     ctl += 1000;
 
     for (; i < ctl; i++) {
-        room = real_roomp(i);
+        room = roomFindNum(i);
         if (room && !IS_SET(room->room_flags, DEATH)) {
             /*
              *  first write out monsters
@@ -5002,7 +5002,7 @@ void ReadTextZone(FILE * fl)
                  * read an object
                  */
                 if (i < j) {
-                    if (j >= 0 && ((rp = real_roomp(j)) != NULL)) {
+                    if (j >= 0 && ((rp = roomFindNum(j)) != NULL)) {
                         if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
                             (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
                             if ((obj = objectRead(i)) != NULL) {
@@ -5104,7 +5104,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * set state of door
                  */
-                rp = real_roomp(i);
+                rp = roomFindNum(i);
                 if (rp && rp->dir_option[j]) {
                     switch (k) {
                     case 0:

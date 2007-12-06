@@ -83,7 +83,7 @@ void mobile_wander(struct char_data *ch)
             continue;
         }
         if (GET_RACE(ch) == RACE_FISH) {
-            rp = real_roomp(EXIT(ch, door)->to_room);
+            rp = roomFindNum(EXIT(ch, door)->to_room);
 
             if (rp->sector_type != SECT_UNDERWATER &&
                 rp->sector_type != SECT_WATER_NOSWIM &&
@@ -97,17 +97,17 @@ void mobile_wander(struct char_data *ch)
 
         if ((IsHumanoid(ch) ? CAN_GO_HUMAN(ch, door) : CAN_GO(ch, door)) && 
             (!IS_SET(ch->specials.act, ACT_STAY_ZONE) || 
-             rp->zone == real_roomp(ch->in_room)->zone)) {
+             rp->zone == roomFindNum(ch->in_room)->zone)) {
             ch->specials.last_direction = direction[door].rev;
             go_direction(ch, door);
             if (ch->in_room == 0 && or != 0) {
                 sprintf(buf, "%s just entered void from %d", GET_NAME(ch), or);
                 log_sev(buf, 5);
             }
-            if( rp->zone != real_roomp(or)->zone && 
+            if( rp->zone != roomFindNum(or)->zone && 
                 IS_SET(ch->specials.act, ACT_STAY_ZONE) ) {
                 Log("%s wandered from zone %ld to %ld", GET_NAME(ch),
-                    real_roomp(or)->zone, rp->zone );
+                    roomFindNum(or)->zone, rp->zone );
             }
             return;
         }
@@ -196,16 +196,13 @@ void MobScavenge(struct char_data *ch)
     char            buf[512];
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
-#if 0
-        Log("No room data in MobScavenge ??Crash???");
-#endif        
         return;
     } 
     
-    if ((real_roomp(ch->in_room))->contents && number(0, 4)) {
-        for (max = 1, best_obj = 0, obj = (real_roomp(ch->in_room))->contents;
+    if ((roomFindNum(ch->in_room))->contents && number(0, 4)) {
+        for (max = 1, best_obj = 0, obj = (roomFindNum(ch->in_room))->contents;
              obj; obj = obj->next_content) {
             if (IS_CORPSE(obj)) {
                 cc++;
@@ -228,7 +225,7 @@ void MobScavenge(struct char_data *ch)
             objectGiveToChar(best_obj, ch);
             act("$n gets $p.", FALSE, ch, best_obj, 0, TO_ROOM);
         }
-    } else if (IsHumanoid(ch) && real_roomp(ch->in_room)->contents && 
+    } else if (IsHumanoid(ch) && roomFindNum(ch->in_room)->contents && 
                !number(0, 4)) {
         command_interpreter(ch, "get all");
     }
@@ -574,7 +571,7 @@ int UseViolentHeldItem(struct char_data *ch)
 
             if (isname(GET_NAME(ch), GET_NAME(ch->specials.fighting))) {
                 i = 0;
-                v = real_roomp(ch->in_room)->people;
+                v = roomFindNum(ch->in_room)->people;
                 while (v && ch->specials.fighting != v) {
                     i++;
                     v = v->next_in_room;
@@ -636,11 +633,8 @@ int AssistFriend(struct char_data *ch)
                     found;
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
-#if 0        
-        Log("No room data in AssistFriend ??Crash???");
-#endif        
         return (0);
     }
 
@@ -670,7 +664,7 @@ int AssistFriend(struct char_data *ch)
      * find the people who are fighting 
      */
 
-    for (tmp_ch = (real_roomp(ch->in_room))->people; tmp_ch; tmp_ch = next) {
+    for (tmp_ch = (roomFindNum(ch->in_room))->people; tmp_ch; tmp_ch = next) {
         next = tmp_ch->next_in_room;
         if (CAN_SEE(ch, tmp_ch) && !IS_SET(ch->specials.act, ACT_WIMPY) && 
             MobFriend(ch, tmp_ch) && tmp_ch->specials.fighting) {
@@ -715,14 +709,14 @@ int FindABetterWeapon(struct char_data * mob)
     if (!HasHands(mob)) {
         return (FALSE);
     }
-    if (!real_roomp(mob->in_room)) {
+    if (!roomFindNum(mob->in_room)) {
         return (FALSE);
     }
     /*
      * check room 
      */
     best = 0;
-    for (o = real_roomp(mob->in_room)->contents; o; o = o->next_content) {
+    for (o = roomFindNum(mob->in_room)->contents; o; o = o->next_content) {
         if (best && IS_WEAPON(o)) {
             if (GetDamage(o, mob) > GetDamage(best, mob)) {
                 best = o;

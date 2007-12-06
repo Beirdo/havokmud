@@ -574,7 +574,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                    *temproom = NULL;
     long            maproom;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!IS_IMMORTAL(ch)) {
         return;
@@ -703,12 +703,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             return;
         } else {
             for (i = r_start; i <= r_end; i++) {
-                if (real_roomp(i) != NULL) {
-                    temproom = real_roomp(i);
+                if (roomFindNum(i) != NULL) {
+                    temproom = roomFindNum(i);
                     temproom->room_flags = r_flags;
                     temproom->sector_type = s_type;
-                    oldSendOutput(ch, "Room and sector flags set for room %d\n\r",
-                              i);
+                    oldSendOutput(ch, "Room and sector flags set for room "
+                                      "%d\n\r", i);
                     if (temproom->name) {
                         sprintf(name, "%s", temproom->name);
                         if (isdigit((int)*name)) {
@@ -809,7 +809,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             rp->dir_option[dir]->key = dkey;
             rp->dir_option[dir]->open_cmd = open_cmd;
 
-            if (real_roomp(exroom) != NULL) {
+            if (roomFindNum(exroom) != NULL) {
                 rp->dir_option[dir]->to_room = exroom;
             } else {
                 send_to_char("Deleting exit.\n\r", ch);
@@ -819,7 +819,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 rp->dir_option[dir] = 0;
                 return;
             }
-        } else if (real_roomp(exroom) == NULL) {
+        } else if (roomFindNum(exroom) == NULL) {
             send_to_char("Hey, John Yaya, that's not a valid room.\n\r", ch);
             return;
         } else {
@@ -933,6 +933,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         }
         sscanf(string, "%d %d %d", &tele_time, &tele_room, &tele_mask);
 
+        rp = roomFindNum(ch->in_room);
+
         if (tele_room < 0 || tele_time < 0 || tele_mask < 0) {
             send_to_char(" edit tele <time> <room_nr> <tele-flags>\n\r", ch);
         } else if (IS_SET(TELE_COUNT, tele_mask)) {
@@ -942,26 +944,28 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 send_to_char(" edit tele <time> <room_nr> <tele-flags> "
                              "[tele-count]\n\r", ch);
             } else {
-                real_roomp(ch->in_room)->tele_time = tele_time;
-                real_roomp(ch->in_room)->tele_targ = tele_room;
-                real_roomp(ch->in_room)->tele_mask = tele_mask;
-                real_roomp(ch->in_room)->tele_cnt = tele_cnt;
+                rp->tele_time = tele_time;
+                rp->tele_targ = tele_room;
+                rp->tele_mask = tele_mask;
+                rp->tele_cnt = tele_cnt;
             }
         } else {
-            real_roomp(ch->in_room)->tele_time = tele_time;
-            real_roomp(ch->in_room)->tele_targ = tele_room;
-            real_roomp(ch->in_room)->tele_mask = tele_mask;
-            real_roomp(ch->in_room)->tele_cnt = 0;
+            rp->tele_time = tele_time;
+            rp->tele_targ = tele_room;
+            rp->tele_mask = tele_mask;
+            rp->tele_cnt = 0;
         }
         return;
         break;
     case 9:
+        rp = roomFindNum(ch->in_room);
         if (!string || (moblim = atoi(string)) < 1) {
             send_to_char("edit tunn <mob_limit>\n\r", ch);
         } else {
-            real_roomp(ch->in_room)->moblim = moblim;
-            if (!IS_SET(real_roomp(ch->in_room)->room_flags, TUNNEL))
-                SET_BIT(real_roomp(ch->in_room)->room_flags, TUNNEL);
+            rp->moblim = moblim;
+            if (!IS_SET(rp->room_flags, TUNNEL)) {
+                SET_BIT(rp->room_flags, TUNNEL);
+            }
         }
         return;
         break;

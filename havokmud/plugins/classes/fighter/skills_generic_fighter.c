@@ -771,7 +771,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
         return;
     }
 #else
-        if (real_roomp(exitp->to_room)->sector_type == SECT_AIR &&
+        if (roomFindNum(exitp->to_room)->sector_type == SECT_AIR &&
             !IS_AFFECTED(ch, AFF_FLYING)) {
             send_to_char("You have no way of getting there!\n\r", ch);
             return;
@@ -1036,7 +1036,7 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    for (tmp_ch = real_roomp(ch->in_room)->people;
+    for (tmp_ch = roomFindNum(ch->in_room)->people;
          tmp_ch && tmp_ch->specials.fighting != victim;
          tmp_ch = tmp_ch->next_in_room){
         /*

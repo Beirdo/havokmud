@@ -638,7 +638,7 @@ struct obj_data *objectGetInCharOrRoom(struct char_data *ch, char *name)
     /*
      * scan room 
      */
-    obj = objectGetInRoom(ch, name, real_roomp(ch->in_room));
+    obj = objectGetInRoom(ch, name, roomFindNum(ch->in_room));
     return(obj);
 }
 
@@ -763,7 +763,7 @@ void objectPutInObjectLocked(struct obj_data *obj, struct obj_data *obj_to)
     }
 
     if (obj_to->in_room != NOWHERE &&
-        !IS_SET(real_roomp(obj_to->in_room)->room_flags, DEATH)) {
+        !IS_SET(roomFindNum(obj_to->in_room)->room_flags, DEATH)) {
 
         save_room(obj_to->in_room);
     }
@@ -834,7 +834,7 @@ void objectTakeFromObject(struct obj_data *obj, Locked_t locked)
     }
 
     if (obj_from->in_room != NOWHERE &&
-        !IS_SET(real_roomp(obj_from->in_room)->room_flags, DEATH)) {
+        !IS_SET(roomFindNum(obj_from->in_room)->room_flags, DEATH)) {
 
         save_room(obj_from->in_room);
     }
@@ -935,6 +935,7 @@ void objectTakeFromChar(struct obj_data *object)
  */
 void objectPutInRoom(struct obj_data *object, long room)
 {
+    struct room_data   *rm;
 
     if (room == -1) {
         room = 4;
@@ -945,16 +946,22 @@ void objectPutInRoom(struct obj_data *object, long room)
         return;
     }
 
+    rm = roomFindNum(room);
+    if( !rm ) {
+        return;
+    }
+
     if (object->in_room > NOWHERE) {
         objectTakeFromRoom(object);
     }
 
-    object->next_content = real_roomp(room)->contents;
-    real_roomp(room)->contents = object;
+    object->next_content = rm->contents;
+    rm->contents = object;
+
     object->in_room = room;
     object->carried_by = NULL;
     object->equipped_by = NULL;
-    if (!IS_SET(real_roomp(room)->room_flags, DEATH)) {
+    if (!IS_SET(rm->room_flags, DEATH)) {
         save_room(room);
     }
 }
@@ -964,7 +971,8 @@ void objectPutInRoom(struct obj_data *object, long room)
  */
 void objectTakeFromRoom(struct obj_data *object)
 {
-    struct obj_data *i;
+    struct obj_data    *i;
+    struct room_data   *rm;
 
     /*
      * remove object from room 
@@ -978,16 +986,21 @@ void objectTakeFromRoom(struct obj_data *object)
         return;
     }
 
-    if (object == real_roomp(object->in_room)->contents) {
+    rm = roomFindNum(object->in_room);
+    if( !rm ) {
+        return;
+    }
+
+    if (object == rm->contents) {
         /* 
          * head of list 
          */
-        real_roomp(object->in_room)->contents = object->next_content;
+        rm->contents = object->next_content;
     } else {
         /* 
          * locate previous element in list 
          */
-        for (i = real_roomp(object->in_room)->contents; i &&
+        for (i = rm->contents; i &&
              (i->next_content != object); i = i->next_content) {
             /* 
              * Empty loop 
@@ -1002,7 +1015,7 @@ void objectTakeFromRoom(struct obj_data *object)
         }
     }
 
-    if (!IS_SET(real_roomp(object->in_room)->room_flags, DEATH)) {
+    if (!IS_SET(rm->room_flags, DEATH)) {
         save_room(object->in_room);
     }
     object->in_room = NOWHERE;
@@ -1346,7 +1359,7 @@ void save_room(int room)
     struct room_data   *rm;
     int                 itemNum;
 
-    rm = real_roomp(room);
+    rm = roomFindNum(room);
     if( !rm ) {
         return;
     }

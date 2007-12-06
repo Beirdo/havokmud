@@ -495,7 +495,7 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
     } else {
         location = 3001;
     }
-    if (!real_roomp(location)) {
+    if (!roomFindNum(location)) {
         send_to_char("You are completely lost.\n\r", victim);
         location = 0;
         return;
@@ -1112,7 +1112,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_ROOM)) {
-            if ((obj = objectGetInRoom(ch, buf2, real_roomp(ch->in_room)))) {
+            if ((obj = objectGetInRoom(ch, buf2, roomFindNum(ch->in_room)))) {
                 target_ok = TRUE;
                 target = TAR_OBJ_ROOM;
             }
@@ -2829,7 +2829,7 @@ void do_arena(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_STRING_LENGTH];
 
-    if (real_roomp(ch->in_room)->zone == ARENA_ZONE) {
+    if (roomFindNum(ch->in_room)->zone == ARENA_ZONE) {
         send_to_char("You're already in the Arena.\n\r", ch);
         return;
     }
@@ -3015,7 +3015,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * Find Corpse
      */
-    if (!(j = objectGetInRoom(ch, itemname, real_roomp(ch->in_room)))) {
+    if (!(j = objectGetInRoom(ch, itemname, roomFindNum(ch->in_room)))) {
         send_to_char("Where did that bloody corpse go?\n\r", ch);
         return;
     } 

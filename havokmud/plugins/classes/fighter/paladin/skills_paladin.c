@@ -123,7 +123,7 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
     level = GET_LEVEL(ch, PALADIN_LEVEL_IND);
     rating = (int) ((level) * (GET_ALIGNMENT(ch)) / 1000) + factor;
     factor = 0;
-    for (test = real_roomp(ch->in_room)->people; test; test = test->next) {
+    for (test = roomFindNum(ch->in_room)->people; test; test = test->next) {
         if (test != ch) {
             if (ch->master) {
                 if (circle_follow(ch->master, test)) {
@@ -477,7 +477,7 @@ void do_heroic_rescue(struct char_data *ch, char *arguement, int command)
         return;
     }
 
-    for (dude = real_roomp(ch->in_room)->people;
+    for (dude = roomFindNum(ch->in_room)->people;
          dude && !(dude->specials.fighting); dude = dude->next_in_room) {
         /*
          * Empty loop
@@ -497,7 +497,7 @@ void do_heroic_rescue(struct char_data *ch, char *arguement, int command)
         return;
     }
 
-    for (dude = real_roomp(ch->in_room)->people; dude;
+    for (dude = roomFindNum(ch->in_room)->people; dude;
          dude = dude->next_in_room) {
         if (dude->specials.fighting && dude->specials.fighting != ch &&
             ch->specials.fighting != dude && dude != ch &&
@@ -667,8 +667,8 @@ void cast_holy_strength(int level, struct char_data *ch, char *arg,
         spell_holy_strength(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
-             tar_ch; tar_ch = tar_ch->next_in_room) {
+        for (tar_ch = roomFindNum(ch->in_room)->people; tar_ch; 
+             tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_holy_strength(level, ch, tar_ch, 0);
             }
@@ -695,7 +695,7 @@ void spell_holyword(int level, struct char_data *ch,
         t_align = 300;
     }
 
-    for (t = real_roomp(ch->in_room)->people; t; t = next) {
+    for (t = roomFindNum(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
 
         if (!IS_IMMORTAL(t)) {
@@ -865,8 +865,8 @@ void cast_pacifism(int level, struct char_data *ch, char *arg,
         spell_pacifism(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
-             tar_ch; tar_ch = tar_ch->next_in_room) {
+        for (tar_ch = roomFindNum(ch->in_room)->people; tar_ch; 
+             tar_ch = tar_ch->next_in_room) {
             if (in_group(ch, tar_ch)) {
                 spell_pacifism(level, ch, tar_ch, 0);
             }
@@ -901,7 +901,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
                      "you a mount just yet.\n\r", ch);
         return;
     }
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("Call a mount indoors? Where's your manners!\n\r", ch);
         return;
     }

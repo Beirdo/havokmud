@@ -257,7 +257,7 @@ void cast_mana(int level, struct char_data *ch, char *arg, int type,
         spell_mana(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room)
             if (tar_ch != ch) {
                 spell_mana(level, ch, tar_ch, 0);
@@ -284,7 +284,7 @@ void spell_geyser(int level, struct char_data *ch,
     act("The Geyser erupts in a huge column of steam!\n\r",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people;
+    for (tmp_victim = roomFindNum(ch->in_room)->people;
          tmp_victim; tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if ((ch != tmp_victim) && (ch->in_room == tmp_victim->in_room)) {

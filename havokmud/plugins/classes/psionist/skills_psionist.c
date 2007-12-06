@@ -445,7 +445,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
     }
 
     location = target->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (A_NOTRAVEL(ch)) {
         send_to_char("The arena rules do not permit you to use travelling "
                      "spells!\n\r", ch);
@@ -1067,7 +1067,7 @@ void mind_burn(int level, struct char_data *ch,
     act("$n sends a gout of flame shooting from $s mind!\n\r",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         rdam = dam;
@@ -1284,7 +1284,7 @@ void mind_probability_travel(int level, struct char_data *ch,
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     for (tmp = rp->people; tmp; tmp = tmp2) {
         tmp2 = tmp->next_in_room;
@@ -1411,7 +1411,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
     }
 
     location = target->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (GetMaxLevel(target) > MAX_MORT || !rp ||
         IS_SET(rp->room_flags, PRIVATE | NO_SUM | NO_MAGIC)) {
         send_to_char("You cannot penetrate the auras surrounding that "
@@ -1630,7 +1630,7 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     }
 
     location = target->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (!rp || IS_SET(rp->room_flags, PRIVATE | NO_SUM | NO_MAGIC)) {
         send_to_char("Your mind cannot seem to locate this individual.\n\r",
                      ch);
@@ -1648,7 +1648,7 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     }
 
     location = target->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (!rp || rp->sector_type == SECT_AIR ||
         rp->sector_type == SECT_WATER_SWIM) {
         send_to_char("You cannot seem to focus on the target.\n\r", ch);
@@ -1656,14 +1656,14 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     }
 
     location = ch->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (!rp || IS_SET(rp->room_flags, PRIVATE | NO_SUM | NO_MAGIC)) {
         send_to_char("Arcane magics prevent you from summoning here.\n\r", ch);
         return;
     }
 
     location = ch->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
     if (!rp || rp->sector_type == SECT_AIR || 
         rp->sector_type == SECT_WATER_SWIM) {
         send_to_char("You cannot seem to focus correctly here.\n\r", ch);
@@ -2210,7 +2210,7 @@ void mind_teleport(int level, struct char_data *ch,
 
     do {
         to_room = number(0, top_of_world);
-        room = real_roomp(to_room);
+        room = roomFindNum(to_room);
         if (room && (IS_SET(room->room_flags, PRIVATE) ||
                      IS_SET(room->room_flags, TUNNEL) ||
                      IS_SET(room->room_flags, NO_SUM) ||
@@ -2234,7 +2234,7 @@ void mind_teleport(int level, struct char_data *ch,
 
     do_look(ch, NULL, 0);
 
-    if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
+    if (IS_SET(roomFindNum(to_room)->room_flags, DEATH) &&
         !IS_IMMORTAL(ch)) {
         NailThisSucker(ch);
         return;
@@ -2401,7 +2401,7 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
 
     old_location = ch->in_room;
     location = target->in_room;
-    rp = real_roomp(location);
+    rp = roomFindNum(location);
 
     if (IS_IMMORTAL(target) || !rp ||
         IS_SET(rp->room_flags, PRIVATE | NO_MAGIC)) {
@@ -2482,8 +2482,8 @@ void mind_sense_object(int level, struct char_data *ch,
         if (i->carried_by) {
             target = i->carried_by;
             if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                 real_roomp(ch->in_room)->zone ==
-                 real_roomp(target->in_room)->zone) || 
+                 roomFindNum(ch->in_room)->zone ==
+                 roomFindNum(target->in_room)->zone) || 
                 (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
                 !IS_IMMORTAL(target) && 
                 !(IS_SET(target->specials.act_class, ACT_PSI) && 
@@ -2496,22 +2496,22 @@ void mind_sense_object(int level, struct char_data *ch,
                 !(IS_SET(target->specials.act_class, ACT_PSI) && 
                   GetMaxLevel(target) > GetMaxLevel(ch)) && 
                 ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                 real_roomp(ch->in_room)->zone ==
-                 real_roomp(target->in_room)->zone) ||
+                 roomFindNum(ch->in_room)->zone ==
+                 roomFindNum(target->in_room)->zone) ||
                  (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
                 room = target->in_room;
             }
         } else if (i->in_obj) {
             if ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
-                 real_roomp(ch->in_room)->zone ==
-                 real_roomp(i->in_obj->in_room)->zone) ||
+                 roomFindNum(ch->in_room)->zone ==
+                 roomFindNum(i->in_obj->in_room)->zone) ||
                 (!IS_SET(SystemFlags, SYS_ZONELOCATE))) {
                 room = (i->in_obj->in_room);
             }
         } else if (i->in_room && 
                    ((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
-                    real_roomp(ch->in_room)->zone ==
-                    real_roomp(target->in_room)->zone) || 
+                    roomFindNum(ch->in_room)->zone ==
+                    roomFindNum(target->in_room)->zone) || 
                     (!IS_SET(SystemFlags, SYS_ZONELOCATE)))) {
             room = (i->in_room);
         }
@@ -2526,7 +2526,7 @@ void mind_sense_object(int level, struct char_data *ch,
     /* 
      * a valid room check
      */
-    if (real_roomp(room)) {
+    if (roomFindNum(room)) {
         send_to_char("You close your eyes and envision your target.\n\r", ch);
         old_location = ch->in_room;
         char_from_room(ch);
@@ -2753,7 +2753,7 @@ void mind_ultra_blast(int level, struct char_data *ch,
     act("$n blasts out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim; 
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim; 
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         rdam = dam;

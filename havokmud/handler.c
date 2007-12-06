@@ -1112,10 +1112,10 @@ void char_from_room(struct char_data *ch)
         /* 
          * Light is ON 
          */
-        real_roomp(ch->in_room)->light--;
+        roomFindNum(ch->in_room)->light--;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (rp == NULL) {
         Log("ERROR: char_from_room: %s was not in a valid room (%ld)",
             (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
@@ -1159,10 +1159,10 @@ void char_to_room(struct char_data *ch, long room)
     struct room_data *rp;
     extern int      pulse;
 
-    rp = real_roomp(room);
+    rp = roomFindNum(room);
     if (!rp) {
         room = 0;
-        rp = real_roomp(room);
+        rp = roomFindNum(room);
         if (!rp) {
             assert(0);
         }
@@ -1440,7 +1440,7 @@ struct char_data *get_char_room(char *name, int room)
     char           *tmp;
     struct room_data *rp;
 
-    if( !name || !(rp = real_roomp(room)) ) {
+    if( !name || !(rp = roomFindNum(room)) ) {
         return( NULL );
     }
 
@@ -1837,7 +1837,7 @@ struct char_data *get_char_room_vis(struct char_data *ch, char *name)
     if (!(number = get_number(&tmp))) {
         return (0);
     }
-    for (i = real_roomp(ch->in_room)->people, j = 1;
+    for (i = roomFindNum(ch->in_room)->people, j = 1;
          i && (j <= number); i = i->next_in_room) {
         if (isname(tmp, GET_NAME(i)) && CAN_SEE(ch, i)) {
             if (j == number) {
@@ -1847,7 +1847,7 @@ struct char_data *get_char_room_vis(struct char_data *ch, char *name)
         }
     }
 
-    for (i = real_roomp(ch->in_room)->people, j = 1;
+    for (i = roomFindNum(ch->in_room)->people, j = 1;
          i && (j <= number); i = i->next_in_room) {
         if (isname2(tmp, GET_NAME(i)) && CAN_SEE(ch, i)) {
             if (j == number) {
@@ -2037,7 +2037,7 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     }
 
     if (IS_SET(bitvector, FIND_OBJ_ROOM) &&
-        (*tar_obj = objectGetInRoom(ch, name, real_roomp(ch->in_room)))) {
+        (*tar_obj = objectGetInRoom(ch, name, roomFindNum(ch->in_room)))) {
         return (FIND_OBJ_ROOM);
     }
 

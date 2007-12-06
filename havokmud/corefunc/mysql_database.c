@@ -2617,10 +2617,10 @@ void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
             break;
         case PROC_OBJECT:
             index = objectIndex(vnum);
-            rnum = ( rp ? 1 : -1 );
+            rnum = ( index ? 1 : -1 );
             break;
         case PROC_ROOM:
-            rp = real_roomp(vnum);
+            rp = roomFindNum(vnum);
             rnum = ( rp ? 1 : -1 );
             break;
         default:

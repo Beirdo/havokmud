@@ -210,7 +210,7 @@ void spell_burning_hands(int level, struct char_data *ch,
     act("$n sends a fan of flame shooting from the fingertips!\n\r",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
 		rdam = dam;
         temp = tmp_victim->next_in_room;
@@ -515,7 +515,7 @@ void cast_calm(int level, struct char_data *ch, char *arg, int type,
         spell_calm(level, ch, ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             spell_calm(level, ch, tar_ch, 0);
         }
@@ -539,7 +539,7 @@ void spell_chain_lightn(int level, struct char_data *ch,
     lev--;
     count++;
 
-    for (t = real_roomp(ch->in_room)->people; t; t = next) {
+    for (t = roomFindNum(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
         if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
             if (count > 8) {
@@ -694,7 +694,7 @@ void cast_charm_monster(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_WAND:
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_charm_monster(level, ch, tar_ch, 0);
@@ -815,7 +815,7 @@ void cast_charm_person(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_WAND:
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_charm_person(level, ch, tar_ch, 0);
@@ -954,7 +954,7 @@ void spell_cone_of_cold(int level, struct char_data *ch,
     act("$n sends a cone of ice shooting from the fingertips!",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         rdam = dam;
         temp = tmp_victim->next_in_room;
@@ -1322,7 +1322,7 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
         }
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_curse(level, ch, tar_ch, 0);
@@ -1363,7 +1363,7 @@ void spell_disintegrate(int level, struct char_data *ch,
             /*
              * get rid of player-player scrappage
              */
-            if (!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
+            if (!IS_SET(roomFindNum(victim->in_room)->room_flags, ARENA_ROOM)) {
                 /*
                  * frag their EQ
                  */
@@ -1504,7 +1504,7 @@ void cast_faerie_fire(int level, struct char_data *ch, char *arg,
         spell_faerie_fire(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_faerie_fire(level, ch, tar_ch, 0);
@@ -1530,7 +1530,7 @@ void spell_faerie_fog(int level, struct char_data *ch,
     act("You snap your fingers, and a cloud of purple smoke billows forth",
         TRUE, ch, 0, 0, TO_CHAR);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = tmp_victim->next_in_room) {
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (IS_IMMORTAL(tmp_victim)) {
@@ -1801,8 +1801,8 @@ void spell_fireball(int level, struct char_data *ch,
                 heat_blind(tmp_victim);
             }
         } else if (tmp_victim->in_room != NOWHERE &&
-                   real_roomp(ch->in_room)->zone ==
-                   real_roomp(tmp_victim->in_room)->zone) {
+                   roomFindNum(ch->in_room)->zone ==
+                   roomFindNum(tmp_victim->in_room)->zone) {
             send_to_char("You feel a blast of hot air.\n\r", tmp_victim);
         }
     }
@@ -1896,7 +1896,7 @@ void cast_fireshield(int level, struct char_data *ch, char *arg, int type,
         spell_fireshield(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_fireshield(level, ch, tar_ch, 0);
@@ -1917,7 +1917,7 @@ void spell_fly_group(int level, struct char_data *ch,
 
     assert(ch);
 
-    if (real_roomp(ch->in_room) == NULL) {
+    if (roomFindNum(ch->in_room) == NULL) {
         return;
     }
 
@@ -1925,7 +1925,7 @@ void spell_fly_group(int level, struct char_data *ch,
         REMOVE_BIT(ch->specials.act, PLR_NOFLY);
     }
 
-    for (tch = real_roomp(ch->in_room)->people; tch; tch = tch->next_in_room) {
+    for (tch = roomFindNum(ch->in_room)->people; tch; tch = tch->next_in_room) {
         if (in_group(ch, tch)) {
             act("You feel lighter than air!", TRUE, ch, 0, tch, TO_VICT);
             if (tch != ch) {
@@ -1979,7 +1979,7 @@ void spell_gust_of_wind(int level, struct char_data *ch,
                  ch);
     act("$n sends a gust of wind towards you!", FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
@@ -2103,7 +2103,7 @@ void cast_haste(int level, struct char_data *ch, char *arg,
         spell_haste(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_haste(level, ch, tar_ch, 0);
@@ -2132,7 +2132,7 @@ void spell_ice_storm(int level, struct char_data *ch,
     send_to_char("You conjure a storm of ice\n\r", ch);
     act("$n conjures an ice storm!", FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         rdam = dam;
         temp = tmp_victim->next_in_room;
@@ -2621,7 +2621,7 @@ void cast_infravision(int level, struct char_data *ch, char *arg,
         spell_infravision(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch && !IS_AFFECTED(tar_ch, AFF_INFRAVISION)) {
                 spell_infravision(level, ch, tar_ch, 0);
@@ -2718,7 +2718,7 @@ void cast_invisibility(int level, struct char_data *ch, char *arg,
         }
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch && !IS_AFFECTED(tar_ch, AFF_INVISIBLE)) {
                 spell_invisibility(level, ch, tar_ch, 0);
@@ -3137,7 +3137,7 @@ void cast_major_track(int level, struct char_data *ch, char *arg,
         spell_major_track(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) { 
             if (tar_ch != ch) {
                 spell_major_track(level, ch, tar_ch, 0);
@@ -3309,7 +3309,7 @@ void cast_minor_track(int level, struct char_data *ch, char *arg,
         spell_minor_track(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_minor_track(level, ch, tar_ch, 0);
@@ -3335,7 +3335,7 @@ void spell_Create_Monster(int level, struct char_data *ch,
      * really simple to start out with
      */
 
-    if ((rp = real_roomp(ch->in_room)) == NULL) {
+    if ((rp = roomFindNum(ch->in_room)) == NULL) {
         return;
     }
     if (IS_SET(rp->room_flags, TUNNEL)) {
@@ -3725,7 +3725,7 @@ void cast_paralyze(int level, struct char_data *ch, char *arg, int type,
         spell_paralyze(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_paralyze(level, ch, tar_ch, 0);
@@ -3983,7 +3983,7 @@ void spell_portal(int level, struct char_data *ch,
     /*
      * check target room for legality.
      */
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     tmp_obj = objectRead(PORTAL);
     if (!rp || !tmp_obj) {
         send_to_char("The magic fails\n\r", ch);
@@ -4006,14 +4006,14 @@ void spell_portal(int level, struct char_data *ch,
         return;
     }
 
-    if (!(nrp = real_roomp(tmp_ch->in_room))) {
+    if (!(nrp = roomFindNum(tmp_ch->in_room))) {
         sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
         Log(str);
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }
 
-    if (IS_SET(real_roomp(tmp_ch->in_room)->room_flags, NO_SUM)) {
+    if (IS_SET(roomFindNum(tmp_ch->in_room)->room_flags, NO_SUM)) {
         send_to_char("Ancient Magiks bar your path.\n\r", ch);
         return;
     }
@@ -4167,7 +4167,7 @@ void spell_prismatic_spray(int level, struct char_data *ch,
     act("$n sends a rainbow of prismatic spray from $s hands!", FALSE, ch,
         0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people;
+    for (tmp_victim = roomFindNum(ch->in_room)->people;
          tmp_victim; tmp_victim = tmp_victim->next_in_room) {
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
@@ -4367,7 +4367,7 @@ void cast_second_wind(int level, struct char_data *ch, char *arg,
     case SPELL_TYPE_WAND:
 
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_second_wind(level, ch, tar_ch, 0);
@@ -4514,7 +4514,7 @@ void cast_shield(int level, struct char_data *ch, char *arg, int type,
         spell_shield(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_shield(level, ch, tar_ch, 0);
@@ -4614,7 +4614,7 @@ void cast_silence(int level, struct char_data *ch, char *arg,
         spell_silence(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch) && !IS_IMMORTAL(tar_ch)) {
                 spell_silence(level, ch, tar_ch, 0);
@@ -4702,7 +4702,7 @@ void cast_sleep(int level, struct char_data *ch, char *arg, int type,
         spell_sleep(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_sleep(level, ch, tar_ch, 0);
@@ -4782,7 +4782,7 @@ void cast_slow(int level, struct char_data *ch, char *arg,
         spell_slow(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_slow(level, ch, tar_ch, 0);
@@ -4854,7 +4854,7 @@ void cast_strength(int level, struct char_data *ch, char *arg, int type,
         spell_strength(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_strength(level, ch, tar_ch, 0);
@@ -4908,7 +4908,7 @@ void spell_summon(int level, struct char_data *ch,
         return;
     }
 
-    if ((rp = real_roomp(ch->in_room)) == NULL) {
+    if ((rp = roomFindNum(ch->in_room)) == NULL) {
         return;
     }
     if (A_NOTRAVEL(ch)) {
@@ -4945,7 +4945,7 @@ void spell_summon(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_SET(real_roomp(victim->in_room)->room_flags, NO_SUM)) {
+    if (IS_SET(roomFindNum(victim->in_room)->room_flags, NO_SUM)) {
         send_to_char("Ancient Magiks bar your path.\n\r", ch);
         return;
     }
@@ -4979,7 +4979,7 @@ void spell_summon(int level, struct char_data *ch,
 
     if (!IS_PC(victim)) {
         count = 0;
-        for (tmp = real_roomp(victim->in_room)->people;
+        for (tmp = roomFindNum(victim->in_room)->people;
              tmp; tmp = tmp->next_in_room) {
             count++;
         }
@@ -4990,7 +4990,7 @@ void spell_summon(int level, struct char_data *ch,
         } else {
             count = number(0, count);
 
-            for (tmp = real_roomp(victim->in_room)->people;
+            for (tmp = roomFindNum(victim->in_room)->people;
                  count && tmp; tmp = tmp->next_in_room, count--) {
                 /*
                  * Empty loop
@@ -5062,7 +5062,7 @@ void spell_teleport(int level, struct char_data *ch,
 
     do {
         to_room = number(0, top_of_world);
-        room = real_roomp(to_room);
+        room = roomFindNum(to_room);
         if (room && ((IS_SET(room->room_flags, PRIVATE)) ||
                      (IS_SET(room->room_flags, TUNNEL)) ||
                      (IS_SET(room->room_flags, NO_SUM)) ||
@@ -5085,7 +5085,7 @@ void spell_teleport(int level, struct char_data *ch,
 
     do_look(ch, NULL, 0);
 
-    if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
+    if (IS_SET(roomFindNum(to_room)->room_flags, DEATH) &&
         !IS_IMMORTAL(ch)) {
         NailThisSucker(ch);
         return;
@@ -5114,7 +5114,7 @@ void cast_teleport(int level, struct char_data *ch, char *arg, int type,
         break;
 
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room)
             if (tar_ch != ch) {
                 spell_teleport(level, ch, tar_ch, 0);
@@ -5159,7 +5159,7 @@ void cast_ventriloquate(int level, struct char_data *ch, char *arg,
 
     sprintf(buf3, "Someone says, '%s'\n\r", arg);
 
-    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch;
+    for (tmp_ch = roomFindNum(ch->in_room)->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) { 
         if ((tmp_ch != ch) && (tmp_ch != tar_ch)) {
             if (saves_spell(tmp_ch, SAVING_SPELL)) {
@@ -5247,7 +5247,7 @@ void spell_web(int level, struct char_data *ch,
     if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
         big = TRUE;
     }
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         if (IsSmall(victim) && !fail && !number(0, 3)) {
             pissed = TRUE;
             /*
@@ -5400,7 +5400,7 @@ void cast_web(int level, struct char_data *ch, char *arg, int type,
         spell_web(level, ch, ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(ch, tar_ch)) {
                 spell_web(level, ch, tar_ch, 0);

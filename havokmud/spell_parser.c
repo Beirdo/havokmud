@@ -1886,7 +1886,8 @@ int GetMoveRegen(struct char_data *i)
     /*
      * Movement
      */
-    if (ValidRoom(i) && IS_SET(real_roomp(i->in_room)->room_flags, MOVE_ROOM)) {
+    if (ValidRoom(i) && 
+        IS_SET(roomFindNum(i->in_room)->room_flags, MOVE_ROOM)) {
         send_to_char("Your feel your stamina decrease.\n\r", i);
         damagex = number(15, 30);
     }
@@ -1923,7 +1924,7 @@ int GetHitRegen(struct char_data *i)
     /*
      * Damage sector regen!!!!
      */
-    damagex = RoomElementalDamage(real_roomp(i->in_room)->room_flags, i);
+    damagex = RoomElementalDamage(roomFindNum(i->in_room)->room_flags, i);
     if (damagex != 0) {
         sprintf(buf, "%s screams in pain!\n\r", GET_NAME(i));
         send_to_room_except(buf, i->in_room, i);
@@ -1942,7 +1943,7 @@ int ValidRoom(struct char_data *ch)
 {
     struct room_data *rp;
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
 #if 0        
         Log("/* no room? BLAH!!! least it never crashed */");
@@ -1957,7 +1958,8 @@ int GetManaRegen(struct char_data *i)
     int             damagex = 0,
                     darkpact = 0;
 
-    if (ValidRoom(i) && IS_SET(real_roomp(i->in_room)->room_flags, MANA_ROOM)) {
+    if (ValidRoom(i) && IS_SET(roomFindNum(i->in_room)->room_flags, 
+                               MANA_ROOM)) {
         send_to_char("You feel your aura being drained by some unknown "
                      "force!\n\r", i);
         damagex = number(15, 30);
@@ -2077,7 +2079,7 @@ void affect_update(int pulse)
                 regenroom = 0;
 
                 if (ValidRoom(i) && 
-                    IS_SET(real_roomp(i->in_room)->room_flags, REGEN_ROOM)) {
+                    IS_SET(roomFindNum(i->in_room)->room_flags, REGEN_ROOM)) {
                     regenroom = 10;
                     if (GET_POS(i) > POSITION_SITTING) {
                         /* 
@@ -2148,7 +2150,7 @@ void affect_update(int pulse)
                     check_idling(i);
                 }
 
-                rp = real_roomp(i->in_room);
+                rp = roomFindNum(i->in_room);
                 if (rp) {
                     if (rp->sector_type == SECT_WATER_SWIM ||
                         rp->sector_type == SECT_WATER_NOSWIM) {
@@ -2249,11 +2251,11 @@ void affect_update(int pulse)
                     act("$p biodegrades in your hands. Everything in it falls "
                         "to the floor", FALSE, j->carried_by, j, 0, TO_CHAR);
                 } else if (j->in_room != NOWHERE && 
-                           real_roomp(j->in_room)->people) {
+                           roomFindNum(j->in_room)->people) {
                     act("$p dissolves into a fertile soil.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+                        roomFindNum(j->in_room)->people, j, 0, TO_ROOM);
                     act("$p dissolves into a fertile soil.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+                        roomFindNum(j->in_room)->people, j, 0, TO_CHAR);
                 }
                 ObjFromCorpse(j);
             }
@@ -2277,11 +2279,11 @@ void affect_update(int pulse)
                     act("$p crumbles to dust.", FALSE, j->carried_by, j, 0,
                         TO_CHAR);
                 } else if (j->in_room != NOWHERE && 
-                           real_roomp(j->in_room)->people) {
+                           roomFindNum(j->in_room)->people) {
                     act("$p crumbles to dust.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+                        roomFindNum(j->in_room)->people, j, 0, TO_ROOM);
                     act("$p crumbles to dust.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+                        roomFindNum(j->in_room)->people, j, 0, TO_CHAR);
                 }
                 objectExtract(j);
             }
@@ -2305,11 +2307,11 @@ void affect_update(int pulse)
                     act("$p dissolves into nothingness.", FALSE,
                         j->carried_by, j, 0, TO_CHAR);
                 } else if ((j->in_room != NOWHERE)
-                           && (real_roomp(j->in_room)->people)) {
+                           && (roomFindNum(j->in_room)->people)) {
                     act("$p dissolves into nothingness.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+                        roomFindNum(j->in_room)->people, j, 0, TO_ROOM);
                     act("$p dissolves into nothingness.", TRUE,
-                        real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+                        roomFindNum(j->in_room)->people, j, 0, TO_CHAR);
                 }
                 objectExtract(j);
             }
@@ -2665,7 +2667,7 @@ void say_spell(struct char_data *ch, int si)
     sprintf(buf2, "$n utters the words, '%s'", buf);
     sprintf(buf, "$n utters the words, '%s'", spells[si - 1]);
 
-    for (temp_char = real_roomp(ch->in_room)->people;
+    for (temp_char = roomFindNum(ch->in_room)->people;
          temp_char; temp_char = temp_char->next_in_room) {
         if (temp_char != ch) {
             if (GET_RACE(ch) == GET_RACE(temp_char)) {
@@ -2708,7 +2710,7 @@ void weave_song(struct char_data *ch, int si)
     sprintf(buf2, "$n utters the words, '%s'", buf);
     sprintf(buf, "$n magically weaves the song of %s.", spells[si - 1]);
 
-    for (temp_char = real_roomp(ch->in_room)->people; temp_char;
+    for (temp_char = roomFindNum(ch->in_room)->people; temp_char;
          temp_char = temp_char->next_in_room) {
         if (temp_char != ch) {
             if (GET_RACE(ch) == GET_RACE(temp_char)) {
@@ -3034,7 +3036,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     if (!target_ok && 
                         IS_SET(spell_info[index].targets, TAR_OBJ_ROOM) &&
                         (tar_obj = objectGetInRoom(ch, name,
-                                                   real_roomp(ch->in_room)))) {
+                                                   roomFindNum(ch->in_room)))) {
                         target_ok = TRUE;
                     }
 
@@ -3534,7 +3536,7 @@ int check_falling(struct char_data *ch)
     if (IS_AFFECTED(ch, AFF_FLYING)) {
         return (FALSE);
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return (FALSE);
     }
@@ -3559,7 +3561,7 @@ int check_falling(struct char_data *ch)
          * check for an exit down. if there is one, go through it. 
          */
         if (rp->dir_option[DOWN] && rp->dir_option[DOWN]->to_room > -1) {
-            targ = real_roomp(rp->dir_option[DOWN]->to_room);
+            targ = roomFindNum(rp->dir_option[DOWN]->to_room);
         } else {
             /*
              * pretend that this is the smash room. 
@@ -3715,7 +3717,7 @@ void check_drowning(struct char_data *ch)
     if (IS_AFFECTED(ch, AFF_WATERBREATH)) {
         return;
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return;
@@ -3749,7 +3751,7 @@ void check_falling_obj(struct obj_data *obj, int room)
         return;
     }
 
-    rp = real_roomp(room);
+    rp = roomFindNum(room);
     if (!rp || rp->sector_type != SECT_AIR) {
         return;
     }
@@ -3758,7 +3760,7 @@ void check_falling_obj(struct obj_data *obj, int room)
 
     while (!done && count < 100) {
         if (rp->dir_option[DOWN] && rp->dir_option[DOWN]->to_room > -1) {
-            targ = real_roomp(rp->dir_option[DOWN]->to_room);
+            targ = roomFindNum(rp->dir_option[DOWN]->to_room);
         } else if (count > 1) {
             if (rp->people) {
                 /*

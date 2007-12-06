@@ -133,7 +133,7 @@ void cleanout_room(struct room_data *rp)
     rp->ex_description = NULL;
 }
 
-struct room_data *real_roomp(int virtual)
+struct room_data *roomFindNum(int virtual)
 {
     struct room_data       *room;
     BalancedBTreeItem_t    *item;

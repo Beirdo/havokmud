@@ -42,7 +42,7 @@ void do_feign_death(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return;
     }
@@ -172,7 +172,7 @@ void do_flowerfist(struct char_data *ch, char *argument, int cmd)
             act("You chant loudly, while sending hits throughout the area.",
                 TRUE, ch, 0, 0, TO_CHAR);
 
-            for (tch = real_roomp(ch->in_room)->people; tch;
+            for (tch = roomFindNum(ch->in_room)->people; tch;
                  tch = tempchar) {
                 tempchar = tch->next_in_room;
                 if (!in_group(tch, ch) && !IS_IMMORTAL(tch)) {

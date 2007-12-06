@@ -118,7 +118,7 @@ void cast_animate_dead(int level, struct char_data *ch, char *arg,
         ch->points.hit = 0;
         break;
     case SPELL_TYPE_STAFF:
-        for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+        for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
             if (IS_CORPSE(i)) {
                 spell_animate_dead(level, ch, 0, i);
             }
@@ -143,7 +143,7 @@ void spell_bind_affinity(int level, struct char_data *ch,
         send_to_char("You cannot set the void as your binding place.\n\r", ch);
         return;
     }
-    rp = real_roomp(roomnr);
+    rp = roomFindNum(roomnr);
     if (!rp) {
         Log("some player got lost in a non existent room");
         return;
@@ -196,7 +196,7 @@ void spell_binding(int level, struct char_data *ch,
         location = 3001;
     }
 
-    if (!real_roomp(location)) {
+    if (!roomFindNum(location)) {
         send_to_char("You are completely lost.\n\r", ch);
         location = 0;
         return;
@@ -259,7 +259,7 @@ void spell_cavorting_bones(int level, struct char_data *ch,
                     mhps,
                     mtohit;
 
-    if ((rp = real_roomp(ch->in_room)) == NULL) {
+    if ((rp = roomFindNum(ch->in_room)) == NULL) {
         return;
     }
     if (!ch) {
@@ -511,7 +511,7 @@ void spell_clinging_darkness(int level, struct char_data *ch,
     }
 
     if (IS_PC(victim) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
     }
@@ -753,7 +753,7 @@ void spell_darktravel(int level, struct char_data *ch,
     /*
      * check target room for legality.
      */
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         send_to_char("The magic fails\n\r", ch);
         return;
@@ -771,14 +771,14 @@ void spell_darktravel(int level, struct char_data *ch,
         return;
     }
 
-    if (!(nrp = real_roomp(tmp_ch->in_room))) {
+    if (!(nrp = roomFindNum(tmp_ch->in_room))) {
         sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
         Log(str);
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }
 
-    if (IS_SET(real_roomp(tmp_ch->in_room)->room_flags, NO_SUM)) {
+    if (IS_SET(roomFindNum(tmp_ch->in_room)->room_flags, NO_SUM)) {
         send_to_char("Ancient Magiks bar your path.\n\r", ch);
         return;
     }
@@ -821,7 +821,7 @@ void spell_darktravel(int level, struct char_data *ch,
          */
         while (!location) {
             tmp = number(0, top_of_world);
-            room = real_roomp(tmp);
+            room = roomFindNum(tmp);
             if (room) {
                 if ((IS_SET(room->room_flags, PRIVATE)) ||
                     (IS_SET(room->room_flags, TUNNEL)) ||
@@ -948,7 +948,7 @@ void spell_disease(int level, struct char_data *ch,
     }
 
     if (IS_PC(victim) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("Sorry. No can do.\n\r", ch);
         return;
     }
@@ -1227,7 +1227,7 @@ void spell_flesh_golem(int level, struct char_data *ch,
                     mhps,
                     mtohit;
 
-    if ((rp = real_roomp(ch->in_room)) == NULL) {
+    if ((rp = roomFindNum(ch->in_room)) == NULL) {
         return;
     }
     if (!ch) {
@@ -1635,7 +1635,7 @@ void spell_life_tap(int level, struct char_data *ch,
     }
 
     if (IS_PC(victim) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
     }
@@ -1750,7 +1750,7 @@ void spell_mist_of_death(int level, struct char_data *ch,
         " of death fills the air!", FALSE, ch, 0, t, TO_CHAR);
 
     dam = dice(level, 7);
-    for (t = real_roomp(ch->in_room)->people; t; t = next) {
+    for (t = roomFindNum(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
         rdam = dam;
         if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
@@ -1940,7 +1940,7 @@ void cast_protection_from_good(int level, struct char_data *ch, char
         spell_protection_from_good(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_protection_from_good(level, ch, tar_ch, 0);
@@ -2149,9 +2149,9 @@ void spell_shadow_step(int level, struct char_data *ch,
     for (i = 0; i <= 5; i++) {  /* give em lots of tries */
         attempt = number(0, 5);
         if (CAN_GO(ch, attempt) &&
-            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+            !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                     DEATH) &&
-            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+            !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                     NO_FLEE)) {
             act("$n steps into a nearby shadow and seems to dissipate.",
                 FALSE, ch, 0, 0, TO_ROOM);
@@ -2207,7 +2207,7 @@ void spell_siphon_strength(int level, struct char_data *ch,
     }
 
     if (IS_PC(victim) &&
-        !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
     }
@@ -2487,7 +2487,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
                 sprintf(buf, "You sense %s in %s.\n\r",
                         i->short_description,
                         (i->in_room == NOWHERE ? "use but uncertain." :
-                         real_roomp(i->in_room)->name));
+                         roomFindNum(i->in_room)->name));
                 j = 3;
             }
             corpse = i;

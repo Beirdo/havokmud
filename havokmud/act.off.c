@@ -354,7 +354,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
     if (IS_AFFECTED(ch, AFF_PARALYSIS)) {
         return;
     }
-    if (!(rp = real_roomp(ch->in_room))) {
+    if (!(rp = roomFindNum(ch->in_room))) {
         return;
     }
     if (GET_POS(ch) < POSITION_SLEEPING) {
@@ -370,7 +370,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
         send_to_char("You can think of nothing but the battle!\n\r", ch);
         return;
     }
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, NO_FLEE) &&
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, NO_FLEE) &&
         !IS_IMMORTAL(ch)) {
         send_to_char("Your feet feel like lead, and refuse to move!\n\r", ch);
         return;
@@ -405,9 +405,9 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
              */
             attempt = number(0, 5);
             if (CAN_GO(ch, attempt) &&
-                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+                !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                         DEATH) &&
-                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+                !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                         NO_FLEE)) {
                 act("$n panics, and attempts to flee.", TRUE, ch, 0, 0,
                     TO_ROOM);
@@ -452,9 +452,9 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
          */
         attempt = number(0, 5);
         if (CAN_GO(ch, attempt) &&
-            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+            !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                     DEATH) &&
-            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+            !IS_SET(roomFindNum(EXIT(ch, attempt)->to_room)->room_flags,
                     NO_FLEE)) {
 
             if (!ch->skills ||
@@ -469,9 +469,9 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                  */
                 for (j = 0; j < 6; j++) {
                     if (CAN_GO(ch, j) &&
-                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,
+                        !IS_SET(roomFindNum(EXIT(ch, j)->to_room)->room_flags,
                                 DEATH) &&
-                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,
+                        !IS_SET(roomFindNum(EXIT(ch, j)->to_room)->room_flags,
                                 NO_FLEE)) {
                         attempt = j;
                         j = 10;
@@ -896,8 +896,8 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
             }
             while (room_count <= MAX_DISTANCE_SHOOT && !victim &&
                    exit_ok(EXIT_NUM(i, dir), NULL)) {
-                this_room = real_roomp(i);
-                to_room = real_roomp(this_room->dir_option[dir]->to_room);
+                this_room = roomFindNum(i);
+                to_room = roomFindNum(this_room->dir_option[dir]->to_room);
                 room_num = this_room->dir_option[dir]->to_room;
                 mob = get_char_near_room_vis(ch, name, room_num);
                 if (mob) {
@@ -1183,7 +1183,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
          * Check for target
          */
         there = 0;
-        for (spud = real_roomp(rm)->people; spud; spud = next_spud) {
+        for (spud = roomFindNum(rm)->people; spud; spud = next_spud) {
             next_spud = spud->next_in_room;
             if (spud == targ) {
                 there = 1;
@@ -1223,7 +1223,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 } else {
                     there = 0;
                 }
-                rm = real_roomp(rm)->dir_option[dir]->to_room;
+                rm = roomFindNum(rm)->dir_option[dir]->to_room;
             } else {
                 if (range > 1) {
                     sprintf(buf, "%s flies into the room from %s and hits a "
@@ -1274,16 +1274,16 @@ void throw_object(struct obj_data *o, int dir, int from)
     char            buf1[100];
     int             distance = 0;
 
-    while (distance < 20 && real_roomp(from)->dir_option[dir] &&
-           real_roomp(from)->dir_option[dir]->exit_info < 2 &&
-           real_roomp(from)->dir_option[dir]->to_room > 0) {
+    while (distance < 20 && roomFindNum(from)->dir_option[dir] &&
+           roomFindNum(from)->dir_option[dir]->exit_info < 2 &&
+           roomFindNum(from)->dir_option[dir]->to_room > 0) {
         if (distance) {
             sprintf(buf1, "%s flies into the room from the %s.\n\r",
                     o->short_description, directions[dir][1]);
             send_to_room(buf1, from);
 
 #if 0
-            for (catcher = real_roomp(from)->people; catcher;
+            for (catcher = roomFindNum(from)->people; catcher;
                  catcher = catcher->next_in_room) {
                 if (!strcmp(catcher->catch, o->name)) {
                     switch (number(1, 3)) {
@@ -1309,7 +1309,7 @@ void throw_object(struct obj_data *o, int dir, int from)
         }
         distance++;
         objectTakeFromRoom(o);
-        from = real_roomp(from)->dir_option[dir]->to_room;
+        from = roomFindNum(from)->dir_option[dir]->to_room;
         objectPutInRoom(o, from);
     }
     if (distance == 20) {
@@ -1326,49 +1326,58 @@ void throw_object(struct obj_data *o, int dir, int from)
 int clearpath(struct char_data *ch, long room, int direc)
 {
     struct room_direction_data *exitdata;
+    struct room_data           *rm;
+    struct room_data           *rm2;
+    struct room_data           *rm3;
 
-    exitdata = (real_roomp(room)->dir_option[direc]);
-
-    if ((exitdata) && (!real_roomp(exitdata->to_room))) {
-        return 0;
+    rm = roomFindNum(room);
+    if( !rm ) {
+        return( NULL );
     }
+
+    exitdata = rm->dir_option[direc];
+    if( !exitdata ) {
+        return( NULL );
+    }
+
+    rm2 = roomFindNum(exitdata->to_room);
+    if( !rm2 ) {
+        return( NULL );
+    }
+
     if (!CAN_GO(ch, direc)) {
-        return 0;
+        return( NULL );
     }
-    if (!real_roomp(room)->dir_option[direc]) {
-        return 0;
+
+    if (rm->zone != rm2->zone) {
+        return( NULL );
     }
-    if (real_roomp(room)->dir_option[direc]->to_room < 1) {
-        return 0;
+
+    if (IS_SET(exitdata->exit_info, EX_CLOSED)) {
+        return( NULL );
     }
-    if (real_roomp(room)->zone !=
-        real_roomp(real_roomp(room)->dir_option[direc]->to_room)->zone) {
-        return 0;
+
+    if (!IS_SET(exitdata->exit_info, EX_ISDOOR) && exitdata->exit_info > 0) {
+        return( NULL );
     }
-    if (IS_SET(real_roomp(room)->dir_option[direc]->exit_info, EX_CLOSED)) {
-        return 0;
-    }
-    if ((!IS_SET
-         (real_roomp(room)->dir_option[direc]->exit_info, EX_ISDOOR))
-        && (real_roomp(room)->dir_option[direc]->exit_info > 0)) {
-        return 0;
-    }
+
     /*
      * One-way windows are allowed... no see through 1-way exits
      */
-    if (!real_roomp(real_roomp(room)->dir_option[direc]->to_room)->
-        dir_option[opdir(direc)]) {
-        return 0;
+    if (!rm2->dir_option[opdir(direc)]) {
+        return( NULL );
     }
-    if (real_roomp(real_roomp(room)->dir_option[direc]->to_room)->
-        dir_option[opdir(direc)]->to_room < 1) {
-        return 0;
+
+    if (rm2->dir_option[opdir(direc)]->to_room < 1) {
+        return( NULL );
     }
-    if (real_roomp((real_roomp(room)->dir_option[direc]->to_room))->
-        dir_option[opdir(direc)]->to_room != room) {
-        return 0;
+
+    rm3 = roomFindNum(rm2->dir_option[opdir(direc)]->to_room);
+    if (rm3->to_room != room) {
+        return( NULL );
     }
-    return real_roomp(room)->dir_option[direc]->to_room;
+
+    return( rm2 );
 }
 
 void do_weapon_load(struct char_data *ch, char *argument, int cmd)

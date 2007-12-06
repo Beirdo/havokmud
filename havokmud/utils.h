@@ -49,18 +49,29 @@
 #define IS_AFFECTED2(ch,skill) (IS_SET((ch)->specials.affected_by2,(skill)))
 
 #if 0
-#define IS_DARK(room) (!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) && real_roomp(room)->light <= 0 && \
-    ((IS_SET(real_roomp(room)->room_flags, DARK)) || real_roomp(room)->dark))
+#define IS_DARK(room) \
+    (!IS_SET(roomFindNum(room)->room_flags, EVER_LIGHT) && \
+     roomFindNum(room)->light <= 0 && \
+    ((IS_SET(roomFindNum(room)->room_flags, DARK)) || roomFindNum(room)->dark))
 
-#define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || (!IS_SET(real_roomp(room)->room_flags, DARK) || !real_roomp(room)->dark))
+#define IS_LIGHT(room) \
+    (IS_SET(roomFindNum(room)->room_flags, EVER_LIGHT) || \
+     roomFindNum(room)->light > 0 || \
+     (!IS_SET(roomFindNum(room)->room_flags, DARK) || \
+      !roomFindNum(room)->dark))
 #else
 
-#define IS_DARK(room) (!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) && (real_roomp(room)->light <= 0 \
-        && (IS_SET(real_roomp(room)->room_flags, DARK) || (IsDarkOutside(real_roomp(room))))))
+#define IS_DARK(room) \
+    (!IS_SET(roomFindNum(room)->room_flags, EVER_LIGHT) && \
+     (roomFindNum(room)->light <= 0 && \
+      (IS_SET(roomFindNum(room)->room_flags, DARK) || \
+       (IsDarkOutside(roomFindNum(room))))))
 
-#define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || \
-         (!IS_SET(real_roomp(room)->room_flags, DARK) && \
-          !IsDarkOutside(real_roomp(room))))
+#define IS_LIGHT(room) \
+    (IS_SET(roomFindNum(room)->room_flags, EVER_LIGHT) || \
+     roomFindNum(room)->light > 0 || \
+     (!IS_SET(roomFindNum(room)->room_flags, DARK) && \
+      !IsDarkOutside(roomFindNum(room))))
 
 #endif
 
@@ -68,7 +79,7 @@
 
 #define REMOVE_BIT(var,bit)  ((var) = (var) & ~(bit) )
 
-#define RM_FLAGS(i)  ((real_roomp(i))?real_roomp(i)->room_flags:0)
+#define RM_FLAGS(i)  ((roomFindNum(i))?roomFindNum(i)->room_flags:0)
 
 #define GET_LEVEL(ch, i)   ((ch)->player.level[(i)])
 
@@ -266,7 +277,7 @@
 #define OBJN(obj, vict) (objectIsVisible((vict), (obj)) ? \
         fname((obj)->name) : "something")
 
-#define OUTSIDE(ch) (!IS_SET(real_roomp((ch)->in_room)->room_flags,INDOORS))
+#define OUTSIDE(ch) (!IS_SET(roomFindNum((ch)->in_room)->room_flags,INDOORS))
 
 #define IS_IMMORTAL(ch) (!IS_NPC(ch) && (GetMaxLevel(ch) >= IMMORTAL))
 
@@ -278,17 +289,17 @@
                         (obj)->value[3] && \
                         KeywordsMatch(&keyCorpse, &(obj)->keywords))
 
-#define EXIT(ch, door)  (real_roomp((ch)->in_room)->dir_option[door])
+#define EXIT(ch, door)  (roomFindNum((ch)->in_room)->dir_option[door])
 
-#define EXIT_NUM(room_num, door)  (real_roomp(room_num)->dir_option[door])
+#define EXIT_NUM(room_num, door)  (roomFindNum(room_num)->dir_option[door])
 
 int             exit_ok(struct room_direction_data *, struct room_data **);
 
-#define CAN_GO(ch, door) (EXIT(ch,door)&&real_roomp(EXIT(ch,door)->to_room) \
+#define CAN_GO(ch, door) (EXIT(ch,door) && roomFindNum(EXIT(ch,door)->to_room) \
                           && !IS_SET(EXIT(ch, door)->exit_info, EX_CLOSED))
 
 #define CAN_GO_HUMAN(ch, door) (EXIT(ch,door) && \
-                          real_roomp(EXIT(ch,door)->to_room) \
+                          roomFindNum(EXIT(ch,door)->to_room) \
                           && !IS_SET(EXIT(ch, door)->exit_info, EX_LOCKED))
 
 #define GET_ALIGNMENT(ch) ((ch)->specials.alignment)
@@ -313,28 +324,28 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
  * Arena flags 
  */
 #define A_NOGROUP(ch)   ((ArenaNoGroup == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOASSIST(ch,vict)  ((ArenaNoAssist == 1) && \
-	       	(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) && \
+	       	(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) && \
 	       	(vict->specials.fighting ? (vict->specials.fighting != ch) : 0))
 #define A_NODISPEL(ch)  ((ArenaNoDispel == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOMAGIC(ch)   ((ArenaNoMagic == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOWSPELLS(ch) ((ArenaNoWSpells == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOSLAY(ch)    ((ArenaNoSlay == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOFLEE(ch)    ((ArenaNoFlee == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOHASTE(ch)   ((ArenaNoHaste == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOPETS(ch)    ((ArenaNoPets == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOTRAVEL(ch)  ((ArenaNoTravel == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOBASH(ch)    ((ArenaNoBash == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
 
 
 #endif

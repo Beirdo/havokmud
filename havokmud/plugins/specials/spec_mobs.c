@@ -83,7 +83,7 @@ struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
     struct char_data *temp_char;
 
     if (room > NOWHERE) {
-        for (temp_char = real_roomp(room)->people; temp_char;
+        for (temp_char = roomFindNum(room)->people; temp_char;
              temp_char = temp_char->next_in_room) {
             if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
                 return( temp_char );
@@ -111,7 +111,7 @@ int AGGRESSIVE(struct char_data *ch, int cmd, char *arg,
         return FALSE;
     }
     if (ch->in_room > -1) {
-        for (i = real_roomp(ch->in_room)->people; i; i = next) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = next) {
             next = i->next_in_room;
             if (GET_RACE(i) != GET_RACE(ch) && !IS_IMMORTAL(i) &&
                 CAN_SEE(ch, i)) {
@@ -336,7 +336,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    if ((rp = real_roomp(ch->in_room)) == 0) {
+    if ((rp = roomFindNum(ch->in_room)) == 0) {
         return (FALSE);
     }
     for (v = rp->people; (v && (!found)); v = next) {
@@ -354,7 +354,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
     }
 
-    for (i = real_roomp(ch->in_room)->contents; i; i = next_r_obj) {
+    for (i = roomFindNum(ch->in_room)->contents; i; i = next_r_obj) {
         next_r_obj = i->next_content;
         if (IS_CORPSE(i)) {
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
@@ -430,7 +430,7 @@ int ghostsoldier(struct char_data *ch, int cmd, char *arg,
     max_good = -1001;
     good = 0;
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (!(mob_index[tch->nr].func == gs) &&
             !(mob_index[tch->nr].func == gc) &&
@@ -514,7 +514,7 @@ int golgar(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
 
     if (!(shaman = get_char_room_vis(ch, SHAMAN_NAME))) {
-        for (tch = real_roomp(ch->in_room)->people; tch;
+        for (tch = roomFindNum(ch->in_room)->people; tch;
              tch = tch->next_in_room) {
             if (IS_NPC(tch) && GET_RACE(tch) == RACE_TROGMAN &&
                 tch->specials.fighting && !IS_NPC(tch->specials.fighting)) {
@@ -554,7 +554,7 @@ int green_slime(struct char_data *ch, int cmd, char *arg,
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    for (cons = real_roomp(ch->in_room)->people; cons;
+    for (cons = roomFindNum(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
         if (cons != ch  && !IS_IMMORTAL(cons)) {
             cast_green_slime(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL,
@@ -600,7 +600,7 @@ int janitor(struct char_data *ch, int cmd, char *arg,
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
         if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) &&
             (i->type_flag == ITEM_TYPE_DRINKCON || i->cost <= 10)) {
             act("$n picks up some trash.", FALSE, ch, 0, 0, TO_ROOM);
@@ -1483,7 +1483,7 @@ int shaman(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     if (ch->specials.fighting) {
         if (!number(0, 3)) {
-            for (tch = real_roomp(ch->in_room)->people; tch;
+            for (tch = roomFindNum(ch->in_room)->people; tch;
                  tch = tch->next_in_room) {
                 if (!IS_NPC(tch) && GetMaxLevel(tch) > 20 && CAN_SEE(ch, tch)) {
                     if (!(god = get_char_room_vis(ch, DEITY_NAME))) {
@@ -1796,7 +1796,7 @@ int temple_labrynth_sentry(struct char_data *ch, int cmd, char *arg,
      * Find a dude to do very evil things upon !
      */
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (GetMaxLevel(tch) > 10 && CAN_SEE(ch, tch)) {
             act("The sentry snaps out of his trance and ...", 1, ch, 0, 0,
@@ -1835,7 +1835,7 @@ int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (GET_POS(ch) != POSITION_STANDING) {
         return (FALSE);
     }
-    for (cons = real_roomp(ch->in_room)->people; cons;
+    for (cons = roomFindNum(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
         if (cons != ch && !IS_IMMORTAL(cons) && !number(0, 4)) {
             if (ch->master && cons != ch->master && 
@@ -1919,7 +1919,7 @@ int trapper(struct char_data *ch, int cmd, char *arg,
      */
 
     if (!ch->specials.fighting) {
-        for (tch = real_roomp(ch->in_room)->people; tch;
+        for (tch = roomFindNum(ch->in_room)->people; tch;
              tch = tch->next_in_room) {
             if (ch != tch && !IS_IMMORTAL(tch) &&
                 !IS_AFFECTED(tch, AFF_FLYING)) {
@@ -1983,7 +1983,7 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (IS_NPC(tch) && IsAnimal(tch) && CAN_SEE(ch, tch)) {
             if (!check_soundproof(ch)) {
@@ -1995,7 +1995,7 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    corpse = objectGetInRoom(ch, "corpse", real_roomp(ch->in_room));
+    corpse = objectGetInRoom(ch, "corpse", roomFindNum(ch->in_room));
 
     if (corpse) {
         command_interpreter(ch, "get corpse");
@@ -2038,7 +2038,7 @@ int troguard(struct char_data *ch, int cmd, char *arg,
     max_good = -1001;
     good = 0;
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (GET_ALIGNMENT(tch) > max_good && !IS_IMMORTAL(tch) &&
             GET_RACE(tch) != RACE_TROGMAN && GET_RACE(tch) != RACE_ARACHNID) {
@@ -2115,7 +2115,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
              * corpse is top item on item_list now that corpse has
              * been made.
              */
-            rp = real_roomp(ch->in_room);
+            rp = roomFindNum(ch->in_room);
             if (!rp)
                 return (FALSE);
 
@@ -2358,7 +2358,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             ch->generic = Valik_Wandering;
             return (FALSE);
         } else {
-            for (vict = real_roomp(ch->in_room)->people; vict;
+            for (vict = roomFindNum(ch->in_room)->people; vict;
                  vict = vict->next_in_room) {
                 if (ch != vict && !IS_NPC(vict) && !IS_IMMORTAL(vict) && 
                     !number(0, 3)) {
@@ -3517,7 +3517,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                                             "kill ourselves a dragon!");
                     ch->generic = 23;
                     count = 1;
-                    for (i = real_roomp(ch->in_room)->people; i;
+                    for (i = roomFindNum(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && 
                             mob_index[i->nr].vnum == WHO_TO_CALL) {
@@ -3572,7 +3572,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                          */
                         command_interpreter(ch, "shout The dragon must die!");
 
-                        for (j = real_roomp(ch->in_room)->people; j;
+                        for (j = roomFindNum(ch->in_room)->people; j;
                              j = j->next_in_room) {
                             if (IS_MOB(j) && 
                                 mob_index[j->nr].vnum == WHO_TO_CALL) {
@@ -3601,7 +3601,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 go_direction(ch, dir);
                 if (ch->in_room == WHERE_TO_SIT) {
                     command_interpreter(ch, "say Ahhh, time for a drink!");
-                    for (i = real_roomp(ch->in_room)->people; i;
+                    for (i = roomFindNum(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && 
                             mob_index[i->nr].vnum == WHO_TO_CALL) {
@@ -4023,7 +4023,7 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
         if (GetMaxLevel(ch) >= 25 && !ch->desc) {
             if (Summoner(ch, cmd, arg, mob, type)) {
                 return (TRUE);
-            } else if (!IS_SET(real_roomp(ch->in_room)->room_flags, NO_SUM) && 
+            } else if (!IS_SET(roomFindNum(ch->in_room)->room_flags, NO_SUM) && 
                 NumCharmedFollowersInRoom(ch) < 4 && 
                 IS_SET(ch->hatefield, HATE_CHAR)) {
                 act("$n utters the words 'Here boy!'", 1, ch, 0, 0, TO_ROOM);
@@ -4430,7 +4430,7 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
     if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
     }
-    for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+    for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].vnum == 6005 && !number(0, 3)) {
             command_interpreter(ch, "emote sees the damn fox and runs like "
                                     "hell.");
@@ -4475,7 +4475,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
 
     key = StringToKeywords( "corpse rabbit", NULL );
 
-    for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
+    for (j = roomFindNum(ch->in_room)->contents; j; j = j->next_content) {
         if (IS_CORPSE(i) && KeywordsMatch(key, &j->keywords)) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
 
@@ -4496,7 +4496,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
 
     FreeKeywords(key, TRUE);
 
-    for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+    for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].vnum == 6001 && !number(0, 3)) {
             command_interpreter(ch, "emote yips and starts to make dinner.");
             hit(ch, i, TYPE_UNDEFINED);
@@ -4753,7 +4753,7 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
     if ((cmd) || (!AWAKE(ch))) {
         return (FALSE);
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if ((!rp) || (check_soundproof(ch))) {
         return (FALSE);
     }
@@ -4978,7 +4978,7 @@ void GreetPeople(struct char_data *ch)
     struct char_data *tch;
 
     if (!IS_SET(ch->specials.act, ACT_GREET)) {
-        for (tch = real_roomp(ch->in_room)->people; tch;
+        for (tch = roomFindNum(ch->in_room)->people; tch;
              tch = tch->next_in_room) {
             if (!IS_NPC(tch) && !number(0, 8) && 
                 GetMaxLevel(tch) > GetMaxLevel(ch) && CAN_SEE(ch, tch)) {
@@ -5356,7 +5356,7 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
         return FALSE;
     }
 
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if ((IS_NPC(tch) && (IsUndead(tch)) && CAN_SEE(ch, tch)) || 
             (IsGoodSide(ch) && IsBadSide(tch) && CAN_SEE(ch, tch)) || 
@@ -5446,7 +5446,7 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg,
     if (check_peaceful(ch, "")) {
         return FALSE;
     }
-    for (tch = real_roomp(ch->in_room)->people; tch;
+    for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (tch->specials.fighting && GET_ALIGNMENT(tch) < max_evil &&
             (IS_NPC(tch) || IS_NPC(tch->specials.fighting))) {
@@ -5485,7 +5485,7 @@ struct breath_victim *choose_victims(struct char_data *ch,
     struct breath_victim *head = NULL,
                    *temp = NULL;
 
-    for (cons = real_roomp(ch->in_room)->people; cons;
+    for (cons = roomFindNum(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
         temp = (struct breath_victim *) malloc(sizeof(struct breath_victim));
         temp->ch = cons;
@@ -5541,7 +5541,7 @@ void breath_weapon(struct char_data *ch, struct char_data *target,
     act("$n rears back and inhales", 1, ch, 0, ch->specials.fighting, TO_ROOM);
     victim = 0;
 
-    for (tmp = real_roomp(ch->in_room)->people; tmp; tmp = tmp->next_in_room) {
+    for (tmp = roomFindNum(ch->in_room)->people; tmp; tmp = tmp->next_in_room) {
         if (tmp != ch && !IS_IMMORTAL(tmp)) {
             victim = 1;
             cast_fear(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, tmp, 0);
@@ -5663,7 +5663,7 @@ int AcidBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0010A stream of hot acid bursts forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_acid_breath(GetMaxLevel(ch), ch,
@@ -5739,8 +5739,8 @@ int pick_archer_target(struct char_data *ch, int maxr,
             if (clearpath(ch, rm, i)) {
                 r++;
 
-                rm = real_roomp(rm)->dir_option[i]->to_room;
-                for (ptarg = real_roomp(rm)->people; ptarg;
+                rm = roomFindNum(rm)->dir_option[i]->to_room;
+                for (ptarg = roomFindNum(rm)->people; ptarg;
                      ptarg = ptarg->next_in_room) {
                     /*
                      * find PC's to kill if we are aggressive 
@@ -6053,7 +6053,7 @@ int baby_bear(struct char_data *ch, int cmd, char *arg,
     }
     if (ch->specials.fighting) {
         command_interpreter(ch, "scream");
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
         if (!rp) {
             return (FALSE);
         }
@@ -6078,7 +6078,7 @@ int banshee(struct char_data *ch, int cmd, char *arg,
     if (ch->specials.fighting && 
         ch->specials.fighting->in_room == ch->in_room) {
         if (IS_DARK(ch->in_room)) {
-            for (tmp = real_roomp(ch->in_room)->people; tmp;
+            for (tmp = roomFindNum(ch->in_room)->people; tmp;
                  tmp = tmp->next_in_room) {
                 if (tmp != ch && !IS_IMMORTAL(tmp)) {
                     victim = 1;
@@ -6531,7 +6531,7 @@ int DarkBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0008A cloud of oppressive darkness surges forth from $n's "
             "mouth!", FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_dark_breath(GetMaxLevel(ch), ch,
@@ -6569,7 +6569,7 @@ int DehydBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0005A searing cone of dehydration billows forth from $n's"
             " mouth!", FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_dehydration_breath(GetMaxLevel(ch), ch,
@@ -6783,7 +6783,7 @@ int FireBreather(struct char_data *ch, int cmd, char *arg,
         act("$n rears back and inhales", FALSE, ch, 0, 0, TO_ROOM);
         act("$c0009A massive cone of fire shoots forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_fire_breath(GetMaxLevel(ch), ch, tar_char, 0);
@@ -6807,7 +6807,7 @@ int FrostBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0014A cone of blistering frost shoots forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_frost_breath(GetMaxLevel(ch), ch,
@@ -6833,7 +6833,7 @@ int GasBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0002A cloud of poisonous gas billows forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_gas_breath(GetMaxLevel(ch), ch,
@@ -7236,7 +7236,7 @@ int LightBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0011A beam of bright yellow light shoots forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_light_breath(GetMaxLevel(ch), ch,
@@ -7261,7 +7261,7 @@ int LightningBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0012A bolt of lightning streaks forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_lightning_breath(GetMaxLevel(ch), ch,
@@ -7352,7 +7352,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
         /*
          * there's victims, let's see if we can harrass one 
          */
-        for (i = real_roomp(ch->in_room)->people; i; i = next) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = next) {
             next = i->next_in_room;
             if (!IS_NPC(i) && !IS_LINKDEAD(i) && !IS_IMMORTAL(i)) {
                 /* 
@@ -8414,7 +8414,7 @@ int raven_iron_golem(struct char_data *ch, int cmd, char *arg,
         ch->specials.fighting->in_room == ch->in_room) {
         if (number(0, 1)) {
             act("$n belows out a gout of green gas!", TRUE, ch, 0, 0, TO_ROOM);
-            for (v = real_roomp(ch->in_room)->people; v;
+            for (v = roomFindNum(ch->in_room)->people; v;
                  v = v->next_in_room) {
                 if (ch != v && !IS_IMMORTAL(v)) {
                     act("The green gas fills your lungs!.", FALSE, v, 0, 0,
@@ -8444,7 +8444,7 @@ int ShardBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0015A cone of glowing shards bursts forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_shard_breath(GetMaxLevel(ch), ch,
@@ -8464,7 +8464,7 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
     if (cmd) {
         return 0;
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (rp->sector_type == SECT_CITY) {
         switch (number(0, 30)) {
@@ -8687,7 +8687,7 @@ int Slavalis(struct char_data *ch, int cmd, char *arg,
         /*
          * move all pc's to different room 
          */
-        for (v = real_roomp(ch->in_room)->people; v; v = v->next_in_room) {
+        for (v = roomFindNum(ch->in_room)->people; v; v = v->next_in_room) {
             if (v != ch && !IS_IMMORTAL(v)) {
                 act("You get a quezzy feeling as you fall into a swirling "
                     "mist.\nYou arrive back on your home plane!", FALSE, v, 0,
@@ -8740,7 +8740,7 @@ int SleepBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0003A cloud of sleeping gas billows forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_sleep_breath(GetMaxLevel(ch), ch,
@@ -8925,7 +8925,7 @@ int SoundBreather(struct char_data *ch, int cmd, char *arg,
         act("$n rears back and inhales", FALSE, ch, 0, 0, TO_ROOM);
         act("$c0013A sonic vibration booms forth from $n's mouth!", FALSE,
             ch, 0, 0, TO_ROOM);
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_sound_breath(GetMaxLevel(ch), ch,
@@ -9788,7 +9788,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
     if ((cmd) || (mob->in_room != 51837)) {
         return (FALSE);
     }
-    obj = objectGetInRoom(ch, "stash", real_roomp(ch->in_room));
+    obj = objectGetInRoom(ch, "stash", roomFindNum(ch->in_room));
 
     if (!obj) {
         return (FALSE);
@@ -9926,7 +9926,7 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
      * scan room for people 
      */
     if (ch->in_room > -1) {
-        for (i = real_roomp(ch->in_room)->people; i; i = next) {
+        for (i = roomFindNum(ch->in_room)->people; i; i = next) {
             next = i->next_in_room;
             if (mob_index[i->nr].vnum == 47975) {
                 /* 
@@ -10005,7 +10005,7 @@ int VaporBreather(struct char_data *ch, int cmd, char *arg,
         act("$c0006A cloud of scalding vapor surges forth from $n's mouth!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+        for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
              tar_char = tar_char->next_in_room) {
             if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
                 spell_vapor_breath(GetMaxLevel(ch), ch,
@@ -10353,7 +10353,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
             /*
              * find the corpse and destroy it 
              */
-            rp = real_roomp(ch->in_room);
+            rp = roomFindNum(ch->in_room);
             if (!rp) {
                 Log("invalid room in creeping death?! oddness!");
                 return (FALSE);
@@ -10411,7 +10411,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         /*
          * make everyone with any brains flee 
          */
-        for (t = real_roomp(ch->in_room)->people; t; t = next) {
+        for (t = roomFindNum(ch->in_room)->people; t; t = next) {
             next = t->next_in_room;
             if (t != ch && !saves_spell(t, SAVING_PETRI)) {
                 do_flee(t, NULL, 0);
@@ -10421,7 +10421,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         /*
          * find someone in the room to flay 
          */
-        for (t = real_roomp(ch->in_room)->people; t; t = next) {
+        for (t = roomFindNum(ch->in_room)->people; t; t = next) {
             if (!t) {
                 Log("found no mobiles in creeping death?! oddness!");
                 return (FALSE);
@@ -10441,7 +10441,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 /*
                  * find the corpse and destroy it 
                  */
-                rp = real_roomp(ch->in_room);
+                rp = roomFindNum(ch->in_room);
                 if (!rp) {
                     Log("invalid room called in creeping death?! oddness!");
                     return (FALSE);
@@ -10499,7 +10499,7 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room < 0) {
         return (FALSE);
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     if (!rp) {
         return (FALSE);
@@ -10642,7 +10642,7 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
     /*
      * there's victims, let's see if we can harrass one 
      */
-    for (i = real_roomp(ch->in_room)->people; i; i = next) {
+    for (i = roomFindNum(ch->in_room)->people; i; i = next) {
         next = i->next_in_room;
         if (GET_RACE(i) == RACE_HUMAN && GET_SEX(i) == SEX_MALE && !IS_NPC(i) &&
             !IS_LINKDEAD(i) && !IS_IMMORTAL(i) && 
@@ -10725,7 +10725,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
 
     if (ch->in_room) {
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
     } else {
         Log("weirdness in gnome_collector, char not in a room");
         return (FALSE);
@@ -10980,7 +10980,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         /* 
          * it should not be there 
          */
-        rp = real_roomp(WAITROOM);
+        rp = roomFindNum(WAITROOM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
                 if (obj->item_number == TARANTIS_PORTAL) {
@@ -10992,7 +10992,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
             }
         }
 
-        rp = real_roomp(REAVER_RM);
+        rp = roomFindNum(REAVER_RM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
                 if (obj->item_number == TARANTIS_PORTAL) {
@@ -11004,7 +11004,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
             }
         }
 
-        rp = real_roomp(DEST_ROOM);
+        rp = roomFindNum(DEST_ROOM);
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
                 if (obj->item_number == REAVER_PORTAL) {
@@ -11020,7 +11020,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
          * all portals are gone, now do the transfer mob thing 
          */
         if (time_info.hours == 9) {
-            spawnroom = real_roomp(SPAWNROOM);
+            spawnroom = roomFindNum(SPAWNROOM);
             if (!spawnroom) {
                 Log("No nightwalker spawnroom found, blame Ash.");
                 return (FALSE);
@@ -11036,7 +11036,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         /* 
          * portals should appear 
          */
-        rp = real_roomp(WAITROOM);
+        rp = roomFindNum(WAITROOM);
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
@@ -11053,7 +11053,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
             }
         }
 
-        rp = real_roomp(REAVER_RM);
+        rp = roomFindNum(REAVER_RM);
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
@@ -11070,7 +11070,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
             }
         }
 
-        rp = real_roomp(DEST_ROOM);
+        rp = roomFindNum(DEST_ROOM);
         check = 0;
         if (rp) {
             for (obj = rp->contents; obj; obj = obj->next_content) {
@@ -11123,7 +11123,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
     }
 
     if (ch->in_room) {
-        rp = real_roomp(ch->in_room);
+        rp = roomFindNum(ch->in_room);
     }
     if (!rp) {
         return (FALSE);
@@ -11569,7 +11569,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
      * to a cinder, and load up a new one in the spawn room 
      */
     if (ch->in_room != SPAWNROOM && ch->in_room != WAITROOM && 
-        !IS_SET(real_roomp(ch->in_room)->room_flags, DARK) && 
+        !IS_SET(roomFindNum(ch->in_room)->room_flags, DARK) && 
         time_info.hours > 6 && time_info.hours < 19) {
         act("A young ray of sunlight peeps over the horizon and strikes $n.",
             FALSE, ch, 0, 0, TO_ROOM);
@@ -11583,7 +11583,8 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     /*
      * Make them enter portal if they're in the right spot 
      */
-    if (ch->in_room && ch->in_room == WAITROOM && (rp = real_roomp(WAITROOM))) {
+    if (ch->in_room && ch->in_room == WAITROOM && 
+        (rp = roomFindNum(WAITROOM))) {
         for (obj = rp->contents; obj; obj = obj->next_content) {
             if (obj->item_number == TARANTIS_PORTAL) {
                 strcpy(buf, "portal");
@@ -11667,7 +11668,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    ventobj = objectGetInRoomNum(VENTOBJVNUM, real_roomp(VENTROOMVNUM));
+    ventobj = objectGetInRoomNum(VENTOBJVNUM, roomFindNum(VENTROOMVNUM));
 
     if (mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
         if (!number(0, 3)) {
@@ -11894,7 +11895,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
              * In correct obj
              */
             if (mob->generic == WAITTOGOHOME) {
-                currroom = real_roomp(mob->in_room);
+                currroom = roomFindNum(mob->in_room);
                 corpse = objectGetInRoomNum( CORPSEOBJVNUM, currroom );
                 if (corpse) {
                     /* 
@@ -11936,7 +11937,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  */
                 mob->generic = theitem->in_room;
                 if( objectGetInRoomNum( CORPSEOBJVNUM, 
-                                        real_roomp(theitem->in_room)) ) {
+                                        roomFindNum(theitem->in_room)) ) {
                     return( TRUE );
                 }
 
@@ -11956,7 +11957,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * set ch->generic to go home again
                  */
                 tempobj = objectGetInRoomNum( CORPSEOBJVNUM, 
-                                              real_roomp(theitem->in_room) );
+                                              roomFindNum(theitem->in_room) );
 
                 /* Even though the generic and in_room match, there is no 
                  * corpse so we need to drop one, and that will be our action 
@@ -12029,7 +12030,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             /* 
              * a character has it let's go get him/her
              */
-            if (real_roomp(tempchar->in_room)->zone == HOMEZONE) {
+            if (roomFindNum(tempchar->in_room)->zone == HOMEZONE) {
                 /* 
                  * don't go hunting if char is still in zone
                  */
@@ -12038,7 +12039,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     /* 
                      * what to do when you find him
                      */
-                    if (!IS_SET(real_roomp(mob->in_room)->room_flags,
+                    if (!IS_SET(roomFindNum(mob->in_room)->room_flags,
                                 PEACEFUL)) {
                         act("$n glares at you, and launches to the "
                             "attack!", TRUE, mob, 0, tempchar, TO_VICT);
@@ -12060,7 +12061,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             if (mob->in_room == tempchar->in_room &&
                 mob->generic != INPEACEROOM) {
 
-                if (!IS_SET(real_roomp(mob->in_room)->room_flags, PEACEFUL)) {
+                if (!IS_SET(roomFindNum(mob->in_room)->room_flags, PEACEFUL)) {
                     act("$n glares at you, and launches to the attack!",
                         TRUE, mob, 0, tempchar, TO_VICT);
                     act("$n suddenly launches $mself at $N!", TRUE, mob,
@@ -12088,7 +12089,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  */
                 mob->generic = tempchar->in_room;
                 if( objectGetInRoomNum( CORPSEOBJVNUM, 
-                                        real_roomp(tempchar->in_room) ) ) {
+                                        roomFindNum(tempchar->in_room) ) ) {
                     return( TRUE );
                 }
                 corpse = objectRead(CORPSEOBJVNUM);
@@ -12112,7 +12113,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
              * peace room
              */
                 tempobj = objectGetInRoomNum( CORPSEOBJVNUM,
-                                              real_roomp(tempchar->in_room) );
+                                              roomFindNum(tempchar->in_room) );
                 if(!tempobj) {
                     mob->generic = -1;
                     return(FALSE);
@@ -12134,7 +12135,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
 
                 if (mob->in_room == tempchar->in_room &&
                     mob->generic != INPEACEROOM) {
-                    if (!IS_SET(real_roomp(mob->in_room)->room_flags,
+                    if (!IS_SET(roomFindNum(mob->in_room)->room_flags,
                                 PEACEFUL)) {
                         act("$n glares at you, and launches to the attack!",
                             TRUE, mob, 0, tempchar, TO_VICT);
@@ -12248,7 +12249,7 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    rp = real_roomp(mob->in_room);
+    rp = roomFindNum(mob->in_room);
 
     for (tempchar = rp->people; tempchar;
          tempchar = tempchar->next_in_room) {
@@ -12413,7 +12414,7 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg,
         af.location = 0;
         af.bitvector = 0;
 
-        rp = real_roomp(mob->in_room);
+        rp = roomFindNum(mob->in_room);
 
         for (tempchar = rp->people; tempchar;
              tempchar = tempchar->next_in_room) {
@@ -12561,7 +12562,7 @@ int moldexplosion(struct char_data *ch, int cmd, char *arg,
         act("Suddenly, the mold explodes, throwing a huge cloud of spores into"
             " the air!", FALSE, mob, 0, 0, TO_ROOM);
 
-        for (tempchar = real_roomp(mob->in_room)->people; tempchar;
+        for (tempchar = roomFindNum(mob->in_room)->people; tempchar;
              tempchar = tempchar->next_in_room) {
             if (!IS_IMMORTAL(tempchar) && !IS_IMMUNE(tempchar, IMM_POISON)) {
                 affect_to_char(tempchar, &af);
@@ -12597,7 +12598,7 @@ int boneshardbreather(struct char_data *ch, int cmd, char *arg,
             "and spews out shards of bones that slice like the sharpest of "
             "daggers!", FALSE, mob, 0, 0, TO_ROOM);
 
-        for (tempchar = real_roomp(mob->in_room)->people; tempchar;
+        for (tempchar = roomFindNum(mob->in_room)->people; tempchar;
              tempchar = tempchar->next_in_room) {
             if (!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
                 dam = dice(25, 10);
@@ -12637,7 +12638,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
     }
 
     if (type == EVENT_DEATH) {
-        for (tempchar = real_roomp(MISTROOMVNUM)->people; tempchar;
+        for (tempchar = roomFindNum(MISTROOMVNUM)->people; tempchar;
              tempchar = nextchar) {
             nextchar = tempchar->next_in_room;
             char_from_room(tempchar);
@@ -12784,14 +12785,14 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
 
     objnum = 6575;
     
-    for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
+    for( o = roomFindNum(ch->in_room)->contents; o; o = o->next_content) {
         if( o->item_number == objnum ) {
             return( FALSE );
         }
     }
 
     if (!strcasecmp(arg, "yes")) {
-        for (i = real_roomp(ch->in_room)->people; i;
+        for (i = roomFindNum(ch->in_room)->people; i;
              i = i->next_in_room) {
             if (IS_FOLLOWING(ch, i) && GetMaxLevel(i) >= 41) {
                 strcpy( buf, "say Your group is far too powerfull to enter!");
@@ -12837,7 +12838,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
 
     objnum = 6580;
 
-    for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
+    for( o = roomFindNum(ch->in_room)->contents; o; o = o->next_content) {
         if( o->item_number == objnum ) {
             return( FALSE );
         }
@@ -13126,7 +13127,7 @@ int dragon(struct char_data *ch, int cmd, char *arg,
     WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     level = GetMaxLevel(ch);
     
-    for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+    for (tar_char = roomFindNum(ch->in_room)->people; tar_char;
          tar_char = tar_char->next_in_room) {
         if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
             (dragonTable[i].breath[j].func)(level, ch, tar_char, 0);
@@ -13143,7 +13144,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
     int             or;
     char            buf[200];
 
-    rp = real_roomp(v->in_room);
+    rp = roomFindNum(v->in_room);
     if (rp && rp->dir_option[dir] && rp->dir_option[dir]->to_room &&
         EXIT(v, dir)->to_room != NOWHERE) {
         if (v->specials.fighting) {
@@ -13156,7 +13157,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
 
         or = v->in_room;
         char_from_room(v);
-        char_to_room(v, (real_roomp(or))->dir_option[dir]->to_room);
+        char_to_room(v, (roomFindNum(or))->dir_option[dir]->to_room);
         do_look(v, NULL, 15);
 
         if (IS_SET(RM_FLAGS(v->in_room), DEATH) && !IS_IMMORTAL(v)) {

@@ -186,8 +186,8 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
 
 #ifdef ZONE_COMM_ONLY
                 if (i->character->in_room != NOWHERE) {
-                    if (real_roomp(ch->in_room)->zone ==
-                        real_roomp(i->character->in_room)->zone &&
+                    if (roomFindNum(ch->in_room)->zone ==
+                        roomFindNum(i->character->in_room)->zone &&
                         !IS_IMMORTAL(i->character) && !IS_IMMORTAL(ch)) {
                         act(buf1, 0, ch, 0, i->character, TO_VICT);
                     } else if (IS_IMMORTAL(ch)) {
@@ -197,7 +197,8 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
                         act(buf3, 0, ch, 0, i->character, TO_VICT);
                     } else if (IS_IMMORTAL(i->character)) {
                         sprintf(buf2, "$c0011[$c0015$n$c0011] yells from zone "
-                                      "%ld '%s'", real_roomp(ch->in_room)->zone,
+                                      "%ld '%s'", 
+                                      roomFindNum(ch->in_room)->zone,
                                       argument);
                         act(buf2, 0, ch, 0, i->character, TO_VICT);
                     }
@@ -329,7 +330,7 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
     }
 
 #ifdef ZONE_COMM_ONLY
-    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
+    if (roomFindNum(ch->in_room)->zone != roomFindNum(vict->in_room)->zone &&
         !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
         send_to_char("That person is not near enough for you to tell.\n\r", ch);
         return;
@@ -586,7 +587,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return;
     }
@@ -718,7 +719,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
         return;
     }
@@ -978,7 +979,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
     }
 
     members = 0;
-    for (gch = real_roomp(ch->in_room)->people; gch != NULL;
+    for (gch = roomFindNum(ch->in_room)->people; gch != NULL;
          gch = gch->next_in_room) {
         if (is_same_group(gch, ch)){
             members++;
@@ -1007,7 +1008,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
     sprintf(buf, "$n splits %d gold coins.  Your share is %d gold coins.",
                  amount, share);
 
-    for (gch = real_roomp(ch->in_room)->people; gch != NULL;
+    for (gch = roomFindNum(ch->in_room)->people; gch != NULL;
          gch = gch->next_in_room) {
         if (gch != ch && is_same_group(gch, ch)) {
             act(buf, FALSE, ch, NULL, gch, TO_VICT);
@@ -1338,7 +1339,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
     }
     
 #ifdef ZONE_COMM_ONLY
-    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
+    if (roomFindNum(ch->in_room)->zone != roomFindNum(vict->in_room)->zone &&
         !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
         send_to_char("That person is not near enough for you to reply.\n\r",
                      ch);

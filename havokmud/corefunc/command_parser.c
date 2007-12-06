@@ -106,11 +106,11 @@ void JustLoggedIn( PlayerStruct_t *player )
         } else {
             homeroom = 1000;
             if (ch->specials.start_room > NOWHERE && 
-                real_roomp(ch->specials.start_room)) {
+                roomFindNum(ch->specials.start_room)) {
                 homeroom = ch->specials.start_room;
             }
         }
-    } else if (real_roomp(ch->in_room)) {
+    } else if (roomFindNum(ch->in_room)) {
         homeroom = ch->in_room;
     }
 
@@ -457,24 +457,24 @@ int fill_word(char *argument)
  */
 int special(struct char_data *ch, int cmd, char *arg)
 {
-    register struct obj_data *i;
-    register struct char_data *k;
-    struct index_data *index;
-    int             j;
+    register struct obj_data   *i;
+    register struct char_data  *k;
+    struct index_data          *index;
+    int                         j;
+    struct room_data           *rm;
 
     if (ch->in_room == NOWHERE) {
         char_to_room(ch, 3001);
-        return (0);
+        return(FALSE);
     }
 
     /*
      * special in room?
      */
-    if (real_roomp(ch->in_room)->funct &&
-        (*real_roomp(ch->in_room)->funct) (ch, cmd, arg,
-                                           real_roomp(ch->in_room),
-                                           PULSE_COMMAND)) {
-        return (1);
+    rm = roomFindNum(ch->in_room);
+    if( rm->funct && (*rm->funct)(ch, cmd, arg, roomFindNum(ch->in_room),
+                                  PULSE_COMMAND) ) {
+        return(TRUE);
     }
 
     /*
@@ -512,17 +512,17 @@ int special(struct char_data *ch, int cmd, char *arg)
     /*
      * special in mobile present?
      */
-    for (k = real_roomp(ch->in_room)->people; k; k = k->next_in_room) {
+    for (k = roomFindNum(ch->in_room)->people; k; k = k->next_in_room) {
         if (IS_MOB(k) && k != ch && mob_index[k->nr].func &&
             (*mob_index[k->nr].func) (ch, cmd, arg, k, PULSE_COMMAND)) {
-            return (1);
+            return(TRUE);
         }
     }
 
     /*
      * special in object present?
      */
-    for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
         if (i->item_number >= 0 && i->index->func && 
             (*i->index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
             /**

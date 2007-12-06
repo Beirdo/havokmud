@@ -551,7 +551,7 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
 
     keeper = 0;
 
-    for (temp_char = real_roomp(ch->in_room)->people; !keeper && temp_char; 
+    for (temp_char = roomFindNum(ch->in_room)->people; !keeper && temp_char; 
          temp_char = temp_char->next_in_room) {
         if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == shop_keeper) {
             keeper = temp_char;

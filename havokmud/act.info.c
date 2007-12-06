@@ -540,7 +540,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             case POSITION_STANDING:
                 if (!IS_AFFECTED(i, AFF_FLYING)
                     && !affected_by_spell(i, SKILL_LEVITATION)) {
-                    if (real_roomp(i->in_room)->sector_type ==
+                    if (roomFindNum(i->in_room)->sector_type ==
                         SECT_WATER_NOSWIM) {
                         strcat(buffer, "$c000w is floating here.");
                     } else {
@@ -551,7 +551,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                 }
                 break;
             case POSITION_SITTING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000w is floating here.");
                 } else {
@@ -559,7 +559,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
 				}
                 break;
             case POSITION_RESTING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000w is resting here in the water.");
                 } else {
@@ -567,7 +567,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
 				}
                 break;
             case POSITION_SLEEPING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000w is sleeping here in the water.");
                 } else {
@@ -1033,7 +1033,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
             case POSITION_STANDING:
                 if (!IS_AFFECTED(i, AFF_FLYING)
                     && !affected_by_spell(i, SKILL_LEVITATION)) {
-                    if (real_roomp(i->in_room)->sector_type ==
+                    if (roomFindNum(i->in_room)->sector_type ==
                         SECT_WATER_NOSWIM) {
                         strcat(buffer, "$c000wis floating here.");
                     } else {
@@ -1044,7 +1044,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
                 }
                 break;
             case POSITION_SITTING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000wis floating here.");
                 } else {
@@ -1052,7 +1052,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
 				}
                 break;
             case POSITION_RESTING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000wis resting here in the water");
 				} else {
@@ -1060,7 +1060,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
 				}
                 break;
             case POSITION_SLEEPING:
-                if (real_roomp(i->in_room)->sector_type ==
+                if (roomFindNum(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
                     strcat(buffer, "$c000wis sleeping here in the water");
                 } else {
@@ -1405,7 +1405,7 @@ void list_exits_in_room(struct char_data *ch)
     for (door = 0; door <= 5; door++) {
         exitdata = EXIT(ch, door);
         if (exitdata) {
-            if (real_roomp(exitdata->to_room)) {
+            if (roomFindNum(exitdata->to_room)) {
                 if (GET_RACE(ch) == RACE_MOON_ELF ||
                     GET_RACE(ch) == RACE_GOLD_ELF ||
                     GET_RACE(ch) == RACE_WILD_ELF ||
@@ -1496,7 +1496,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    inroom = real_roomp(ch->in_room);
+    inroom = roomFindNum(ch->in_room);
 
     if (GET_POS(ch) < POSITION_SLEEPING) {
         send_to_char("You can't see anything but stars!\n\r", ch);
@@ -1554,7 +1554,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                 }
 
                 if (affected_by_spell(ch, SKILL_DANGER_SENSE)) {
-                    tmprp = real_roomp(exitp->to_room);
+                    tmprp = roomFindNum(exitp->to_room);
                     if (tmprp && IS_SET(tmprp->room_flags, DEATH)) {
                         send_to_char("You sense great dangers in that "
                                      "direction.\n\r", ch);
@@ -1596,7 +1596,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                             direction[keyword_no].dir);
                     act(buffer, FALSE, ch, 0, 0, TO_ROOM);
 
-                    rp = real_roomp(exitp->to_room);
+                    rp = roomFindNum(exitp->to_room);
                     if (!rp) {
                         send_to_char("You see swirling chaos.\n\r", ch);
                     } else {
@@ -1788,7 +1788,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                  */
 
                 if (!found) {
-                    for (tmp_object = real_roomp(ch->in_room)->contents;
+                    for (tmp_object = roomFindNum(ch->in_room)->contents;
                          tmp_object && !found;
                          tmp_object = tmp_object->next_content) {
                         if (objectIsVisible(ch, tmp_object)) {
@@ -1957,7 +1957,7 @@ void generate_map(struct char_data *ch, int size, int x, int y)
             map[a][b] = 0;
 		}
 	}
-	rm = real_roomp(ch->in_room);
+	rm = roomFindNum(ch->in_room);
     if (!rm) {
         send_to_char("Error??", ch);
         return;
@@ -1997,7 +1997,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 	 * north
 	 */
     if (rp->dir_option[0]) {
-        rm = real_roomp(rp->dir_option[0]->to_room);
+        rm = roomFindNum(rp->dir_option[0]->to_room);
         if (!rm) {
             return;
 		}
@@ -2008,7 +2008,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 	 * east
 	 */
     if (rp->dir_option[1]) {
-        rm = real_roomp(rp->dir_option[1]->to_room);
+        rm = roomFindNum(rp->dir_option[1]->to_room);
         if (!rm) {
             return;
 		}
@@ -2019,7 +2019,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 	 * south
 	 */
     if (rp->dir_option[2]) {
-        rm = real_roomp(rp->dir_option[2]->to_room);
+        rm = roomFindNum(rp->dir_option[2]->to_room);
         if (!rm) {
             return;
 		}
@@ -2030,7 +2030,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 	 * west
 	 */
     if (rp->dir_option[3]) {
-        rm = real_roomp(rp->dir_option[3]->to_room);
+        rm = roomFindNum(rp->dir_option[3]->to_room);
         if (!rm) {
             return;
 		}
@@ -2101,7 +2101,7 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
             continue;
         }
 
-        if (!real_roomp(exitdata->to_room)) {
+        if (!roomFindNum(exitdata->to_room)) {
             if (IS_IMMORTAL(ch)) {
                 sprintf(&buf[strlen(buf)],
                         "%s - swirling chaos of #%ld\n\r",
@@ -2110,7 +2110,7 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
         } else if (exitdata->to_room != NOWHERE) {
             if (IS_IMMORTAL(ch)) {
                 sprintf(&buf[strlen(buf)], "%s - %s", direction[door].exit,
-                        real_roomp(exitdata->to_room)->name);
+                        roomFindNum(exitdata->to_room)->name);
                 if (IS_SET(exitdata->exit_info, EX_SECRET)) {
                     strcat(buf, " (secret)");
                 }
@@ -2130,7 +2130,7 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
                 } else {
                     sprintf(&buf[strlen(buf)], "%s - %s\n\r",
                             direction[door].exit,
-                            real_roomp(exitdata->to_room)->name);
+                            roomFindNum(exitdata->to_room)->name);
                 }
             }
         }
@@ -2889,7 +2889,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
      * If its a whozone commmand
      */
     if (cmd == 234) {
-        rm = real_roomp(ch->in_room);
+        rm = roomFindNum(ch->in_room);
         zd = zone_table + rm->zone;
         oldSendOutput(ch, "%sZone: $c0015%s", color, zd->name);
         if (IS_IMMORTAL(ch)) {
@@ -2932,17 +2932,17 @@ void do_who(struct char_data *ch, char *argument, int cmd)
     if(cmd == 234) {
         /* Whozone */
 
-        zone = real_roomp(ch->in_room)->zone;
+        zone = roomFindNum(ch->in_room)->zone;
 
         for (d = descriptor_list; d; d = d->next) {
             person = (d->original ? d->original : d->character);
-            if (person && person->in_room && real_roomp(person->in_room) &&
+            if (person && person->in_room && roomFindNum(person->in_room) &&
                 GetMaxLevel(person) && CAN_SEE(ch, person) &&
-                real_roomp(person->in_room)->zone == zone && 
+                roomFindNum(person->in_room)->zone == zone && 
                 (!IS_AFFECTED(person, AFF_HIDE) || IS_IMMORTAL(ch))) {
 
                 oldSendOutput(ch, "$c000w%-25s - %s", GET_NAME(person),
-                              real_roomp(person->in_room)->name);
+                              roomFindNum(person->in_room)->name);
                 if (IS_IMMORTAL(ch)) {
                     oldSendOutput(ch, " [%ld]", person->in_room);
                 }
@@ -2955,7 +2955,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
 
         for (d = descriptor_list; d; d = d->next) {
             person = (d->original ? d->original : d->character);
-            if (person && person->in_room && real_roomp(person->in_room) &&
+            if (person && person->in_room && roomFindNum(person->in_room) &&
                 GetMaxLevel(person) && CAN_SEE(ch, person) &&
                 isname2(tbuf, GET_NAME(person)) &&
                 (!IS_AFFECTED(person, AFF_HIDE) || IS_IMMORTAL(ch))) {
@@ -2979,7 +2979,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
         found = 0;
         for (d = descriptor_list; d; d = d->next) {
             person = (d->original ? d->original : d->character);
-            if (person && person->in_room && real_roomp(person->in_room) &&
+            if (person && person->in_room && roomFindNum(person->in_room) &&
                 GetMaxLevel(person) && CAN_SEE(ch, person) &&
                 IS_IMMORTAL(person) && !IS_AFFECTED2(person, AFF2_QUEST)) {
 
@@ -2997,7 +2997,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
         found = 0;
         for (d = descriptor_list; d; d = d->next) {
             person = (d->original ? d->original : d->character);
-            if (person && person->in_room && real_roomp(person->in_room) &&
+            if (person && person->in_room && roomFindNum(person->in_room) &&
                 GetMaxLevel(person) && CAN_SEE(ch, person) &&
                 IS_AFFECTED2(person, AFF2_QUEST)) {
 
@@ -3019,7 +3019,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
         found = 0;
         for (d = descriptor_list; d; d = d->next) {
             person = (d->original ? d->original : d->character);
-            if (person && person->in_room && real_roomp(person->in_room) &&
+            if (person && person->in_room && roomFindNum(person->in_room) &&
                 GetMaxLevel(person) && CAN_SEE(ch, person) && 
                 !IS_IMMORTAL(person) && !IS_AFFECTED2(person, AFF2_QUEST)) {
 
@@ -3189,7 +3189,7 @@ void do_where_person(struct char_data *ch, struct char_data *person,
 
     sprintf(buf, "$c000W%-30s$c000B- $c000Y%s ", PERS(person, ch),
             (person->in_room > -1 ?
-             real_roomp(person->in_room)->name : "$c000RNowhere$c000w"));
+             roomFindNum(person->in_room)->name : "$c000RNowhere$c000w"));
 
     if (IS_IMMORTAL(ch)) {
         sprintf(buf + strlen(buf), "$c000B[$c000W%ld$c000B]$c000w", 
@@ -3213,7 +3213,7 @@ void do_where_object(struct char_data *ch, struct obj_data *obj,
 		 */
         sprintf(buf, "$c000W%-30s$c000B- $c000Y%s $c000B[$c000W%d"
                      "$c000B]$c000w\n\r", obj->short_description,
-                real_roomp(obj->in_room)->name, obj->in_room);
+                roomFindNum(obj->in_room)->name, obj->in_room);
     } else if (obj->carried_by != NULL) {
 		/*
 		 * object carried by monster
@@ -3290,14 +3290,14 @@ void do_where(struct char_data *ch, char *argument, int cmd)
                                  "$c000B[$c000W%ld$c000B] In body of: "
                                  "[$c000W%s$c000B]$c000w\n\r",
                             d->original->player.name,
-                            real_roomp(d->character->in_room)->name,
+                            roomFindNum(d->character->in_room)->name,
                             d->character->in_room,
                             fname(d->character->player.name));
                 } else {
                     sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
                                  "$c000B[$c000W%ld$c000B]$c000w\n\r",
                             d->character->player.name,
-                            real_roomp(d->character->in_room)->name,
+                            roomFindNum(d->character->in_room)->name,
                             d->character->in_room);
                 }
                 append_to_string_block(&sb, buf);
@@ -3322,8 +3322,8 @@ void do_where(struct char_data *ch, char *argument, int cmd)
     for (i = character_list; i; i = i->next) {
         if (isname(name, i->player.name) && CAN_SEE(ch, i)) {
             if (i->in_room != NOWHERE && 
-                (IS_IMMORTAL(ch) || real_roomp(i->in_room)->zone == 
-                                    real_roomp(ch->in_room)->zone)) {
+                (IS_IMMORTAL(ch) || roomFindNum(i->in_room)->zone == 
+                                    roomFindNum(ch->in_room)->zone)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);
@@ -4606,7 +4606,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
     /*
      * Check in room first
      */
-    for (spud = real_roomp(ch->in_room)->people; spud;
+    for (spud = roomFindNum(ch->in_room)->people; spud;
          spud = spud->next_in_room) {
         if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
@@ -4627,8 +4627,8 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         while (range < max_range) {
             range++;
             if (clearpath(ch, rm, i)) {
-                rm = real_roomp(rm)->dir_option[i]->to_room;
-                for (spud = real_roomp(rm)->people; spud;
+                rm = roomFindNum(rm)->dir_option[i]->to_room;
+                for (spud = roomFindNum(rm)->people; spud;
                      spud = spud->next_in_room) {
                     if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE)) {
                         if (IS_NPC(spud)) {
@@ -4796,8 +4796,8 @@ int can_see_linear(struct char_data *ch, struct char_data *targ, int *rng,
         while (range < max_range) {
             range++;
             if (clearpath(ch, rm, i)) {
-                rm = real_roomp(rm)->dir_option[i]->to_room;
-                for (spud = real_roomp(rm)->people; spud;
+                rm = roomFindNum(rm)->dir_option[i]->to_room;
+                for (spud = roomFindNum(rm)->people; spud;
                      spud = spud->next_in_room) {
                     if ((spud == targ) && (CAN_SEE(ch, spud))) {
                         *rng = range;
@@ -4836,7 +4836,7 @@ struct char_data *get_char_linear(struct char_data *ch, char *arg, int *rf,
     rm = ch->in_room;
     i = 0;
     range = 0;
-    for (spud = real_roomp(rm)->people; spud; spud = spud->next_in_room) {
+    for (spud = roomFindNum(rm)->people; spud; spud = spud->next_in_room) {
         if ((isname(tmp, GET_NAME(spud))) && (CAN_SEE(ch, spud))) {
             n_sofar++;
             if (n_sofar == n) {
@@ -4853,8 +4853,8 @@ struct char_data *get_char_linear(struct char_data *ch, char *arg, int *rf,
         while (range < max_range) {
             range++;
             if (clearpath(ch, rm, i)) {
-                rm = real_roomp(rm)->dir_option[i]->to_room;
-                for (spud = real_roomp(rm)->people; spud;
+                rm = roomFindNum(rm)->dir_option[i]->to_room;
+                for (spud = roomFindNum(rm)->people; spud;
                      spud = spud->next_in_room) {
                     if ((isname(tmp, GET_NAME(spud)))
                         && (CAN_SEE(ch, spud))) {
@@ -4928,8 +4928,8 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
     for (d = descriptor_list; d; d = d->next) {
         person = (d->original ? d->original : d->character);
         if (CAN_SEE(ch, d->character) &&
-            (real_roomp(person->in_room)) &&
-            (real_roomp(person->in_room)->zone == 124)) {
+            (roomFindNum(person->in_room)) &&
+            (roomFindNum(person->in_room)->zone == 124)) {
             if (OK_NAME(person, name_mask)) {
                 count++;
                 color_cnt = ((color_cnt + 1) % 9);
@@ -5046,7 +5046,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                     sprintf(tbuf, "%s", levels);
                     sprintf(levels, "%30s", "");
                     strcpy(levels + 10 - (strlen(tbuf) / 2), tbuf);
-                    if (real_roomp(ch->in_room)->zone == 124) {
+                    if (roomFindNum(ch->in_room)->zone == 124) {
                         sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s", levels,
                                 person->player.title ?
                                 person->player.title : GET_NAME(person));

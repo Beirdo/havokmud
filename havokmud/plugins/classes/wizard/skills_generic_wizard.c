@@ -117,7 +117,7 @@ void cast_detect_invisibility(int level, struct char_data *ch, char *arg,
         spell_detect_invisibility(level, ch, ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (in_group(ch, tar_ch) && 
                 !IS_AFFECTED(tar_ch, AFF_DETECT_INVISIBLE)) {
@@ -173,7 +173,7 @@ void cast_detect_magic(int level, struct char_data *ch, char *arg,
         spell_detect_magic(level, ch, ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch && !IS_AFFECTED(tar_ch, SPELL_DETECT_MAGIC)) {
                 spell_detect_magic(level, ch, tar_ch, 0);
@@ -832,7 +832,7 @@ void cast_dispel_magic(int level, struct char_data *ch, char *arg,
         break;
 
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_dispel_magic(level, ch, tar_ch, 0);
@@ -1140,7 +1140,7 @@ void cast_energy_drain(int level, struct char_data *ch, char *arg,
         }
         break;
     case SPELL_TYPE_STAFF:
-        for (victim = real_roomp(ch->in_room)->people;
+        for (victim = roomFindNum(ch->in_room)->people;
              victim; victim = victim->next_in_room) {
             if (!in_group(ch, victim) && victim != ch) {
                 spell_energy_drain(level, ch, victim, 0);
@@ -1195,7 +1195,7 @@ void cast_fear(int level, struct char_data *ch, char *arg, int type,
         spell_fear(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_fear(level, ch, tar_ch, 0);
@@ -1417,7 +1417,7 @@ void cast_refresh(int level, struct char_data *ch, char *arg, int type,
         spell_refresh(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_refresh(level, ch, tar_ch, 0);
@@ -1518,7 +1518,7 @@ void spell_teleport_wo_error(int level, struct char_data *ch,
         return;
     }
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
 
     for (tmp = rp->people; tmp; tmp = tmp2) {
         tmp2 = tmp->next_in_room;
@@ -1601,7 +1601,7 @@ void cast_weakness(int level, struct char_data *ch, char *arg, int type,
         spell_weakness(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_weakness(level, ch, tar_ch, 0);

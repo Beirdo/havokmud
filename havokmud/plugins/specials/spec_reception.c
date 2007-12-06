@@ -456,7 +456,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     action_table[7] = 142;
     action_table[8] = 147;
 
-    for (temp_char = real_roomp(ch->in_room)->people;
+    for (temp_char = roomFindNum(ch->in_room)->people;
          (temp_char) && (!recep); temp_char = temp_char->next_in_room) {
         if (IS_MOB(temp_char) && 
             mob_index[temp_char->nr].func == receptionist) {
@@ -469,7 +469,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
         assert(0);
     }
 
-    if (!(rp = real_roomp(recep->in_room))) {
+    if (!(rp = roomFindNum(recep->in_room))) {
         Log("receptionist found, but not in a valid room");
         return (FALSE);
     }

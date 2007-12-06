@@ -628,7 +628,7 @@ struct char_data *FindAHatee(struct char_data *ch)
     struct char_data *tmp_ch;
     struct room_data *rp;
 #if 0
-    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch; 
+    for (tmp_ch = roomFindNum(ch->in_room)->people; tmp_ch; 
          tmp_ch =tmp_ch->next_in_room) {
 #endif
     if (!ch) {
@@ -638,7 +638,7 @@ struct char_data *FindAHatee(struct char_data *ch)
     if (ch->in_room < 0) {
         return (0);
     }
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     if (!rp) {
 #if 0        
         Log("No room data in FindAHatee ??Crash???");
@@ -705,7 +705,7 @@ struct char_data *FindAFearee(struct char_data *ch)
     if (ch->in_room < 0) {
         return (0);
     }
-    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch;
+    for (tmp_ch = roomFindNum(ch->in_room)->people; tmp_ch;
          tmp_ch = tmp_ch->next_in_room) {
         if (Fears(ch, tmp_ch) && CAN_SEE(ch, tmp_ch) &&
             ch->in_room == tmp_ch->in_room && ch != tmp_ch) {

@@ -1997,8 +1997,8 @@ void act(char *str, int hide_invisible, struct char_data *ch,
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
         to = ch;
-    } else if (real_roomp(ch->in_room)) {
-        to = real_roomp(ch->in_room)->people;
+    } else if (roomFindNum(ch->in_room)) {
+        to = roomFindNum(ch->in_room)->people;
     } else {
         Log("Crash in ACT");
     }
@@ -2163,8 +2163,8 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
         to = ch;
-    } else if (real_roomp(ch->in_room)) {
-        to = real_roomp(ch->in_room)->people;
+    } else if (roomFindNum(ch->in_room)) {
+        to = roomFindNum(ch->in_room)->people;
     } else {
         Log("Crash in ACT");
     }
@@ -2633,10 +2633,10 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                      * room number for immortals 
                      */
                     if (IS_IMMORTAL(ch)) {
-                        rm = real_roomp(ch->in_room);
+                        rm = roomFindNum(ch->in_room);
                         if (!rm) {
                             char_to_room(ch, 0);
-                            rm = real_roomp(ch->in_room);
+                            rm = roomFindNum(ch->in_room);
                         }
                         sprintf(tbuf, "%ld", rm->number);
                     } else {
@@ -2648,10 +2648,10 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                      * zone number for immortals 
                      */
                     if (IS_IMMORTAL(ch)) {
-                        rm = real_roomp(ch->in_room);
+                        rm = roomFindNum(ch->in_room);
                         if (!rm) {
                             char_to_room(ch, 0);
-                            rm = real_roomp(ch->in_room);
+                            rm = roomFindNum(ch->in_room);
                         }
                         sprintf(tbuf, "%ld", rm->zone);
                     } else {
@@ -2682,7 +2682,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                                      "On" : "Off");
                         break;
                     case 's':
-                        rm = real_roomp(ch->in_room);
+                        rm = roomFindNum(ch->in_room);
                         if( !rm ) {
                             strcpy( tbuf, "UNKNOWN" );
                         } else {
@@ -2690,7 +2690,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                         }
                         break;
                     case 'F':
-                        rm = real_roomp(ch->in_room);
+                        rm = roomFindNum(ch->in_room);
                         if(!rm) {
                             strcpy(tbuf, "UNKNOWN");
                         } else {

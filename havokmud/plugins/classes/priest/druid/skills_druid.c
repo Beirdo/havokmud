@@ -154,7 +154,7 @@ void cast_barkskin(int level, struct char_data *ch, char *arg,
         spell_barkskin(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_barkskin(level, ch, tar_ch, 0);
@@ -181,7 +181,7 @@ void spell_chain_lightn(int level, struct char_data *ch,
     lev--;
     count++;
 
-    for (t = real_roomp(ch->in_room)->people; t; t = next) {
+    for (t = roomFindNum(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
         if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
             if (count > 8) {
@@ -330,7 +330,7 @@ void spell_changestaff(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
@@ -522,7 +522,7 @@ void cast_charm_monster(int level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_WAND:
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_charm_monster(level, ch, tar_ch, 0);
@@ -631,7 +631,7 @@ void cast_charm_veggie(int level, struct char_data *ch, char *arg,
         spell_charm_veggie(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch)) {
                 spell_charm_veggie(level, ch, tar_ch, 0);
@@ -651,8 +651,8 @@ void spell_creeping_death(int level, struct char_data *ch,
     struct affected_type af;
     struct char_data *cd;
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS) ||
-        IS_SET(real_roomp(ch->in_room)->sector_type, SECT_INSIDE)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS) ||
+        IS_SET(roomFindNum(ch->in_room)->sector_type, SECT_INSIDE)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
@@ -757,7 +757,7 @@ void spell_elemental_summoning(int level, struct char_data *ch,
     vnum = spell - SPELL_FIRE_SERVANT;
     vnum += FIRE_ELEMENTAL;
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
@@ -891,12 +891,12 @@ void spell_entangle(int level, struct char_data *ch,
 {
     struct affected_type af;
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
 
-    if (real_roomp(ch->in_room)->sector_type != SECT_FOREST) {
+    if (roomFindNum(ch->in_room)->sector_type != SECT_FOREST) {
         send_to_char("You must cast this spell in the forest!\n\r", ch);
         return;
     }
@@ -952,7 +952,7 @@ void cast_entangle(int level, struct char_data *ch, char *arg,
         spell_entangle(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (!in_group(tar_ch, ch) && !IS_IMMORTAL(tar_ch)) {
                 spell_entangle(level, ch, tar_ch, 0);
@@ -1038,7 +1038,7 @@ void cast_fireshield(int level, struct char_data *ch, char *arg, int type,
         spell_fireshield(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
+        for (tar_ch = roomFindNum(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
             if (tar_ch != ch) {
                 spell_fireshield(level, ch, tar_ch, 0);
@@ -1069,7 +1069,7 @@ void spell_firestorm(int level, struct char_data *ch,
     act("$n sends a firestorm whirling across the room!\n\r",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
+    for (tmp_victim = roomFindNum(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         rdam = dam;
@@ -1301,7 +1301,7 @@ void spell_insect_growth(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
@@ -1429,7 +1429,7 @@ void spell_plant_gate(int level, struct char_data *ch,
      * find the tree in the room
      */
 
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     for (o = rp->contents; o; o = o->next_content) {
         if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
@@ -1468,7 +1468,7 @@ void spell_plant_gate(int level, struct char_data *ch,
         return;
     }
 
-    if (!real_roomp(obj->in_room)) {
+    if (!roomFindNum(obj->in_room)) {
         send_to_char("That tree is nowhere to be found!\n\r", ch);
         return;
     }
@@ -1478,7 +1478,7 @@ void spell_plant_gate(int level, struct char_data *ch,
     act("You place a hand on $p and its surface wavers as a large gate opens "
         "within it!", FALSE, ch, o, 0, TO_CHAR);
 
-    for (tch = real_roomp(ch->in_room)->people; tch; tch = tch2) {
+    for (tch = roomFindNum(ch->in_room)->people; tch; tch = tch2) {
         tch2 = tch->next_in_room;
         if (in_group(tch, ch) && GET_POS(tch) > POSITION_SLEEPING &&
             tch != ch) {
@@ -1560,11 +1560,11 @@ void spell_reincarnate(int level, struct char_data *ch,
     if (!obj) {
         return;
     }
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
-    if (real_roomp(ch->in_room)->sector_type != SECT_FOREST) {
+    if (roomFindNum(ch->in_room)->sector_type != SECT_FOREST) {
         send_to_char("You must cast this spell in the forest!\n\r", ch);
         return;
     }
@@ -1825,7 +1825,7 @@ void spell_sunray(int level, struct char_data *ch,
     /*
      * blind all in room
      */
-    for (t = real_roomp(ch->in_room)->people; t; t = n) {
+    for (t = roomFindNum(ch->in_room)->people; t; t = n) {
         n = t->next_in_room;
         if (!in_group(ch, t) && !IS_IMMORTAL(t)) {
             spell_blindness(level, ch, t, obj);
@@ -1833,7 +1833,7 @@ void spell_sunray(int level, struct char_data *ch,
              * if not arena, scrap any ANTI-SUN equipment worn by
              * ungroupies
              */
-            if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
+            if (!IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
                 for (j = 0; j <= (MAX_WEAR - 1); j++) {
                     if (t->equipment[j] && t->equipment[j]->item_number >= 0 &&
                         IS_OBJ_STAT(t->equipment[j], anti_flags, 
@@ -1897,7 +1897,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     /*
      * find the tree in the room
      */
-    rp = real_roomp(ch->in_room);
+    rp = roomFindNum(ch->in_room);
     for (o = rp->contents; o; o = o->next_content) {
         if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
@@ -1937,7 +1937,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
         return;
     }
 
-    if (!real_roomp(obj->in_room)) {
+    if (!roomFindNum(obj->in_room)) {
         send_to_char("That tree is nowhere to be found.\n\r", ch);
         return;
     }
@@ -1978,7 +1978,7 @@ void spell_tree(int level, struct char_data *ch,
     struct char_data *mob;
     int             mobn;
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
@@ -2091,7 +2091,7 @@ void spell_veggie_growth(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+    if (IS_SET(roomFindNum(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
