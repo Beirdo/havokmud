@@ -209,7 +209,8 @@ void MobScavenge(struct char_data *ch)
              obj; obj = obj->next_content) {
             if (IS_CORPSE(obj)) {
                 cc++;
-                if (obj->contains && IsHumanoid(ch) && !number(0, 4)) {
+                if ( LinkedListCount( obj->containList ) && IsHumanoid(ch) && 
+                     !number(0, 4)) {
                     sprintf(buf, "get all %d.corpse", cc);
                     command_interpreter(ch, buf);
                     return;

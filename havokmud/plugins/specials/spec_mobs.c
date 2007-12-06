@@ -358,11 +358,14 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         next_r_obj = i->next_content;
         if (IS_CORPSE(i)) {
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
-            for (temp = i->contains; temp; temp = next_obj) {
-                next_obj = temp->next_content;
-                objectTakeFromObject(temp);
+            LinkedListLock( i->containList );
+            for( item = i->containList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                temp = CONTAIN_LINK_TO_OBJ(item);
+                objectTakeFromObject(temp, LOCKED);
                 objectPutInRoom(temp, ch->in_room);
             }
+            LinkedListUnlock( i->containList );
             objectExtract(i);
             return (TRUE);
         }
@@ -2068,6 +2071,8 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     int             i,
                     index;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (cmd && cmd != 156) {
         return (FALSE);
@@ -2119,9 +2124,11 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                     /*
                      * assume 1st corpse is victim's
                      */
-                    while (co->contains) {
-                        o = co->contains;
-                        objectTakeFromObject(o);
+                    LinkedListLock( co->containList );
+                    for( item = co->containList->head; item; item = nextItem ) {
+                        nextItem = item->next;
+                        o = CONTAIN_LINK_TO_OBJ(item);
+                        objectTakeFromObject(o, LOCKED);
                         objectGiveToChar(o, ch);
 
                         if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
@@ -2142,6 +2149,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
 
                         }
                     }
+                    LinkedListUnlock( co->containList );
                     objectExtract(co);
                     return (TRUE);
                 }
@@ -4454,6 +4462,8 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
                    *k,
                    *next;
     Keywords_t     *key;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
@@ -4468,11 +4478,15 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
         if (IS_CORPSE(i) && KeywordsMatch(key, &j->keywords)) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
-            for (k = j->contains; k; k = next) {
-                next = k->next_content;
-                objectTakeFromObject(k);
+
+            LinkedListLock( j->containList );
+            for( item = j->containList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                k = CONTAIN_LINK_TO_OBJ(item);
+                objectTakeFromObject(k, LOCKED);
                 objectPutInRoom(k, ch->in_room);
             }
+            LinkedListUnlock( j->containList );
             objectExtract(j);
             ch->generic = 10;
             FreeKeywords(key, TRUE);
@@ -5784,6 +5798,7 @@ int archer_sub(struct char_data *ch)
     char            buf[MAX_STRING_LENGTH];
     struct char_data *td;
     char           *temp;
+    LinkedListItem_t   *item;
 
     if (ch->equipment[WIELD] && 
         ch->equipment[WIELD]->type_flag == ITEM_TYPE_FIREWEAPON) {
@@ -5807,10 +5822,11 @@ int archer_sub(struct char_data *ch)
                  */
                 if (ITEM_TYPE(spid) == ITEM_TYPE_CONTAINER) {
                     found = FALSE;
-                    for (obj_object = spid->contains;
-                         obj_object && !found; obj_object = next_obj) {
-                        next_obj = obj_object->next_content;
-                        if (obj_object->type_flag == ITEM_TYPE_MISSILE && 
+                    LinkedListLock( spid->containList );
+                    for( item = spid->containList->head; item & !found;
+                         item = item->next ) {
+                        obj_object = CONTAIN_LINK_TO_OBJ(item);
+                        if (ITEM_TYPE(obj_object) == ITEM_TYPE_MISSILE && 
                             obj_object->value[3] == bow->value[2]) {
                             /*
                              * gets arrow out of quiver, next round
@@ -5820,6 +5836,7 @@ int archer_sub(struct char_data *ch)
                             found = TRUE;
                         }
                     }
+                    LinkedListUnlock( spid->containList );
                 }
             }
 
@@ -5854,16 +5871,17 @@ int archer_sub(struct char_data *ch)
      */
     if (!bow) {
         for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (spid->type_flag == ITEM_TYPE_FIREWEAPON) {
+            if (ITEM_TYPE(spid) == ITEM_TYPE_FIREWEAPON) {
                 bow = spid;
             }
 
             if (ITEM_TYPE(spid) == ITEM_TYPE_CONTAINER) {
                 found = FALSE;
-                for (obj_object = spid->contains;
-                     obj_object && !found; obj_object = next_obj) {
-                    next_obj = obj_object->next_content;
-                    if (obj_object->type_flag == ITEM_TYPE_FIREWEAPON) {
+                LinkedListLock( spid->containList );
+                for( item = spid->containList; item && !found; 
+                     item = item->next ) {
+                    obj_object = CONTAIN_LINK_TO_OBJ(item);
+                    if (ITEM_TYPE(obj_object) == ITEM_TYPE_FIREWEAPON) {
                         /*
                          * gets bow out of container 
                          */
@@ -5872,6 +5890,7 @@ int archer_sub(struct char_data *ch)
                         bow = obj_object;
                     }
                 }
+                LinkedListUnlock( spid->containList );
             }
         }
 
@@ -9794,7 +9813,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
     send_to_room("Still laughing like a madman, it quaffs a misty potion and "
                  "fades out of existence.\n\r", mob->in_room);
 
-    objectTakeFromObject(trinket);
+    objectTakeFromObject(trinket, UNLOCKED);
     objectGiveToChar(trinket, mob);
     char_from_room(mob);
 
@@ -10304,6 +10323,8 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     struct obj_data *co,
                    *o;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (cmd) {
         return (FALSE);
@@ -10343,11 +10364,14 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                     /* 
                      * assume 1st corpse is victim's 
                      */
-                    while (co->contains) {
-                        o = co->contains;
-                        objectTakeFromObject(o);
+                    LinkedListLock( co->containList );
+                    for( item = co->containList->head; item; item = nextItem ) {
+                        nextItem = item->next;
+                        o = CONTAIN_LINK_TO_OBJ(item);
+                        objectTakeFromObject(o, LOCKED);
                         objectPutInRoom(o, ch->in_room);
                     }
+                    LinkedListUnlock( co->containList );
 
                     /* remove the corpse */
                     objectExtract(co);
@@ -10426,11 +10450,16 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 for (co = rp->contents; co; co = co->next_content) {
                     if (IS_CORPSE(co)) {
                         /* assume 1st corpse is victim's */
-                        while (co->contains) {
-                            o = co->contains;
-                            objectTakeFromObject(o);
+                        LinkedListLock( co->containList );
+                        for( item = co->containList->head; item; 
+                             item = nextItem ) {
+                            nextItem = item->next;
+                            o = CONTAIN_LINK_TO_OBJ(item);
+                            objectTakeFromObject(o, LOCKED);
                             objectPutInRoom(o, ch->in_room);
                         }
+                        LinkedListUnlock( co->containList );
+
                         /* 
                          * remove the corpse 
                          */
@@ -11317,7 +11346,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 obj = unequip_char(ch, obj1->eq_pos);
                 objectGiveToChar(obj, ch);
             } else if (!obj1->carried_by && obj1->in_obj) {
-                objectTakeFromObject(obj1);
+                objectTakeFromObject(obj1, UNLOCKED);
                 objectGiveToChar(obj1, ch);
             } else {
                 Log("where is this item!?! bad spot in master_smith");
@@ -11343,7 +11372,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 obj = unequip_char(ch, obj2->eq_pos);
                 objectGiveToChar(obj, ch);
             } else if (!obj2->carried_by && obj2->in_obj) {
-                objectTakeFromObject(obj2);
+                objectTakeFromObject(obj2, UNLOCKED);
                 objectGiveToChar(obj2, ch);
             } else {
                 Log("where is this item!?! bad spot in master_smith");
@@ -11369,7 +11398,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 obj = unequip_char(ch, obj3->eq_pos);
                 objectGiveToChar(obj, ch);
             } else if (!obj3->carried_by && obj3->in_obj) {
-                objectTakeFromObject(obj3);
+                objectTakeFromObject(obj3, UNLOCKED);
                 objectGiveToChar(obj3, ch);
             } else {
                 Log("where is this item!?! bad spot in master_smith");
@@ -11395,7 +11424,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 obj = unequip_char(ch, obj4->eq_pos);
                 objectGiveToChar(obj, ch);
             } else if (!obj4->carried_by && obj4->in_obj) {
-                objectTakeFromObject(obj4);
+                objectTakeFromObject(obj4, UNLOCKED);
                 objectGiveToChar(obj4, ch);
             } else {
                 Log("where is this item!?! bad spot in master_smith");
@@ -11421,7 +11450,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 obj = unequip_char(ch, obj5->eq_pos);
                 objectGiveToChar(obj, ch);
             } else if (!obj5->carried_by && obj5->in_obj) {
-                objectTakeFromObject(obj5);
+                objectTakeFromObject(obj5, UNLOCKED);
                 objectGiveToChar(obj5, ch);
             } else {
                 Log("where is this item!?! bad spot in master_smith");
@@ -11827,7 +11856,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
 
         for (j = 0; j < MAX_WEAR; j++) {
             if ((tempobj = mob->equipment[j])) {
-                if (tempobj->contains) {
+                if (LinkedListCount(tempobj->containList)) {
                     objectGiveToChar(unequip_char(mob, j), mob);
                 } else {
                     MakeScrap(mob, NULL, tempobj);
@@ -11836,13 +11865,17 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         }
 
         while ((tempobj = mob->carrying)) {
-            if (!tempobj->contains) {
+            if (!LinkedListCount(tempobj->containList)) {
                 MakeScrap(mob, NULL, tempobj);
             } else {
-                while ((nextobj = tempobj->contains)) {
-                    objectTakeFromObject(nextobj);
+                LinkedListLock( tempobj->containList );
+                for( item = tempobj->containList->head; item; item = next ) {
+                    next = item->next;
+                    nextobj = CONTAIN_LINK_TO_OBJ(item);
+                    objectTakeFromObject(nextobj, LOCKED);
                     objectGiveToChar(nextobj, mob);
                 }
+                LinkedListUnlock( tempobj->containList );
             }
         }
 
@@ -12155,11 +12188,14 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * it's in a container take out items until it's not
                  */
                 parentobj = theitem->in_obj;
-                while (parentobj->contains) {
-                    tempobj = parentobj->contains;
-                    objectTakeFromObject(tempobj);
+                LinkedListLock( parentobj->containList );
+                for( item = parentobj->containList->head; item; item = next ) {
+                    next = item->next;
+                    tempobj = CONTAIN_LINK_TO_OBJ(item);
+                    objectTakeFromObject(tempobj, LOCKED);
                     objectPutInObject(tempobj, ventobj);
                 }
+                LinkedListUnlock( parentobj->containList );
             }
         }
         return (FALSE);

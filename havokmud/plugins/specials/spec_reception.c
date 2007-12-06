@@ -37,6 +37,15 @@ int ReadObjs(FILE * fl, struct obj_file_u *st);
  * Routines used for the "Offer"                                           *
  ************************************************************************* */
 
+void add_obj_cost_chain(struct char_data *ch, struct char_data *re,
+                        struct obj_data *obj, struct obj_cost *cost)
+{
+    while( obj ) {
+        add_obj_cost(ch, re, obj, cost);
+        obj = obj->next_contents;  /* ->carrying list */
+    }
+}
+
 void add_obj_cost(struct char_data *ch, struct char_data *re,
                   struct obj_data *obj, struct obj_cost *cost)
 {
@@ -45,83 +54,91 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
     char           *str_pos,
                    *i;
     int             temp;
+    LinkedListItem_t   *item;
 
     /*
-     * Add cost for an item and it's contents, and next->contents 
+     * Add cost for an item and it's contents
      */
 
-    if (obj) {
-        if (obj->item_number > -1 && cost->ok && 
-            ItemEgoClash(ch, obj, 0) > -5) {
-            if (obj->cost_per_day > 9000) {
-                /* 
-                 * 1/2 price rent 
-                 */
-                temp = MAX(0, obj->cost_per_day);
-            } else {
-                temp = 0;
-            }
+    if (!obj) {
+        return;
+    }
 
-            if (!IS_RARE(obj) || obj->cost_per_day <= 10000) {
-                /* 
-                 * Let's not charge for normal items 
-                 */
-                temp = 0;
-            }
+    if (obj->item_number > -1 && cost->ok && ItemEgoClash(ch, obj, 0) > -5) {
+        if (obj->cost_per_day > 9000) {
+            /* 
+             * 1/2 price rent 
+             */
+            temp = MAX(0, obj->cost_per_day);
+        } else {
+            temp = 0;
+        }
 
-            cost->total_cost += temp;
+        if (!IS_RARE(obj) || obj->cost_per_day <= 10000) {
+            /* 
+             * Let's not charge for normal items 
+             */
+            temp = 0;
+        }
 
-            if (re) {
-                /* 
-                 * set up starting position 
-                 */
-                str_pos = tmp_str;
-                for (i = obj->short_description; *i; i++) {
-                    /*
-                     * If we find an ANSI string, add spaces to the left
-                     * of the string. This accounts for correct alignment
-                     * b/c the ansi code will be taken out. 
-                     */
-                    if (*i == '$' && (*(i + 1) == 'c' || (*i + 1) == 'C')) {
-                        memcpy(str_pos, "      ", 6);
-                        str_pos += 6;
-                    }
-                }
+        cost->total_cost += temp;
 
+        if (re) {
+            /* 
+             * set up starting position 
+             */
+            str_pos = tmp_str;
+            for (i = obj->short_description; *i; i++) {
                 /*
-                 * Now fill in the original description, making sure not
-                 * to overrun the buffer. 
+                 * If we find an ANSI string, add spaces to the left
+                 * of the string. This accounts for correct alignment
+                 * b/c the ansi code will be taken out. 
                  */
-                strncpy(str_pos, obj->short_description,
-                        &tmp_str[MAX_INPUT_LENGTH * 2 - 1] - str_pos);
-
-                if (IS_RARE(obj)) {
-                    sprintf(buf, "%30s : %d coins/day  $c000W[$c000RRARE"
-                                 "$c000W]$c0007\n\r", tmp_str, temp);
-                } else {
-                    sprintf(buf, "%30s : %d coins/day\n\r", tmp_str, temp);
+                if (*i == '$' && (*(i + 1) == 'c' || (*i + 1) == 'C')) {
+                    memcpy(str_pos, "      ", 6);
+                    str_pos += 6;
                 }
-
-                /*
-                 * And send it to the player 
-                 */
-                send_to_char(buf, ch);
             }
-            cost->no_carried++;
-            add_obj_cost(ch, re, obj->contains, cost);
-            add_obj_cost(ch, re, obj->next_content, cost);
-        } else if (cost->ok) {
-            if (re) {
-                act("$c0013[$c0015$n$c0013] tells you 'I refuse storing $p'",
-                    FALSE, re, obj, ch, TO_VICT);
-                cost->ok = FALSE;
+
+            /*
+             * Now fill in the original description, making sure not
+             * to overrun the buffer. 
+             */
+            strncpy(str_pos, obj->short_description,
+                    &tmp_str[MAX_INPUT_LENGTH * 2 - 1] - str_pos);
+
+            if (IS_RARE(obj)) {
+                sprintf(buf, "%30s : %d coins/day  $c000W[$c000RRARE"
+                             "$c000W]$c0007\n\r", tmp_str, temp);
             } else {
+                sprintf(buf, "%30s : %d coins/day\n\r", tmp_str, temp);
+            }
+
+            /*
+             * And send it to the player 
+             */
+            send_to_char(buf, ch);
+        }
+        cost->no_carried++;
+
+        if( LinkedListCount( obj->containList ) ) {
+            LinkedListLock( obj->containList );
+            for( item = obj->containList->head; item; item = item->next ) {
+                add_obj_cost( ch, re, CONTAIN_LINK_TO_OBJ(item), cost );
+            }
+            LinkedListUnlock( obj->containList );
+        }
+    } else if (cost->ok) {
+        if (re) {
+            act("$c0013[$c0015$n$c0013] tells you 'I refuse storing $p'",
+                FALSE, re, obj, ch, TO_VICT);
+            cost->ok = FALSE;
+        } else {
 #ifdef DUPLICATES
-                act("Sorry, but $p don't keep in storage.", FALSE, ch, obj,
-                    0, TO_CHAR);
+            act("Sorry, but $p don't keep in storage.", FALSE, ch, obj,
+                0, TO_CHAR);
 #endif
-                cost->ok = FALSE;
-            }
+            cost->ok = FALSE;
         }
     }
 }
@@ -161,7 +178,7 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         return (FALSE);
     }
 
-    add_obj_cost(ch, receptionist, ch->carrying, cost);
+    add_obj_cost_chain(ch, receptionist, ch->carrying, cost);
     limited_items += CountLims(ch->carrying);
 
     for (i = 0; i < MAX_WEAR; i++) {

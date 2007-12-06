@@ -31,6 +31,8 @@ void show_who_immortal(struct char_data *ch, struct char_data *person,
                        char type);
 void show_who_mortal(struct char_data *ch, struct char_data *person, char type);
 void do_help_common(struct char_data *ch, char *argument, int type);
+void list_obj_in_pile(void *pile, PileFirst_t getFirst, PileNext_t getNext,
+                      int offset, struct char_data *ch);
 
 
 int singular(struct obj_data *o)
@@ -121,70 +123,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch,
                 strcat(buffer, "..They hum with power");
 			}
         }
-        /*
-         * Commented out for now.. no more container fullness -Lennya
-         * 20030408
-         */
-#if 0
-        if (singular(object) && object->type_flag == ITEM_TYPE_CONTAINER) {
-        	if (!object->value[2] && !object->value[3]) {
-			/*
-			 * check for ShowFull, IsCorpse
-			 */
-        	    for(i=object->contains;i;i=i->next_content) {
-        			weight +=(float)i->weight;
-        		}
-        	/*
-        	 * calculate how much stuff is in this bag
-        	 */
-        		fullperc = ((float) weight / ((float)
-            	object->value[0] -((float)object->weight -
-            	weight)-1));
-        	/*
-        	 * 0% <= fullperc < 5 Empty
-        	 */
-            	if(fullperc < .05) {
-                strcat(buffer, "..It is empty");
-				}
-        	/*
-        	 * 5 <= fullperc < 20 Almost Empty
-        	 */
-              	  else if(fullperc < .2) {
-        			strcat(buffer, "..It is almost empty");
-				}
-        	/*
-        	 * 20 <= fullperc < 40 Less than Half
-        	 */
-        	  	  else if(fullperc < .4) {
-        			strcat(buffer, "..Its less than half full");
-				}
-        	/*
-        	 * 40 <= fullperc < 60 About Half
-        	 */
-        	  	  else if(fullperc < .6) {
-        			strcat(buffer, "..Its about half full");
-				}
-        	/*
-        	 * 60 <= fullperc < 80 More than half
-        	 */
-        	  	  else if(fullperc < .8) {
-        			strcat(buffer, "..Its more than half full");
-				}
-       	 	/*
-       	 	 * 80 <= fullperc < 95 Almost full
-       	 	 */
-        	  	  else if(fullperc < .95) {
-        			strcat(buffer, "..It is almost full");
-				}
-        	/*
-        	 * 95 <= fullperc < 100 Full
-        	 */
-        	  	  else if(fullperc >= .95) {
-        			strcat(buffer, "..It is full");
-				}
-        	}
-        }
-#endif
+
         if (object->type_flag == ITEM_TYPE_ARMOR) {
             if (object->value[0] < (object->value[1] / 4)) {
                 if (singular(object)) {
@@ -358,31 +297,110 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
     }
 }
 
+typedef struct obj_data *(*getFirst)( void *pile, int offset );
+typedef struct obj_data *(*getNextChain)( void *pile, int offset, 
+                                          struct obj_data *obj );
+
+struct obj_data *getFirstChain( void *pile, int offset )
+{
+    struct obj_data    *chain;
+    struct obj_data    *obj;
+
+    chain = (struct obj_data *)pile;
+    obj = chain;
+
+    return( obj );
+}
+
+struct obj_data *getNextChain( void *pile, int offset, struct obj_data *obj )
+{
+    if( !obj ) {
+        return( NULL );
+    }
+    obj = obj->next_content;
+
+    return( obj );
+}
+
 void list_obj_in_heap(struct obj_data *list, struct char_data *ch)
 {
+    list_obj_in_pile( list, getFirstChain, getNextChain, 0, ch );
+}
+
+struct obj_data *getFirstList( void *pile, int offset )
+{
+    LinkedList_t       *list;
+    LinkedListItem_t   *item;
+    struct obj_data    *obj;
+
+    list = (LinkedList *)pile;
+    if( !list ) {
+        return( NULL );
+    }
+
+    /* Assumes the list is locked */
+    item = list->head;
+    obj = (struct obj_data *)PTR_AT_OFFSET(-offset, item);
+
+    return( obj );
+}
+
+struct obj_data *getNextList( void *pile, int offset, struct obj_data *obj )
+{
+    LinkedListItem_t   *item;
+
+    if( !obj ) {
+        return( NULL );
+    }
+
+    item = (LinkedListItem_t *)PTR_AT_OFFSET(offset, obj);
+    if( !item ) {
+        return( NULL );
+    }
+
+    /* Assumes the list is locked */
+    item = item->next;
+    obj = (struct obj_data *)PTR_AT_OFFSET(-offset, item);
+
+    return( obj );
+}
+
+void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch)
+{
+    if( !list ) {
+        return;
+    }
+
+    LinkedListLock( list );
+    list_obj_in_pile( list, getFirstList, getNextList, offset, ch );
+    LinkedListUnlock( list );
+}
+
+#define MAX_COND_PTR 50
+void list_obj_in_pile(void *pile, PileFirst_t getFirst, PileNext_t getNext,
+                      int offset, struct char_data *ch)
+{
     struct obj_data *i,
-                   *cond_ptr[50];
+                   *cond_ptr[MAX_COND_PTR];
     int             k,
                     cond_top,
-                    cond_tot[50],
+                    cond_tot[MAX_COND_PTR],
                     found = FALSE;
 
     int             Num_Inventory = 1;
     cond_top = 0;
 
-    for (i = list; i; i = i->next_content) {
+    for (i = getFirst(pile, offset); i; i = getNext(pile, offset, i) {
         if (objectIsVisible(ch, i)) {
-            if (cond_top < 50) {
+            if (cond_top < MAX_COND_PTR) {
                 found = FALSE;
-                for (k = 0; (k < cond_top && !found); k++) {
+                for (k = 0; k < cond_top && !found; k++) {
                     if (cond_top > 0) {
                         if ((i->item_number == cond_ptr[k]->item_number) &&
-                            (i->short_description
-                             && cond_ptr[k]->short_description
-                             &&
-                             (!strcmp
-                              (i->short_description,
-                               cond_ptr[k]->short_description)))) {
+                            (i->short_description && 
+                             cond_ptr[k]->short_description &&
+                             (!strcmp(i->short_description,
+                                      cond_ptr[k]->short_description)))) {
                             cond_tot[k] += 1;
                             found = TRUE;
                         }
@@ -394,12 +412,10 @@ void list_obj_in_heap(struct obj_data *list, struct char_data *ch)
                     cond_top += 1;
                 }
             } else {
+                oldSendOutput(ch, "[%2d] ", Num_Inventory++);
                 show_obj_to_char(i, ch, 2);
             }
         }
-        /*
-         * else can't see
-         */
     }
 
     if (cond_top) {
@@ -1460,6 +1476,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     struct room_data *inroom;
     Keywords_t     *secret;
     char           *temp;
+    LinkedListItem_t   *item;
     static char    *keywords[] = {
         "north",
         "east",
@@ -1638,21 +1655,26 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                  * If it's not a corpse, calculate how
                                  * much stuff is in this container
                                  */
-                                for (i = tmp_object->contains; i;
-                                     i = i->next_content) {
+                                LinkedListLock( tmp_object->containList );
+                                for( item = tmp_object->containList->head;
+                                     item; item = item->next ) {
+                                    i = CONTAIN_LINK_TO_OBJ(item);
                                     weight += (float) i->weight;
                                 }
-                                fullperc = (((float) weight /
+
+                                /**
+                                 * @todo this is messy!
+                                 */
+                                fullperc = 100.0 * (weight /
                                             ((float) tmp_object->value[0] -
                                              ((float) tmp_object->weight - 
-                                              weight) - 1)) *
-                                            100.0);
+                                              weight) - 1));
                                 sprintf(buffer, "%s %.0f%s full",
                                         fname(tmp_object->short_description), 
                                               fullperc, "%");
                             } else {
                                 /*
-                                 * it's a corpse - Lennya 20030320
+                                 * it's a corpse
                                  */
                                 sprintf(buffer, "%s ", 
                                         fname(tmp_object->short_description));
@@ -1670,7 +1692,8 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                 send_to_char(" (used) : \n\r", ch);
                                 break;
                             }
-                            list_obj_in_heap(tmp_object->contains, ch);
+                            list_obj_in_list(tmp_object->containList, 
+                                             CONTAIN_LINK_OFFSET, ch);
                         } else {
                             send_to_char("It is closed.\n\r", ch);
                         }

@@ -214,7 +214,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
 
         db_delete_mail_message(messageNum[i]);
 
-        objectKeywordTreeAdd( tmp_obj );
+        objectKeywordTreeAdd( objectKeywordTree, tmp_obj );
         objectTypeTreeAdd( tmp_obj );
 
         objectGiveToChar(tmp_obj, ch);

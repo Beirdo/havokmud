@@ -54,6 +54,7 @@ void LinkedListLock( LinkedList_t *list )
     }
 
     pthread_mutex_lock( &list->mutex );
+    list->locked = TRUE;
 }
 
 
@@ -65,6 +66,16 @@ void LinkedListUnlock( LinkedList_t *list )
     }
 
     pthread_mutex_unlock( &list->mutex );
+    list->locked = FALSE;
+}
+
+bool LinkedListIsLocked( LinkedList_t *list )
+{
+    if( list == NULL ) {
+        return( FALSE );
+    }
+
+    return( list->locked );
 }
 
 
@@ -82,6 +93,7 @@ LinkedList_t *LinkedListCreate( void )
     list->head = NULL;
     list->tail = NULL;
     pthread_mutex_init( &list->mutex, NULL );
+    list->locked = FALSE;
     list->items = 0;
 
     return( list );

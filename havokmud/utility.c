@@ -264,15 +264,19 @@ void Zwrite(FILE * fp, char cmd, int tf, int arg1, int arg2, int arg3,
 
 void RecZwriteObj(FILE * fp, struct obj_data *o)
 {
-    struct obj_data *t;
-    struct index_data *index;
+    struct obj_data    *t;
+    struct index_data  *index;
+    LinkedListItem_t   *item;
 
     if (ITEM_TYPE(o) == ITEM_TYPE_CONTAINER) {
-        for (t = o->contains; t; t = t->next_content) {
+        LinkedListLock( o->containList );
+        for( item = o->containList->head; item; item = item->next ) {
+            t = CONTAIN_LINK_TO_OBJ(item);
             Zwrite(fp, 'P', 1, t->item_number, t->index->number, o->item_number,
                    t->short_description);
             RecZwriteObj(fp, t);
         }
+        LinkedListUnlock( o->containList );
     }
 }
 
@@ -3017,14 +3021,18 @@ int RecCompObjNum(struct obj_data *o, int obj_num)
 
     int             total = 0;
     struct obj_data *i;
+    LinkedListItem_t *item;
 
     if (o->item_number == obj_num) {
         total = 1;
     }
     if (ITEM_TYPE(o) == ITEM_TYPE_CONTAINER) {
-        for (i = o->contains; i; i = i->next_content) {
+        LinkedListLock( o->containList );
+        for( item = o->containList->head; item; item = item->next ) {
+            i = CONTAIN_LINK_TO_OBJ(item);
             total += RecCompObjNum(i, obj_num);
         }
+        LinkedListUnlock( o->containList );
     }
     return (total);
 }
@@ -3850,21 +3858,32 @@ void SpaceForSkills(struct char_data *ch)
 
 int CountLims(struct obj_data *obj)
 {
-    int             total = 0;
+    int                 total = 0;
+    LinkedListItem_t   *item;
+    struct obj_data    *subobj;
 
     if (!obj) {
         return (0);
     }
-    if (obj->contains)
-        total += CountLims(obj->contains);
-    if (obj->next_content)
+
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = item->next ) {
+        subobj = CONTAIN_LINK_TO_OBJ(item);
+        total += CountLims(subobj);
+    }
+    LinkedListUnlock( obj->containList );
+
+    if (obj->next_content) {
         total += CountLims(obj->next_content);
+    }
+
     if (IS_RARE(obj)) {
         /*
          * LIM_ITEM_COST_MIN)
          */
         total += 1;
     }
+
     return (total);
 }
 
@@ -3874,20 +3893,24 @@ int CountLims(struct obj_data *obj)
  */
 struct obj_data *find_a_rare(struct obj_data *obj)
 {
-    struct obj_data *rare;
+    struct obj_data    *rare;
+    struct obj_data    *subobj;
+    LinkedListItem_t   *item;
 
     if (!obj) {
         return (NULL);
     }
-    if (obj->contains) {
-        /*
-         * check contents
-         */
-        rare = find_a_rare(obj->contains);
-        if (rare) {
-            return (rare);
+
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = item->next ) {
+        subobj = CONTAIN_LINK_TO_OBJ(item);
+        rare = find_a_rare( subobj );
+        if( rare ) {
+            LinkedListUnlock( obj->containList );
+            return( rare );
         }
     }
+    LinkedListUnlock( obj->containList );
 
     if (IS_RARE(obj)) {
         /*

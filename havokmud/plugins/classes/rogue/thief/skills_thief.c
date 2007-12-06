@@ -326,17 +326,23 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 
 int remove_trap(struct char_data *ch, struct obj_data *trap)
 {
-    int             num;
-    struct obj_data *t;
+    int                 num;
+    struct obj_data    *t;
+    LinkedListItem_t   *item;
+
     /*
      * to disarm traps inside item 
      */
     if (ITEM_TYPE(trap) == ITEM_TYPE_CONTAINER) {
-        for (t = trap->contains; t; t = t->next_content) {
+        LinkedListLock( trap->containList );
+        for( item = trap->containList->head; item; item = item->next ) {
+            t = CONTAIN_LINK_TO_OBJ(item);
             if (ITEM_TYPE(t) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(t) > 0) {
+                LinkedListUnlock( trap->containList );
                 return (remove_trap(ch, t));
             }
         }
+        LinkedListUnlock( trap->containList );
     } else if (ITEM_TYPE(trap) != ITEM_TYPE_TRAP) {
         send_to_char("That's no trap!\n\r", ch);
         return (FALSE);

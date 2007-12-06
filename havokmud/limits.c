@@ -1142,34 +1142,32 @@ void ObjFromCorpse(struct obj_data *c)
 {
     struct obj_data *jj,
                    *next_thing;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
-    for (jj = c->contains; jj; jj = next_thing) {
-        /* 
-         * Next in inventory 
-         */
-        next_thing = jj->next_content;
-        if (jj->in_obj) {
-            objectTakeFromObject(jj);
-            if (c->in_obj) {
-                objectPutInObject(jj, c->in_obj);
-            } else if (c->carried_by) {
-                objectPutInRoom(jj, c->carried_by->in_room);
-                check_falling_obj(jj, c->carried_by->in_room);
-            } else if (c->in_room != NOWHERE) {
-                objectPutInRoom(jj, c->in_room);
-                check_falling_obj(jj, c->in_room);
-            } else {
-                assert(FALSE);
-            }
+    if( !c ) {
+        return;
+    }
+
+    LinkedListLock( c->containList );
+    for( item = c->containList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        jj = CONTAIN_LINK_TO_OBJ(item);
+
+        objectTakeFromObject(jj, LOCKED);
+        if (c->in_obj) {
+            objectPutInObject(jj, c->in_obj);
+        } else if (c->carried_by) {
+            objectPutInRoom(jj, c->carried_by->in_room);
+            check_falling_obj(jj, c->carried_by->in_room);
+        } else if (c->in_room != NOWHERE) {
+            objectPutInRoom(jj, c->in_room);
+            check_falling_obj(jj, c->in_room);
         } else {
-            /*
-             * hmm..  it isn't in the object it says it is in.
-             * don't extract it.
-             */
-            c->contains = 0;
-            Log("Memory lost in ObjFromCorpse.");
+            assert(FALSE);
         }
     }
+    LinkedListUnlock( c->containList );
     objectExtract(c);
 }
 

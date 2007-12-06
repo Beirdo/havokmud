@@ -1339,10 +1339,12 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
 void spell_disintegrate(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             i,
-                    damage;
-    struct obj_data *x;
-    char            buf[MAX_STRING_LENGTH + 30];
+    int                 i,
+                        damage;
+    struct obj_data    *x;
+    char                buf[MAX_STRING_LENGTH + 30];
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (!ch) {
         Log("!ch in spell_disintegrate");
@@ -1383,15 +1385,20 @@ void spell_disintegrate(int level, struct char_data *ch,
                                 obj = unequip_char(obj->equipped_by,
                                                    obj->eq_pos);
                             } else if (obj->in_obj) {
-                                objectTakeFromObject(obj);
+                                objectTakeFromObject(obj, UNLOCKED);
                                 objectPutInRoom(obj, ch->in_room);
-                            } else if (obj->contains) {
-                                while (obj->contains) {
-                                    x = obj->contains;
-                                    objectTakeFromObject(x);
+                            } else if (LinkedListCount(obj->containList)) {
+                                LinkedListLock( obj->containList );
+                                for( item = obj->containList->head; item;
+                                     item = nextItem ) {
+                                    nextItem = item->next;
+                                    x = CONTAIN_LINK_TO_OBJ(item);
+                                    objectTakeFromObject(x, LOCKED);
                                     objectPutInRoom(x, ch->in_room);
                                 }
+                                LinkedListUnlock( obj->containList );
                             }
+
                             if (obj) {
                                 objectExtract(obj);
                             }

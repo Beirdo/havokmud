@@ -358,11 +358,34 @@ void stop_fighting(struct char_data *ch)
     update_pos(ch);
 }
 
+/**
+ * Set all carried_by to point to new owner 
+ */
+void object_list_new_owner(struct obj_data *obj, struct char_data *ch)
+{
+    LinkedListItem_t   *item;
+    struct obj_data    *subobj;
+
+    if( !obj ) {
+        return;
+    }
+
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = item->next ) {
+        subobj = CONTAIN_LINK_TO_OBJ(item);
+        object_list_new_owner( subobj, ch );
+    }
+    LinkedListUnlock( obj->containList );
+    obj->carried_by = ch;
+}
+
+
 void make_corpse(struct char_data *ch, int killedbytype)
 {
     struct obj_data *corpse,
                    *o,
-                   *cp;
+                   *cp,
+                   *obj;
     struct obj_data *money;
     char            buf[MAX_INPUT_LENGTH + 80],
                     spec_desc[255];
@@ -389,10 +412,10 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
             sprintf(buf, "head severed %s", 
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
-            objectKeywordTreeRemove( cp );
+            objectKeywordTreeRemove( objectKeywordTree, cp );
             FreeKeywords( &cp->keywords, FALSE );
             StringToKeywords( buf, &cp->keywords );
-            objectKeywordTreeAdd( cp );
+            objectKeywordTreeAdd( objectKeywordTree, cp );
 
             sprintf(buf, "the severed head of %s",
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
@@ -493,7 +516,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
         sprintf(buf, "corpse %s", 
                     (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
-        objectKeywordTreeRemove( corpse );
+        objectKeywordTreeRemove( objectKeywordTree, corpse );
         FreeKeywords( &corpse->keywords, FALSE );
         StringToKeywords( buf, &corpse->keywords );
 
@@ -520,7 +543,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
         ADeadBody = TRUE;
     } else if (IsUndead(ch)) {
-        objectKeywordTreeRemove( corpse );
+        objectKeywordTreeRemove( objectKeywordTree, corpse );
         FreeKeywords( &corpse->keywords, FALSE );
         
         if (corpse->description) {
@@ -536,7 +559,17 @@ void make_corpse(struct char_data *ch, int killedbytype)
         corpse->short_description = strdup("a pile of dust and bones");
     }
 
-    corpse->contains = ch->carrying;
+    /**
+     * @todo clean this up once ch->carrying is also a good list
+     */
+    while( (obj = ch->carrying) ) {
+        objectKeywordTreeAdd( corpse->containKeywordTree, obj );
+        LinkedListAdd( corpse->containList, &obj->containLink, UNLOCKED,
+                       AT_TAIL );
+        ch->carrying = obj->next_contents;
+        obj->in_obj = corpse;
+        obj->next_contents = NULL;
+    }
 
     if (GET_GOLD(ch) > 0) {
         money = create_money(GET_GOLD(ch));
@@ -584,7 +617,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
             objectPutInObject(unequip_char(ch, i), corpse);
         }
     }
-    ch->carrying = 0;
+    ch->carrying = NULL;
     IS_CARRYING_N(ch) = 0;
     IS_CARRYING_W(ch) = 0;
 
@@ -601,16 +634,13 @@ void make_corpse(struct char_data *ch, int killedbytype)
         }
     }
 
-    corpse->carried_by = 0;
-    corpse->equipped_by = 0;
+    corpse->carried_by = NULL;
+    corpse->equipped_by = NULL;
 
-    objectKeywordTreeAdd( corpse );
+    objectKeywordTreeAdd( objectKeywordTree, corpse );
     objectTypeTreeAdd( corpse );
 
-    for (o = corpse->contains; o; o = o->next_content) {
-        o->in_obj = corpse;
-    }
-    object_list_new_owner(corpse, 0);
+    object_list_new_owner(corpse, NULL);
 
     objectPutInRoom(corpse, ch->in_room);
 
@@ -4303,6 +4333,8 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     struct obj_data *t,
                    *x;
     extern char     DestroyedItems;
+    LinkedListItem_t *item,
+                     *nextItem;
 
     if (ValidRoom(ch) == FALSE) {
         return;
@@ -4343,11 +4375,14 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
 
     t->value[0] = 20;
 
-    while (obj->contains) {
-        x = obj->contains;
-        objectTakeFromObject(x);
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        x = CONTAIN_LINK_TO_OBJ(item);
+        objectTakeFromObject(x, LOCKED);
         objectPutInRoom(x, ch->in_room);
     }
+    LinkedListUnlock( obj->containList );
 
     check_falling_obj(t, ch->in_room);
     objectExtract(obj);

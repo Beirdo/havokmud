@@ -1562,7 +1562,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     cost.no_carried = 0;
     cost.ok = TRUE;
 
-    add_obj_cost(ch, 0, ch->carrying, &cost);
+    add_obj_cost_chain(ch, 0, ch->carrying, &cost);
     count = CountLims(ch->carrying);
     for (i = 0; i < MAX_WEAR; i++) {
         add_obj_cost(ch, 0, ch->equipment[i], &cost);

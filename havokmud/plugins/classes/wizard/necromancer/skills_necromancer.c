@@ -59,12 +59,15 @@ void spell_animate_dead(int level, struct char_data *ch,
     /*
      * take all from corpse, and give to zombie
      */
-
-    for (obj_object = corpse->contains; obj_object; obj_object = next_obj) {
-        next_obj = obj_object->next_content;
-        objectTakeFromObject(obj_object);
+    LinkedListLock( corpse->containList );
+    for( item = corpse->containList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj_object = CONTAIN_LINK_TO_OBJ( item );
+        objectTakeFromObject(obj_object, LOCKED);
         objectGiveToChar(obj_object, mob);
     }
+    LinkedListUnlock( corpse->containList );
+
     /*
      * set up descriptions and such
      */

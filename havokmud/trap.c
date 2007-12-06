@@ -44,14 +44,24 @@ int CheckForMoveTrap(struct char_data *ch, int dir)
 
 int CheckForInsideTrap(struct char_data *ch, struct obj_data *i)
 {
-    struct obj_data *t;
+    struct obj_data    *t;
+    LinkedListItem_t   *item;
 
-    for (t = i->contains; t; t = t->next_content) {
+    if( !i ) {
+        return( FALSE );
+    }
+
+    LinkedListLock( i->containList );
+    for( item = i->containList->head; item; item = item->next ) {
+        t = CONTAIN_LINK_TO_OBJ(item);
         if (ITEM_TYPE(t) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(t) > 0 &&
             IS_SET(GET_TRAP_EFF(t), TRAP_EFF_OBJECT)) {
+            LinkedListUnlock( i->containList );
             return (TriggerTrap(ch, t));
         }
     }
+
+    LinkedListUnlock( i->containList );
     return (FALSE);
 }
 

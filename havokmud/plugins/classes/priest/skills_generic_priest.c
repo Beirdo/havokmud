@@ -2406,7 +2406,7 @@ void spell_goodberry(int level, struct char_data *ch,
     tmp_obj->affected[0].location = APPLY_EAT_SPELL;
     tmp_obj->affected[0].modifier = SPELL_CURE_LIGHT;
 
-    objectKeywordTreeAdd( tmp_obj );
+    objectKeywordTreeAdd( objectKeywordTree, tmp_obj );
     objectTypeTreeAdd( tmp_obj );
 
     objectGiveToChar(tmp_obj, ch);

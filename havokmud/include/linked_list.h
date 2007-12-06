@@ -56,6 +56,7 @@ typedef struct _LinkedList_t
     LinkedListItem_t *head;
     LinkedListItem_t *tail;
     pthread_mutex_t  mutex;
+    bool             locked;
     int              items;
 } LinkedList_t;
 
@@ -77,6 +78,7 @@ LinkedList_t *LinkedListCreate( void );
 void LinkedListDestroy( LinkedList_t *list );
 void LinkedListLock( LinkedList_t *list );
 void LinkedListUnlock( LinkedList_t *list );
+bool LinkedListIsLocked( LinkedList_t *list );
 void LinkedListAdd( LinkedList_t *list, LinkedListItem_t *item, 
                     LinkedListLocked_t locked, LinkedListLoc_t location );
 void LinkedListRemove( LinkedList_t *list, LinkedListItem_t *item, 

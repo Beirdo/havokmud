@@ -1225,6 +1225,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
     char           *proc;
     struct index_data *index;
     char           *objname;
+    LinkedListItem_t   *item;
 
     dlog("in do_stat");
 
@@ -1924,11 +1925,15 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
         strcpy(buf, "Contains :\n\r");
         found = FALSE;
-        for (j2 = j->contains; j2; j2 = j2->next_content) {
+        LinkedListLock( j->containList );
+        for( item = j->containList->head; item; item = item->next ) {
+            j2 = CONTAIN_LINK_TO_OBJ(item);
             strcat(buf, fname(j2->name));
             strcat(buf, "\n\r");
             found == TRUE;
         }
+        LinkedListUnlock( j->containList );
+
         if (!found) {
             strcpy(buf, "Contains : Nothing\n\r");
         }
@@ -5692,7 +5697,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
                          * clone mob->equipment[j]
                          */
                         ocopy = objectClone(mob->equipment[j]);
-                        if (mob->equipment[j]->contains) {
+                        if( LinkedListCount(mob->equipment[j]->containList) ) {
                             objectCloneContainer(ocopy, mob->equipment[j]);
                         }
                         equip_char(mcopy, ocopy, j);
@@ -5705,7 +5710,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
             if (mob->carrying) {
                 for (obj = mob->carrying; obj; obj = obj->next_content) {
                     ocopy = objectClone(obj);
-                    if (obj->contains) {
+                    if ( LinkedListCount( obj->containList ) ) {
                         objectCloneContainer(ocopy, obj);
                     }
                     /*
@@ -5737,7 +5742,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
         }
         for (i = 0; i < count; i++) {
             ocopy = objectClone(obj);
-            if (obj->contains) {
+            if ( LinkedListCount( obj->containList ) ) {
                 objectCloneContainer(ocopy, obj);
             }
             /*

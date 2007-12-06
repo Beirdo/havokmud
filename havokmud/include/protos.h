@@ -140,6 +140,7 @@ void            list_obj_in_room(struct obj_data *list,
                                  struct char_data *ch);
 void            list_obj_in_heap(struct obj_data *list,
                                  struct char_data *ch);
+void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch);
 void            list_obj_to_char(struct obj_data *l, struct char_data *ch,
                                  int m, bool show);
 void            show_char_to_char(struct char_data *i,
@@ -682,7 +683,6 @@ struct obj_data *unequip_char(struct char_data *ch, int pos);
 struct char_data *get_char_room(char *name, int room);
 struct char_data *get_char(char *name);
 struct char_data *get_char_num(int nr);
-void object_list_new_owner(struct obj_data *list, struct char_data *ch);
 void            update_object(struct obj_data *obj, int use);
 void            update_char_objects(struct char_data *ch);
 void            extract_char(struct char_data *ch);
@@ -1373,6 +1373,8 @@ int             BestClassBIT(struct char_data *ch);
 
 void            add_obj_cost(struct char_data *ch, struct char_data *re,
                              struct obj_data *obj, struct obj_cost *cost);
+void add_obj_cost_chain(struct char_data *ch, struct char_data *re,
+                        struct obj_data *obj, struct obj_cost *cost);
 
 bool            recep_offer(struct char_data *ch,
                             struct char_data *receptionist,

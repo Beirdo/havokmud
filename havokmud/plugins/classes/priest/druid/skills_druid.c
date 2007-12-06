@@ -1144,7 +1144,7 @@ void spell_flame_blade(int level, struct char_data *ch,
     tmp_obj->affected[0].location = APPLY_DAMROLL;
     tmp_obj->affected[0].modifier = 4 + GET_LEVEL(ch, DRUID_LEVEL_IND) / 8;
 
-    objectKeywordTreeAdd( tmp_obj );
+    objectKeywordTreeAdd( objectKeywordTree, tmp_obj );
     objectTypeTreeAdd( tmp_obj );
 
     equip_char(ch, tmp_obj, WIELD);

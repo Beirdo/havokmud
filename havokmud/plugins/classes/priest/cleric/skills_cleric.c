@@ -738,7 +738,7 @@ void spell_create_food(int level, struct char_data *ch,
     tmp_obj->cost = 10;
     tmp_obj->cost_per_day = 1;
 
-    objectKeywordTreeAdd( tmp_obj );
+    objectKeywordTreeAdd( objectKeywordTree, tmp_obj );
     objectTypeTreeAdd( tmp_obj );
 
     objectPutInRoom(tmp_obj, ch->in_room);
@@ -2700,6 +2700,8 @@ void spell_resurrection(int level, struct char_data *ch,
     struct obj_data *obj_object,
                    *next_obj;
     FILE           *fl;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (!obj) {
         return;
@@ -2761,12 +2763,14 @@ void spell_resurrection(int level, struct char_data *ch,
              * take all from corpse, and give to person
              */
 
-            for (obj_object = obj->contains; obj_object;
-                 obj_object = next_obj) {
-                next_obj = obj_object->next_content;
-                objectTakeFromObject(obj_object);
+            LinkedListLock( obj->containList );
+            for( item = obj->containList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj_object = CONTAIN_LINK_TO_OBJ(item);
+                objectTakeFromObject(obj_object, LOCKED);
                 objectGiveToChar(obj_object, victim);
             }
+            LinkedListUnlock( obj->containList );
 
             /*
              * get rid of corpse
@@ -3070,11 +3074,11 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "a scroll of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
-        objectKeywordTreeRemove( obj );
+        objectKeywordTreeRemove( objectKeywordTree, obj );
         FreeKeywords( &obj->keywords, FALSE );
         sprintf(buf, "scroll %s", spells[sn]);
         StringToKeywords( buf, &obj->keywords );
-        objectKeywordTreeAdd( obj );
+        objectKeywordTreeAdd( objectKeywordTree, obj );
 
         if (obj->description) {
             free(obj->description);

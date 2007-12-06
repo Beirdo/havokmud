@@ -920,12 +920,13 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
 int altarofsin(struct char_data *ch, int cmd, char *argument,
                struct obj_data *obj, int type)
 {
-    struct obj_data *i,
-                   *win;
-    int             virtual,
-                    x;
-    char           *buf;
-    int             hasStones[7] = { 0, 0, 0, 0, 0, 0, 0 };
+    struct obj_data    *i,
+                       *win;
+    int                 virtual,
+                        x;
+    char               *buf;
+    int                 hasStones[7] = { 0, 0, 0, 0, 0, 0, 0 };
+    LinkedListItem_t   *item;
 
     if (cmd != 438) {
         /* rub */
@@ -939,13 +940,16 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
         /*
          * rub altar 
          */
-        for (i = obj->contains; i; i = i->next_content) {
-            virtual = MAX( 0, i->item_number );
+        LinkedListLock( obj->containList );
+        for( item = obj->containList->head; item; item = item->next ) {
+            i = CONTAIN_LINK_TO_OBJ(item);
+            virtual = i->item_number;
 
             if (virtual < 51809 && virtual > 51801) {
                 hasStones[virtual - 51802] = 1;
             }
         }
+        LinkedListUnlock( obj->containList );
 
         /*
          * Check to see if all stones are present
@@ -1187,10 +1191,11 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
                  struct obj_data *obj, int type)
 {
     struct follow_type *f;
-    struct char_data *k;
-    struct obj_data *i;
-    int             virtual;
-    int             count = 0;
+    struct char_data   *k;
+    struct obj_data    *i;
+    int                 virtual;
+    int                 count = 0;
+    LinkedListItem_t   *item;
 
     if (cmd != 67) {
         /* put */
@@ -1201,13 +1206,17 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
 
     do_put(ch, argument, 67);
 
-    for (i = obj->contains; i; i = i->next_content) {
-        virtual = MAX( 0, i->item_number );
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = item->next ) {
+        i = CONTAIN_LINK_TO_OBJ(item);
+        virtual = i->item_number;
 
         if (virtual == 51833) {
             count++;
         }
     }
+    LinkedListUnlock( obj->containList );
+
     /*
      * Check to see if all stones are present
      */
@@ -1723,6 +1732,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     char           *buf1;
     char           *buf2;
     FILE           *fl;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (obj->in_room == -1 || cmd != 15 || IS_IMMORTAL(ch)) {
         return (FALSE);
@@ -1832,9 +1843,14 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
             total_equip_cost += mob->equipment[i]->cost;
             mob->equipment[i]->timer = 20;
             if (ITEM_TYPE(mob->equipment[i]) == ITEM_TYPE_CONTAINER) {
-                while ((tempobj = mob->equipment[i]->contains)) {
+                LinkedListLock( mob->equipment[i]->containList );
+                for( item = mob->equipment[i]->containList->head; item;
+                     item = nextItem ) {
+                    nextItem = item->next;
+                    tempobj = CONTAIN_LINK_TO_OBJ(item);
                     objectExtract(tempobj);
                 }
+                LinkedListUnlock( mob->equipment[i]->containList );
             }
 
             if(IS_OBJ_STAT(mob->equipment[i], anti_flags, ITEM_ANTI_GOOD)) {
@@ -2234,7 +2250,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
                                        obj->equipped_by->equipment, &i, FALSE );
             unequip_char(obj->equipped_by, i);
         } else if( obj->in_obj ) {
-            objectTakeFromObject(obj);
+            objectTakeFromObject(obj, UNLOCKED);
         }
         objectExtract(obj);
     }

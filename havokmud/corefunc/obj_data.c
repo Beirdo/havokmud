@@ -58,6 +58,8 @@ BalancedBTree_t *objectTypeTree    = NULL;
 
 long            obj_count = 0;
 
+void objectCloneContainerLocked(struct obj_data *to, struct obj_data *obj);
+void objectPutInObjectLocked(struct obj_data *obj, struct obj_data *obj_to);
 struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
                                         BalancedBTree_t *tree, int offset,
                                         int *count, int steps);
@@ -68,6 +70,11 @@ struct obj_data *GetObjectNumInList(int num, struct obj_data *list,
                                     int nextOffset);
 int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
                      int roomId, int itemNum, int parentItem, int delete);
+int objectStoreList(LinkedList_t *list, PlayerStruct_t *player, int playerId,
+                    int roomId, int itemNum, int parentItem, int delete);
+int objectStore(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                int roomId, int itemNum, int parentItem, int delete, 
+                Locked_t locked);
 int contained_weight(struct obj_data *container);
 void RecursivePrintLimitedItems(BalancedBTreeItem_t *node);
 void save_room(int room);
@@ -157,15 +164,34 @@ struct obj_data *objectClone(struct obj_data *obj)
 
 void objectCloneContainer(struct obj_data *to, struct obj_data *obj)
 {
-    struct obj_data *tmp,
-                   *ocopy;
+    LinkedListLock( to->containList );
+    LinkedListLock( obj->containList );
+    objectCloneContainerLocked( to, obj );
+    LinkedListUnlock( obj->containList );
+    LinkedListUnlock( to->containList );
+}
 
-    for (tmp = obj->contains; tmp; tmp = tmp->next_content) {
+void objectCloneContainerLocked(struct obj_data *to, struct obj_data *obj)
+{
+    LinkedListItem_t   *item;
+    struct obj_data    *tmp,
+                       *ocopy;
+
+    /*
+     * Assume that both to->containList and obj->containList are locked
+     */
+    for (item = obj->containList->head; item; item = item->next ) {
+        tmp = CONTAIN_LINK_TO_OBJ(item);
+
         ocopy = objectClone(tmp);
-        if (tmp->contains) {
-            objectCloneContainer(ocopy, tmp);
+
+        LinkedListLock( tmp->containList );
+        if (tmp->containList->head) {
+            objectCloneContainerLocked(ocopy, tmp);
         }
-        objectPutInObject(ocopy, to);
+        LinkedListUnlock( tmp->containList );
+
+        objectPutInObjectLocked(ocopy, to);
     }
 }
 
@@ -198,12 +224,11 @@ struct obj_data *objectRead(int nr)
     obj->equipped_by = NULL;
     obj->eq_pos = -1;
     obj->containList = LinkedListCreate();
-    obj->contains = NULL;
     obj->item_number = nr;
     obj->index = index;
     obj->in_obj = NULL;
 
-    objectKeywordTreeAdd( obj );
+    objectKeywordTreeAdd( objectKeywordTree, obj );
     objectTypeTreeAdd( obj );
 
     index->number++;
@@ -287,11 +312,11 @@ void objectExtract(struct obj_data *obj)
     objectExtractLocked( obj, UNLOCKED );
 }
 
-void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked )
+void objectExtractLocked(struct obj_data *obj, Locked_t locked )
 {
-    struct obj_data *temp1,
-                   *temp2;
     extern long     obj_count;
+    LinkedListItem_t   *item;
+    LinkedListItem_t   *nextItem;
 
     if (obj->in_room != NOWHERE) {
         objectTakeFromRoom(obj);
@@ -312,35 +337,29 @@ void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked )
             return;
         }
     } else if (obj->in_obj) {
-        temp1 = obj->in_obj;
-        if (temp1->contains == obj) {
-            /* head of list */
-            temp1->contains = obj->next_content;
-        } else {
-            for (temp2 = temp1->contains;
-                 temp2 && (temp2->next_content != obj);
-                 temp2 = temp2->next_content) {
-                /* 
-                 * Empty loop 
-                 */
-            }
-
-            if (temp2) {
-                temp2->next_content = obj->next_content;
-            }
+        locked = LinkedListIsLocked( obj->in_obj->containList );
+        if( !locked ) {
+            LinkedListLock( obj->in_obj->containList );
         }
+        LinkedListRemove( obj->in_obj->containList, &obj->containLink, 
+                          LOCKED );
+        if( !locked ) {
+            LinkedListUnlock( obj->in_obj->containList );
+        }
+        objectKeywordTreeRemove( obj->in_obj->containKeywordTree, obj );
     }
 
     /*
-     * leaves nothing ! 
+     * remove the contents too
      */
-    for (; obj->contains; objectExtractLocked(obj->contains, locked)) {
-        /* 
-         * Empty loop 
-         */
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        objectExtractLocked( CONTAIN_LINK_TO_OBJ(item), locked );
     }
+    LinkedListUnlock( obj->containList );
 
-    objectKeywordTreeRemove( obj );
+    objectKeywordTreeRemove( objectKeywordTree, obj );
     objectTypeTreeRemove( obj );
 
     if (obj->item_number >= 0) {
@@ -413,10 +432,9 @@ struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
 struct obj_data *objectGetInObject( struct char_data *ch, char *name,
                                     struct obj_data *obj )
 {
-    static int  offset  = OFFSETOF(next_content, struct obj_data);
     static int  steps   = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( ch, name, obj->contains, offset, NULL, 
-                             BOOL(ch != NULL), steps ) );
+    return( GetObjectInKeywordTree( ch, name, obj->containKeywordTree, 
+                                    CONTAIN_ITEM_OFFSET, NULL, steps ) );
 }
 
 struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count)
@@ -714,6 +732,13 @@ bool HasExtraBits(struct char_data *ch, int bits)
  */
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
 {
+    LinkedListLock( obj_to->containList );
+    objectPutInObjectLocked( obj, obj_to );
+    LinkedListUnlock( obj_to->containList );
+}
+
+void objectPutInObjectLocked(struct obj_data *obj, struct obj_data *obj_to)
+{
     struct obj_data *tmp_obj;
 
     if( !obj || !obj_to ) {
@@ -726,8 +751,8 @@ void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
         return;
     }
 
-    obj->next_content = obj_to->contains;
-    obj_to->contains = obj;
+    objectKeywordTreeAdd( obj_to->containKeywordTree, obj );
+    LinkedListAdd( obj_to->containList, &obj->containLink, UNLOCKED, AT_TAIL );
     obj->in_obj = obj_to;
 
     obj->carried_by = NULL;
@@ -746,8 +771,10 @@ void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to)
 
 /**
  * @brief remove an object from an object 
+ * @param obj object to remove from its containing object
+ * @param locked whether or not parent->containList is locked
  */
-void objectTakeFromObject(struct obj_data *obj)
+void objectTakeFromObject(struct obj_data *obj, Locked_t locked)
 {
     struct obj_data    *tmp,
                        *obj_from = NULL;
@@ -787,38 +814,17 @@ void objectTakeFromObject(struct obj_data *obj)
     }
 
     obj_from = obj->in_obj;
-    if (obj == obj_from->contains) {
-        /* 
-         * head of list 
-         */
-        obj_from->contains = obj->next_content;
-    } else {
-        /* 
-         * locate previous 
-         */
-        for (tmp = obj_from->contains; tmp && (tmp->next_content != obj);
-             tmp = tmp->next_content) {
-            /* 
-             * Empty loop 
-             */
-        }
+    objectKeywordTreeRemove( obj_from->containKeywordTree, obj );
+    LinkedListRemove( obj_from->containList, &obj->containLink, locked );
 
-        if (!tmp) {
-            LogPrintNoArg( LOG_CRIT, "No previous object in chain!");
-            return;
-        }
-
-        tmp->next_content = obj->next_content;
-    }
-
-    /**
-     * @todo this looks funky
+    /*
      * Subtract weight from containers container 
      */
     for (tmp = obj->in_obj; tmp->in_obj; tmp = tmp->in_obj) {
         GET_OBJ_WEIGHT(tmp) -= GET_OBJ_WEIGHT(obj);
     }
     GET_OBJ_WEIGHT(tmp) -= GET_OBJ_WEIGHT(obj);
+    obj->in_obj = NULL;
 
     /*
      * Subtract weight from char that carries the object 
@@ -826,8 +832,6 @@ void objectTakeFromObject(struct obj_data *obj)
     if (tmp->carried_by) {
         IS_CARRYING_W(tmp->carried_by) -= GET_OBJ_WEIGHT(obj);
     }
-    obj->in_obj = NULL;
-    obj->next_content = NULL;
 
     if (obj_from->in_room != NOWHERE &&
         !IS_SET(real_roomp(obj_from->in_room)->room_flags, DEATH)) {
@@ -1043,8 +1047,8 @@ void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
             unequip_char(ch, i);
         }
 
-        itemNum = objectStoreChain(obj, player, ch->playerId, -1, itemNum, -1, 
-                                   delete);
+        itemNum = objectStore(obj, player, ch->playerId, -1, itemNum, -1, 
+                              delete, UNLOCKED);
     }
 
     itemNum = objectStoreChain(ch->carrying, player, ch->playerId, -1, itemNum,
@@ -1065,75 +1069,115 @@ void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
 /**
  * @brief Destroy inventory after transferring it to "store inventory" 
  */
-int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
-                     int roomId, int itemNum, int parentItem, int delete)
+int objectStoreList(LinkedList_t *list, PlayerStruct_t *player, int playerId,
+                    int roomId, int itemNum, int parentItem, int delete)
 {
-    int                 weight;
-    struct obj_data    *next;
-    int                 newParent;
+    LinkedListItem_t   *item;
+    LinkedListItem_t   *nextItem;
+    struct obj_data    *obj;
 
-    if (!obj) {
+    if (!list) {
         return( itemNum );
     } 
 
-    for( ; obj; obj = next ) {
-        if( (obj->timer < 0 && obj->timer != OBJ_NOTIMER) ||
-            (obj->cost_per_day < 0) ) {
-#ifdef DUPLICATES
-            if( delete && player) {
-                SendOutput(player, "You're told: '%s is just old junk, I'll "
-                                   "throw it away for you.'\n\r", 
-                                   obj->short_description);
-            }
-#endif
-            newParent = parentItem;
-        } else if (obj->item_number != -1) {
-            weight = contained_weight(obj);
+    LinkedListLock( list );
 
-            GET_OBJ_WEIGHT(obj) -= weight;
-            db_save_object(obj, playerId, roomId, itemNum, parentItem);
-            GET_OBJ_WEIGHT(obj) += weight;
-            newParent = itemNum;
-            itemNum++;
-        } else {
-            /* If this is an unrentable, save any contents as in the parent */
-            newParent = parentItem;
-        }
+    for( item = list->head ; item; item = nextItem ) {
+        nextItem = item->next;
+        obj = CONTAIN_LINK_TO_OBJ(item);
 
-        if (obj->contains) {
-            itemNum = objectStoreChain(obj->contains, player, playerId, roomId, 
-                                       itemNum, newParent, delete);
-        }
-
-        next = obj->next_content;
-
-        /*
-         * and now we can destroy object 
-         */
-        if (delete) {
-            if (obj->in_obj) {
-                objectTakeFromObject(obj);
-            }
-            if (IS_RARE(obj)) {
-                obj->index->number++;
-                LinkedListAdd( obj->index->list, &obj->globalLink, UNLOCKED,
-                               AT_HEAD );
-            }
-            objectExtract(obj);
-        }
+        itemNum = objectStore( obj, player, playerId, roomId, itemNum, 
+                               parentItem, delete, LOCKED );
     }
+
+    LinkedListUnlock( list );
     return( itemNum );
 }
 
+/**
+ * @todo this will be completely replaced with objectStore and objectStoreList
+ */
+int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                     int roomId, int itemNum, int parentItem, int delete)
+{
+    return( itemNum );
+}
+
+int objectStore(struct obj_data *obj, PlayerStruct_t *player, int playerId,
+                int roomId, int itemNum, int parentItem, int delete, 
+                Locked_t locked)
+{
+    int                 weight;
+    int                 newParent;
+
+    if( !obj ) {
+        return( itemNum );
+    }
+
+    if( (obj->timer < 0 && obj->timer != OBJ_NOTIMER) ||
+        (obj->cost_per_day < 0) ) {
+#ifdef DUPLICATES
+        if( delete && player) {
+            SendOutput(player, "You're told: '%s is just old junk, I'll "
+                               "throw it away for you.'\n\r", 
+                               obj->short_description);
+        }
+#endif
+        newParent = parentItem;
+    } else if (obj->item_number != -1) {
+        weight = contained_weight(obj);
+
+        GET_OBJ_WEIGHT(obj) -= weight;
+        db_save_object(obj, playerId, roomId, itemNum, parentItem);
+        GET_OBJ_WEIGHT(obj) += weight;
+        newParent = itemNum;
+        itemNum++;
+    } else {
+        /* If this is an unrentable, save any contents as in the parent */
+        newParent = parentItem;
+    }
+
+    if( LinkedListCount( obj->containList, UNLOCKED ) ) {
+        itemNum = objectStoreList(obj->containList, player, playerId, 
+                                  roomId, itemNum, newParent, delete);
+    }
+
+    /*
+     * and now we can destroy object 
+     */
+    if (delete) {
+        if (obj->in_obj) {
+            objectTakeFromObject(obj, locked);
+        }
+
+        if (IS_RARE(obj)) {
+            obj->index->number++;
+            LinkedListAdd( obj->index->list, &obj->globalLink, UNLOCKED,
+                           AT_HEAD );
+        }
+
+        objectExtract(obj);
+    }
+
+    return( itemNum );
+}
 
 int contained_weight(struct obj_data *container)
 {
     struct obj_data    *tmp;
     int                 rval = 0;
+    LinkedListItem_t   *item;
+    
+    if( !container ) {
+        return( 0 );
+    }
 
-    for (tmp = container->contains; tmp; tmp = tmp->next_content) {
+    LinkedListLock( container->containList );
+    for( item = container->containList->head; item; item = item->next ) {
+        tmp = CONTAIN_LINK_TO_OBJ(item);
         rval += GET_OBJ_WEIGHT(tmp);
     }
+    LinkedListUnlock( container->containList );
     return( rval );
 }
 
@@ -1318,13 +1362,13 @@ void save_room(int room)
 /**
  * @todo make a copy of the keyword when creating the tree
  */
-void objectKeywordTreeAdd( struct obj_data *obj )
+void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
 {
     int                     i;
     Keywords_t             *key;
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *objItem;
-    BalancedBTree_t        *tree;
+    BalancedBTree_t        *subtree;
 
     key = &obj->keywords;
 
@@ -1332,63 +1376,61 @@ void objectKeywordTreeAdd( struct obj_data *obj )
         CREATE( obj->keywordItem, BalancedBTreeItem_t, key->count );
     }
 
-    BalancedBTreeLock( objectKeywordTree );
+    BalancedBTreeLock( tree );
 
     for( i = 0; i < key->count; i++ ) {
         if( key->words[i] ) {
-            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], 
-                                      LOCKED, FALSE );
+            item = BalancedBTreeFind( tree, &key->words[i], LOCKED, FALSE );
             if( !item ) {
-                tree = BalancedBTreeCreate( BTREE_KEY_POINTER );
+                subtree = BalancedBTreeCreate( BTREE_KEY_POINTER );
                 CREATE(item, BalancedBTreeItem_t, 1);
-                item->item = tree;
+                item->item = subtree;
                 item->key  = &key->words[i];
-                BalancedBTreeAdd( objectKeywordTree, item, LOCKED, TRUE );
+                BalancedBTreeAdd( tree, item, LOCKED, TRUE );
             } else {
-                tree = (BalancedBTree_t *)item->item;
+                subtree = (BalancedBTree_t *)item->item;
             }
 
             objItem = &obj->keywordItem[i];
             objItem->item = obj;
             objItem->key  = &obj;
-            BalancedBTreeAdd( tree, objItem, UNLOCKED, TRUE );
+            BalancedBTreeAdd( subtree, objItem, UNLOCKED, TRUE );
         }
     }
 
-    BalancedBTreeUnlock( objectKeywordTree );
+    BalancedBTreeUnlock( tree );
 }
 
-void objectKeywordTreeRemove( struct obj_data *obj )
+void objectKeywordTreeRemove( BalancedBTree_t *tree, struct obj_data *obj )
 {
     int                     i;
     Keywords_t             *key;
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *objItem;
-    BalancedBTree_t        *tree;
+    BalancedBTree_t        *subtree;
 
     BalancedBTreeLock( objectKeywordTree );
 
     key = &obj->keywords;
     for( i = 0; i < key->count; i++ ) {
         if( key->words[i] ) {
-            item = BalancedBTreeFind( objectKeywordTree, &key->words[i], 
-                                      LOCKED, FALSE );
+            item = BalancedBTreeFind( tree, &key->words[i], LOCKED, FALSE );
             if( !item ) {
                 continue;
             }
 
-            tree = (BalancedBTree_t *)item->item;
+            subtree = (BalancedBTree_t *)item->item;
 
-            objItem = BalancedBTreeFind( tree, &obj, UNLOCKED, FALSE );
+            objItem = BalancedBTreeFind( subtree, &obj, UNLOCKED, FALSE );
             if( !objItem ) {
                 continue;
             }
-            BalancedBTreeRemove( tree, objItem, UNLOCKED, TRUE );
+            BalancedBTreeRemove( subtree, objItem, UNLOCKED, TRUE );
             memset( objItem, 0, sizeof(BalancedBTreeItem_t) );
 
-            if( tree->root == NULL ) {
-                BalancedBTreeRemove( objectKeywordTree, item, LOCKED, TRUE );
-                BalancedBTreeDestroy( tree );
+            if( subtree->root == NULL ) {
+                BalancedBTreeRemove( tree, item, LOCKED, TRUE );
+                BalancedBTreeDestroy( subtree );
                 free( item );
             }
         }

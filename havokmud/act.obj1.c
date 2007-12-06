@@ -37,7 +37,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
                     TO_CHAR);
                 act("$n gets $p from $P.", 1, ch, obj_object, sub_object,
                     TO_ROOM);
-                objectTakeFromObject(obj_object);
+                objectTakeFromObject(obj_object, UNLOCKED);
                 objectGiveToChar(obj_object, ch);
             } else {
                 act("$P must be opened first.", 1, ch, 0, sub_object,
@@ -102,6 +102,8 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     char            newarg[MAX_STRING_LENGTH];
     int             num,
                     p;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     dlog("in do_get");
 
@@ -294,19 +296,21 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                     has = TRUE;
                 }
 
-                for (obj_object = sub_object->contains;
-                     obj_object; obj_object = next_obj) {
-                    /*
-                     * check for trap (jdb - 11/9)
-                     */
+                LinkedListLock( sub_object->containList );
+                for( item = sub_object->containList->head; item; 
+                     item = nextItem ) {
+                    nextItem = item->next;
+
+                    obj_object = CONTAIN_LINK_TO_OBJ(item);
                     if (CheckForGetTrap(ch, obj_object)) {
+                        LinkedListUnlock( sub_object->containList );
                         return;
                     }
-                    next_obj = obj_object->next_content;
+
                     if (objectIsVisible(ch, obj_object)) {
                         if (IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)) {
-                            if (has || IS_CARRYING_W(ch) + 
-                                       obj_object->weight <
+                            if (has || 
+                                IS_CARRYING_W(ch) + obj_object->weight <
                                        CAN_CARRY_W(ch)) {
                                 if (CAN_WEAR(obj_object, ITEM_TAKE)) {
                                     get(ch, obj_object, sub_object);
@@ -329,6 +333,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                         }
                     }
                 }
+                LinkedListUnlock( sub_object->containList );
 
                 if (!found && !fail) {
                     oldSendOutput(ch, "You do not see anything in %s.\n\r",

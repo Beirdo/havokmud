@@ -556,16 +556,22 @@ struct obj_data {
     Keywords_t     *ex_description;     /**< extra descriptions */
     int             ex_description_count;   /**< count of extra descriptions */
 
-    struct char_data *carried_by;       /**< Carried by :NULL in room/conta */
+    struct char_data *carried_by;       /**< Carried by whom?  NULL in 
+                                         *   room/containers 
+                                         */
     int             eq_pos;             /**< what is the equip. pos? */
-    struct char_data *equipped_by;      /**< equipped by :NULL in room/conta */
+    struct char_data *equipped_by;      /**< equipped by whom?  NULL in 
+                                         *   room/containers
+                                         */
     struct obj_data *in_obj;            /**< In what object NULL when none */
-#if 1  /* These will be disappearing very shortly */
-    struct obj_data *contains;          /**< Contains objects */
-    struct obj_data *next_content;      /**< For 'contains' lists */
-#endif
+
 #if 0
-    struct obj_data *next;              /**< For the object list */
+    struct obj_data *contains;          /**< Contains objects */
+#endif
+#if 1  /* These will be disappearing very shortly */
+    struct obj_data *next_content;      /**< For carrying and room contents 
+                                         *   lists 
+                                         */
 #endif
 
     int             level;              /**< Level ego of the item */
@@ -579,6 +585,7 @@ struct obj_data {
 };
 
 #define KEYWORD_ITEM_OFFSET (OFFSETOF(keywordItem, struct obj_data))
+#define CONTAIN_ITEM_OFFSET (OFFSETOF(containItem, struct obj_data))
 
 #define GLOBAL_LINK_OFFSET  (OFFSETOF(globalLink, struct obj_data))
 #define GLOBAL_LINK_TO_OBJ(x)   \

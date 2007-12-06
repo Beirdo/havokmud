@@ -291,9 +291,9 @@ void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
 struct obj_data *objectRead(int nr);
 void objectFree(struct obj_data *obj);
 void objectExtract(struct obj_data *obj);
-void objectExtractLocked(struct obj_data *obj, LinkedListLocked_t locked );
+void objectExtractLocked(struct obj_data *obj, Locked_t locked );
 void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
-void objectTakeFromObject(struct obj_data *obj);
+void objectTakeFromObject(struct obj_data *obj, Locked_t locked);
 void objectGiveToChar(struct obj_data *object, struct char_data *ch);
 void objectTakeFromChar(struct obj_data *object);
 void objectPutInRoom(struct obj_data *object, long room);
@@ -317,8 +317,8 @@ struct obj_data *objectGetInRoomNum(int num, struct room_data *rm);
 
 bool objectIsVisible(struct char_data *ch, struct obj_data *obj);
 
-void objectKeywordTreeAdd( struct obj_data *obj );
-void objectKeywordTreeRemove( struct obj_data *obj );
+void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj );
+void objectKeywordTreeRemove( BalancedBTree_t *tree, struct obj_data *obj );
 struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
                                          Keywords_t *key );
 struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, int offset,

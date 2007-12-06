@@ -1522,28 +1522,23 @@ struct char_data *get_char_num(int nr)
     return (0);
 }
 
-/**
- * @todo this uses object_list-like behavior and needs rethinking
- * Set all carried_by to point to new owner 
- */
-void object_list_new_owner(struct obj_data *list, struct char_data *ch)
-{
-    if (list) {
-        object_list_new_owner(list->contains, ch);
-        object_list_new_owner(list->next_content, ch);
-        list->carried_by = ch;
-    }
-}
-
 
 void update_object(struct obj_data *obj, int use)
 {
+    LinkedListItem_t   *item;
+    struct obj_data    *subobj;
+
     if (obj->timer > 0) {
         obj->timer -= use;
     }
-    if (obj->contains) {
-        update_object(obj->contains, use);
+
+    LinkedListLock( obj->containList );
+    for( item = obj->containList->head; item; item = item->next ) {
+        subobj = CONTAIN_LINK_TO_OBJ(item);
+        update_object(subobj, use);
     }
+    LinkedListUnlock( obj->containList );
+
     if (obj->next_content && obj->next_content != obj) {
         update_object(obj->next_content, use);
     }
@@ -1565,6 +1560,9 @@ void update_char_objects(struct char_data *ch)
         }
     }
 
+    /**
+     * @todo this will soon need to loop over a list
+     */
     if (ch->carrying) {
         update_object(ch->carrying, 1);
     }
