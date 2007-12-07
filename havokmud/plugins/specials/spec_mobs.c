@@ -332,6 +332,8 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                    *next;
     register struct room_data *rp;
     char            found = FALSE;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -339,6 +341,7 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if ((rp = roomFindNum(ch->in_room)) == 0) {
         return (FALSE);
     }
+
     for (v = rp->people; (v && (!found)); v = next) {
         next = v->next_in_room;
         if (IS_NPC(v) && mob_index[v->nr].vnum == 100 && CAN_SEE(ch, v)) {
@@ -354,8 +357,10 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
     }
 
-    for (i = roomFindNum(ch->in_room)->contents; i; i = next_r_obj) {
-        next_r_obj = i->next_content;
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        i = CONTENT_LINK_TO_OBJ(item);
         if (IS_CORPSE(i)) {
             act("$n savagely devours a corpse.", FALSE, ch, 0, 0, TO_ROOM);
             LinkedListLock( i->containList );
@@ -363,13 +368,16 @@ int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 nextItem = item->next;
                 temp = CONTAIN_LINK_TO_OBJ(item);
                 objectTakeFromObject(temp, LOCKED);
-                objectPutInRoom(temp, ch->in_room);
+                objectPutInRoom(temp, ch->in_room, LOCKED);
             }
             LinkedListUnlock( i->containList );
             objectExtract(i);
+            LinkedListUnlock( rp->contentList );
             return (TRUE);
         }
     }
+
+    LinkedListUnlock( rp->contentList );
     return (FALSE);
 }
 
@@ -595,20 +603,29 @@ int guild_guard(struct char_data *ch, int cmd, char *arg,
 int janitor(struct char_data *ch, int cmd, char *arg,
             struct char_data *mob, int type)
 {
-    struct obj_data *i;
+    struct obj_data    *i;
+    LinkedListItem_t   *item;
+    struct room_data   *rp;
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
+
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        i = CONTENT_LINK_TO_OBJ(item);
         if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) &&
-            (i->type_flag == ITEM_TYPE_DRINKCON || i->cost <= 10)) {
+            (ITEM_TYPE(i) == ITEM_TYPE_DRINKCON || i->cost <= 10)) {
             act("$n picks up some trash.", FALSE, ch, 0, 0, TO_ROOM);
-            objectTakeFromRoom(i);
+            objectTakeFromRoom(i, LOCKED);
             objectGiveToChar(i, ch);
+            LinkedListUnlock( rp->contentList );
             return (TRUE);
         }
     }
+
+    LinkedListUnlock( rp->contentList );
     return (FALSE);
 }
 
@@ -650,7 +667,7 @@ int jugglernaut(struct char_data *ch, int cmd, char *arg,
             act("$n tosses $p but fumbles it!", TRUE, ch, tmp_obj, NULL,
                 TO_ROOM);
             objectTakeFromChar(tmp_obj);
-            objectPutInRoom(tmp_obj, ch->in_room);
+            objectPutInRoom(tmp_obj, ch->in_room, UNLOCKED);
         }
         return (TRUE);
     }
@@ -2073,6 +2090,8 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                     index;
     LinkedListItem_t   *item,
                        *nextItem;
+    LinkedListItem_t   *rItem;
+    spellFunc_t         func;
 
     if (cmd && cmd != 156) {
         return (FALSE);
@@ -2119,41 +2138,48 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
             if (!rp)
                 return (FALSE);
 
-            for (co = rp->contents; co; co = co->next_content) {
-                if (IS_CORPSE(co)) {
-                    /*
-                     * assume 1st corpse is victim's
-                     */
-                    LinkedListLock( co->containList );
-                    for( item = co->containList->head; item; item = nextItem ) {
-                        nextItem = item->next;
-                        o = CONTAIN_LINK_TO_OBJ(item);
-                        objectTakeFromObject(o, LOCKED);
-                        objectGiveToChar(o, ch);
+            LinkedListLock( rp->contentList );
+            for( rItem = rp->contentList->head; rItem; rItem = rItem->next ) {
+                co = CONTENT_LINK_TO_OBJ(rItem);
+                if( !IS_CORPSE(co) ) {
+                    continue;
+                }
 
-                        if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
-                            /*
-                             * do the effects of the potion:
-                             */
-                            for (i = 1; i < 4; i++) {
-                                if (o->value[i] >= 1) {
-                                    index = spell_index[o->value[i]];
-                                    if( spell_info[index].spell_pointer ) {
-                                        ((*spell_info[index].spell_pointer)
-                                         ((byte)o->value[0], ch,
-                                          "", SPELL_TYPE_POTION, ch, o));
-                                    }
+                /*
+                 * assume 1st corpse is victim's
+                 */
+                LinkedListLock( co->containList );
+                for( item = co->containList->head; item; item = nextItem ) {
+                    nextItem = item->next;
+                    o = CONTAIN_LINK_TO_OBJ(item);
+                    objectTakeFromObject(o, LOCKED);
+                    objectGiveToChar(o, ch);
+
+                    if (ITEM_TYPE(o) == ITEM_TYPE_POTION) {
+                        /*
+                         * do the effects of the potion:
+                         */
+                        for (i = 1; i < 4; i++) {
+                            if (o->value[i] >= 1) {
+                                index = spell_index[o->value[i]];
+                                func = spell_info[index].spell_pointer;
+                                if( func ) {
+                                    (*func)(o->value[0], ch, "", 
+                                            SPELL_TYPE_POTION, ch, o);
                                 }
                             }
-                            objectExtract(o);
-
                         }
+                        objectExtract(o);
+
                     }
-                    LinkedListUnlock( co->containList );
-                    objectExtract(co);
-                    return (TRUE);
                 }
+
+                LinkedListUnlock( rp->contentList );
+                LinkedListUnlock( co->containList );
+                objectExtract(co);
+                return (TRUE);
             }
+            LinkedListUnlock( rp->contentList );
         } else {
             act("$N barely misses being swallowed whole!", FALSE, ch,
                 0, targ, TO_NOTVICT);
@@ -2161,6 +2187,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                 0, targ, TO_VICT);
         }
     }
+
     return( FALSE );
 }
 
@@ -4464,6 +4491,8 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     Keywords_t     *key;
     LinkedListItem_t   *item,
                        *nextItem;
+    LinkedListItem_t   *rItem;
+    struct room_data   *rp;
 
     if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
@@ -4475,8 +4504,11 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
 
     key = StringToKeywords( "corpse rabbit", NULL );
 
-    for (j = roomFindNum(ch->in_room)->contents; j; j = j->next_content) {
-        if (IS_CORPSE(i) && KeywordsMatch(key, &j->keywords)) {
+    rp= roomFind(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( rItem = rp->contentList->head; rItem; rItem = rItem->next ) {
+        j = CONTENT_LINK_TO_OBJ(rItem);
+        if (IS_CORPSE(j) && KeywordsMatch(key, &j->keywords)) {
             command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
 
             LinkedListLock( j->containList );
@@ -4484,19 +4516,21 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
                 nextItem = item->next;
                 k = CONTAIN_LINK_TO_OBJ(item);
                 objectTakeFromObject(k, LOCKED);
-                objectPutInRoom(k, ch->in_room);
+                objectPutInRoom(k, ch->in_room, LOCKED);
             }
             LinkedListUnlock( j->containList );
             objectExtract(j);
             ch->generic = 10;
             FreeKeywords(key, TRUE);
+            LinkedListUnlock( rp->contentList );
             return (TRUE);
         }
     }
 
     FreeKeywords(key, TRUE);
+    LinkedListUnlock( rp->contentList );
 
-    for (i = roomFindNum(ch->in_room)->people; i; i = i->next_in_room) {
+    for (i = rp->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].vnum == 6001 && !number(0, 3)) {
             command_interpreter(ch, "emote yips and starts to make dinner.");
             hit(ch, i, TYPE_UNDEFINED);
@@ -9308,13 +9342,13 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                  * place sun sword ... 
                  */
                 target_obj = objectRead(SUN_SWORD_RAVENLOFT);
-                objectPutInRoom(target_obj, sun_loc[number(0, 3)]);
+                objectPutInRoom(target_obj, sun_loc[number(0, 3)], UNLOCKED);
 
                 /*
                  * place holy symbol 
                  */
                 target_obj = objectRead(HOLY_ITEM_RAVENLOFT);
-                objectPutInRoom(target_obj, holy_loc[number(0, 2)]);
+                objectPutInRoom(target_obj, holy_loc[number(0, 2)], UNLOCKED);
 
                 return (FALSE);
             }
@@ -10325,6 +10359,8 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                    *o;
     LinkedListItem_t   *item,
                        *nextItem;
+    LinkedListItem_t   *rItem,
+                       *nextRItem;
 
     if (cmd) {
         return (FALSE);
@@ -10359,7 +10395,10 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 return (FALSE);
             }
 
-            for (co = rp->contents; co; co = co->next_content) {
+            LinkedListLock( rp->contentList );
+            for( rItem = rp->contentList->head; rItem; rItem = nextRItem ) {
+                nextRItem = rItem->next;
+                co = CONTENT_LINK_TO_OBJ(rItem);
                 if (IS_CORPSE(co)) {
                     /* 
                      * assume 1st corpse is victim's 
@@ -10369,7 +10408,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                         nextItem = item->next;
                         o = CONTAIN_LINK_TO_OBJ(item);
                         objectTakeFromObject(o, LOCKED);
-                        objectPutInRoom(o, ch->in_room);
+                        objectPutInRoom(o, ch->in_room, LOCKED);
                     }
                     LinkedListUnlock( co->containList );
 
@@ -10377,6 +10416,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                     objectExtract(co);
                 }
             }
+            LinkedListUnlock( rp->contentList );
         }
 
         if (GET_HIT(ch) < 0) {
@@ -10447,7 +10487,10 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                     return (FALSE);
                 }
 
-                for (co = rp->contents; co; co = co->next_content) {
+                LinkedListLock( rp->contentList );
+                for( rItem = rp->contentList->head; rItem; rItem = nextRItem ) {
+                    nextRItem = rItem->next;
+                    co = CONTENT_LINK_TO_OBJ(rItem);
                     if (IS_CORPSE(co)) {
                         /* assume 1st corpse is victim's */
                         LinkedListLock( co->containList );
@@ -10456,7 +10499,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                             nextItem = item->next;
                             o = CONTAIN_LINK_TO_OBJ(item);
                             objectTakeFromObject(o, LOCKED);
-                            objectPutInRoom(o, ch->in_room);
+                            objectPutInRoom(o, ch->in_room, LOCKED);
                         }
                         LinkedListUnlock( co->containList );
 
@@ -10466,6 +10509,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                         objectExtract(co);
                     }
                 }
+                LinkedListUnlock( rp->contentList );
 
                 if (GET_HIT(ch) < 0) {
                     act("$n dissipates, you breathe a sigh of relief.",
@@ -10975,6 +11019,8 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
     struct obj_data *obj;
     extern struct time_info_data time_info;
     int             check = 0;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (time_info.hours < 20 && time_info.hours > 5) {
         /* 
@@ -10982,7 +11028,10 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
          */
         rp = roomFindNum(WAITROOM);
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == TARANTIS_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
@@ -10990,11 +11039,15 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     objectExtract(obj);
                 }
             }
+            LinkedListUnlock( rp->contentList );
         }
 
         rp = roomFindNum(REAVER_RM);
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == TARANTIS_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
@@ -11002,11 +11055,15 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     objectExtract(obj);
                 }
             }
+            LinkedListUnlock( rp->contentList );
         }
 
         rp = roomFindNum(DEST_ROOM);
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == REAVER_PORTAL) {
                     send_to_room("$c0008The dark portal suddenly turns "
                                  "sideways, shrinks to a mere sliver, and "
@@ -11014,6 +11071,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     objectExtract(obj);
                 }
             }
+            LinkedListUnlock( rp->contentList );
         }                       
         
         /* 
@@ -11039,7 +11097,10 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         rp = roomFindNum(WAITROOM);
         check = 0;
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == TARANTIS_PORTAL) {
                     check = 1;
                 }
@@ -11049,14 +11110,18 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears."
                              " It widens, turns sideways, and becomes a "
                              "portal!\n\r", WAITROOM);
-                objectPutInRoom(obj, WAITROOM);
+                objectPutInRoom(obj, WAITROOM, LOCKED);
             }
+            LinkedListUnlock( rp->contentList );
         }
 
         rp = roomFindNum(REAVER_RM);
         check = 0;
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == TARANTIS_PORTAL) {
                     check = 1;
                 }
@@ -11066,14 +11131,18 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears. It "
                              "widens, turns sideways, and becomes a "
                              "portal!\n\r", REAVER_RM);
-                objectPutInRoom(obj, REAVER_RM);
+                objectPutInRoom(obj, REAVER_RM, LOCKED);
             }
+            LinkedListUnlock( rp->contentList );
         }
 
         rp = roomFindNum(DEST_ROOM);
         check = 0;
         if (rp) {
-            for (obj = rp->contents; obj; obj = obj->next_content) {
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj = CONTENT_LINK_TO_OBJ(item);
                 if (obj->item_number == REAVER_PORTAL) {
                     check = 1;
                 }
@@ -11083,8 +11152,9 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                 send_to_room("$c0008A sliver of darkness suddenly appears. It "
                              "widens, turns sideways, and becomes a "
                              "portal!\n\r", DEST_ROOM);
-                objectPutInRoom(obj, DEST_ROOM);
+                objectPutInRoom(obj, DEST_ROOM, LOCKED);
             }
+            LinkedListUnlock( rp->contentList );
         }
     }
     return (FALSE);
@@ -11545,6 +11615,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     struct obj_data *obj;
     char                buf[MAX_STRING_LENGTH];
+    LinkedListItem_t   *item;
 
     if (!ch) {
         return (FALSE);
@@ -11585,13 +11656,17 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
      */
     if (ch->in_room && ch->in_room == WAITROOM && 
         (rp = roomFindNum(WAITROOM))) {
-        for (obj = rp->contents; obj; obj = obj->next_content) {
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = item->next ) {
+            obj = CONTENT_LINK_TO_OBJ(item);
             if (obj->item_number == TARANTIS_PORTAL) {
                 strcpy(buf, "portal");
                 do_enter(ch, buf, 7);
+                LinkedListUnlock( rp->contentList );
                 return (FALSE);
             }
         }
+        LinkedListUnlock( rp->contentList );
     }
     return (FALSE);
 }
@@ -11942,7 +12017,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
 
                 corpse = objectRead(CORPSEOBJVNUM);
-                objectPutInRoom(corpse, theitem->in_room);
+                objectPutInRoom(corpse, theitem->in_room, UNLOCKED);
                 currroomnum = mob->in_room;
                 char_from_room(mob);
                 char_to_room(mob, mob->generic);
@@ -11966,7 +12041,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  */
                 if(!tempobj) {
                     corpse = objectRead(CORPSEOBJVNUM);
-                    objectPutInRoom(corpse, theitem->in_room);
+                    objectPutInRoom(corpse, theitem->in_room, UNLOCKED);
                     currroomnum = mob->in_room;
                     char_from_room(mob);
                     char_to_room(mob, mob->generic);
@@ -11992,7 +12067,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 if (theitem->in_room == mob->in_room) {
                     act("$n gestures and a bauble disappears from the "
                         "ground.", TRUE, mob, 0, 0, TO_ROOM);
-                    objectTakeFromRoom(theitem);
+                    objectTakeFromRoom(theitem, UNLOCKED);
                     objectPutInObject(theitem, ventobj);
                     mob->generic = WAITTOGOHOME;
                 } else {
@@ -12093,7 +12168,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     return( TRUE );
                 }
                 corpse = objectRead(CORPSEOBJVNUM);
-                objectPutInRoom(corpse, mob->generic);
+                objectPutInRoom(corpse, mob->generic, UNLOCKED);
                 currroomnum = mob->in_room;
                 char_from_room(mob);
                 char_to_room(mob, tempchar->in_room);
@@ -12181,7 +12256,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 mob, parentobj, 0, TO_ROOM);
             char_from_room(mob);
             char_to_room(mob, currroomnum);
-            objectTakeFromRoom(parentobj);
+            objectTakeFromRoom(parentobj, UNLOCKED);
             objectPutInObject(parentobj, ventobj);
 
             while (theitem->in_obj != ventobj) {
@@ -12778,6 +12853,8 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
     struct  obj_data *o;    
     int     objnum;
     struct  char_data *i;
+    LinkedListItem_t   *item;
+    struct room_data   *rp;
     
     if (cmd != 17 || ch == mob || !arg || !ch || !mob) {
             return( FALSE );
@@ -12785,14 +12862,19 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
 
     objnum = 6575;
     
-    for( o = roomFindNum(ch->in_room)->contents; o; o = o->next_content) {
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
         if( o->item_number == objnum ) {
+            LinkedListUnlock( rp->contentList );
             return( FALSE );
         }
     }
+    LinkedListUnlock( rp->contentList );
 
     if (!strcasecmp(arg, "yes")) {
-        for (i = roomFindNum(ch->in_room)->people; i;
+        for (i = rp->people; i;
              i = i->next_in_room) {
             if (IS_FOLLOWING(ch, i) && GetMaxLevel(i) >= 41) {
                 strcpy( buf, "say Your group is far too powerfull to enter!");
@@ -12807,7 +12889,7 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
         act("$c000WSuddenly a large portal opens!$c000w",
             FALSE, mob, 0, 0, TO_ROOM);
         o = objectRead(6575);
-        objectPutInRoom(o, ch->in_room);
+        objectPutInRoom(o, ch->in_room, UNLOCKED);
         return(TRUE);
     } 
     
@@ -12831,6 +12913,9 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
     struct  obj_data *o;
     int     ret = FALSE;
     int     objnum;
+    LinkedListItem_t   *item;
+    struct room_data   *rp;
+    
     
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
@@ -12838,12 +12923,16 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
 
     objnum = 6580;
 
-    for( o = roomFindNum(ch->in_room)->contents; o; o = o->next_content) {
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
         if( o->item_number == objnum ) {
+            LinkedListUnlock( rp->contentList );
             return( FALSE );
         }
     }
-
+    LinkedListUnlock( rp->contentList );
 
     /* Keep the original arg for the caller in case we don't return TRUE */
     argument = strdup(arg);
@@ -12877,7 +12966,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
             "the portal is the way home.", FALSE, mob, NULL, NULL, TO_ROOM);
 
         o = objectRead(6580);
-        objectPutInRoom(o, ch->in_room);
+        objectPutInRoom(o, ch->in_room, UNLOCKED);
         ret = TRUE;
     }
 
@@ -12937,7 +13026,7 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
                 FALSE, mob, 0, 0, TO_ROOM);
 
             o = objectRead(portal);
-            objectPutInRoom(o, ch->in_room);
+            objectPutInRoom(o, ch->in_room, UNLOCKED);
 
             act("The riddler disapears in a puff of smoke!", 
                 FALSE, mob, NULL, NULL, TO_ROOM);

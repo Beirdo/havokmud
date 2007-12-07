@@ -296,8 +296,8 @@ void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
 void objectTakeFromObject(struct obj_data *obj, Locked_t locked);
 void objectGiveToChar(struct obj_data *object, struct char_data *ch);
 void objectTakeFromChar(struct obj_data *object);
-void objectPutInRoom(struct obj_data *object, long room);
-void objectTakeFromRoom(struct obj_data *object);
+void objectPutInRoom(struct obj_data *object, long room, Locked_t locked);
+void objectTakeFromRoom(struct obj_data *object, Locked_t locked);
 void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete);
 void load_char_objs(struct char_data *ch);
 struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
@@ -366,6 +366,7 @@ void initializeRooms( void );
 struct room_data *roomFindNum(int virtual);
 void cleanout_room(struct room_data *rp);
 void completely_cleanout_room(struct room_data *rp);
+int roomCountObject(int nr, struct room_data *rp);
 
 /*************************************************************************
  * Support for different platforms

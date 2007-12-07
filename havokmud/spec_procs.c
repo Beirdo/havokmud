@@ -1470,7 +1470,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
             !strcasecmp(buf2, "altar")) {
             objectExtract(chalice);
             chalice = objectRead(achl);
-            objectPutInRoom(chalice, ch->in_room);
+            objectPutInRoom(chalice, ch->in_room, UNLOCKED);
             send_to_char("Ok.\n\r", ch);
         }
         return (TRUE);
@@ -2333,7 +2333,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                         } else {
                             act("$n emerges with $p, and drops it for $N.",
                                 FALSE, ch, obj, t, TO_ROOM);
-                            objectPutInRoom(obj, ch->in_room);
+                            objectPutInRoom(obj, ch->in_room, UNLOCKED);
                         }
                     }
                 }
@@ -2386,7 +2386,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
                     act("$n sniffs $p, then discards it with disgust.",
                         TRUE, latt, obj, 0, TO_ROOM);
                     objectTakeFromChar(obj);
-                    objectPutInRoom(obj, ch->in_room);
+                    objectPutInRoom(obj, ch->in_room, UNLOCKED);
                     if (!IS_MOB(ch) && CAN_SEE(latt, ch)) {
                         mem->index = affect_status(mem, latt, ch, -5);
                     } else {
@@ -5026,27 +5026,34 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
     return FALSE;
 }
 
-/**
- * @todo change to use the corpse flag to determine that it's a corpse or not
- */
 int AcidBlob(struct char_data *ch, int cmd, char *arg,
              struct char_data *mob, int type)
 {
     struct obj_data *i;
+    LinkedListItem_t   *item,
+                       *nextItem;
+    struct room_data   *rp;
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
-        if (IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) && 
-            !strncmp(i->keywords.words[0], "corpse", 6)) {
+
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        i = CONTENT_LINK_TO_OBJ(item);
+
+        if( IS_OBJ_STAT(i, wear_flags, ITEM_TAKE) && !IS_CORPSE(i) ) {
             act("$n destroys some trash.", FALSE, ch, 0, 0, TO_ROOM);
 
-            objectTakeFromRoom(i);
+            objectTakeFromRoom(i, LOCKED);
             objectExtract(i);
+            LinkedListUnlock( rp->contentList );
             return (TRUE);
         }
     }
+    LinkedListUnlock( rp->contentList );
     return (FALSE);
 }
 
@@ -5079,70 +5086,72 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
                    *blade;
     struct char_data *joe,
                    *holder;
-    struct char_data *lowjoe = 0;
+    struct char_data *lowjoe = NULL;
     char           *arg1,
                     buf[250];
     struct index_data *index;
     Keywords_t     *key;
+    LinkedListItem_t   *item,
+                       *nextItem;
+    struct room_data   *rp;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
-        (!roomFindNum(ch->in_room))) {
+        (!(rp = roomFindNum(ch->in_room)))) {
         return (FALSE);
     }
-    for (obj = roomFindNum(ch->in_room)->contents;
-         obj; obj = obj->next_content) {
-        if (obj->index->func == EvilBlade) {
-            /*
-             * I am on the floor 
-             */
-            for (joe = roomFindNum(ch->in_room)->people; joe;
-                 joe = joe->next_in_room) {
-                if ((GET_ALIGNMENT(joe) <= -400) && (!IS_IMMORTAL(joe))) {
-                    if (lowjoe) {
-                        if (GET_ALIGNMENT(joe) < GET_ALIGNMENT(lowjoe)) {
-                            lowjoe = joe;
-                        }
-                    } else
-                        lowjoe = joe;
-                }
+
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj = CONTENT_LINK_TO_OBJ(item);
+
+        if (obj->index->func != EvilBlade) {
+            continue;
+        }
+
+        /*
+         * I am on the floor 
+         */
+        for (joe = rp->people; joe; joe = joe->next_in_room) {
+            if( GET_ALIGNMENT(joe) <= -400 && !IS_IMMORTAL(joe) &&
+                (!loejoe || GET_ALIGNMENT(joe) < GET_ALIGNMENT(lowjoe)) ) {
+                lowjoe = joe;
             }
+        }
 
-            if (lowjoe) {
-                if (CAN_GET_OBJ(lowjoe, obj)) {
-                    objectTakeFromRoom(obj);
-                    objectGiveToChar(obj, lowjoe);
+        if (lowjoe && CAN_GET_OBJ(lowjoe, obj)) {
+            objectTakeFromRoom(obj, LOCKED);
+            objectGiveToChar(obj, lowjoe);
 
-                    sprintf(buf, "%s leaps into your hands!\n\r",
+            sprintf(buf, "%s leaps into your hands!\n\r",
+                    obj->short_description);
+            send_to_char(buf, lowjoe);
+
+            sprintf(buf, "%s jumps from the floor and leaps into %s's"
+                         " hands!\n\r",
+                    obj->short_description, GET_NAME(lowjoe));
+            act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
+
+            if (!EgoBladeSave(lowjoe)) {
+                LinkedListUnlock( rp->contentList );
+                if (!lowjoe->equipment[WIELD]) {
+                    sprintf(buf, "%s forces you to wield it!\n\r",
                             obj->short_description);
                     send_to_char(buf, lowjoe);
-
-                    sprintf(buf, "%s jumps from the floor and leaps into %s's"
-                                 " hands!\n\r",
-                            obj->short_description, GET_NAME(lowjoe));
-                    act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
-
-                    if (!EgoBladeSave(lowjoe)) {
-                        if (!lowjoe->equipment[WIELD]) {
-                            sprintf(buf, "%s forces you to wield it!\n\r",
-                                    obj->short_description);
-                            send_to_char(buf, lowjoe);
-                            wear(lowjoe, obj, 12);
-                            return (FALSE);
-                        } else {
-                            sprintf(buf, "You can feel %s attempt to make you "
-                                         "wield it.\n\r", 
-                                    obj->short_description);
-                            send_to_char(buf, lowjoe);
-                            return (FALSE);
-                        }
-                    }
+                    wear(lowjoe, obj, 12);
+                } else {
+                    sprintf(buf, "You can feel %s attempt to make you "
+                                 "wield it.\n\r", 
+                            obj->short_description);
+                    send_to_char(buf, lowjoe);
                 }
+                return (FALSE);
             }
         }
     }
+    LinkedListUnlock( rp->contentList );
 
-    for (holder = roomFindNum(ch->in_room)->people; holder;
-         holder = holder->next_in_room) {
+    for (holder = rp->people; holder; holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
             if (obj->index->func && obj->index->func != board) {
                 /*
@@ -5160,7 +5169,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
 
                     blade = unequip_char(holder, WIELD);
                     if (blade) {
-                        objectPutInRoom(blade, holder->in_room);
+                        objectPutInRoom(blade, holder->in_room, UNLOCKED);
                     }
                     if (!holder->equipment[WIELD]) {
                         sprintf(buf, "%s forces you to wield it!\n\r",
@@ -5387,66 +5396,71 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                     buf[250];
     struct index_data *index;
     Keywords_t     *key;
+    LinkedListItem_t   *item,
+                       *nextItem;
+    struct room_data   *rp;
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
-        (!roomFindNum(ch->in_room))) {
+        (!(rp = roomFindNum(ch->in_room)))) {
         return (FALSE);
     }
-    return (FALSE);
+
     /*
      * disabled
      */
-    for (obj = roomFindNum(ch->in_room)->contents;
-         obj; obj = obj->next_content) {
-        if (obj->index->func == GoodBlade) {
-            /*
-             * I am on the floor 
-             */
-            for (joe = roomFindNum(ch->in_room)->people; joe;
-                 joe = joe->next_in_room) {
-                if (GET_ALIGNMENT(joe) >= 350 && !IS_IMMORTAL(joe)) {
-                    if (lowjoe) {
-                        if (GET_ALIGNMENT(joe) > GET_ALIGNMENT(lowjoe)) {
-                            lowjoe = joe;
-                        }
-                    } else
-                        lowjoe = joe;
-                }
+    return (FALSE);
+
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj = CONTENT_LINK_FROM_OBJ(item);
+
+        if( !obj->index->func == GoodBlade ) {
+            continue;
+        }
+
+        /*
+         * I am on the floor 
+         */
+        for (joe = rp->people; joe; joe = joe->next_in_room) {
+            if( GET_ALIGNMENT(joe) >= 350 && !IS_IMMORTAL(joe) &&
+                (!lowjoe || GET_ALIGNMENT(joe) > GET_ALIGNMENT(lowjoe)) ) {
+                lowjoe = joe;
             }
+        }
 
-            if (lowjoe && CAN_GET_OBJ(lowjoe, obj)) {
-                objectTakeFromRoom(obj);
-                objectGiveToChar(obj, lowjoe);
+        if (lowjoe && CAN_GET_OBJ(lowjoe, obj)) {
+            objectTakeFromRoom(obj, LOCKED);
+            objectGiveToChar(obj, lowjoe);
 
-                sprintf(buf, "%s leaps into your hands!\n\r",
-                        obj->short_description);
-                send_to_char(buf, lowjoe);
+            sprintf(buf, "%s leaps into your hands!\n\r",
+                    obj->short_description);
+            send_to_char(buf, lowjoe);
 
-                sprintf(buf, "%s jumps from the floor and leaps into %s's "
-                             "hands!\n\r", obj->short_description,
-                        GET_NAME(lowjoe));
-                act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
+            sprintf(buf, "%s jumps from the floor and leaps into %s's "
+                         "hands!\n\r", obj->short_description,
+                    GET_NAME(lowjoe));
+            act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
 
-                if (!EgoBladeSave(lowjoe)) {
-                    if (!lowjoe->equipment[WIELD]) {
-                        sprintf(buf, "%s forces you to wield it!\n\r",
-                                obj->short_description);
-                        send_to_char(buf, lowjoe);
-                        wear(lowjoe, obj, 12);
-                        return (FALSE);
-                    } else {
-                        sprintf(buf, "You can feel %s attept to make you wield"
-                                     " it.\n\r", obj->short_description);
-                        send_to_char(buf, lowjoe);
-                        return (FALSE);
-                    }
+            if (!EgoBladeSave(lowjoe)) {
+                LinkedListUnlock( rp->contentList );
+                if (!lowjoe->equipment[WIELD]) {
+                    sprintf(buf, "%s forces you to wield it!\n\r",
+                            obj->short_description);
+                    send_to_char(buf, lowjoe);
+                    wear(lowjoe, obj, 12);
+                } else {
+                    sprintf(buf, "You can feel %s attept to make you wield"
+                                 " it.\n\r", obj->short_description);
+                    send_to_char(buf, lowjoe);
                 }
+                return (FALSE);
             }
         }
     }
+    LinkedListUnlock( rp->contentList );
 
-    for (holder = roomFindNum(ch->in_room)->people; holder;
-         holder = holder->next_in_room) {
+    for (holder = rp->people; holder; holder = holder->next_in_room) {
         for (obj = holder->carrying; obj; obj = obj->next_content) {
             if (obj->index->func && obj->index->func != board) {
                 /*
@@ -5465,7 +5479,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
 
                     blade = unequip_char(holder, WIELD);
                     if (blade) {
-                        objectPutInRoom(blade, holder->in_room);
+                        objectPutInRoom(blade, holder->in_room, UNLOCKED);
                     }
                     if (!holder->equipment[WIELD]) {
                         sprintf(buf, "%s forces you to wield it!\n\r",
@@ -7606,7 +7620,7 @@ int generate_legend_statue(void)
                     /*
                      * and finally place it in a room 
                      */
-                    objectPutInRoom(obj, rnum);
+                    objectPutInRoom(obj, rnum, UNLOCKED);
                 }
             }
             free(tmp);

@@ -488,15 +488,22 @@ struct index_data {
  * ======================== Structure for object ========================
  */
 struct obj_data {
-    LinkedListItem_t    globalLink; /**< Linked List linkage for the global
+    LinkedListItem_t    globalLink; /**< Linked List linkage for 
+                                     *   index_data::list -- the global
                                      *   list of items (one list per item
                                      *   number)
                                      */
     LinkedListItem_t    containLink; /**< Linked List linkage for 
-                                      *   obj::containList.  This linkage is all
-                                      *   of the items contained in the same
-                                      *   object
+                                      *   obj_data::containList.  This linkage 
+                                      *   is all of the items contained in the 
+                                      *   same object
                                       */
+    LinkedListItem_t    contentLink; /**< Linked List linkage for
+                                      *   room_data::contentList.  This linkage
+                                      *   is all of the items contained in the
+                                      *   same room
+                                      */
+
     struct index_data *index;       /**< pointer back to the index entry to
                                      *   save calls to objectIndex
                                      */
@@ -509,8 +516,14 @@ struct obj_data {
     BalancedBTreeItem_t *containItem; /**< The btree items in the 
                                        *   obj_data::containKeywordTree (one per
                                        *   keyword entry) if this item is
-                                       *   contained in another
+                                       *   contained in another object
                                        */
+    BalancedBTreeItem_t *contentItem; /**< The btree items in the 
+                                       *   room_data::contentKeywordTree (one 
+                                       *   per keyword entry) if this item is
+                                       *   in a room
+                                       */
+
     BalancedBTree_t    *containKeywordTree; /**< The double binary tree of all 
                                              *   items contained in this one 
                                              *   (same structure as the 
@@ -565,9 +578,6 @@ struct obj_data {
                                          */
     struct obj_data *in_obj;            /**< In what object NULL when none */
 
-#if 0
-    struct obj_data *contains;          /**< Contains objects */
-#endif
 #if 1  /* These will be disappearing very shortly */
     struct obj_data *next_content;      /**< For carrying and room contents 
                                          *   lists 
@@ -586,6 +596,7 @@ struct obj_data {
 
 #define KEYWORD_ITEM_OFFSET (OFFSETOF(keywordItem, struct obj_data))
 #define CONTAIN_ITEM_OFFSET (OFFSETOF(containItem, struct obj_data))
+#define CONTENT_ITEM_OFFSET (OFFSETOF(contentItem, struct obj_data))
 
 #define GLOBAL_LINK_OFFSET  (OFFSETOF(globalLink, struct obj_data))
 #define GLOBAL_LINK_TO_OBJ(x)   \
@@ -594,6 +605,10 @@ struct obj_data {
 #define CONTAIN_LINK_OFFSET  (OFFSETOF(containLink, struct obj_data))
 #define CONTAIN_LINK_TO_OBJ(x)  \
     ((struct obj_data *)PTR_AT_OFFSET(-CONTAIN_LINK_OFFSET,(x)))
+
+#define CONTENT_LINK_OFFSET  (OFFSETOF(contentLink, struct obj_data))
+#define CONTENT_LINK_TO_OBJ(x)  \
+    ((struct obj_data *)PTR_AT_OFFSET(-CONTENT_LINK_OFFSET,(x)))
 
 /*
  * The following defs are for room_data
@@ -708,6 +723,9 @@ struct room_direction_data {
  * ========================= Structure for room ==========================
  */
 struct room_data {
+    LinkedList_t       *contentList;
+    BalancedBTree_t    *contentKeywordTree;
+
     int             number;     /* Rooms number */
     int             zone;       /* Room zone (for resetting) */
     int             continent;  /* Which continent/mega-zone */
@@ -731,9 +749,11 @@ struct room_data {
     long            room_flags; /* DEATH,DARK ... etc */
     int             light;      /* Number of lightsources in room */
     int             dark;
-    int             (*funct) ();        /* special procedure */
+    int             (*func) ();        /* special procedure */
 
+#if 0
     struct obj_data *contents;  /* List of items in room */
+#endif
     struct char_data *people;   /* List of NPC / PC in room */
 
     int             special;

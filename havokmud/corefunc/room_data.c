@@ -65,6 +65,8 @@ void completely_cleanout_room(struct room_data *rp)
     struct char_data   *ch;
     struct obj_data    *obj;
     PlayerStruct_t     *player; 
+    LinkedListItem_t   *item;
+    LinkedListItem_t   *nextItem;
 
     while (rp->people) {
         ch = rp->people;
@@ -81,15 +83,14 @@ void completely_cleanout_room(struct room_data *rp)
         char_to_room(ch, 0);
     }
 
-    while (rp->contents) {
-        obj = rp->contents;
-        objectTakeFromRoom(obj);
-
-        /*
-         * send item to the void
-         */
-        objectPutInRoom(obj, 0);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj = CONTENT_LINK_TO_OBJ(item);
+        objectTakeFromRoom(obj, LOCKED);
+        objectPutInRoom(obj, 0, UNLOCKED);
     }
+    LinkedListUnlock( rp->contentList );
 
     cleanout_room(rp);
 }
@@ -148,16 +149,20 @@ struct room_data *roomFindNum(int virtual)
 }
 
 
-int ObjRoomCount(int nr, struct room_data *rp)
+int roomCountObject(int nr, struct room_data *rp)
 {
-    struct obj_data *o;
-    int             count = 0;
+    struct obj_data    *o;
+    int                 count = 0;
+    LinkedListItem_t   *item;
 
-    for (o = rp->contents; o; o = o->next_content) {
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
         if (o->item_number == nr) {
             count++;
         }
     }
+    LinkedListUnlock( rp->contentList );
     return (count);
 }
 

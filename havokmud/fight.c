@@ -459,7 +459,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
             } else {
                 cp->timer = MAX_PC_CORPSE_TIME + 3;
             }
-            objectPutInRoom(cp, ch->in_room);
+            objectPutInRoom(cp, ch->in_room, UNLOCKED);
         }
 
         /*
@@ -642,7 +642,7 @@ void make_corpse(struct char_data *ch, int killedbytype)
 
     object_list_new_owner(corpse, NULL);
 
-    objectPutInRoom(corpse, ch->in_room);
+    objectPutInRoom(corpse, ch->in_room, UNLOCKED);
 
     /*
      * this must be set before dispel_magic, because if they
@@ -2786,7 +2786,7 @@ void MissVictim(struct char_data *ch, struct char_data *v, int type,
                     TO_CHAR);
                 act("$p falls to the ground harmlessly", FALSE, ch, o, 0,
                     TO_ROOM);
-                objectPutInRoom(o, ch->in_room);
+                objectPutInRoom(o, ch->in_room, UNLOCKED);
             }
         }
     }
@@ -3382,7 +3382,7 @@ void perform_violence(int pulse)
                                 if (!HasClass(ch, CLASS_RANGER) ||
                                     number(1, 20) > GET_DEX(ch)) {
                                     tmp = unequip_char(ch, HOLD);
-                                    objectPutInRoom(tmp, ch->in_room);
+                                    objectPutInRoom(tmp, ch->in_room, UNLOCKED);
                                     act("$c0014You fumble and drop $p",
                                         0, ch, tmp, tmp, TO_CHAR);
                                     act("$c0014$n fumbles and drops $p", 0,
@@ -3395,7 +3395,8 @@ void perform_violence(int pulse)
 
                                     if (number(1, 20) > GET_DEX(ch)) {
                                         tmp = unequip_char(ch, WIELD);
-                                        objectPutInRoom(tmp, ch->in_room);
+                                        objectPutInRoom(tmp, ch->in_room, 
+                                                        UNLOCKED);
                                         act("$c0015and you fumble and drop"
                                             " $p too!", 0, ch, tmp, tmp,
                                             TO_CHAR);
@@ -3444,7 +3445,7 @@ void perform_violence(int pulse)
                                 } else if (!HasClass(ch, CLASS_RANGER) ||
                                            number(1, 20) > GET_DEX(ch)) {
                                     tmp = unequip_char(ch, HOLD);
-                                    objectPutInRoom(tmp, ch->in_room);
+                                    objectPutInRoom(tmp, ch->in_room, UNLOCKED);
                                     act("$c0014You fumble and drop $p",
                                         0, ch, tmp, tmp, TO_CHAR);
                                     act("$c0014$n fumbles and drops $p",
@@ -3458,7 +3459,8 @@ void perform_violence(int pulse)
                                     if (number(1, 20) >
                                         GET_DEX(ch)) {
                                         tmp = unequip_char(ch, WIELD);
-                                        objectPutInRoom(tmp, ch->in_room);
+                                        objectPutInRoom(tmp, ch->in_room, 
+                                                        UNLOCKED);
                                         act("$c0015and you fumble and "
                                             "drop $p too!", 0, ch, tmp,
                                             tmp, TO_CHAR);
@@ -4365,12 +4367,12 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
             /*
              * for shooting * missles
              */
-            objectPutInRoom(t, v->in_room);
+            objectPutInRoom(t, v->in_room, UNLOCKED);
         } else
 #endif
-            objectPutInRoom(t, ch->in_room);
+            objectPutInRoom(t, ch->in_room, UNLOCKED);
     } else {
-        objectPutInRoom(t, ch->in_room);
+        objectPutInRoom(t, ch->in_room, UNLOCKED);
     }
 
     t->value[0] = 20;
@@ -4380,7 +4382,7 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
         nextItem = item->next;
         x = CONTAIN_LINK_TO_OBJ(item);
         objectTakeFromObject(x, LOCKED);
-        objectPutInRoom(x, ch->in_room);
+        objectPutInRoom(x, ch->in_room, UNLOCKED);
     }
     LinkedListUnlock( obj->containList );
 
@@ -5061,6 +5063,8 @@ void NailThisSucker(struct char_data *ch)
     struct room_data *rp;
     struct obj_data *obj,
                    *next_o;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     rp = roomFindNum(ch->in_room);
     room_num = ch->in_room;
@@ -5093,12 +5097,15 @@ void NailThisSucker(struct char_data *ch)
      */
     if (IS_SET(rp->room_flags, DEATH)) {
         Log("%s hit a DeathTrap in room %s[%ld]\r\n", GET_NAME(ch),
-            roomFindNum(room_num)->name, room_num);
+            rp->name, room_num);
 
-        for (obj = roomFindNum(room_num)->contents; obj; obj = next_o) {
-            next_o = obj->next_content;
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = nextItem ) {
+            nextItem = item->next;
+            obj = CONTENT_LINK_TO_OBJ(item);
             objectExtract(obj);
         }
+        LinkedListUnlock( rp->contentList );
     }
 }
 

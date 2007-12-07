@@ -292,7 +292,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                     arg1,
                     arg2,
                     arg3;
-    struct index_data *index;
+    struct index_data  *index;
+    LinkedListItem_t   *item;
 
     for (i = start_room; i <= end_room; i++) {
         room = roomFindNum(i);
@@ -349,7 +350,9 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
         /*
          *  write out objects in rooms
          */
-        for (o = room->contents; o; o = o->next_content) {
+        LinkedListLock( room->contentList );
+        for( item = room->contentList->head; item; item = item->next ) {
+            o = CONTENT_LINK_TO_OBJ(item);
             if (o->item_number >= 0) {
                 cmd = 'O';
                 arg1 = o->item_number;
@@ -364,6 +367,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                 RecZwriteObj(fp, o);
             }
         }
+        LinkedListUnlock( room->contentList );
+
         /*
          *  lastly.. doors
          */
@@ -470,7 +475,9 @@ void CleanZone(int zone)
     int             start,
                     end,
                     i;
-    struct index_data *index;
+    struct index_data  *index;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     start = zone ? (zone_table[zone - 1].top + 1) : 0;
     end = zone_table[zone].top;
@@ -487,8 +494,10 @@ void CleanZone(int zone)
             }
         }
 
-        for (obj = rp->contents; obj; obj = next_o) {
-            next_o = obj->next_content;
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = nextItem ) {
+            nextItem = item->next;
+            obj = CONTENT_LINK_TO_OBJ(item);
             obj->index->number--;
 
             /*
@@ -504,6 +513,7 @@ void CleanZone(int zone)
                 objectExtract(obj);
             }
         }
+        LinkedListUnlock( rp->contentList );
     }
 }
 
@@ -1610,6 +1620,8 @@ void down_river(int pulse)
                     or;
     char            buf[80];
     struct room_data *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (pulse < 0) {
         return;
@@ -1617,6 +1629,7 @@ void down_river(int pulse)
 
     for (ch = character_list; ch; ch = tmp) {
         tmp = ch->next;
+
         if (!IS_NPC(ch) && ch->in_room != NOWHERE &&
             (rp = roomFindNum(ch->in_room)) &&
             rp->sector_type == SECT_WATER_NOSWIM &&
@@ -1624,16 +1637,18 @@ void down_river(int pulse)
             rp->river_dir <= 5 && rp->river_dir >= 0) {
 
             rd = rp->river_dir;
-            for (obj_object = rp->contents;
-                 obj_object; obj_object = next_obj) {
 
-                next_obj = obj_object->next_content;
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj_object = CONTENT_LINK_TO_OBJ(item);
                 if (rp->dir_option[rd]) {
-                    objectTakeFromRoom(obj_object);
+                    objectTakeFromRoom(obj_object, LOCKED);
                     objectPutInRoom(obj_object,
-                                    rp->dir_option[rd]->to_room);
+                                    rp->dir_option[rd]->to_room, UNLOCKED);
                 }
             }
+            LinkedListUnlock( rp->contentList );
 
             /*
              * flyers don't get moved
@@ -3096,6 +3111,8 @@ void TeleportPulseStuff(int pulse)
                    *dest;
     struct obj_data *obj_object,
                    *temp_obj;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     /*
      * check_mobile_activity(pulse); Teleport(pulse);
@@ -3117,9 +3134,6 @@ void TeleportPulseStuff(int pulse)
         next = ch->next;
         if (IS_MOB(ch)) {
             if (ch->specials.tick == tick && !ch->specials.fighting) {
-#if 0
-                Log("through here");
-#endif
                 mobile_activity(ch);
             }
         } else if (IS_PC(ch)) {
@@ -3133,13 +3147,14 @@ void TeleportPulseStuff(int pulse)
                     continue;
                 }
 
-                obj_object = (rp)->contents;
-                while (obj_object) {
-                    temp_obj = obj_object->next_content;
-                    objectTakeFromRoom(obj_object);
-                    objectPutInRoom(obj_object, (rp)->tele_targ);
-                    obj_object = temp_obj;
+                LinkedListLock( rp->contentList );
+                for( item = rp->contentList->head; item; item = nextItem ) {
+                    nextItem = item->next;
+                    obj_object = CONTENT_LINK_TO_OBJ(item);
+                    objectTakeFromRoom(obj_object, LOCKED);
+                    objectPutInRoom(obj_object, rp->tele_targ, UNLOCKED);
                 }
+                LinkedListUnlock( rp->contentList );
 
                 bk = 0;
 
@@ -3641,6 +3656,8 @@ void RiverPulseStuff(int pulse)
     char            buf[80],
                     buffer[100];
     struct room_data *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (pulse < 0) {
         return;
@@ -3657,15 +3674,19 @@ void RiverPulseStuff(int pulse)
                 rp->river_dir <= 5 && rp->river_dir >= 0) {
 
                 rd = rp->river_dir;
-                for (obj_object = rp->contents;
-                     obj_object; obj_object = next_obj) {
-                    next_obj = obj_object->next_content;
+
+                LinkedListLock( rp->contentList );
+                for( item = rp->contentList->head; item; item = nextItem ) {
+                    nextItem = item->next;
+                    obj_object = CONTENT_LINK_TO_OBJ(item);
+
                     if (rp->dir_option[rd]) {
-                        objectTakeFromRoom(obj_object);
+                        objectTakeFromRoom(obj_object, LOCKED);
                         objectPutInRoom(obj_object,
-                                        rp->dir_option[rd]->to_room);
+                                        rp->dir_option[rd]->to_room, UNLOCKED);
                     }
                 }
+                LinkedListUnlock( rp->contentList );
 
                 /*
                  * flyers don't get moved

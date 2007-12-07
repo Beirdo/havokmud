@@ -741,7 +741,7 @@ void spell_create_food(int level, struct char_data *ch,
     objectKeywordTreeAdd( objectKeywordTree, tmp_obj );
     objectTypeTreeAdd( tmp_obj );
 
-    objectPutInRoom(tmp_obj, ch->in_room);
+    objectPutInRoom(tmp_obj, ch->in_room, UNLOCKED);
 
     tmp_obj->item_number = -1;
 
@@ -1425,6 +1425,7 @@ void spell_golem(int level, struct char_data *ch,
                    *boots = 0,
                    *o;
     struct room_data *rp;
+    LinkedListItem_t   *item;
 
     /*
      * you need: helm, jacket, leggings, sleeves, gloves, boots
@@ -1434,7 +1435,11 @@ void spell_golem(int level, struct char_data *ch,
     if (!rp) {
         return;
     }
-    for (o = rp->contents; o; o = o->next_content) {
+
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
+
         if (ITEM_TYPE(o) == ITEM_TYPE_ARMOR) {
             if (IS_OBJ_STAT(o, wear_flags, ITEM_WEAR_HEAD) && !helm) {
                 count++;
@@ -1473,6 +1478,7 @@ void spell_golem(int level, struct char_data *ch,
             }
         }
     }
+    LinkedListUnlock( rp->contentList );
 
     if (count < 6) {
         send_to_char("You don't have all the correct pieces!\n\r", ch);

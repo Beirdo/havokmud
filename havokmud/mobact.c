@@ -195,21 +195,28 @@ void MobScavenge(struct char_data *ch)
                     cc = 0;
     char            buf[512];
     struct room_data *rp;
+    LinkedListItem_t   *item, 
+                       *nextItem;
 
     rp = roomFindNum(ch->in_room);
     if (!rp) {
         return;
     } 
     
-    if ((roomFindNum(ch->in_room))->contents && number(0, 4)) {
-        for (max = 1, best_obj = 0, obj = (roomFindNum(ch->in_room))->contents;
-             obj; obj = obj->next_content) {
+    if (LinkedListCount( rp->contentList ) && number(0, 4)) {
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head, max = 1, best_obj = NULL; item;
+             item = nextItem ) {
+            nextItem = item->next;
+            obj = CONTENT_LINK_TO_OBJ(item);
+
             if (IS_CORPSE(obj)) {
                 cc++;
                 if ( LinkedListCount( obj->containList ) && IsHumanoid(ch) && 
                      !number(0, 4)) {
                     sprintf(buf, "get all %d.corpse", cc);
                     command_interpreter(ch, buf);
+                    LinkedListUnlock( rp->contentList );
                     return;
                 }
             }
@@ -221,24 +228,15 @@ void MobScavenge(struct char_data *ch)
         }
 
         if (best_obj && !CheckForAnyTrap(ch, best_obj)) {
-            objectTakeFromRoom(best_obj);
+            objectTakeFromRoom(best_obj, LOCKED);
             objectGiveToChar(best_obj, ch);
             act("$n gets $p.", FALSE, ch, best_obj, 0, TO_ROOM);
         }
-    } else if (IsHumanoid(ch) && roomFindNum(ch->in_room)->contents && 
+        LinkedListUnlock( rp->contentList );
+    } else if (IsHumanoid(ch) && LinkedListCount( rp->contentList ) && 
                !number(0, 4)) {
         command_interpreter(ch, "get all");
     }
-
-#if 0
-    if (number(0, 3)) {
-        for (obj = ch->carrying; obj; obj = obj->next) {
-            if (IS_OBJ_STAT(obj, extra_flags, ITEM_NODROP)) {
-                do_junk(ch, obj->name, 0);
-            }
-        }
-    }
-#endif
 
     if (!number(0, 3) && IsHumanoid(ch) && ch->carrying) {
         command_interpreter(ch, "wear all");
@@ -698,6 +696,8 @@ int FindABetterWeapon(struct char_data * mob)
                    *best;
     char            buf[MAX_STRING_LENGTH];
     char           *objname;
+    LinkedListItem_t   *item;
+    struct room_data   *rp;
 
     /*
      * pick up and wield weapons Similar code for armor, etc. 
@@ -709,19 +709,21 @@ int FindABetterWeapon(struct char_data * mob)
     if (!HasHands(mob)) {
         return (FALSE);
     }
-    if (!roomFindNum(mob->in_room)) {
+
+    if (!(rp = roomFindNum(mob->in_room))) {
         return (FALSE);
     }
+
     /*
      * check room 
      */
-    best = 0;
-    for (o = roomFindNum(mob->in_room)->contents; o; o = o->next_content) {
-        if (best && IS_WEAPON(o)) {
-            if (GetDamage(o, mob) > GetDamage(best, mob)) {
-                best = o;
-            }
-        } else if (IS_WEAPON(o)) {
+    best = NULL;
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
+
+        if( IS_WEAPON(o) && 
+            ( !best || GetDamage(o, mob) > GetDamage(best, mob) ) {
             best = o;
         }
     }

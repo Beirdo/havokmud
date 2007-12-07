@@ -441,6 +441,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     int             j,
                     num;
     Keywords_t     *key;
+    LinkedListItem_t   *item;
+    struct room_data   *rp;
 
     switch (cmd) {
     case 10:                    /* Get */
@@ -481,9 +483,12 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
      * Look in the room first, in get case
      */
     if (cmd == 10) {
-        for (i = roomFindNum(ch->in_room)->contents, j = 1; 
-             i && (j <= num);
-             i = i->next_content) {
+        rp = roomFindNum(ch->in_room);
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head, j = 1; item && j <= num;
+             item = item->next ) {
+            i = CONTENT_LINK_TO_OBJ(item);
+
             if (i->item_number >= 0 && 
                 (do_all || KeywordsMatch(key, &i->keywords))) {
 
@@ -498,6 +503,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
                 }
             }
         }
+        LinkedListUnlock( rp->contentList );
     }
 
     /*
@@ -576,7 +582,7 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
             sprintf(buf, "Scraps from %s lie in a pile here.",
                     obj->short_description);
             i->description = (char *) strdup(buf);
-            objectPutInRoom(i, ch->in_room);
+            objectPutInRoom(i, ch->in_room, UNLOCKED);
             objectTakeFromChar(obj);
             objectExtract(obj);
 
@@ -975,11 +981,11 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
         /*
          * purge everything in altar
          */
-        objectTakeFromRoom(obj);
+        objectTakeFromRoom(obj, UNLOCKED);
         objectExtract(obj);
 
         obj = objectRead(51831);
-        objectPutInRoom(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room, UNLOCKED);
 
         /*
          * Load up the prize 
@@ -1652,12 +1658,12 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
         objectExtract(obj2);
 
         obj = objectRead(DRAGON_SCEPTRE_ONE);
-        objectPutInRoom(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room, UNLOCKED);
 
         obj = objectRead(EYE_DRAGON);
-        objectPutInRoom(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room, UNLOCKED);
         obj = objectRead(EYE_DRAGON);
-        objectPutInRoom(obj, ch->in_room);
+        objectPutInRoom(obj, ch->in_room, UNLOCKED);
 
         room = roomFindNum(ch->in_room);
         for (tmp = room->people; tmp; tmp = tmp2) {
@@ -2266,7 +2272,7 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
         return( FALSE );
     }
     if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
-        objectTakeFromRoom(obj);
+        objectTakeFromRoom(obj, UNLOCKED);
         objectExtract(obj);
         act("The ring of blazing white light suddenly vanishes!", 
             FALSE, ch, obj, NULL, TO_ROOM);

@@ -185,12 +185,19 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     char            buf[100];
     struct char_data *tmp_char;
     int             value = 0;
+    struct room_data   *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
-    for (k = roomFindNum(ch->in_room)->contents; k;
-         k = roomFindNum(ch->in_room)->contents) {
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        k = CONTENT_LINK_TO_OBJ(item);
+
         sprintf(buf, "The %s vanish in a puff of smoke.\n\r",
                 fname(k->short_description));
-        for (tmp_char = roomFindNum(ch->in_room)->people; tmp_char;
+        for (tmp_char = rp->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
@@ -198,6 +205,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
         }
         objectExtract(k);
     }
+    LinkedListUnlock( rp->contentList );
 
     if (cmd != 60) {
         return (FALSE);
@@ -206,11 +214,15 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
     value = 0;
 
-    for (k = roomFindNum(ch->in_room)->contents; k;
-         k = roomFindNum(ch->in_room)->contents) {
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        k = CONTENT_LINK_TO_OBJ(item);
+
         sprintf(buf, "The %s vanish in a puff of smoke.\n\r", 
                 fname(k->short_description));
-        for (tmp_char = roomFindNum(ch->in_room)->people; tmp_char;
+        for (tmp_char = rp->people; tmp_char;
              tmp_char = tmp_char->next_in_room) {
             if (objectIsVisible(tmp_char, k)) {
                 send_to_char(buf, tmp_char);
@@ -219,6 +231,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
         value += (MIN(1000, MAX(k->cost / 4, 1)));
         objectExtract(k);
     }
+    LinkedListUnlock( rp->contentList );
 
     if (value) {
         act("You are awarded for outstanding performance.",
@@ -437,6 +450,9 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                    *obj;
     int             i;
     char           *descr;
+    struct room_data   *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     if (cmd != 176) {
         /*
@@ -453,10 +469,14 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
     gold = 0;
     found = FALSE;
 
-    for (tmp_obj = roomFindNum(key_room)->contents; tmp_obj;
-         tmp_obj = tmp_obj->next_content) {
+    rp = roomFindNum(key_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        tmp_obj = CONTENT_LINK_TO_OBJ(item);
         descr = find_ex_description(buf, tmp_obj->ex_description,
                                     tmp_obj->ex_description_count);
+
         if (descr) {
             if (gold == 0) {
                 gold = 1;
@@ -465,20 +485,16 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
                 act("You notice a faint light in Odin's eye.",
                     FALSE, ch, 0, 0, TO_CHAR);
             }
-            /**
-             * @todo make sure this is OK, it used to be a REAL load rather
-             *       than VIRTUAL
-             */
+
             obj = objectRead(tmp_obj->item_number);
-            objectPutInRoom(obj, ch->in_room);
-            act("$p slowly fades into existence.", FALSE, ch, obj, 0,
-                TO_ROOM);
-            act("$p slowly fades into existence.", FALSE, ch, obj, 0,
-                TO_CHAR);
+            objectPutInRoom(obj, ch->in_room, UNLOCKED);
+            act("$p slowly fades into existence.", FALSE, ch, obj, 0, TO_ROOM);
+            act("$p slowly fades into existence.", FALSE, ch, obj, 0, TO_CHAR);
             gold += obj->cost;
             found = TRUE;
         }
     }
+    LinkedListUnlock( rp->contentList );
 
     if (found) {
         GET_GOLD(ch) -= gold;
@@ -767,6 +783,8 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
     struct char_data *i;
     struct room_data *me;
     int             rm;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     rm = ch->in_room;
 
@@ -818,9 +836,14 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                     while (me->people) {
                         extract_char(me->people);
                     }
-                    while (me->contents) {
-                        objectExtract(me->contents);
+
+                    LinkedListLock( me->contentList );
+                    for( item = me->contentList->head; item; item = nextItem ) {
+                        nextItem = item->next;
+                        objectExtract(CONTENT_LINK_TO_OBJ(item));
                     }
+                    LinkedListUnlock( me->contentList );
+
                     me->river_speed = 0;
                     return (TRUE);
                 }
@@ -887,7 +910,7 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         for (tmp_obj = ch->carrying; tmp_obj; tmp_obj = next_obj) {
             next_obj = tmp_obj->next_content;
             objectTakeFromChar(tmp_obj);
-            objectPutInRoom(tmp_obj, ch->in_room);
+            objectPutInRoom(tmp_obj, ch->in_room, UNLOCKED);
         }
 
         monkpreproom = ch->in_room;
@@ -978,7 +1001,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         for (tmp_obj = ch->carrying; tmp_obj; tmp_obj = next_obj) {
             next_obj = tmp_obj->next_content;
             objectTakeFromChar(tmp_obj);
-            objectPutInRoom(tmp_obj, ch->in_room);
+            objectPutInRoom(tmp_obj, ch->in_room, UNLOCKED);
         }
 
         druidpreproom = ch->in_room;
@@ -1015,6 +1038,8 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
     struct char_data *i;
     struct room_data *me;
     int             rm;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     me = roomFindNum(ch->in_room);
     if (!me) {
@@ -1038,10 +1063,9 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
             if (IS_NPC(ch)) {
                 command_interpreter(ch, "return");
             }
-            GET_EXP(ch) = 
-                MIN(classes[DRUID_LEVEL_IND].
-                        levels[(int)GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
-                    GET_EXP(ch));
+            GET_EXP(ch) = MIN(classes[DRUID_LEVEL_IND].
+                               levels[(int)GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
+                              GET_EXP(ch));
             send_to_char("Go home\n\r", ch);
             char_from_room(ch);
             char_to_room(ch, rm - 1);
@@ -1050,54 +1074,58 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
                 extract_char(me->people);
             }
             return (TRUE);
-        } else {
-            if (mob_index[ch->nr].vnum >= DRUID_MOB &&
-                mob_index[ch->nr].vnum <= DRUID_MOB + 40) {
-                extract_char(ch);
-                /*
-                 * find pc in room; 
-                 */
-                for (i = me->people; i; i = i->next_in_room)
-                    if (IS_PC(i)) {
-                        if (IS_NPC(i)) {
-                            command_interpreter(i, "return");
-                        }
-                        GET_EXP(i) = 
-                            MAX(classes[DRUID_LEVEL_IND].
-                                  levels[GET_LEVEL(i, DRUID_LEVEL_IND) + 
-                                         1].exp + 1, GET_EXP(i));
-                        GainLevel(i, DRUID_LEVEL_IND);
-                        char_from_room(i);
-                        char_to_room(i, druidpreproom);
-
-                        if (affected_by_spell(i, SPELL_POISON)) {
-                            affect_from_char(ch, SPELL_POISON);
-                        }
-
-                        if (affected_by_spell(i, SPELL_HEAT_STUFF)) {
-                            affect_from_char(ch, SPELL_HEAT_STUFF);
-                        }
-
-                        while (me->people) {
-                            extract_char(me->people);
-                        }
-
-                        while (me->contents) {
-                            objectExtract(me->contents);
-                        }
-
-                        me->river_speed = 0;
-
-                        return (TRUE);
+        } 
+        
+        if (mob_index[ch->nr].vnum >= DRUID_MOB &&
+            mob_index[ch->nr].vnum <= DRUID_MOB + 40) {
+            extract_char(ch);
+            /*
+             * find pc in room; 
+             */
+            for (i = me->people; i; i = i->next_in_room) {
+                if (IS_PC(i)) {
+                    if (IS_NPC(i)) {
+                        command_interpreter(i, "return");
                     }
-                return (TRUE);
-            } else {
-                return (FALSE);
-            }
-        }
-    }
-    return (FALSE);
+                    GET_EXP(i) = MAX(classes[DRUID_LEVEL_IND].
+                                      levels[GET_LEVEL(i, DRUID_LEVEL_IND) + 
+                                             1].exp + 1, GET_EXP(i));
 
+                    GainLevel(i, DRUID_LEVEL_IND);
+                    char_from_room(i);
+                    char_to_room(i, druidpreproom);
+
+                    if (affected_by_spell(i, SPELL_POISON)) {
+                        affect_from_char(ch, SPELL_POISON);
+                    }
+
+                    if (affected_by_spell(i, SPELL_HEAT_STUFF)) {
+                        affect_from_char(ch, SPELL_HEAT_STUFF);
+                    }
+
+                    while (me->people) {
+                        extract_char(me->people);
+                    }
+
+                    LinkedListLock( me->contentList );
+                    for( item = me->contentList->head; item; item = nextItem ) {
+                        nextItem = item->next;
+                        objectExtract(CONTENT_LINK_TO_OBJ(item));
+                    }
+                    LinkedListUnlock( me->contentList );
+
+                    me->river_speed = 0;
+
+                    return (TRUE);
+                }
+            }
+            return (TRUE);
+        } 
+        
+        return (FALSE);
+    }
+
+    return (FALSE);
 }
 
 int bahamut_home(struct char_data *ch, int cmd, char *arg,
@@ -2106,8 +2134,9 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 int cog_room(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
-    struct obj_data *obj;
-    char           *cogname;
+    struct obj_data    *obj;
+    char               *cogname;
+    LinkedListItem_t   *item;
 
     if (!cmd || !ch || cmd != 374 || !ch->in_room || !arg || !*arg) {
         return (FALSE);
@@ -2224,7 +2253,10 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                     return (TRUE);
                 }
 
-                for (obj = rp->contents; obj; obj = obj->next_content) {
+                LinkedListLock( rp->contentList );
+                for( item = rp->contentList->head; item; item = item->next ) {
+                    obj = CONTENT_LINK_TO_OBJ(item);
+
                     if (obj->item_number == chest_pointer) {
                         if (IS_SET(obj->value[1], CONT_LOCKED)) {
                             REMOVE_BIT(obj->value[1], CONT_LOCKED);
@@ -2235,9 +2267,11 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                         send_to_room("The machine grinds to a halt and one of "
                                      "the chests emits a loud click.\n\r",
                                      CHESTS_ROOM);
+                        LinkedListUnlock( rp->contentList );
                         return (TRUE);
                     }
                 }
+                LinkedListUnlock( rp->contentList );
                 Log("Couldn't find appropriate chest in CHESTS_ROOM");
             } else {
                 cog_sequence = -1;

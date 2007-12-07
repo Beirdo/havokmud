@@ -2660,8 +2660,8 @@ void reset_zone(int zone, int cmd)
                 if (ZCMD.arg3 >= 0 &&
                     ((rp = roomFindNum(ZCMD.arg3)) != NULL)) {
                     if ((ZCMD.if_flag > 0 &&
-                         ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
-                        (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
+                         roomCountObject(ZCMD.arg1, rp) < ZCMD.if_flag) ||
+                        (ZCMD.if_flag <= 0 && roomCountObject(ZCMD.arg1,rp) <
                             (-ZCMD.if_flag) + 1)) {
                         if ((obj = objectRead(ZCMD.arg1)) != NULL) {
                             index = objectIndex(ZCMD.arg1);
@@ -2682,12 +2682,12 @@ void reset_zone(int zone, int cmd)
                             if (cmd != 375) {
                                 if (does_Load((int)index->number,
                                               (int)obj->max) == TRUE) {
-                                    objectPutInRoom(obj, ZCMD.arg3);
+                                    objectPutInRoom(obj, ZCMD.arg3, UNLOCKED);
                                 } else {
                                     objectExtract(obj);
                                 }
                             } else {
-                                objectPutInRoom(obj, ZCMD.arg3);
+                                objectPutInRoom(obj, ZCMD.arg3, UNLOCKED);
                             }
 
                             last_cmd = 1;
@@ -3036,9 +3036,10 @@ void reset_zone(int zone, int cmd)
                     if (ZCMD.arg3 >= 0 &&
                         (rp = roomFindNum(ZCMD.arg3)) != NULL) {
                         if ((ZCMD.if_flag > 0 &&
-                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
-                            (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1, rp) <
-                                (-ZCMD.if_flag) + 1)) {
+                             roomCountObject(ZCMD.arg1, rp) < ZCMD.if_flag) ||
+                            (ZCMD.if_flag <= 0 && 
+                             roomCountObject(ZCMD.arg1, rp) < 
+                             (-ZCMD.if_flag) + 1)) {
                             if ((obj = objectRead(ZCMD.arg1)) != NULL) {
                                 if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                                     tweakroll = number(1, 100);
@@ -3052,7 +3053,7 @@ void reset_zone(int zone, int cmd)
                                     }
                                 }
 
-                                objectPutInRoom(obj, ZCMD.arg3);
+                                objectPutInRoom(obj, ZCMD.arg3, UNLOCKED);
                                 last_cmd = 1;
                             } else {
                                 last_cmd = 0;
@@ -5003,10 +5004,10 @@ void ReadTextZone(FILE * fl)
                  */
                 if (i < j) {
                     if (j >= 0 && ((rp = roomFindNum(j)) != NULL)) {
-                        if ((tmp > 0 && ObjRoomCount(i, rp) < tmp) ||
-                            (tmp <= 0 && ObjRoomCount(i, rp) < (-tmp) + 1)) {
+                        if ((tmp > 0 && roomCountObject(i, rp) < tmp) ||
+                            (tmp <= 0 && roomCountObject(i, rp) < (-tmp) + 1)) {
                             if ((obj = objectRead(i)) != NULL) {
-                                objectPutInRoom(obj, k);
+                                objectPutInRoom(obj, k, UNLOCKED);
                                 last_cmd = 1;
                             } else {
                                 last_cmd = 0;

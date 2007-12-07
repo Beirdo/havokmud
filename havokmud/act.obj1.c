@@ -50,7 +50,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
             }
             act("You get $p.", 0, ch, obj_object, 0, TO_CHAR);
             act("$n gets $p.", 1, ch, obj_object, 0, TO_ROOM);
-            objectTakeFromRoom(obj_object);
+            objectTakeFromRoom(obj_object, UNLOCKED);
             objectGiveToChar(obj_object, ch);
         }
         if ((obj_object->type_flag == ITEM_TYPE_MONEY) &&
@@ -104,6 +104,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                     p;
     LinkedListItem_t   *item,
                        *nextItem;
+    struct room_data   *rp;
 
     dlog("in do_get");
 
@@ -170,39 +171,45 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         sub_object = 0;
         found = FALSE;
         fail = FALSE;
-        for (obj_object = roomFindNum(ch->in_room)->contents;
-             obj_object; obj_object = next_obj) {
-            next_obj = obj_object->next_content;
+        rp = roomFindNum(ch->in_room);
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = nextItem ) {
+            nextItem = item->next;
+            obj_object = CONTENT_LINK_TO_OBJ(item);
+
             /*
              * check for a trap (traps fire often)
              */
             if (CheckForAnyTrap(ch, obj_object)) {
+                LinkedListUnlock( rp->contentList );
                 return;
             }
-            if (objectIsVisible(ch, obj_object)) {
-                if (IS_CARRYING_N(ch) + 1 <= CAN_CARRY_N(ch)) {
-                    if (IS_CARRYING_W(ch) + obj_object->weight <=
-                        CAN_CARRY_W(ch)) {
-                        if (CAN_WEAR(obj_object, ITEM_TAKE)) {
-                            get(ch, obj_object, sub_object);
-                            found = TRUE;
-                        } else {
-                            send_to_char("You can't take that.\n\r", ch);
-                            fail = TRUE;
-                        }
+
+            if (!objectIsVisible(ch, obj_object)) {
+                continue;
+            }
+
+            if (IS_CARRYING_N(ch) + 1 <= CAN_CARRY_N(ch)) {
+                if (IS_CARRYING_W(ch) + obj_object->weight <= CAN_CARRY_W(ch)) {
+                    if (CAN_WEAR(obj_object, ITEM_TAKE)) {
+                        get(ch, obj_object, sub_object);
+                        found = TRUE;
                     } else {
-                        oldSendOutput(ch, "%s : You can't carry that much "
-                                      "weight.\n\r", 
-                                      obj_object->short_description);
+                        send_to_char("You can't take that.\n\r", ch);
                         fail = TRUE;
                     }
                 } else {
-                    oldSendOutput(ch, "%s : You can't carry that many items.\n\r",
-                                  obj_object->short_description);
+                    oldSendOutput(ch, "%s : You can't carry that much "
+                                  "weight.\n\r", obj_object->short_description);
                     fail = TRUE;
                 }
+            } else {
+                oldSendOutput(ch, "%s : You can't carry that many items.\n\r",
+                              obj_object->short_description);
+                fail = TRUE;
             }
         }
+        LinkedListUnlock( rp->contentList );
 
         if (found) {
             send_to_char("OK.\n\r", ch);
@@ -480,7 +487,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
         act("$n drops some gold.", FALSE, ch, 0, 0, TO_ROOM);
         tmp_object = create_money(amount);
-        objectPutInRoom(tmp_object, ch->in_room);
+        objectPutInRoom(tmp_object, ch->in_room, UNLOCKED);
         GET_GOLD(ch) -= amount;
         return;
     }
@@ -491,7 +498,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
             next_obj = tmp_object->next_content;
             if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                 objectTakeFromChar(tmp_object);
-                objectPutInRoom(tmp_object, ch->in_room);
+                objectPutInRoom(tmp_object, ch->in_room, UNLOCKED);
                 check_falling_obj(tmp_object, ch->in_room);
                 test = TRUE;
             } else if (objectIsVisible(ch, tmp_object)) {
@@ -535,7 +542,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                               tmp_object->short_description);
                 act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
                 objectTakeFromChar(tmp_object);
-                objectPutInRoom(tmp_object, ch->in_room);
+                objectPutInRoom(tmp_object, ch->in_room, UNLOCKED);
 
                 check_falling_obj(tmp_object, ch->in_room);
             } else {
@@ -934,8 +941,9 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                 next_obj = tmp_object->next_content;
                 if (!IS_OBJ_STAT(tmp_object, extra_flags, ITEM_NODROP)) {
                     objectTakeFromChar(tmp_object);
-                    objectPutInRoom(tmp_object, ((number(0, 1) == 1)) ?
-                                donations1 : donations2);
+                    objectPutInRoom(tmp_object, 
+                                    (number(0, 1) == 1 ?  donations1 : 
+                                     donations2), UNLOCKED);
                     value += ((tmp_object->cost) * 10 / 100);
                     test = TRUE;
                 } else {
@@ -988,8 +996,9 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     act("$p disappears from $n's hands!.", 1, ch,
                         tmp_object, 0, TO_ROOM);
                     objectTakeFromChar(tmp_object);
-                    objectPutInRoom(tmp_object, ((number(0, 1) == 1)) ?
-                                donations1 : donations2);
+                    objectPutInRoom(tmp_object, 
+                                    (number(0, 1) == 1 ? donations1 : 
+                                     donations2), UNLOCKED);
                     value += ((tmp_object->cost) * 10 / 100);
                 } else {
                     if (singular(tmp_object)) {

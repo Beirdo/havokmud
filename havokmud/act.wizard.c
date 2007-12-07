@@ -1264,7 +1264,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         oldSendOutput(ch, "Sector type : %s\n\r", sectors[rm->sector_type].type);
 
         oldSendOutput(ch, "Special procedure : %s\n\r",
-                      ((proc = procGetNameByFunc( rm->funct, PROC_ROOM )) ?
+                      ((proc = procGetNameByFunc( rm->func, PROC_ROOM )) ?
                        proc : "None") );
         sprintbit((unsigned long) rm->room_flags, room_bits, buf);
         oldSendOutput(ch, "Room flags: %s\n\r", buf);
@@ -1297,9 +1297,12 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         }
 
         oldSendOutput(ch, "\n\r--------- Contents ---------\n\r");
-        for (j = rm->contents; j; j = j->next_content) {
+        LinkedListLock( rm->contentList );
+        for( item = rm->contentList->head; item; item = item->next ) {
+            j = CONTENT_LINK_TO_OBJ(item);
             oldSendOutput(ch, "%s\n\r", j->name);
         }
+        LinkedListUnlock( rm->contentList );
 
         if (rm->tele_time > 0) {
             send_to_char("\n\r--------- Teleport ---------\n\r", ch);
@@ -3111,6 +3114,8 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
     struct char_data *ch;
     struct obj_data *obj;
     extern long     room_count;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     /*
      * purge the void? I think not
@@ -3133,14 +3138,17 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
         act("$n tumbles into the Void.", TRUE, ch, 0, 0, TO_ROOM);
     }
 
-    while (rp->contents) {
-        obj = rp->contents;
-        objectTakeFromRoom(obj);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj = CONTENT_LINK_TO_OBJ(item);
+        objectTakeFromRoom(obj, LOCKED);
         /*
          * send item to the void
          */
-        objectPutInRoom(obj, 0);
+        objectPutInRoom(obj, 0, UNLOCKED);
     }
+    LinkedListUnlock( rp->contentList );
 
     completely_cleanout_room(rp);
 #ifdef HASH
@@ -3166,6 +3174,8 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
     int             range[2];
     register int    i;
     struct room_data *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
 
     dlog("in do_purge");
 
@@ -3263,16 +3273,19 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
         if (GetMaxLevel(ch) < DEMIGOD) {
             return;
         }
+
         if (IS_NPC(ch)) {
             send_to_char("You would only kill yourself..\n\r", ch);
             return;
         }
 
+        rp = roomFindNum(ch->in_room);
+
         act("$n gestures... You are surrounded by thousands of tiny scrubbing"
             " bubbles!", FALSE, ch, 0, 0, TO_ROOM);
         send_to_room("The world seems a little cleaner.\n\r", ch->in_room);
 
-        for (vict = roomFindNum(ch->in_room)->people; vict; vict = next_v) {
+        for (vict = rp->people; vict; vict = next_v) {
             next_v = vict->next_in_room;
             if (IS_NPC(vict) &&
                 !IS_SET(vict->specials.act, ACT_POLYSELF)) {
@@ -3280,10 +3293,13 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             }
         }
 
-        for (obj = roomFindNum(ch->in_room)->contents; obj; obj = next_o) {
-            next_o = obj->next_content;
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = nextItem ) {
+            nextItem = item->next;
+            obj = CONTENT_LINK_TO_OBJ(item);
             objectExtract(obj);
         }
+        LinkedListUnlock( rp->contentList );
     }
 }
 
@@ -5753,7 +5769,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
             if (where == 1) {
                 objectGiveToChar(ocopy, ch);
             } else {
-                objectPutInRoom(ocopy, ch->in_room);
+                objectPutInRoom(ocopy, ch->in_room, UNLOCKED);
             }
             act("$n has cloned $p!", FALSE, ch, obj, 0, TO_ROOM);
             act("You cloned $p.", FALSE, ch, obj, 0, TO_CHAR);

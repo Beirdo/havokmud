@@ -32,7 +32,7 @@ void show_who_immortal(struct char_data *ch, struct char_data *person,
 void show_who_mortal(struct char_data *ch, struct char_data *person, char type);
 void do_help_common(struct char_data *ch, char *argument, int type);
 void list_obj_in_pile(void *pile, PileFirst_t getFirst, PileNext_t getNext,
-                      int offset, struct char_data *ch);
+                      int offset, struct char_data *ch, int mode);
 
 
 int singular(struct obj_data *o)
@@ -227,75 +227,6 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch,
     page_string(ch->desc, buffer, 1);
 }
 
-void list_obj_in_room(struct obj_data *list, struct char_data *ch)
-{
-    struct obj_data *i,
-                   *cond_ptr[50];
-    int             Inventory_Num = 1;
-    int             k,
-                    cond_top,
-                    cond_tot[50],
-                    found = FALSE;
-
-    cond_top = 0;
-
-    for (i = list; i; i = i->next_content) {
-        if (objectIsVisible(ch, i)) {
-            if (cond_top < 50) {
-                found = FALSE;
-                for (k = 0; (k < cond_top && !found); k++) {
-                    if (cond_top > 0) {
-                        if ((i->item_number == cond_ptr[k]->item_number) &&
-                            (i->description && cond_ptr[k]->description &&
-                             !strcmp(i->description,
-                                     cond_ptr[k]->description))) {
-                            cond_tot[k] += 1;
-                            found = TRUE;
-                        }
-                    }
-                }
-                if (!found) {
-                    cond_ptr[cond_top] = i;
-                    cond_tot[cond_top] = 1;
-                    cond_top += 1;
-                }
-            } else {
-                if ((ITEM_TYPE(i) == ITEM_TYPE_TRAP) || 
-                    (GET_TRAP_CHARGES(i) > 0)) {
-                    if (objectIsVisible(ch, i)) {
-                        show_obj_to_char(i, ch, 0);
-                    }
-                } else {
-                    show_obj_to_char(i, ch, 0);
-                }
-            }
-        }
-    }
-
-    if (cond_top) {
-        for (k = 0; k < cond_top; k++) {
-            if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TYPE_TRAP)
-                && (GET_TRAP_CHARGES(cond_ptr[k]) > 0)) {
-                if (objectIsVisible(ch, cond_ptr[k])) {
-                    if (cond_tot[k] > 1) {
-                        oldSendOutput(ch, "[%2d] ", Inventory_Num++);
-                        show_mult_obj_to_char(cond_ptr[k], ch, 0,
-                                              cond_tot[k]);
-                    } else {
-                        show_obj_to_char(cond_ptr[k], ch, 0);
-                    }
-                }
-            } else {
-                if (cond_tot[k] > 1) {
-                    oldSendOutput(ch, "[%2d] ", Inventory_Num++);
-                    show_mult_obj_to_char(cond_ptr[k], ch, 0, cond_tot[k]);
-                } else {
-                    show_obj_to_char(cond_ptr[k], ch, 0);
-                }
-            }
-        }
-    }
-}
 
 typedef struct obj_data *(*getFirst)( void *pile, int offset );
 typedef struct obj_data *(*getNextChain)( void *pile, int offset, 
@@ -324,7 +255,7 @@ struct obj_data *getNextChain( void *pile, int offset, struct obj_data *obj )
 
 void list_obj_in_heap(struct obj_data *list, struct char_data *ch)
 {
-    list_obj_in_pile( list, getFirstChain, getNextChain, 0, ch );
+    list_obj_in_pile( list, getFirstChain, getNextChain, 0, ch, 2 );
 }
 
 struct obj_data *getFirstList( void *pile, int offset )
@@ -365,20 +296,21 @@ struct obj_data *getNextList( void *pile, int offset, struct obj_data *obj )
     return( obj );
 }
 
-void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch)
+void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch, 
+                       int mode )
 {
     if( !list ) {
         return;
     }
 
     LinkedListLock( list );
-    list_obj_in_pile( list, getFirstList, getNextList, offset, ch );
+    list_obj_in_pile( list, getFirstList, getNextList, offset, ch, mode );
     LinkedListUnlock( list );
 }
 
 #define MAX_COND_PTR 50
 void list_obj_in_pile(void *pile, PileFirst_t getFirst, PileNext_t getNext,
-                      int offset, struct char_data *ch)
+                      int offset, struct char_data *ch, int mode)
 {
     struct obj_data *i,
                    *cond_ptr[MAX_COND_PTR];
@@ -411,21 +343,39 @@ void list_obj_in_pile(void *pile, PileFirst_t getFirst, PileNext_t getNext,
                     cond_tot[cond_top] = 1;
                     cond_top += 1;
                 }
+            } else if (ITEM_TYPE(i) == ITEM_TYPE_TRAP || 
+                       GET_TRAP_CHARGES(i) > 0) {
+                if (objectIsVisible(ch, i)) {
+                    oldSendOutput(ch, "[%2d] ", Num_Inventory++);
+                    show_obj_to_char(i, ch, mode);
+                }
             } else {
                 oldSendOutput(ch, "[%2d] ", Num_Inventory++);
-                show_obj_to_char(i, ch, 2);
+                show_obj_to_char(i, ch, mode);
             }
         }
     }
 
     if (cond_top) {
         for (k = 0; k < cond_top; k++) {
-            oldSendOutput(ch, "[%2d] ", Num_Inventory++);
-            if (cond_tot[k] > 1) {
-                Num_Inventory += cond_tot[k] - 1;
-                show_mult_obj_to_char(cond_ptr[k], ch, 2, cond_tot[k]);
+            if( ITEM_TYPE(cond_ptr[k]) == ITEM_TYPE_TRAP && 
+                GET_TRAP_CHARGES(cond_ptr[k]) > 0) {
+                if (objectIsVisible(ch, cond_ptr[k])) {
+                    oldSendOutput(ch, "[%2d] ", Inventory_Num++);
+                    if (cond_tot[k] > 1) {
+                        show_mult_obj_to_char(cond_ptr[k], ch, mode,
+                                              cond_tot[k]);
+                    } else {
+                        show_obj_to_char(cond_ptr[k], ch, mode);
+                    }
+                }
             } else {
-                show_obj_to_char(cond_ptr[k], ch, 2);
+                oldSendOutput(ch, "[%2d] ", Inventory_Num++);
+                if (cond_tot[k] > 1) {
+                    show_mult_obj_to_char(cond_ptr[k], ch, mode, cond_tot[k]);
+                } else {
+                    show_obj_to_char(cond_ptr[k], ch, mode);
+                }
             }
         }
     }
@@ -1693,7 +1643,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                                 break;
                             }
                             list_obj_in_list(tmp_object->containList, 
-                                             CONTAIN_LINK_OFFSET, ch);
+                                             CONTAIN_LINK_OFFSET, ch, 2);
                         } else {
                             send_to_char("It is closed.\n\r", ch);
                         }
@@ -1765,6 +1715,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                         }
                     }
                 }
+
                 /*
                  * In inventory
                  */
@@ -1783,14 +1734,17 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                         }
                     }
                 }
+
                 /*
                  * Object In room
                  */
-
                 if (!found) {
-                    for (tmp_object = roomFindNum(ch->in_room)->contents;
-                         tmp_object && !found;
-                         tmp_object = tmp_object->next_content) {
+                    rp = roomFindNum(ch->in_room);
+                    LinkedListLock( rp->contentList );
+                    for( item = rp->contentList->head; item && !found; 
+                         item = item->next ) {
+                        tmp_object = CONTENT_LINK_TO_OBJ(item);
+
                         if (objectIsVisible(ch, tmp_object)) {
                             tmp_desc = find_ex_description(arg2,
                                            tmp_object->ex_description,
@@ -1801,7 +1755,9 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                             }
                         }
                     }
+                    LinkedListUnlock( rp->contentList );
                 }
+
                 /*
                  * wrong argument
                  */
@@ -1875,7 +1831,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             }
 
             list_exits_in_room(ch);
-            list_obj_in_room(inroom->contents, ch);
+            list_obj_in_list( inroom->contentList, CONTENT_LINK_OFFSET, ch, 0 );
             list_char_in_room(inroom->people, ch);
 
             break;

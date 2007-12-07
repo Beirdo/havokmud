@@ -1218,7 +1218,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
                         act("$p turns so hot that $n is forced to let go of "
                             "it!", FALSE, ch, obj, 0, TO_ROOM);
                         if ((obj = unequip_char(ch, j)) != NULL) {
-                            objectPutInRoom(obj, ch->in_room);
+                            objectPutInRoom(obj, ch->in_room, UNLOCKED);
                         }
                     }
                 }
@@ -1259,7 +1259,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
                         act("$p turns so hot that $n is forced to let go of "
                             "it!", FALSE, victim, obj, 0, TO_ROOM);
                         if ((obj = unequip_char(victim, j)) != NULL) {
-                            objectPutInRoom(obj, victim->in_room);
+                            objectPutInRoom(obj, victim->in_room, UNLOCKED);
                         }
                     }
                 }
@@ -1424,17 +1424,21 @@ void spell_plant_gate(int level, struct char_data *ch,
                    *tch2;
     int             has_companions = 0;
     Keywords_t     *key;
+    LinkedListItem_t   *item;
 
     /*
      * find the tree in the room
      */
 
     rp = roomFindNum(ch->in_room);
-    for (o = rp->contents; o; o = o->next_content) {
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
         if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
         }
     }
+    LinkedListUnlock( rp->contentList );
 
     if (!o) {
         send_to_char("You need to have a tree nearby.\n\r", ch);
@@ -1893,16 +1897,20 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     struct obj_data *obj = NULL;
     int             found = 0;
     Keywords_t     *key;
+    LinkedListItem_t   *item;
 
     /*
      * find the tree in the room
      */
     rp = roomFindNum(ch->in_room);
-    for (o = rp->contents; o; o = o->next_content) {
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        o = CONTENT_LINK_TO_OBJ(item);
         if (ITEM_TYPE(o) == ITEM_TYPE_TREE) {
             break;
         }
     }
+    LinkedListUnlock( rp->contentList );
 
     if (!o) {
         send_to_char("You need to have a tree nearby\n\r", ch);

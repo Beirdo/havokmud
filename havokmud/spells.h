@@ -594,12 +594,14 @@
 #define TAR_ROOM         (1<<13)        /* spells which target the room */
 #define TAR_GROUP        (1<<14)        /* spells that target groupees */
 
+
+typedef void (*spellFunc_t)(int level, struct char_data * ch, char *arg, 
+                            int type, struct char_data * tar_ch,
+                            struct obj_data * tar_obj);
+
 struct spell_info_type {
     int             nr;                 /* Skill number */
-    void            (*spell_pointer)(int level, struct char_data * ch, 
-                                     char *arg, int type, 
-                                     struct char_data * tar_ch,
-                                     struct obj_data * tar_obj);
+    spellFunc_t     spell_pointer;
     ubyte           min_usesmana;       /* Amount of mana used by a spell */
     byte            beats;              /* Heartbeats until ready for next */
     byte            minimum_position;   /* Position for caster */

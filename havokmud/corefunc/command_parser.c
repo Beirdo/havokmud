@@ -462,6 +462,7 @@ int special(struct char_data *ch, int cmd, char *arg)
     struct index_data          *index;
     int                         j;
     struct room_data           *rm;
+    LinkedListItem_t           *item;
 
     if (ch->in_room == NOWHERE) {
         char_to_room(ch, 3001);
@@ -472,8 +473,8 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in room?
      */
     rm = roomFindNum(ch->in_room);
-    if( rm->funct && (*rm->funct)(ch, cmd, arg, roomFindNum(ch->in_room),
-                                  PULSE_COMMAND) ) {
+    if( rm->func && (*rm->func)(ch, cmd, arg, roomFindNum(ch->in_room),
+                                PULSE_COMMAND) ) {
         return(TRUE);
     }
 
@@ -512,7 +513,7 @@ int special(struct char_data *ch, int cmd, char *arg)
     /*
      * special in mobile present?
      */
-    for (k = roomFindNum(ch->in_room)->people; k; k = k->next_in_room) {
+    for (k = rm->people; k; k = k->next_in_room) {
         if (IS_MOB(k) && k != ch && mob_index[k->nr].func &&
             (*mob_index[k->nr].func) (ch, cmd, arg, k, PULSE_COMMAND)) {
             return(TRUE);
@@ -522,15 +523,17 @@ int special(struct char_data *ch, int cmd, char *arg)
     /*
      * special in object present?
      */
-    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
-        if (i->item_number >= 0 && i->index->func && 
-            (*i->index->func) (ch, cmd, arg, i, PULSE_COMMAND)) {
-            /**
-             * @bug Crash here maybe?? FROZE HERE!! loop?
-             */
+    LinkedListLock( rm->contentList );
+    for( item = rm->contentList->head; item; item = item->next ) {
+        i = CONTENT_LINK_TO_OBJ(item);
+        index = i->index;
+        if (i->item_number >= 0 && index->func && 
+            (*index->func)(ch, cmd, arg, i, PULSE_COMMAND)) {
+            LinkedListUnlock( rm->contentList );
             return(TRUE);
         }
     }
+    LinkedListUnlock( rm->contentList );
 
     return(FALSE);
 }

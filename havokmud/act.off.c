@@ -212,7 +212,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
                         tmp_char, TO_VICT);
                     if (tmp_char->points.gold) {
                         obj = create_money(tmp_char->points.gold);
-                        objectPutInRoom(obj, ch->in_room);
+                        objectPutInRoom(obj, ch->in_room, UNLOCKED);
                     }
                     extract_char(tmp_char);
                 } else {
@@ -1174,7 +1174,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
             TRUE, ch, o, 0, TO_ROOM);
         act("$p flew 2 feet then fell to earth.  Maybe a lighter weapon...",
             TRUE, ch, o, 0, TO_CHAR);
-        objectPutInRoom(o, ch->in_room);
+        objectPutInRoom(o, ch->in_room, UNLOCKED);
         return;
     }
     range = 0;
@@ -1196,17 +1196,17 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                             /*
                              * storage for broken arrows
                              */
-                            objectPutInRoom(o, 3);
+                            objectPutInRoom(o, 3, UNLOCKED);
                             /*
                              * for some reason this causes the obj to get
                              * placed in very weird places
                              */
 #if 0
-                              objectTakeFromRoom(o);
+                              objectTakeFromRoom(o, UNLOCKED);
                               objectExtract(o);
 #endif
                         } else {
-                            objectPutInRoom(o, rm);
+                            objectPutInRoom(o, rm, UNLOCKED);
                         }
                     }
                     slog("Gobble 2");
@@ -1237,7 +1237,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 if (number(1, 100) < o->value[0]) {
                     sprintf(buf, "%s breaks into splinters.\n\r",
                             o->short_description);
-                    objectPutInRoom(o, 3);
+                    objectPutInRoom(o, 3, UNLOCKED);
                     /*
                      * storage for broken arrows
                      */
@@ -1245,7 +1245,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 } else {
                     sprintf(buf, "%s falls to the ground.\n\r",
                             o->short_description);
-                    objectPutInRoom(o, rm);
+                    objectPutInRoom(o, rm, UNLOCKED);
                 }
                 send_to_room(buf, rm);
                 return;
@@ -1256,7 +1256,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
     if (broken == FALSE) {
         sprintf(buf, "%s falls to the ground.\n\r", o->short_description);
         send_to_room(buf, rm);
-        objectPutInRoom(o, rm);
+        objectPutInRoom(o, rm, UNLOCKED);
     }
 }
 
@@ -1296,7 +1296,7 @@ void throw_object(struct obj_data *o, int dir, int from)
                             TO_ROOM);
                     }
                     send_to_char("You caught it!\n\r", catcher);
-                    objectTakeFromRoom(o);
+                    objectTakeFromRoom(o, UNLOCKED);
                     objectGiveToChar(o, catcher);
                     return;
                 }
@@ -1308,9 +1308,9 @@ void throw_object(struct obj_data *o, int dir, int from)
             send_to_room(buf1, from);
         }
         distance++;
-        objectTakeFromRoom(o);
+        objectTakeFromRoom(o, UNLOCKED);
         from = roomFindNum(from)->dir_option[dir]->to_room;
-        objectPutInRoom(o, from);
+        objectPutInRoom(o, from, UNLOCKED);
     }
     if (distance == 20) {
         sprintf(buf1, "%s flies into the room from the %s and lands here.\n\r",
@@ -1594,7 +1594,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
         if (cmd!=263)
 #endif
         act("$n throws $p!", TRUE, ch, throw, 0, TO_ROOM);
-        objectPutInRoom(throw, ch->in_room);
+        objectPutInRoom(throw, ch->in_room, UNLOCKED);
         throw_object(throw, tdir, ch->in_room);
     } else {
         if (check_peaceful(targ, "Someone just tried to throw a weapon at you,"
@@ -1993,7 +1993,7 @@ void do_dig(struct char_data *ch, char *argument, int cmd) {
         ch_printf(ch,"You dig and dig long and hard... \n\r"
                 "You just discovered %s!!", prize->short_description );
          /* Print info to room*/
-        objectPutInRoom(prize, ch->in_room);
+        objectPutInRoom(prize, ch->in_room, UNLOCKED);
         o->value[3]=1;
 
     }

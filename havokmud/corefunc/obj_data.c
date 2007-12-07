@@ -66,8 +66,9 @@ struct obj_data *GetObjectInKeywordTree(struct char_data *ch, char *name,
 struct obj_data *GetObjectInList(struct char_data *ch, char *name,
                                  struct obj_data *list, int nextOffset,
                                  int *count, bool visible, int steps);
-struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
-                                    int nextOffset);
+struct obj_data *GetObjectNumInListOld(int num, struct obj_data *list, 
+                                       int nextOffset);
+struct obj_data *GetObjectNumInList(int num, LinkedList_t *list, int offset);
 int objectStoreChain(struct obj_data *obj, PlayerStruct_t *player, int playerId,
                      int roomId, int itemNum, int parentItem, int delete);
 int objectStoreList(LinkedList_t *list, PlayerStruct_t *player, int playerId,
@@ -319,7 +320,7 @@ void objectExtractLocked(struct obj_data *obj, Locked_t locked )
     LinkedListItem_t   *nextItem;
 
     if (obj->in_room != NOWHERE) {
-        objectTakeFromRoom(obj);
+        objectTakeFromRoom(obj, UNLOCKED);
     } else if (obj->carried_by) {
         objectTakeFromChar(obj);
     } else if (obj->equipped_by) {
@@ -414,10 +415,9 @@ struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
 struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
                                   struct room_data *rm )
 {
-    static int  offset  = OFFSETOF(next_content, struct obj_data);
     static int  steps   = KEYWORD_FULL_MATCH | KEYWORD_PARTIAL_MATCH;
-    return( GetObjectInList( ch, name, rm->contents, offset, NULL, 
-                             BOOL(ch != NULL), steps ) );
+    return( GetObjectInKeywordTree( ch, name, rm->contentKeywordTree, 
+                                    CONTENT_ITEM_OFFSET, NULL, steps ) );
 }
 
 struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
@@ -569,13 +569,12 @@ struct obj_data *GetObjectInList(struct char_data *ch, char *name,
 struct obj_data *objectGetOnCharNum(int num, struct char_data *ch)
 {
     static int  offset = OFFSETOF(next_content, struct obj_data);
-    return( GetObjectNumInList( num, ch->carrying, offset ) );
+    return( GetObjectNumInListOld( num, ch->carrying, offset ) );
 }
 
 struct obj_data *objectGetInRoomNum(int num, struct room_data *rm)
 {
-    static int  offset = OFFSETOF(next_content, struct obj_data);
-    return( GetObjectNumInList( num, rm->contents, offset ) );
+    return( GetObjectNumInList( num, rm->contentList, CONTENT_LINK_OFFSET ) );
 }
 
 struct obj_data *objectGetNumLastCreated(int num)
@@ -602,8 +601,8 @@ struct obj_data *objectGetNumLastCreated(int num)
 /**
  * @todo check if object_list can be done in a better way... like btrees
  */
-struct obj_data *GetObjectNumInList(int num, struct obj_data *list, 
-                                    int nextOffset)
+struct obj_data *GetObjectNumInListOld(int num, struct obj_data *list, 
+                                       int nextOffset)
 {
     struct obj_data *obj;
 
@@ -613,6 +612,23 @@ struct obj_data *GetObjectNumInList(int num, struct obj_data *list,
             return (obj);
         }
     }
+    return (NULL);
+}
+
+struct obj_data *GetObjectNumInList(int num, LinkedList_t *list, int offset)
+{
+    struct obj_data    *obj;
+    LinkedListItem_t   *item;
+
+    LinkedListLock( list );
+    for( item = list->head; item; item = item->next ) {
+        obj = PTR_AT_OFFSET( -offset, item );
+        if (obj->item_number == num) {
+            LinkedListUnlock( list );
+            return( obj );
+        }
+    }
+    LinkedListUnlock( list );
     return (NULL);
 }
 
@@ -933,7 +949,7 @@ void objectTakeFromChar(struct obj_data *object)
 /*
  * put an object in a room 
  */
-void objectPutInRoom(struct obj_data *object, long room)
+void objectPutInRoom(struct obj_data *object, long room, Locked_t locked)
 {
     struct room_data   *rm;
 
@@ -951,12 +967,16 @@ void objectPutInRoom(struct obj_data *object, long room)
         return;
     }
 
-    if (object->in_room > NOWHERE) {
-        objectTakeFromRoom(object);
+    if( object->in_room == room ) {
+        return;
     }
 
-    object->next_content = rm->contents;
-    rm->contents = object;
+    if (object->in_room > NOWHERE) {
+        objectTakeFromRoom(object, UNLOCKED);
+    }
+
+    LinkedListAdd( rm->contentList, &object->contentLink, locked, AT_TAIL );
+    objectKeywordTreeAdd( rm->contentKeywordTree, object );
 
     object->in_room = room;
     object->carried_by = NULL;
@@ -969,9 +989,8 @@ void objectPutInRoom(struct obj_data *object, long room)
 /*
  * Take an object from a room 
  */
-void objectTakeFromRoom(struct obj_data *object)
+void objectTakeFromRoom(struct obj_data *object, Locked_t locked)
 {
-    struct obj_data    *i;
     struct room_data   *rm;
 
     /*
@@ -991,29 +1010,8 @@ void objectTakeFromRoom(struct obj_data *object)
         return;
     }
 
-    if (object == rm->contents) {
-        /* 
-         * head of list 
-         */
-        rm->contents = object->next_content;
-    } else {
-        /* 
-         * locate previous element in list 
-         */
-        for (i = rm->contents; i &&
-             (i->next_content != object); i = i->next_content) {
-            /* 
-             * Empty loop 
-             */
-        }
-
-        if (i) {
-            i->next_content = object->next_content;
-        } else {
-            LogPrintNoArg( LOG_CRIT, "Couldn't find object in room");
-            return;
-        }
-    }
+    LinkedListRemove( rm->contentList, &object->contentLink, locked );
+    objectKeywordTreeRemove( rm->contentKeywordTree, object );
 
     if (!IS_SET(rm->room_flags, DEATH)) {
         save_room(object->in_room);
@@ -1364,8 +1362,8 @@ void save_room(int room)
         return;
     }
 
-    itemNum = objectStoreChain(rm->contents, NULL, -1, room, itemNum, -1, 
-                               FALSE);
+    itemNum = objectStoreList(rm->contentList, NULL, -1, room, itemNum, -1, 
+                              FALSE);
 
     /* Clear out any objects above the last item */
     db_clear_objects( -1, room, itemNum );

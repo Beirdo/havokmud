@@ -660,7 +660,7 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
             /*
              * send the object to a nearby room, instead 
              */
-            objectPutInRoom(w, victim->in_room);
+            objectPutInRoom(w, victim->in_room, UNLOCKED);
         } else {
             act("You try to disarm $N, but $E doesn't have a weapon.",
                 TRUE, ch, 0, victim, TO_CHAR);

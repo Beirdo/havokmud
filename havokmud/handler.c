@@ -1310,7 +1310,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         if (obj->index->func != EvilBlade && obj->index->func != NeutralBlade &&
             obj->index->func != GoodBlade && !CheckEgo(ch, obj)) {
             if (ch->in_room != NOWHERE) {
-                objectPutInRoom(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room, UNLOCKED);
                 do_save(ch, "", 0);
             } else {
                 Log("Ch->in_room = NOWHERE on anti-ego item!");
@@ -1320,7 +1320,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
 
         if (!CheckGetBarbarianOK(ch, obj)) {
             if (ch->in_room != NOWHERE) {
-                objectPutInRoom(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room, UNLOCKED);
                 do_save(ch, "", 0);
                 return;
             } else {
@@ -1335,7 +1335,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
                     FALSE, ch, obj, 0, TO_CHAR);
                 act("$n is zapped by $p and instantly drops it.",
                     FALSE, ch, obj, 0, TO_ROOM);
-                objectPutInRoom(obj, ch->in_room);
+                objectPutInRoom(obj, ch->in_room, UNLOCKED);
                 do_save(ch, "", 0);
                 return;
             } else {
@@ -1644,7 +1644,7 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
             while (ch->carrying) {
                 i = ch->carrying;
                 objectTakeFromChar(i);
-                objectPutInRoom(i, ch->in_room);
+                objectPutInRoom(i, ch->in_room, UNLOCKED);
                 check_falling_obj(i, ch->in_room);
             }
         } else {
@@ -1698,7 +1698,7 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
      */
     for (l = 0; l < MAX_WEAR; l++) {
         if (ch->equipment[l]) {
-            objectPutInRoom(unequip_char(ch, l), was_in);
+            objectPutInRoom(unequip_char(ch, l), was_in, UNLOCKED);
         }
     }
 
@@ -1806,7 +1806,7 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
 
 /*
  ***********************************************************************
- Here follows high-level versions of some earlier routines, ie functionst
+ Here follows high-level versions of some earlier routines, ie functions
  which incorporate the actual player-data.
  *********************************************************************** */
 

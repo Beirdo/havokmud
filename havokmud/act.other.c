@@ -464,7 +464,7 @@ void do_save(struct char_data *ch, char *argument, int cmd)
             if (ch->equipment[i] && ch->equipment[i]->in_room != -1) {
                 o = ch->equipment[i];
                 ch->equipment[i] = NULL;
-                objectTakeFromRoom(o);
+                objectTakeFromRoom(o, UNLOCKED);
                 equip_char(ch, o, i);
             }
         }
@@ -3072,7 +3072,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * to room perhaps?
      */
-    objectPutInRoom(head, ch->in_room);
+    objectPutInRoom(head, ch->in_room, UNLOCKED);
 
     /*
      * CHange name of head

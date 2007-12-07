@@ -86,12 +86,15 @@ void spell_animate_dead(int level, struct char_data *ch,
      */
     objectExtract(corpse);
 }
+
 void cast_animate_dead(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
 
-    struct obj_data *i;
+    struct obj_data    *i;
+    LinkedListItem_t   *item;
+    struct room_data   *room;
 
     if (NoSummon(ch)) {
         return;
@@ -118,11 +121,15 @@ void cast_animate_dead(int level, struct char_data *ch, char *arg,
         ch->points.hit = 0;
         break;
     case SPELL_TYPE_STAFF:
-        for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
+        rp = roomFindNum(ch->in_room);
+        LinkedListLock( rp->contentList );
+        for( item = rp->contentList->head; item; item = item->next ) {
+            i = CONTENT_LINK_TO_OBJ(item);
             if (IS_CORPSE(i)) {
                 spell_animate_dead(level, ch, 0, i);
             }
         }
+        LinkedListUnlock( rp->contentList );
         break;
     default:
         Log("Serious screw-up in animate_dead!");

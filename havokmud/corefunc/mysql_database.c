@@ -2640,7 +2640,7 @@ void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
             index->func = func;
             break;
         case PROC_ROOM:
-            rp->funct = func;
+            rp->func = func;
             break;
         default:
             return;
@@ -2897,7 +2897,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
         room->river_speed = atoi(row[8]);
         room->river_dir = atoi(row[9]);
         room->moblim = atoi(row[10]);
-        room->funct = procGetFuncByName( row[11], PROC_ROOM );
+        room->func = procGetFuncByName( row[11], PROC_ROOM );
         room->light = atoi(row[12]);
 
         /* Load the room_flags and tele_mask */
@@ -3915,7 +3915,7 @@ void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         if( args->parentObj[args->i] ) {
             objectPutInObject( obj, args->parentObj[args->i] );
         } else {
-            objectPutInRoom( obj, room );
+            objectPutInRoom( obj, room, UNLOCKED );
         }
     }
 

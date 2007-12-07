@@ -1386,7 +1386,7 @@ void spell_disintegrate(int level, struct char_data *ch,
                                                    obj->eq_pos);
                             } else if (obj->in_obj) {
                                 objectTakeFromObject(obj, UNLOCKED);
-                                objectPutInRoom(obj, ch->in_room);
+                                objectPutInRoom(obj, ch->in_room, UNLOCKED);
                             } else if (LinkedListCount(obj->containList)) {
                                 LinkedListLock( obj->containList );
                                 for( item = obj->containList->head; item;
@@ -1394,7 +1394,7 @@ void spell_disintegrate(int level, struct char_data *ch,
                                     nextItem = item->next;
                                     x = CONTAIN_LINK_TO_OBJ(item);
                                     objectTakeFromObject(x, LOCKED);
-                                    objectPutInRoom(x, ch->in_room);
+                                    objectPutInRoom(x, ch->in_room, UNLOCKED);
                                 }
                                 LinkedListUnlock( obj->containList );
                             }
@@ -3201,7 +3201,7 @@ void spell_minor_create(int level, struct char_data *ch,
     act("You clap your hands together.", TRUE, ch, 0, 0, TO_CHAR);
     act("In a flash of light, $p appears.", TRUE, ch, obj, 0, TO_ROOM);
     act("In a flash of light, $p appears.", TRUE, ch, obj, 0, TO_CHAR);
-    objectPutInRoom(obj, ch->in_room);
+    objectPutInRoom(obj, ch->in_room, UNLOCKED);
 }
 
 #define LONG_SWORD   3022
@@ -4055,7 +4055,7 @@ void spell_portal(int level, struct char_data *ch,
     tmp_obj->value[0] = level / 5;
     tmp_obj->value[1] = tmp_ch->in_room;
 
-    objectPutInRoom(tmp_obj, ch->in_room);
+    objectPutInRoom(tmp_obj, ch->in_room, UNLOCKED);
 
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_ROOM);
     act("$p suddenly appears.", TRUE, ch, tmp_obj, 0, TO_CHAR);

@@ -30,15 +30,22 @@ void do_settrap(struct char_data *ch, char *arg, int cmd)
 
 int CheckForMoveTrap(struct char_data *ch, int dir)
 {
-    struct obj_data *i;
+    struct obj_data    *i;
+    struct room_data   *rp;
+    LinkedListItem_t   *item;
 
-    for (i = roomFindNum(ch->in_room)->contents; i; i = i->next_content) {
+    rp = roomFindNum(ch->in_room);
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = item->next ) {
+        i = CONTENT_LINK_TO_OBJ(item);
         if (ITEM_TYPE(i) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(i) > 0 &&
             IS_SET(GET_TRAP_EFF(i), direction[dir].trap) &&
             IS_SET(GET_TRAP_EFF(i), TRAP_EFF_MOVE)) {
+            LinkedListUnlock( rp->contentList );
             return (TriggerTrap(ch, i));
         }
     }
+    LinkedListUnlock( rp->contentList );
     return (FALSE);
 }
 

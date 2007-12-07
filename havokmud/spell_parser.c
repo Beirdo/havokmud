@@ -3788,8 +3788,8 @@ void check_falling_obj(struct obj_data *obj, int room)
             act("$p falls out of sight", FALSE, rp->people, obj, 0, TO_CHAR);
         }
 
-        objectTakeFromRoom(obj);
-        objectPutInRoom(obj, rp->dir_option[DOWN]->to_room);
+        objectTakeFromRoom(obj, UNLOCKED);
+        objectPutInRoom(obj, rp->dir_option[DOWN]->to_room, UNLOCKED);
 
         if (targ->people) {
             act("$p falls from the sky", FALSE, targ->people, obj, 0, TO_ROOM);
@@ -3834,8 +3834,8 @@ void check_falling_obj(struct obj_data *obj, int room)
 
     if (count >= 100) {
         Log("Someone screwed up an air room.");
-        objectTakeFromRoom(obj);
-        objectPutInRoom(obj, 4);
+        objectTakeFromRoom(obj, UNLOCKED);
+        objectPutInRoom(obj, 4, UNLOCKED);
         return;
     }
 }

@@ -679,7 +679,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                      "drop it!\n\r", ch);
         act("$n shivers and drops $p!", FALSE, ch, obj_object, 0, TO_ROOM);
         objectTakeFromChar(obj_object);
-        objectPutInRoom(obj_object, ch->in_room);
+        objectPutInRoom(obj_object, ch->in_room, UNLOCKED));
         return;
     }
 

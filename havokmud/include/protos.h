@@ -136,11 +136,10 @@ void            show_obj_to_char(struct obj_data *object,
                                  struct char_data *ch, int mode);
 void            show_mult_obj_to_char(struct obj_data *o,
                                       struct char_data *ch, int m, int n);
-void            list_obj_in_room(struct obj_data *list,
-                                 struct char_data *ch);
 void            list_obj_in_heap(struct obj_data *list,
                                  struct char_data *ch);
-void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch);
+void list_obj_in_list( LinkedList_t *list, int offset, struct char_data *ch,
+                       int mode );
 void            list_obj_to_char(struct obj_data *l, struct char_data *ch,
                                  int m, bool show);
 void            show_char_to_char(struct char_data *i,
@@ -524,7 +523,6 @@ void            reset_char(struct char_data *ch);
 void            clear_char(struct char_data *ch);
 void            init_char(struct char_data *ch);
 int             real_mobile(int virtual);
-int             ObjRoomCount(int nr, struct room_data *rp);
 int             load(void);
 void            gr(int s);
 int             workhours(void);
