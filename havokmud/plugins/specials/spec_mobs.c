@@ -2251,12 +2251,15 @@ char           *quest_intro[] = {
 };
 
 
-#define Valik_Wandering   0
-#define Valik_Meditating  1
-#define Valik_Qone        2
-#define Valik_Qtwo        3
-#define Valik_Qthree      4
-#define Valik_Qfour       5
+enum {
+    Valik_Wandering = 0,
+    Valik_Meditating,
+    Valik_Qone,
+    Valik_Qtwo,
+    Valik_Qthree,
+    Valik_Qfour
+};
+
 #define Shield            21113
 #define Ring              21120
 #define Chalice           21121
@@ -2264,9 +2267,6 @@ char           *quest_intro[] = {
 #define Necklace          21122
 #define Med_Chambers      21324
 
-/**
- * @todo make quest_lines and valik_dests preloaded static arrays!
- */
 int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
@@ -2277,29 +2277,14 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     struct char_data *vict,
                    *master;
     struct obj_data *obj = NULL;
-    int             (*valik) ();
     bool            gave_this_click = FALSE;
-    short           quest_lines[4];
-    short           valik_dests[9];
+    static int      quest_lines[4] = { 6, 7, 5, 7 };
+    static int      valik_dests[9] = { 104, 1638, 7902, 13551, 16764, 17330,
+                                       19244, 21325, 25230 };
 
     if ((cmd && cmd != 72 && cmd != 86) || !AWAKE(ch)) {
         return (FALSE);
     }
-
-    quest_lines[0] = 6;
-    quest_lines[1] = 7;
-    quest_lines[2] = 5;
-    quest_lines[3] = 7;
-
-    valik_dests[0] = 104;
-    valik_dests[1] = 1638;
-    valik_dests[2] = 7902;
-    valik_dests[3] = 13551;
-    valik_dests[4] = 16764;
-    valik_dests[5] = 17330;
-    valik_dests[6] = 19244;
-    valik_dests[7] = 21325;
-    valik_dests[8] = 25230;
 
     if (!cmd) {
         if (ch->specials.fighting) {
@@ -2317,8 +2302,6 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     vict = FindMobInRoomWithFunction(ch->in_room, Valik);
     assert(vict != 0);
-
-    valik = Valik;
 
     switch (vict->generic) {
     case Valik_Wandering:
@@ -2341,7 +2324,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             /*
              * the target is valik
              */
-            if (mob_index[vict->nr].func == valik) {
+            if (mob_index[vict->nr].func == Valik) {
                 act("You give $p to $N.", TRUE, ch, obj, vict, TO_CHAR);
                 act("$n gives $p to $N.", TRUE, ch, obj, vict, TO_ROOM);
             } else {
@@ -2357,7 +2340,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 return (FALSE);
             }
 
-            if (mob_index[vict->nr].func != valik) {
+            if (mob_index[vict->nr].func != Valik) {
                 return (FALSE);
             } else {
                 if (!(strcmp(arg, " What is the quest of the Rhyodin?"))) {
@@ -4554,16 +4537,6 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     struct obj_data *new;
 
-    /* 
-     * special procedure for this mob/obj 
-     */
-    int             (*rep_guy) ();
-
-    if (!AWAKE(ch)) {
-        return (FALSE);
-    }
-    rep_guy = RepairGuy;
-
     if (IS_NPC(ch)) {
         if (cmd == 72) {
             arg = get_argument(arg, &obj_name);
@@ -4577,7 +4550,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 return (FALSE);
             }
 
-            if (mob_index[vict->nr].func == rep_guy) {
+            if (mob_index[vict->nr].func == RepairGuy) {
                 send_to_char("Nah, you really wouldn't want to do that.", ch);
                 return (TRUE);
             }
@@ -4716,10 +4689,6 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
              * weapon repair.  expensive! 
              */
             cost = obj->cost;
-            /**
-             * @todo make sure this is OK.  it used to be a REAL load rather
-             *       than VIRTUAL
-             */
             new = objectRead(obj->item_number);
             if (obj->value[2]) {
                 cost /= obj->value[2];

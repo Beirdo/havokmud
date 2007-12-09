@@ -89,10 +89,6 @@ void initializeObjects( void )
     db_load_object_tree( objectMasterTree );
 }
 
-/**
- * @todo if we put the pointer to the index item into every object, we may
- *       never need to do this search
- */
 struct index_data *objectIndex( int vnum )
 {
     struct index_data      *index;
@@ -1370,9 +1366,6 @@ void save_room(int room)
 #endif
 }
 
-/**
- * @todo make a copy of the keyword when creating the tree
- */
 void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
 {
     int                     i;
@@ -1380,6 +1373,7 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *objItem;
     BalancedBTree_t        *subtree;
+    char                   *keyword;
 
     key = &obj->keywords;
 
@@ -1395,8 +1389,9 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
             if( !item ) {
                 subtree = BalancedBTreeCreate( BTREE_KEY_POINTER );
                 CREATE(item, BalancedBTreeItem_t, 1);
+                keyword = strdup( key->words[i] );
                 item->item = subtree;
-                item->key  = &key->words[i];
+                item->key  = &keyword;
                 BalancedBTreeAdd( tree, item, LOCKED, TRUE );
             } else {
                 subtree = (BalancedBTree_t *)item->item;
@@ -1442,6 +1437,7 @@ void objectKeywordTreeRemove( BalancedBTree_t *tree, struct obj_data *obj )
             if( subtree->root == NULL ) {
                 BalancedBTreeRemove( tree, item, LOCKED, TRUE );
                 BalancedBTreeDestroy( subtree );
+                free( item->key );
                 free( item );
             }
         }
@@ -1523,14 +1519,12 @@ struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, int offset,
     return( obj );
 }
 
-/**
- * @todo make a copy of the type when creating the tree
- */
 void objectTypeTreeAdd( struct obj_data *obj )
 {
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *objItem;
     BalancedBTree_t        *tree;
+    uint32                 *key;
 
     BalancedBTreeLock( objectTypeTree );
 
@@ -1538,8 +1532,10 @@ void objectTypeTreeAdd( struct obj_data *obj )
     if( !item ) {
         tree = BalancedBTreeCreate( BTREE_KEY_POINTER );
         CREATE(item, BalancedBTreeItem_t, 1);
+        CREATE(key, uint32, 1);
+        *key = (uint32)obj->type_flag;
         item->item = tree;
-        item->key  = &obj->type_flag;
+        item->key  = key;
         BalancedBTreeAdd( objectTypeTree, item, LOCKED, TRUE );
     } else {
         tree = (BalancedBTree_t *)item->item;
@@ -1581,6 +1577,7 @@ void objectTypeTreeRemove( struct obj_data *obj )
     if( tree->root == NULL ) {
         BalancedBTreeRemove( objectTypeTree, item, LOCKED, TRUE );
         BalancedBTreeDestroy( tree );
+        free( item->key );
         free( item );
     }
 

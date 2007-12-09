@@ -1450,9 +1450,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
                       struct room_data *rp, int type)
 {
     char           *buf;
-    struct obj_data *i;
     struct obj_data *obj;
-    int             has_pill = 0;
 
     if (cmd == 12) {
         /* 
@@ -1465,50 +1463,40 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        /**
-         * @todo un-list this nonsense
-         */
-        for (i = ch->carrying; i && !has_pill; i = i->next_content) {
-            if (i->item_number == BLUE_PILL) {
-                has_pill = 1;
-            }
+        if (obj->item_number != BLUE_PILL) {
+            return (FALSE);
         }
 
-        if (has_pill == 1) {
-            if (obj->item_number != BLUE_PILL) {
-                return (FALSE);
-            }
-            act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
-            act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
-            objectExtract(obj);
+        act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
+        act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
+        objectExtract(obj);
 
-            if (time_info.hours > 6) {
-                if (time_info.hours < 20) {
-                    obj = objectRead(PEN_MIGHT);
-                    objectGiveToChar(obj, ch);
-                    send_to_char("Elamin's Pen of Might bursts out of thin"
-                                 " air and lands in your hands.\n\r", ch);
-                    act("Elamin's Pen of Might bursts out of thin air and"
-                        " lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
-                } else {
-                    send_to_char("You realize too late that you chose the "
-                                 "wrong pill.\n\r", ch);
-                    act("$n realizes too late that they chose the wrong pill "
-                        "as they fall to the ground.", FALSE, ch, 0, 0, 
-                        TO_ROOM);
-                    GET_HIT(ch) = -1;
-                    die(ch, '\0');
-                }
+        if (time_info.hours > 6) {
+            if (time_info.hours < 20) {
+                obj = objectRead(PEN_MIGHT);
+                objectGiveToChar(obj, ch);
+                send_to_char("Elamin's Pen of Might bursts out of thin"
+                             " air and lands in your hands.\n\r", ch);
+                act("Elamin's Pen of Might bursts out of thin air and"
+                    " lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
             } else {
-                send_to_char("You realize too late that you chose the wrong "
-                             "pill.\n\r", ch);
-                act("$n realizes too late that they chose the wrong pill as "
-                    "they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+                send_to_char("You realize too late that you chose the "
+                             "wrong pill.\n\r", ch);
+                act("$n realizes too late that they chose the wrong pill "
+                    "as they fall to the ground.", FALSE, ch, 0, 0, 
+                    TO_ROOM);
                 GET_HIT(ch) = -1;
                 die(ch, '\0');
             }
-            return (TRUE);
+        } else {
+            send_to_char("You realize too late that you chose the wrong "
+                         "pill.\n\r", ch);
+            act("$n realizes too late that they chose the wrong pill as "
+                "they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+            GET_HIT(ch) = -1;
+            die(ch, '\0');
         }
+        return (TRUE);
     }
 
     return (FALSE);
@@ -1529,41 +1517,31 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
             act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
             return (TRUE);
         }
-
-        /**
-         * @todo un-list this nonsense
-         */
-        for (i = ch->carrying; i && !has_pill; i = i->next_content) {
-            if (i->item_number == BLACK_PILL) {
-                has_pill = 1;
-            }
+        
+        if (obj->item_number != BLACK_PILL) {
+            return (FALSE);
         }
 
-        if (has_pill == 1) {
-            if (obj->item_number != BLACK_PILL) {
-                return (FALSE);
-            }
-            act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
-            act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
-            objectExtract(obj);
+        act("$n eats $p", TRUE, ch, obj, 0, TO_ROOM);
+        act("You eat $p.", FALSE, ch, obj, 0, TO_CHAR);
+        objectExtract(obj);
 
-            if (time_info.hours < 7 || time_info.hours > 19) {
-                obj = objectRead(PEN_MIGHT);
-                objectGiveToChar(obj, ch);
-                send_to_char("Elamin's Pen of Might bursts out of thin air"
-                             " and lands in your hands.\n\r", ch);
-                act("Elamin's Pen of Might bursts out of thin air and lands"
-                    " in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
-            } else {
-                send_to_char("You realize too late that you chose the wrong "
-                             "pill.\n\r", ch);
-                act("$n realizes too late that they chose the wrong pill as "
-                    "they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
-                GET_HIT(ch) = -1;
-                die(ch, '\0');
-            }
-            return (TRUE);
+        if (time_info.hours < 7 || time_info.hours > 19) {
+            obj = objectRead(PEN_MIGHT);
+            objectGiveToChar(obj, ch);
+            send_to_char("Elamin's Pen of Might bursts out of thin air"
+                         " and lands in your hands.\n\r", ch);
+            act("Elamin's Pen of Might bursts out of thin air and lands"
+                " in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
+        } else {
+            send_to_char("You realize too late that you chose the wrong "
+                         "pill.\n\r", ch);
+            act("$n realizes too late that they chose the wrong pill as "
+                "they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+            GET_HIT(ch) = -1;
+            die(ch, '\0');
         }
+        return (TRUE);
     }
 
     return (FALSE);
