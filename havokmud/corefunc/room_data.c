@@ -62,11 +62,14 @@ void initializeRooms( void )
 
 void completely_cleanout_room(struct room_data *rp)
 {
-    struct char_data   *ch;
-    struct obj_data    *obj;
-    PlayerStruct_t     *player; 
-    LinkedListItem_t   *item;
-    LinkedListItem_t   *nextItem;
+    struct char_data       *ch;
+    struct obj_data        *obj;
+    PlayerStruct_t         *player; 
+    LinkedListItem_t       *item;
+    LinkedListItem_t       *nextItem;
+    BalancedBTreeItem_t    *node;
+    BalancedBTreeItem_t    *node2;
+    BalancedBTree_t        *tree;
 
     while (rp->people) {
         ch = rp->people;
@@ -91,6 +94,24 @@ void completely_cleanout_room(struct room_data *rp)
         objectPutInRoom(obj, 0, UNLOCKED);
     }
     LinkedListUnlock( rp->contentList );
+
+    BalancedBTreeLock( rp->contentKeywordTree );
+    for( node = BalancedBTreeFindLeast( rp->contentKeywordTree->root ); node;
+         node = BalancedBTreeFindLeast( rp->contentKeywordTree->root )) {
+        tree = (BalancedBTree_t *)node->item;
+        BalancedBTreeLock( tree );
+        for( node2 = BalancedBTreeFindLeast( tree->root ); node2;
+             node2 = BalancedBTreeFindLeast( tree->root ) ) {
+            BalancedBTreeRemove( tree, node2, LOCKED, FALSE );
+            free( node2 );
+        }
+        BalancedBTreeUnlock( tree );
+        BalancedBTreeDestroy( tree );
+
+        BalancedBTreeRemove( rp->contentKeywordTree, node, LOCKED, FALSE );
+        free( node );
+    }
+    BalancedBTreeUnlock( rp->contentKeywordTree );
 
     cleanout_room(rp);
 }
