@@ -258,6 +258,27 @@ char           *strstr(register const char *s, register const char *find)
 }
 #endif
 
+#ifndef HAVE_STRNDUP
+/* OSX seems to be missing strndup */
+char *strndup(const char *s, size_t n)
+{
+    int     len;
+    char   *copy;
+
+    len = strlen(s);
+    if( len > n ) {
+        len = n;
+    }
+
+    if (!(copy = (char *) malloc((u_int) len+1))) {
+        return ((char *) NULL);
+    }
+    bcopy(s, copy, len);
+    copy[len] = '\0';
+    return (copy);
+}
+#endif
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

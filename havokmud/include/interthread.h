@@ -389,11 +389,16 @@ char *strsep(char **stringp, const char *delim);
 #endif
 
 #ifndef HAVE_STRDUP
-char           *strdup(const char *str)
+char           *strdup(const char *str);
 #endif
 
 #ifndef HAVE_STRSTR
-char           *strstr(register const char *s, register const char *find)
+char           *strstr(register const char *s, register const char *find);
+#endif
+
+#ifndef HAVE_STRNDUP
+/* OSX seems to be missing strndup */
+char           *strndup(const char *s, size_t n);
 #endif
 
 
