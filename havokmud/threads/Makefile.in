@@ -9,14 +9,14 @@ RANLIB=@RANLIB@
 ROOT=..
 
 ## Include dirs
-INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util -I/usr/include/mysql
+INCDIRS = -I. -I${ROOT} -I${ROOT}/include -I${ROOT}/util @INCLUDES@
 
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
 	 ${INCDIRS}
 
 ##  Libraries
-LIBS = @LIBS@
+LIBS = @LIBS@ -pthread
 LDFLAGS = @LDFLAGS@
 
 

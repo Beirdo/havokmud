@@ -17,7 +17,7 @@ CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
 	 ${INCDIRS}
 
 ##  Libraries
-LIBS = @LIBS@
+LIBS = @LIBS@ -pthread
 LDFLAGS = @LDFLAGS@
 
 
