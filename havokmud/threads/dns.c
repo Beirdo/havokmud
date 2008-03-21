@@ -35,6 +35,7 @@
 #include "externs.h"
 #include "interthread.h"
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
 #include <stdlib.h>
