@@ -265,10 +265,7 @@ char *strndup(const char *s, size_t n)
     int     len;
     char   *copy;
 
-    len = strlen(s);
-    if( len > n ) {
-        len = n;
-    }
+    len = strnlen(s, n);
 
     if (!(copy = (char *) malloc((u_int) len+1))) {
         return ((char *) NULL);
