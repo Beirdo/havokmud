@@ -106,7 +106,7 @@ AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
 AC_FUNC_CLOSEDIR_VOID
-AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gethostname getpagesize gettimeofday inet_ntoa isascii memset select socket strcasecmp strchr strdup strncasecmp strndup strstr strsep])
+AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gethostname getpagesize gettimeofday inet_ntoa isascii memset select socket strcasecmp strchr strdup strncasecmp strndup strnlen strstr strsep])
 
 dnl HAVOK_SWITCH(arg-name, arg_name, ARG_NAME, help_LHS, help_RHS, cache_string,
 dnl              header_comment, default, not_default)
