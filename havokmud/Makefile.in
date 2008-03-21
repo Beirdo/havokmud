@@ -85,7 +85,7 @@ cleannew:
 configure: configure.ac
 	autoconf
 
-config.in.h: configure.in
+config.in.h: configure.ac
 	autoheader
 
 Makefile: Makefile.in ${ROOT}/configure
