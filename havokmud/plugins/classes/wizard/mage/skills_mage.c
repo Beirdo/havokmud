@@ -432,7 +432,7 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
             return;
         }
 
-        el = read_mobile(mob, VIRTUAL);
+        el = read_mobile(mob);
         if (!el) {
             send_to_char("You sense that all demons of that kind are in "
                          "others' services...\n\r", ch);
@@ -1109,7 +1109,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
             return;
         }
 
-        el = read_mobile(mob, VIRTUAL);
+        el = read_mobile(mob);
         if (!el) {
             send_to_char("There are no elementals of that type available\n\r",
                          ch);
@@ -1707,15 +1707,15 @@ void spell_familiar(int level, struct char_data *ch,
      */
 
     if (level < 2) {
-        f = read_mobile(KITTEN, VIRTUAL);
+        f = read_mobile(KITTEN);
     } else if (level < 4) {
-        f = read_mobile(PUPPY, VIRTUAL);
+        f = read_mobile(PUPPY);
     } else if (level < 6) {
-        f = read_mobile(BEAGLE, VIRTUAL);
+        f = read_mobile(BEAGLE);
     } else if (level < 8) {
-        f = read_mobile(ROTT, VIRTUAL);
+        f = read_mobile(ROTT);
     } else {
-        f = read_mobile(WOLF, VIRTUAL);
+        f = read_mobile(WOLF);
     }
     char_to_room(f, ch->in_room);
 
@@ -3348,38 +3348,38 @@ void spell_Create_Monster(int level, struct char_data *ch,
         return;
     }
     if (level <= 5) {
-        mob = read_mobile(16034, VIRTUAL);
+        mob = read_mobile(16034);
 #if 0
         rnum = number(1, 10) + 200;
         /*
          * removed this plot of mobs
          */
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
 #endif
     } else if (level <= 7) {
-        mob = read_mobile(9191, VIRTUAL);
+        mob = read_mobile(9191);
 #if 0
         rnum = number(1, 10) + 210;
         /*
          * removed this plot of mobs
          */
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
 #endif
     } else if (level <= 9) {
         rnum = number(1, 10) + 220;
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
     } else if (level <= 11) {
         rnum = number(1, 10) + 230;
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
     } else if (level <= 13) {
         rnum = number(1, 10) + 240;
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
     } else if (level <= 15) {
         rnum = 250 + number(1, 10);
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
     } else {
         rnum = 260 + number(1, 10);
-        mob = read_mobile(rnum, VIRTUAL);
+        mob = read_mobile(rnum);
     }
 
     if (!mob) {
@@ -3618,7 +3618,7 @@ void spell_mount(int level, struct char_data *ch,
         }
     }
 
-    m = read_mobile(mnr, VIRTUAL);
+    m = read_mobile(mnr);
     if (m) {
         char_to_room(m, ch->in_room);
         act("In a flash of light, $N appears", FALSE, ch, 0, m, TO_CHAR);
@@ -3944,7 +3944,7 @@ void cast_poly_self(int level, struct char_data *ch, char *arg, int type,
             return;
         }
         
-        mob = read_mobile(mobn, VIRTUAL);
+        mob = read_mobile(mobn);
         if (mob) {
             spell_poly_self(level, ch, mob, 0);
         } else {

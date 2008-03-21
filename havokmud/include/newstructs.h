@@ -479,9 +479,9 @@ struct index_data {
     Keywords_t      keywords;
     char           *short_desc;
     char           *long_desc;
-    int             MaxObjCount;
-    LinkedList_t   *list;       /**< Linked List of all loaded objects of this
-                                 *   vnum */
+    int             MaxCount;
+    LinkedList_t   *list;       /**< Linked List of all loaded objects/mobiles
+                                 *   of this vnum */
 };
 
 /*

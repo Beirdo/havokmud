@@ -230,7 +230,7 @@ void spell_animal_summon(int level, struct char_data *ch,
     lev = GetMaxLevel(ch);
 
     for (i = 0; i < 4; i++) {
-        mob = read_mobile(ANISUM + number(0, 20), VIRTUAL);
+        mob = read_mobile(ANISUM + number(0, 20));
         if (!mob) {
             continue;
         }
@@ -572,7 +572,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
             return;
         }
 
-        el = read_mobile(mob, VIRTUAL);
+        el = read_mobile(mob);
         if (!el) {
             send_to_char("There are no elementals of that type available\n\r",
                          ch);
@@ -2074,7 +2074,7 @@ void spell_dust_devil(int level, struct char_data *ch,
 
     vnum = DUST_DEVIL;
 
-    mob = read_mobile(vnum, VIRTUAL);
+    mob = read_mobile(vnum);
 
     if (!mob) {
         send_to_char("None available\n\r", ch);
@@ -2838,7 +2838,7 @@ void spell_mount(int level, struct char_data *ch,
         }
     }
 
-    m = read_mobile(mnr, VIRTUAL);
+    m = read_mobile(mnr);
     if (m) {
         char_to_room(m, ch->in_room);
         act("In a flash of light, $N appears", FALSE, ch, 0, m, TO_CHAR);

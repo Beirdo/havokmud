@@ -32,7 +32,7 @@ void spell_animate_dead(int level, struct char_data *ch,
         return;
     }
 
-    mob = read_mobile(r_num, VIRTUAL);
+    mob = read_mobile(r_num);
     char_to_room(mob, ch->in_room);
 
     act("With mystic power, $n animates a corpse.", TRUE, ch, 0, 0, TO_ROOM);
@@ -300,7 +300,7 @@ void spell_cavorting_bones(int level, struct char_data *ch,
     act("You stare at $p while phrasing some arcane incantations.", TRUE,
         ch, obj, 0, TO_CHAR);
     lev = GetMaxLevel(ch);
-    mob = read_mobile(CB_TEMPLATE, VIRTUAL);
+    mob = read_mobile(CB_TEMPLATE);
 
     if (!mob) {
         Log("No template found for cavorting bones spells (no mobile with "
@@ -1275,7 +1275,7 @@ void spell_flesh_golem(int level, struct char_data *ch,
         ch, obj, 0, TO_CHAR);
     lev = GetMaxLevel(ch);
 
-    mob = read_mobile(FG_TEMPLATE, VIRTUAL);
+    mob = read_mobile(FG_TEMPLATE);
     if (!mob) {
         Log("No template found for flesh golem spell (no mobile with vnum 6)");
         send_to_char("Screw up in this spell, no flesh golem template "

@@ -3009,7 +3009,8 @@ void do_load_mobile(struct char_data *ch, char *argument, int number)
         send_to_char("There is no such monster.\n\r", ch);
         return;
     }
-    mob = read_mobile(number, REAL);
+    /** @todo this was a load REAL */
+    mob = read_mobile(number);
     char_to_room(mob, ch->in_room);
 
     act("$n makes a quaint, magical gesture with one hand.", TRUE, ch,
@@ -5670,7 +5671,8 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
             return;
         }
         for (i = 0; i < count; i++) {
-            mcopy = read_mobile(mob->nr, REAL);
+            /** @todo was a REAL load */
+            mcopy = read_mobile(mob->nr);
             /*
              * clear
              */

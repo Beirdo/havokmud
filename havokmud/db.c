@@ -1049,7 +1049,11 @@ void boot_zones(void)
 /*
  * read a mobile from MOB_FILE
  */
-struct char_data *read_mobile(int nr, int type)
+
+/** @todo This is borked as it is now indexing mob_index using vnums.
+ *  @todo rewrite to use trees/lists like the objects
+ */
+struct char_data *read_mobile(int nr)
 {
     FILE           *f;
     struct char_data *mob;
@@ -1058,9 +1062,9 @@ struct char_data *read_mobile(int nr, int type)
     char            buf[100];
 
     i = nr;
-    if (type == VIRTUAL  && (nr = real_mobile(nr)) < 0) {
+    if (nr < 0) {
         sprintf(buf, "Mobile (V) %d does not exist in database.", i);
-        return (0);
+        return( NULL );
     }
 
     CREATE(mob, struct char_data, 1);
@@ -1100,88 +1104,70 @@ struct char_data *read_mobile(int nr, int type)
     /*
      * assign common proc flags
      */
-    if (mob->specials.proc != 0) {
-        if (mob->specials.proc == PROC_QUEST) {
-            if (mob_index[mob->nr].func != QuestMobProc) {
-                mob_index[mob->nr].func = *QuestMobProc;
-            }
-        } else if (mob->specials.proc == PROC_SHOPKEEPER) {
-            if (mob_index[mob->nr].func != shopkeeper) {
-                mob_index[mob->nr].func = *shopkeeper;
-            }
-        } else if (mob->specials.proc == PROC_GUILDMASTER) {
-            if (mob_index[mob->nr].func != generic_guildmaster) {
-                mob_index[mob->nr].func = *generic_guildmaster;
-            }
-        } else if (mob->specials.proc == PROC_SWALLOWER) {
-            if (mob_index[mob->nr].func != Tyrannosaurus_swallower) {
-                mob_index[mob->nr].func = *Tyrannosaurus_swallower;
-            }
-        } else if (mob->specials.proc == PROC_OLD_BREATH) {
-            if (mob_index[mob->nr].func != BreathWeapon) {
-                mob_index[mob->nr].func = *BreathWeapon;
-            }
-        } else if (mob->specials.proc == PROC_FIRE_BREATH) {
-            if (mob_index[mob->nr].func != FireBreather) {
-                mob_index[mob->nr].func = *FireBreather;
-            }
-        } else if (mob->specials.proc == PROC_GAS_BREATH) {
-            if (mob_index[mob->nr].func != GasBreather) {
-                mob_index[mob->nr].func = *GasBreather;
-            }
-        } else if (mob->specials.proc == PROC_FROST_BREATH) {
-            if (mob_index[mob->nr].func != FrostBreather) {
-                mob_index[mob->nr].func = *FrostBreather;
-            }
-        } else if (mob->specials.proc == PROC_ACID_BREATH) {
-            if (mob_index[mob->nr].func != AcidBreather) {
-                mob_index[mob->nr].func = *AcidBreather;
-            }
-        } else if (mob->specials.proc == PROC_LIGHTNING_BREATH) {
-            if (mob_index[mob->nr].func != LightningBreather) {
-                mob_index[mob->nr].func = *LightningBreather;
-            }
-        } else if (mob->specials.proc == PROC_DEHYDRATION_BREATH) {
-            if (mob_index[mob->nr].func != DehydBreather) {
-                mob_index[mob->nr].func = *DehydBreather;
-            }
-        } else if (mob->specials.proc == PROC_VAPOR_BREATH) {
-            if (mob_index[mob->nr].func != VaporBreather) {
-                mob_index[mob->nr].func = *VaporBreather;
-            }
-        } else if (mob->specials.proc == PROC_SOUND_BREATH) {
-            if (mob_index[mob->nr].func != SoundBreather) {
-                mob_index[mob->nr].func = *SoundBreather;
-            }
-        } else if (mob->specials.proc == PROC_SHARD_BREATH) {
-            if (mob_index[mob->nr].func != ShardBreather) {
-                mob_index[mob->nr].func = *ShardBreather;
-            }
-        } else if (mob->specials.proc == PROC_SLEEP_BREATH) {
-            if (mob_index[mob->nr].func != SleepBreather) {
-                mob_index[mob->nr].func = *SleepBreather;
-            }
-        } else if (mob->specials.proc == PROC_LIGHT_BREATH) {
-            if (mob_index[mob->nr].func != LightBreather) {
-                mob_index[mob->nr].func = *LightBreather;
-            }
-        } else if (mob->specials.proc == PROC_DARK_BREATH) {
-            if (mob_index[mob->nr].func != DarkBreather) {
-                mob_index[mob->nr].func = *DarkBreather;
-            }
-        } else if (mob->specials.proc == PROC_RECEPTIONIST) {
-            if (mob_index[mob->nr].func != receptionist) {
-                mob_index[mob->nr].func = *receptionist;
-            }
-            if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
-                SET_BIT(mob->specials.act, ACT_SENTINEL);
-            }
-        } else if (mob->specials.proc == PROC_REPAIRGUY) {
-            if (mob_index[mob->nr].func != RepairGuy) {
-                mob_index[mob->nr].func = *RepairGuy;
-            }
-        }
+    switch( mob->specials.proc ) {
+    case PROC_QUEST:
+        mob_index[mob->nr].func = *QuestMobProc;
+        break;
+    case PROC_SHOPKEEPER:
+        mob_index[mob->nr].func = *shopkeeper;
+        break;
+    case PROc_GUILDMASTER:
+        mob_index[mob->nr].func = *generic_guildmaster;
+        break;
+    case PROC_SWALLOWER:
+        mob_index[mob->nr].func = *Tyrannosaurus_swallower;
+        break;
+    case PROC_OLD_BREATH:
+        mob_index[mob->nr].func = *BreathWeapon;
+        break;
+    case PROC_FIRE_BREATH:
+        mob_index[mob->nr].func = *FireBreather;
+        break;
+    case PROC_GAS_BREATH:
+        mob_index[mob->nr].func = *GasBreather;
+        break;
+    case PROC_FROST_BREATH:
+        mob_index[mob->nr].func = *FrostBreather;
+        break;
+    case PROC_ACID_BREATH:
+        mob_index[mob->nr].func = *AcidBreather;
+        break;
+    case PROC_LIGHTNING_BREATH:
+        mob_index[mob->nr].func = *LightningBreather;
+        break;
+    case PROC_DEHYDRATION_BREATH:
+        mob_index[mob->nr].func = *DehydBreather;
+        break;
+    case PROC_VAPOR_BREATH:
+        mob_index[mob->nr].func = *VaporBreather;
+        break;
+    case PROC_SOUND_BREATH:
+        mob_index[mob->nr].func = *SoundBreather;
+        break;
+    case PROC_SHARD_BREATH:
+        mob_index[mob->nr].func = *ShardBreather;
+        break;
+    case PROC_SLEEP_BREATH:
+        mob_index[mob->nr].func = *SleepBreather;
+        break;
+    case PROC_LIGHT_BREATH:
+        mob_index[mob->nr].func = *LightBreather;
+        break;
+    case PROC_DARK_BREATH:
+        mob_index[mob->nr].func = *DarkBreather;
+        break;
+    case PROC_RECEPTIONIST:
+        mob_index[mob->nr].func = *receptionist;
+        SET_BIT(mob->specials.act, ACT_SENTINEL);
+        break;
+    case PROC_REPAIRGUY:
+        mob_index[mob->nr].func = *RepairGuy;
+        break;
+    case 0:
+    default:
+        break;
     }
+
     return (mob);
 }
 
@@ -2567,7 +2553,8 @@ void reset_zone(int zone, int cmd)
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !fighting_in_room(ZCMD.arg3) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
-                    mob = read_mobile(ZCMD.arg1, REAL);
+                    /** @todo was a REAL load */
+                    mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
                         log_sev("Error while loading mob in reset_zone(read)",
                                 1);
@@ -2602,7 +2589,8 @@ void reset_zone(int zone, int cmd)
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
-                    mob = read_mobile(ZCMD.arg1, REAL);
+                    /** @todo was a REAL load */
+                    mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
                         last_cmd = 0;
@@ -2665,7 +2653,7 @@ void reset_zone(int zone, int cmd)
                             (-ZCMD.if_flag) + 1)) {
                         if ((obj = objectRead(ZCMD.arg1)) != NULL) {
                             index = objectIndex(ZCMD.arg1);
-                            index->MaxObjCount = ZCMD.arg2;
+                            index->MaxCount = ZCMD.arg2;
 
                             if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                                 tweakroll = number(1, 100);
@@ -2715,7 +2703,7 @@ void reset_zone(int zone, int cmd)
                 obj_to = objectGetNumLastCreated(ZCMD.arg3);
                 if (obj_to && obj) {
                     index = objectIndex( ZCMD.arg1 );
-                    index->MaxObjCount = ZCMD.arg2;
+                    index->MaxCount = ZCMD.arg2;
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -2752,7 +2740,7 @@ void reset_zone(int zone, int cmd)
                  */
                 if ((obj = objectRead(ZCMD.arg1)) && mob) {
                     index = objectIndex( ZCMD.arg1 );
-                    index->MaxObjCount = ZCMD.arg2;
+                    index->MaxCount = ZCMD.arg2;
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -2814,7 +2802,7 @@ void reset_zone(int zone, int cmd)
                 if ((obj = objectRead(ZCMD.arg1))) {
                     if (!mob->equipment[ZCMD.arg3]) {
                         index = objectIndex( ZCMD.arg1 );
-                        index->MaxObjCount = ZCMD.arg2;
+                        index->MaxCount = ZCMD.arg2;
 
                         if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                             tweakroll = number(1, 100);
@@ -2948,7 +2936,8 @@ void reset_zone(int zone, int cmd)
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
-                    mob = read_mobile(ZCMD.arg1, REAL);
+                    /** @todo was REAL load */
+                    mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Read)", 1);
                         last_cmd = 0;
@@ -2976,7 +2965,8 @@ void reset_zone(int zone, int cmd)
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
-                    mob = read_mobile(ZCMD.arg1, REAL);
+                    /** @todo was REAL load */
+                    mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
                         last_cmd = 0;
@@ -4943,7 +4933,8 @@ void ReadTextZone(FILE * fl)
                 i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].vnum)) {
-                    mob = read_mobile(i, REAL);
+                    /** @todo was REAL load */
+                    mob = read_mobile(i);
                     char_to_room(mob, k);
 
                     last_cmd = 1;
@@ -4960,7 +4951,8 @@ void ReadTextZone(FILE * fl)
                 i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].vnum)) {
-                    mob = read_mobile(i, REAL);
+                    /** @todo was REAL load */
+                    mob = read_mobile(i);
                     if (master) {
                         char_to_room(mob, master->in_room);
                         /*

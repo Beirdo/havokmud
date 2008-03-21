@@ -13,7 +13,6 @@
 #define MAX_PROD 5
 
 extern struct str_app_type str_app[];
-extern struct index_data *mob_index;
 extern struct chr_app_type chr_apply[];
 
 char            getall(char *name, char *newname);

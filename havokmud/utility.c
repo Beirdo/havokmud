@@ -317,8 +317,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                         p->equipment[j]->item_number >= 0) {
                         cmd = 'E';
                         arg1 = p->equipment[j]->item->number;
-                        if (p->equipment[j]->index->MaxObjCount) {
-                            arg2 = p->equipment[j]->index->MaxObjCount;
+                        if (p->equipment[j]->index->MaxCount) {
+                            arg2 = p->equipment[j]->index->MaxCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -333,8 +333,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
                     if (o->item_number >= 0) {
                         cmd = 'G';
                         arg1 = o->item_number;
-                        if (o->index->MaxObjCount) {
-                            arg2 = o->index->MaxObjCount;
+                        if (o->index->MaxCount) {
+                            arg2 = o->index->MaxCount;
                         } else {
                             arg2 = 65535;
                         }
@@ -356,8 +356,8 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
             if (o->item_number >= 0) {
                 cmd = 'O';
                 arg1 = o->item_number;
-                if (o->index->MaxObjCount) {
-                    arg2 = o->index->MaxObjCount;
+                if (o->index->MaxCount) {
+                    arg2 = o->index->MaxCount;
                 } else {
                     arg2 = 65535;
                 }
@@ -5910,7 +5910,7 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
     send_to_char(buf, ch);
 
     for (i = m_start; i <= WORLD_SIZE; i++) {
-        if ((mob = read_mobile(i, VIRTUAL))) {
+        if ((mob = read_mobile(i))) {
 
             nr = real_mobile(i);
 

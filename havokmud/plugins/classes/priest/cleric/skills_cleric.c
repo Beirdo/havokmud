@@ -517,7 +517,7 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
             return;
         }
 
-        el = read_mobile(mob, VIRTUAL);
+        el = read_mobile(mob);
         if (!el) {
             send_to_char("You sense that all demons of that kind are in "
                          "others' services...\n\r", ch);
@@ -1498,7 +1498,7 @@ void spell_golem(int level, struct char_data *ch,
         return;
     }
 
-    gol = read_mobile(GOLEM, VIRTUAL);
+    gol = read_mobile(GOLEM);
     char_to_room(gol, ch->in_room);
 
     /*
@@ -2726,7 +2726,7 @@ void spell_resurrection(int level, struct char_data *ch,
                 GET_GOLD(ch) -= 25000;
             }
 
-            victim = read_mobile(obj->char_vnum, VIRTUAL);
+            victim = read_mobile(obj->char_vnum);
             char_to_room(victim, ch->in_room);
             GET_GOLD(victim) = 0;
             GET_EXP(victim) = 0;

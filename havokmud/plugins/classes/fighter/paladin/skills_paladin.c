@@ -921,7 +921,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
             act("$n whistles a lively tune.", FALSE, ch, 0, 0, TO_ROOM);
             LearnFromMistake(ch, SKILL_STEED, 0, 95);
         } else {
-            if ((steed = read_mobile(STEED_TEMPLATE, VIRTUAL))) {
+            if ((steed = read_mobile(STEED_TEMPLATE))) {
                 act("You whistle loudly.", FALSE, ch, 0, 0, TO_CHAR);
                 act("$n whistles loudly.", FALSE, ch, 0, 0, TO_ROOM);
                 mhit = GET_HIT(ch);

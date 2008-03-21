@@ -1509,7 +1509,7 @@ int shaman(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                         if (!number(0, 8)) {
                             act("There is a blinding flash of light!",
                                 FALSE, ch, 0, 0, TO_ROOM);
-                            god = read_mobile(DEITY, VIRTUAL);
+                            god = read_mobile(DEITY);
                             char_to_room(god, ch->in_room);
                         }
                     } else if (!number(0, 2)) {
@@ -8631,7 +8631,7 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg,
     struct char_data *mobtmp;
 
     if (type == EVENT_DEATH) {
-        mobtmp = read_mobile(real_mobile(51803), REAL);
+        mobtmp = read_mobile(51803);
         char_to_room(mobtmp, 51817);
         act("$n gasps his last breath, but the supply of sinners seems no "
             "less.", FALSE, ch, 0, 0, TO_ROOM);
@@ -8763,7 +8763,7 @@ int snake_avt(struct char_data *ch, int cmd, char *arg,
     if (type == EVENT_DEATH && ch->in_room == RESCUE_ROOM) {
         mob = get_char_vis(ch, "zifnab");
         cast_portal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, mob, 0);
-        mob = read_mobile(real_mobile(RESCUE_VIRGIN), REAL);
+        mob = read_mobile(RESCUE_VIRGIN);
         char_to_room(mob, RESCUE_ROOM);
 
         act("After defeating the avatar of the snake god a mystical door "
@@ -9095,7 +9095,7 @@ int strahd_zombie(struct char_data *ch, int cmd, char *arg,
             return (shadow(ch, cmd, arg, mob, type));
         case 2:
             if (number(0, 1)) {
-                mobtmp = read_mobile(real_mobile(STRAHD_ZOMBIE), REAL);
+                mobtmp = read_mobile(STRAHD_ZOMBIE);
                 char_to_room(mobtmp, ch->in_room);
                 act("A body part falls from $n and forms into $N!",
                     FALSE, ch, 0, mobtmp, TO_ROOM);
@@ -9158,7 +9158,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
             break;
         case 0:
             vampnum++;
-            mobtmp = read_mobile(real_mobile(STRAHD_VAMPIRE), REAL);
+            mobtmp = read_mobile(STRAHD_VAMPIRE);
             char_to_room(mobtmp, STRAHD_RELOCATE_ROOM);
             AddHated(mobtmp, tmp);
             SetHunting(mobtmp, tmp);
@@ -9179,7 +9179,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
             ch = mobtmp;
 
             for (i = 0; i < 7; i++) {
-                mobtmp = read_mobile(real_mobile(STRAHD_ZOMBIE), REAL);
+                mobtmp = read_mobile(STRAHD_ZOMBIE);
                 char_to_room(mobtmp, ch->in_room);
                 add_follower(mobtmp, ch);
                 SET_BIT(mobtmp->specials.affected_by, AFF_CHARM);
@@ -9268,7 +9268,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
              */
         default:
             tmp = ch->specials.fighting;
-            mobtmp = read_mobile(real_mobile(STRAHD_ZOMBIE), REAL);
+            mobtmp = read_mobile(STRAHD_ZOMBIE);
             char_to_room(mobtmp, ch->in_room);
             add_follower(mobtmp, ch);
             SET_BIT(mobtmp->specials.affected_by, AFF_CHARM);
@@ -10047,7 +10047,7 @@ int virgin_sac(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
     if (type == EVENT_DEATH && ch->in_room == RESCUE_ROOM) {
-        mob = read_mobile(real_mobile(SNAKE_GOD), REAL);
+        mob = read_mobile(SNAKE_GOD);
         char_to_room(mob, RESCUE_ROOM);
         act("$n says 'You have completed the sacrifice, you shall be rewarded "
             "with death!'", FALSE, mob, 0, 0, TO_ROOM);
@@ -11596,7 +11596,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
      * spawn_room 
      */
     if (type == EVENT_DEATH) {
-        freshmob = read_mobile(real_mobile(NIGHTWALKER), REAL);
+        freshmob = read_mobile(NIGHTWALKER);
         char_to_room(freshmob, SPAWNROOM);
         act("$n crumbles to a pile of dust, but a tiny cloud seems to escape.",
             FALSE, ch, 0, 0, TO_ROOM);

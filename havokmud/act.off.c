@@ -39,7 +39,6 @@ extern int      ArenaNoGroup,
                 ArenaNoBash;
 
 extern struct breather breath_monsters[];
-extern struct index_data *mob_index;
 extern const struct clan clan_list[MAX_CLAN];
 extern long     SystemFlags;
 

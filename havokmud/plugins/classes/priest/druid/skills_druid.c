@@ -41,7 +41,7 @@ void spell_animate_rock(int level, struct char_data *ch,
     if (GET_OBJ_WEIGHT(obj) > 320) {
         mobn++;
     }
-    mob = read_mobile(mobn, VIRTUAL);
+    mob = read_mobile(mobn);
     if (mob) {
         char_to_room(mob, ch->in_room);
         if (mob->master) {
@@ -293,7 +293,7 @@ void cast_change_form(int level, struct char_data *ch, char *arg,
             send_to_char("Couldn't find any of those\n\r", ch);
             return;
         } else {
-            mob = read_mobile(mobn, VIRTUAL);
+            mob = read_mobile(mobn);
             if (mob) {
                 af.type = SPELL_CHANGE_FORM;
                 af.duration = 12;
@@ -353,7 +353,7 @@ void spell_changestaff(int level, struct char_data *ch,
     act("$p vanishes in a burst of flame!", FALSE, ch, s, 0, TO_ROOM);
     act("$p vanishes in a burst of flame!", FALSE, ch, s, 0, TO_CHAR);
 
-    t = read_mobile(TREE, VIRTUAL);
+    t = read_mobile(TREE);
     char_to_room(t, ch->in_room);
     GET_EXP(t) = 0;
 
@@ -660,7 +660,7 @@ void spell_creeping_death(int level, struct char_data *ch,
      * obj is really the direction that the death wishes to travel in
      */
 
-    cd = read_mobile(CREEPING_DEATH, VIRTUAL);
+    cd = read_mobile(CREEPING_DEATH);
     if (!cd) {
         send_to_char("None available\n\r", ch);
         return;
@@ -762,7 +762,7 @@ void spell_elemental_summoning(int level, struct char_data *ch,
         return;
     }
 
-    mob = read_mobile(vnum, VIRTUAL);
+    mob = read_mobile(vnum);
 
     if (!mob) {
         send_to_char("None available\n\r", ch);
@@ -2004,7 +2004,7 @@ void spell_tree(int level, struct char_data *ch,
     if (level > 48) {
         mobn++;
     }
-    mob = read_mobile(mobn, VIRTUAL);
+    mob = read_mobile(mobn);
     if (mob) {
         spell_poly_self(level, ch, mob, 0);
     } else {
