@@ -124,38 +124,22 @@ int named_object_on_ground(int room, void *c_data)
 
 struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
 {
-    struct char_data *temp_char,
-                   *targ;
-
-    targ = 0;
-
-    if (room > NOWHERE) {
-        for (temp_char = roomFindNum(room)->people; (!targ) && (temp_char);
-             temp_char = temp_char->next_in_room) {
-            if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
-                targ = temp_char;
-            }
-        }
-    } else {
-        return (NULL);
-    }
-    return (targ);
-}
-
-
-
-struct char_data *find_mobile_here_with_spec_proc(int (*fcn) (), int rnumber)
-{
     struct char_data *temp_char;
 
-    for (temp_char = roomFindNum(rnumber)->people; temp_char;
+    if( room <= NOWHERE ) {
+        return( NULL );
+    }
+
+    for (temp_char = roomFindNum(room)->people; temp_char;
          temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == fcn) {
-            return temp_char;
+        if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
+            return( temp_char );
         }
     }
-    return NULL;
+
+    return (NULL);
 }
+
 
 /*
  *******************************************************************
@@ -1273,7 +1257,7 @@ int zm_kill_fidos(struct char_data *zmaster)
 {
     struct char_data *fido_b;
 
-    fido_b = find_mobile_here_with_spec_proc(fido, zmaster->in_room);
+    fido_b = FindMobInRoomWithFunction(zmaster->in_room, fido);
     if (fido_b) {
         if (!check_soundproof(zmaster)) {
             act("$n shrilly screams 'Kill that carrion beast!'", FALSE,
@@ -1321,7 +1305,7 @@ int zombie_master(struct char_data *ch, int cmd, char *arg,
     struct char_data *zmaster;
     int             dir;
 
-    zmaster = find_mobile_here_with_spec_proc(zombie_master, ch->in_room);
+    zmaster = FindMobInRoomWithFunction(ch->in_room, zombie_master);
 
     if (cmd != 0 || ch != zmaster || !AWAKE(ch)) {
         return FALSE;
@@ -2728,7 +2712,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
     } else if (cmd == 3 && !IS_NPC(ch)) {
-        g = find_mobile_here_with_spec_proc(guardian, ch->in_room);
+        g = FindMobInRoomWithFunction(ch->in_room, guardian);
         gstruct = (void *) g->act_ptr;
         j = 0;
 

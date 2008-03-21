@@ -1537,8 +1537,6 @@ int             mayor(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type);
 int             andy_wilcox(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
-struct char_data *find_mobile_here_with_spec_proc(int (*fcn) (),
-                                                  int rnumber);
 int             eric_johnson(struct char_data *ch, int cmd, char *arg,
                              struct char_data *mob, int type);
 void            exec_social(struct char_data *npc, char *cmd,

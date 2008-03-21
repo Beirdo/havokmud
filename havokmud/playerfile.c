@@ -22,7 +22,6 @@
 #define OBJ_FILE_FREE "\0\0\0"
 
 extern struct room_data *world;
-extern struct index_data *mob_index;
 extern int      top_of_objt;
 extern struct player_index_element *player_table;
 extern int      top_of_p_table;

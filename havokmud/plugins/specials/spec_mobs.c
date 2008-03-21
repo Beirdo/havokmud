@@ -440,8 +440,7 @@ int ghostsoldier(struct char_data *ch, int cmd, char *arg,
 
     for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
-        if (!(mob_index[tch->nr].func == gs) &&
-            !(mob_index[tch->nr].func == gc) &&
+        if (mob_index[tch->nr].func != gs && mob_index[tch->nr].func != gc &&
             GET_ALIGNMENT(tch) > max_good && !IS_IMMORTAL(tch) &&
             GET_RACE(tch) >= 4) {
             max_good = GET_ALIGNMENT(tch);
@@ -4588,7 +4587,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
         if (!IS_NPC(vict)) {
             return (FALSE);
         }
-        if (mob_index[vict->nr].func == rep_guy) {
+        if (mob_index[vict->nr].func == RepairGuy) {
             /*
              * we have the repair guy, and we can give him the stuff 
              */
