@@ -1495,47 +1495,6 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     }
 }
 
-/*
- * returns the real number of the monster with given virtual number
- */
-int real_mobile(int virtual)
-{
-    int             bot,
-                    top,
-                    mid;
-
-    bot = 0;
-    top = top_of_sort_mobt;
-
-    /*
-     * perform binary search on mob-table
-     */
-    for (;;) {
-        mid = (bot + top) / 2;
-
-        if ((mob_index + mid)->vnum == virtual) {
-            return (mid);
-        }
-        if (bot >= top) {
-            /*
-             * start unsorted search now
-             */
-            for (mid = top_of_sort_mobt; mid < top_of_mobt; mid++) {
-                if ((mob_index + mid)->vnum == virtual) {
-                    return (mid);
-                }
-            }
-            return (-1);
-        }
-        if ((mob_index + mid)->vnum > virtual) {
-            top = mid - 1;
-        } else {
-            bot = mid + 1;
-        }
-    }
-}
-
-
 void InitScripts(void)
 {
     char            buf[255],

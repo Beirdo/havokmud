@@ -3002,8 +3002,6 @@ void do_load_mobile(struct char_data *ch, char *argument, int number)
         if (number == top_of_mobt) {
             number = -1;
         }
-    } else {
-        number = real_mobile(number);
     }
     if (number < 0 || number >= top_of_mobt) {
         send_to_char("There is no such monster.\n\r", ch);
@@ -5855,9 +5853,6 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     /*
      * check for valid VNUM period
      */
-    if ((nr = real_mobile(vnum)) != -1) {
-        send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r", ch);
-    }
     sprintf(buf, "mobiles/%ld", vnum);
     if ((f = fopen(buf, "wt")) == NULL) {
         send_to_char("Can't write to disk now..try later.\n\r", ch);

@@ -674,10 +674,6 @@ void boot_the_shops(void)
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].temper1);
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].temper2);
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].keeper);
-
-            shop_index[number_of_shops].keeper =
-                real_mobile(shop_index[number_of_shops].keeper);
-
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].with_who);
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].in_room);
             fscanf(shop_f, "%d \n", &shop_index[number_of_shops].open1);

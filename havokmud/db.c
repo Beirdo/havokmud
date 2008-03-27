@@ -654,7 +654,6 @@ void renum_zone_table(int spec_zone)
         for (comm = 0; zone_table[zone].cmd[comm].command != 'S'; comm++) {
             switch ((cmd = zone_table[zone].cmd + comm)->command) {
             case 'M':
-                cmd->arg1 = real_mobile(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('M', "mobile", zone, comm);
                 }
@@ -663,14 +662,9 @@ void renum_zone_table(int spec_zone)
                 }
                 break;
             case 'C':
-                cmd->arg1 = real_mobile(cmd->arg1);
                 if (cmd->arg1 < 0) {
                     LOG_ZONE_ERROR('C', "mobile", zone, comm);
                 }
-#if 0
-                cmd->arg3 = real_room(cmd->arg3);
-
-#endif
                 if (cmd->arg3 < 0) {
                     LOG_ZONE_ERROR('C', "room", zone, comm);
                 }
@@ -3369,7 +3363,6 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile
                  */
-                i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].vnum)) {
                     /** @todo was REAL load */
@@ -3387,7 +3380,6 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile.  Charm them to follow prev.
                  */
-                i = real_mobile(i);
                 if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].vnum)) {
                     /** @todo was REAL load */

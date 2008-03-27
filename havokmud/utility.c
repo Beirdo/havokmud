@@ -5912,8 +5912,6 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
     for (i = m_start; i <= WORLD_SIZE; i++) {
         if ((mob = read_mobile(i))) {
 
-            nr = real_mobile(i);
-
             sprintf(buf, "mobiles/%ld", i);
             if ((vnum_f = fopen(buf, "wt")) == NULL) {
                 send_to_char("Can't write to disk now..try later.\n\r", ch);
@@ -5923,11 +5921,8 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
             fprintf(vnum_f, "#%ld\n", i);
             save_new_mobile_structure(mob, vnum_f);
             fclose(vnum_f);
-            if (nr == -1) {
-                insert_mobile(mob, i);
-            } else {
-                mob_index[nr].pos = -1;
-            }
+            insert_mobile(mob, i);
+
             fprintf(mob_file, "#%ld\n", i);
             save_new_mobile_structure(mob, mob_file);
             count++;

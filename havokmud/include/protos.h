@@ -522,7 +522,6 @@ void            ClearDeadBit(struct char_data *ch);
 void            reset_char(struct char_data *ch);
 void            clear_char(struct char_data *ch);
 void            init_char(struct char_data *ch);
-int             real_mobile(int virtual);
 int             load(void);
 void            gr(int s);
 int             workhours(void);
