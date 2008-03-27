@@ -3562,7 +3562,6 @@ void spell_group_heal(int level, struct char_data *ch,
 void spell_iron_skins(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
 void SetDefaultLang(struct char_data *ch);
-void insert_mobile(struct char_data *obj, long vnum);
 int opdir(int dir);
 int countPeople(int zonenr);
 int count_People_in_room(int room);

@@ -5863,7 +5863,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     write_mob_to_file(mob, f);
     fclose(f);
     if (nr == -1) {
-        insert_mobile(mob, vnum);
+        mobileInsert(mob, vnum);
     } else {
         mob_index[nr].pos = -1;
     }
