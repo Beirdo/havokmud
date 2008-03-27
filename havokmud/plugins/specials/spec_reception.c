@@ -428,6 +428,10 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
  * Routine Receptionist                                                    *
  ************************************************************************* */
 
+static short int recept_actions[] = { 23, 24, 36, 105, 106, 109, 111, 142,
+                                      147 };
+static int recept_action_count = NELEMENTS(recept_actions);
+
 int receptionist(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
@@ -436,7 +440,6 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     struct char_data *temp_char;
     struct room_data *rp;
     short int       saveroom;
-    short int       action_table[9];
     struct index_data *index;
 
     if (!ch->desc) {
@@ -446,25 +449,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    action_table[0] = 23;
-    action_table[1] = 24;
-    action_table[2] = 36;
-    action_table[3] = 105;
-    action_table[4] = 106;
-    action_table[5] = 109;
-    action_table[6] = 111;
-    action_table[7] = 142;
-    action_table[8] = 147;
-
-    /** @todo don't we have a function for this already?! */
-    for (temp_char = roomFindNum(ch->in_room)->people;
-         (temp_char) && (!recep); temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && (index = mobileIndex(temp_char->nr)) &&
-            index->func == receptionist) {
-            recep = temp_char;
-        }
-    }
-
+    recep = FindMobInRoomWithFunction(ch->in_room, receptionist);
     if (!recep) {
         Log("No_receptionist.\n\r");
         assert(0);
@@ -490,7 +475,8 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!number(0, 30)) {
-            do_action(recep, "", action_table[number(0, 8)]);
+            do_action(recep, "", 
+                      recept_actions[number(0, recept_action_count + 1)]);
         }
         return (FALSE);
     }
