@@ -3020,7 +3020,7 @@ void do_load_mobile(struct char_data *ch, char *argument, int number)
         return;
     }
     /** @todo this was a load REAL */
-    mob = read_mobile(number);
+    mob = mobileRead(number);
     char_to_room(mob, ch->in_room);
 
     act("$n makes a quaint, magical gesture with one hand.", TRUE, ch,
@@ -5686,7 +5686,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
         }
         for (i = 0; i < count; i++) {
             /** @todo was a REAL load */
-            mcopy = read_mobile(mob->nr);
+            mcopy = mobileRead(mob->nr);
             /*
              * clear
              */

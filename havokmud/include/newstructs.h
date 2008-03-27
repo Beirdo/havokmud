@@ -758,6 +758,33 @@ struct room_data {
     int             special;
 };
 
+/*
+ * for common mobile procedures: specials.proc
+ */
+typedef enum {
+    PROC_NONE = 0,      /* no proc */
+    PROC_SHOPKEEPER,    /* int shopkeeper() behaviour */
+    PROC_GUILDMASTER,   /* GM, dependant on class in MobAct & level */
+    PROC_SWALLOWER,     /* Swallows when not bashed */
+    PROC_DRAIN,         /* Drains when not bashed */
+    PROC_QUEST,         /* it's a give/receive mob */
+    PROC_OLD_BREATH,
+    PROC_FIRE_BREATH,
+    PROC_GAS_BREATH,
+    PROC_FROST_BREATH,
+    PROC_ACID_BREATH,
+    PROC_LIGHTNING_BREATH,
+    PROC_DEHYDRATION_BREATH,
+    PROC_VAPOR_BREATH,
+    PROC_SOUND_BREATH,
+    PROC_SHARD_BREATH,
+    PROC_SLEEP_BREATH,
+    PROC_LIGHT_BREATH,
+    PROC_DARK_BREATH,
+    PROC_RECEPTIONIST,
+    PROC_REPAIRGUY
+} CommonProcTypes_t;
+
 #endif
 
 /*

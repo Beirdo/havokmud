@@ -59,7 +59,6 @@ int             top_of_sort_mobt = 0;
 int             top_of_alloc_mobt = 99999;
 int             mob_tick_count = 0;
 int             top_of_scripts = 0;
-long            total_mbc = 0;
 
 
 BalancedBTree_t *mobileMasterTree  = NULL;
@@ -122,680 +121,79 @@ void mobileInsert(struct char_data *mob, long vnum)
  * read a mobile from MOB_FILE
  */
 
-/** @todo This is borked as it is now indexing mob_index using vnums.
- *  @todo rewrite to use trees/lists like the objects
- */
-struct char_data *read_mobile(int nr)
-{
-    FILE           *f;
-    struct char_data *mob;
-    int             i;
-    long            bc;
-    char            buf[100];
-    struct index_data *index;
+typedef struct {
+    int_func    func;
+    long        actbit;
+} CommonProcDef_t;
 
-    i = nr;
-    if (nr < 0) {
-        sprintf(buf, "Mobile (V) %d does not exist in database.", i);
+static CommonProcDef_t procDefs[] = {
+    { NULL, 0 },                    /* PROC_NONE */
+    { shopkeeper, 0 },              /* PROC_SHOPKEEPER */
+    { generic_guildmaster, 0 },     /* PROC_GUILDMASTER */
+    { Tyrannosaurus_swallower, 0 }, /* PROC_SWALLOWER */
+    { NULL, 0 },                    /* PROC_DRAIN */
+    { QuestMobProc, 0 },            /* PROC_QUEST */
+    { BreathWeapon, 0 },            /* PROC_OLD_BREATH */
+    { FireBreather, 0 },            /* PROC_FIRE_BREATH */
+    { GasBreather, 0 },             /* PROC_GAS_BREATH */
+    { FrostBreather, 0 },           /* PROC_FROST_BREATH */
+    { AcidBreather, 0 },            /* PROC_ACID_BREATH */
+    { LightningBreather, 0 },       /* PROC_LIGHTNING_BREATH */
+    { DehydBreather, 0 },           /* PROC_DEHYDRATION_BREATH */
+    { VaporBreather, 0 },           /* PROC_VAPOR_BREATH */
+    { SoundBreather, 0 },           /* PROC_SOUND_BREATH */
+    { ShardBreather, 0 },           /* PROC_SHARD_BREATH */
+    { SleepBreather, 0 },           /* PROC_SLEEP_BREATH */
+    { LightBreather, 0 },           /* PROC_LIGHT_BREATH */
+    { DarkBreather, 0 },            /* PROC_DARK_BREATH */
+    { receptionist, ACT_SENTINEL }, /* PROC_RECEPTIONIST */
+    { RepairGuy, 0 }                /* PROC_REPAIRGUY */
+};
+static int procDefCount = NELEMENTS(procDefs);
+
+struct char_data *mobileRead(int nr)
+{
+    struct char_data   *mob;
+    struct index_data  *index;
+    int                 procNum;
+
+    index = mobileIndex( nr );
+    if( !index ) {
+        Log("Mobile (V) %d does not exist in database.", nr);
         return( NULL );
     }
 
     CREATE(mob, struct char_data, 1);
-
     if (!mob) {
-        Log("Cannot create mob?! db.c read_mobile");
-        return (FALSE);
+        Log("Cannot create mob?!");
+        return( NULL );
     }
 
-    bc = sizeof(struct char_data);
     clear_char(mob);
-    mob->nr = nr;
 
-    index = mobileIndex(nr);
-
-    /*
-     * mobile in external file
-     */
-    sprintf(buf, "%s/%d", MOB_DIR, nr);
-    if ((f = fopen(buf, "rt")) == NULL) {
-        Log("can't open mobile file for mob %ld", nr);
-        free_char(mob);
-        return (0);
+#if 0
+    if( !db_read_mobile(mob, nr) ) {
+        free_char( mob );
+        return( NULL );
     }
-    fscanf(f, "#%*d\n");
-
-    bc += read_mob_from_new_file(mob, f);
-    fclose(f);
-
-    total_mbc += bc;
-    mob_count++;
+#endif
 
     /*
      * assign common proc flags
      */
-    /** @todo make this a table rather than a switch */
-    switch( mob->specials.proc ) {
-    case PROC_QUEST:
-        index->func = *QuestMobProc;
-        break;
-    case PROC_SHOPKEEPER:
-        index->func = *shopkeeper;
-        break;
-    case PROC_GUILDMASTER:
-        index->func = *generic_guildmaster;
-        break;
-    case PROC_SWALLOWER:
-        index->func = *Tyrannosaurus_swallower;
-        break;
-    case PROC_OLD_BREATH:
-        index->func = *BreathWeapon;
-        break;
-    case PROC_FIRE_BREATH:
-        index->func = *FireBreather;
-        break;
-    case PROC_GAS_BREATH:
-        index->func = *GasBreather;
-        break;
-    case PROC_FROST_BREATH:
-        index->func = *FrostBreather;
-        break;
-    case PROC_ACID_BREATH:
-        index->func = *AcidBreather;
-        break;
-    case PROC_LIGHTNING_BREATH:
-        index->func = *LightningBreather;
-        break;
-    case PROC_DEHYDRATION_BREATH:
-        index->func = *DehydBreather;
-        break;
-    case PROC_VAPOR_BREATH:
-        index->func = *VaporBreather;
-        break;
-    case PROC_SOUND_BREATH:
-        index->func = *SoundBreather;
-        break;
-    case PROC_SHARD_BREATH:
-        index->func = *ShardBreather;
-        break;
-    case PROC_SLEEP_BREATH:
-        index->func = *SleepBreather;
-        break;
-    case PROC_LIGHT_BREATH:
-        index->func = *LightBreather;
-        break;
-    case PROC_DARK_BREATH:
-        index->func = *DarkBreather;
-        break;
-    case PROC_RECEPTIONIST:
-        index->func = *receptionist;
-        SET_BIT(mob->specials.act, ACT_SENTINEL);
-        break;
-    case PROC_REPAIRGUY:
-        index->func = *RepairGuy;
-        break;
-    case 0:
-    default:
-        break;
+    procNum = mob->specials.proc;
+    if( procNum >= PROC_NONE && procNum < procDefCount ) {
+        if( procDefs[procNum].func ) {
+            index->func = procDefs[procNum].func;
+        }
+        SET_BIT( mob->specials.act, procDefs[procNum].actbit );
     }
+
+    mob_count++;
 
     return (mob);
 }
 
-int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
-{
-    int             savebase = 40;
-    int             i,
-                    nr;
-    long            tmp,
-                    tmp2,
-                    tmp3,
-                    bc = 0;
-    char            letter;
-    struct index_data *index;
-
-    if( !mob ) {
-        return( -1 );
-    }
-    
-    memset( mob, 0, sizeof(struct char_data) );
-
-    nr = mob->nr;
-    mob->player.name = fread_string(mob_fi);
-    if (*mob->player.name) {
-        bc += strlen(mob->player.name);
-    }
-    mob->player.short_descr = fread_string(mob_fi);
-    if (*mob->player.short_descr) {
-        bc += strlen(mob->player.short_descr);
-    }
-    mob->player.long_descr = fread_string(mob_fi);
-    if (*mob->player.long_descr) {
-        bc += strlen(mob->player.long_descr);
-    }
-    mob->player.description = fread_string(mob_fi);
-    if (mob->player.description && *mob->player.description) {
-        bc += strlen(mob->player.description);
-    }
-    mob->player.title = 0;
-
-    /*
-     *** Numeric data ***
-     */
-
-    mob->mult_att = 1.0;
-    mob->specials.spellfail = 101;
-
-    fscanf(mob_fi, "%ld ", &tmp);
-    mob->specials.act = tmp;
-    SET_BIT(mob->specials.act, ACT_ISNPC);
-
-    fscanf(mob_fi, " %ld ", &tmp);
-    mob->specials.affected_by = tmp;
-
-    fscanf(mob_fi, " %ld ", &tmp);
-    mob->specials.alignment = tmp;
-
-    tmp = 0;
-    tmp2 = 0;
-    tmp3 = 0;
-
-    mob->player.class = CLASS_WARRIOR;
-
-    fscanf(mob_fi, " %c ", &letter);
-
-    if (letter == 'S') {
-        fscanf(mob_fi, "\n");
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
-
-        mob->abilities.str = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.intel = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.wis = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.dex = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.con = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.chr = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.hitroll = 20 - tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-
-        if (tmp > 10 || tmp < -10) {
-            tmp /= 10;
-        }
-        mob->points.armor = 10 * tmp;
-
-        fscanf(mob_fi, " %ldd%ld+%ld ", &tmp, &tmp2, &tmp3);
-        mob->points.max_hit = dice(tmp, tmp2) + tmp3;
-        mob->points.hit = mob->points.max_hit;
-
-        fscanf(mob_fi, " %ldd%ld+%ld \n", &tmp, &tmp2, &tmp3);
-        mob->points.damroll = tmp3;
-        mob->specials.damnodice = tmp;
-        mob->specials.damsizedice = tmp2;
-
-        mob->points.mana = 10;
-        mob->points.max_mana = 10;
-
-        mob->points.move = 50;
-        mob->points.max_move = 50;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        if (tmp == -1) {
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            tmp = MAX(tmp, GET_LEVEL(mob, WARRIOR_LEVEL_IND) *
-                                          mob->points.max_hit);
-            GET_EXP(mob) = tmp;
-
-            fscanf(mob_fi, " %ld \n", &tmp);
-            GET_RACE(mob) = tmp;
-            if (IsGiant(mob)) {
-                mob->abilities.str += number(1, 4);
-            }
-            if (IsSmall(mob)) {
-                mob->abilities.str -= 1;
-            }
-        } else {
-            mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
-
-            fscanf(mob_fi, " %ld \n", &tmp);
-            if (tmp >= 0) {
-                GET_EXP(mob) = (DetermineExp(mob, tmp) + mob->points.gold);
-            } else {
-                GET_EXP(mob) = -tmp;
-            }
-            GET_EXP(mob) = tmp;
-        }
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.position = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.default_pos = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        if (tmp < 3) {
-            mob->player.sex = tmp;
-            mob->immune = 0;
-            mob->M_immune = 0;
-            mob->susc = 0;
-        } else if (tmp < 6) {
-            mob->player.sex = (tmp - 3);
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->immune = tmp;
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->M_immune = tmp;
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->susc = tmp;
-        } else {
-            mob->player.sex = 0;
-            mob->immune = 0;
-            mob->M_immune = 0;
-            mob->susc = 0;
-        }
-
-        fscanf(mob_fi, "\n");
-
-        mob->player.class = 0;
-
-        mob->player.time.birth = time(0);
-        mob->player.time.played = 0;
-        mob->player.time.logon = time(0);
-        mob->player.weight = 200;
-        mob->player.height = 198;
-
-        for (i = 0; i < 3; i++) {
-            GET_COND(mob, i) = -1;
-        }
-        for (i = 0; i < MAX_SAVES; i++) {
-#if 0
-            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob,
-            WARRIOR_LEVEL_IND), 2);
-#endif
-            savebase = 40;
-            if (number(0, 1)) {
-                savebase += number(0, 3);
-            } else {
-                savebase -= number(0, 3);
-            }
-            mob->specials.apply_saving_throw[i] = MAX(savebase -
-                    (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
-        }
-
-    } else if ((letter == 'A') || (letter == 'N') || (letter == 'B') ||
-               (letter == 'L')) {
-        if ((letter == 'A') || (letter == 'B') || (letter == 'L')) {
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->mult_att = (float) tmp;
-        }
-
-        fscanf(mob_fi, "\n");
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
-
-        mob->abilities.str = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.intel = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.wis = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.dex = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.con = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-        mob->abilities.chr = 9 + number(1, (MAX(1, tmp / 5 - 1)));
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.hitroll = 20 - tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.armor = 10 * tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.max_hit =
-            dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8) + tmp;
-        mob->points.hit = mob->points.max_hit;
-#if 0
-        HpBonus = mob->points.max_hit;
-#endif
-        fscanf(mob_fi, " %ldd%ld+%ld \n", &tmp, &tmp2, &tmp3);
-        mob->points.damroll = tmp3;
-        mob->specials.damnodice = tmp;
-        mob->specials.damsizedice = tmp2;
-
-        mob->points.mana = 10;
-        mob->points.max_mana = 10;
-
-        mob->points.move = 50;
-        mob->points.max_move = 50;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-
-        if (tmp == -1) {
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            if (tmp >= 0) {
-                GET_EXP(mob) = (DetermineExp(mob, tmp) + mob->points.gold);
-            } else {
-                GET_EXP(mob) = -tmp;
-            }
-            fscanf(mob_fi, " %ld ", &tmp);
-            GET_RACE(mob) = tmp;
-
-            if (IsGiant(mob)) {
-                mob->abilities.str += number(1, 4);
-            }
-            if (IsSmall(mob)) {
-                mob->abilities.str -= 1;
-            }
-        } else {
-            mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
-
-            /*
-             * this is where the new exp will come into play
-             */
-            fscanf(mob_fi, " %ld \n", &tmp);
-            if (tmp >= 0) {
-                GET_EXP(mob) = (DetermineExp(mob, tmp) + mob->points.gold);
-            } else {
-                GET_EXP(mob) = -tmp;
-            }
-        }
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.position = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.default_pos = tmp;
-
-        fscanf(mob_fi, " %ld \n", &tmp);
-        if (tmp < 3) {
-            mob->player.sex = tmp;
-            mob->immune = 0;
-            mob->M_immune = 0;
-            mob->susc = 0;
-        } else if (tmp < 6) {
-            mob->player.sex = (tmp - 3);
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->immune = tmp;
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->M_immune = tmp;
-
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->susc = tmp;
-        } else {
-            mob->player.sex = 0;
-            mob->immune = 0;
-            mob->M_immune = 0;
-            mob->susc = 0;
-        }
-
-        /*
-         *   read in the sound string for a mobile
-         */
-
-        if (letter == 'L') {
-            mob->player.sounds = fread_string(mob_fi);
-            if (mob->player.sounds && *mob->player.sounds) {
-                bc += strlen(mob->player.sounds);
-            }
-            mob->player.distant_snds = fread_string(mob_fi);
-            if (mob->player.distant_snds && *mob->player.distant_snds) {
-                bc += strlen(mob->player.distant_snds);
-            }
-        } else {
-            mob->player.sounds = 0;
-            mob->player.distant_snds = 0;
-        }
-
-        if (letter == 'B') {
-            SET_BIT(mob->specials.act, ACT_HUGE);
-        }
-
-        mob->player.class = 0;
-
-        mob->player.time.birth = time(0);
-        mob->player.time.played = 0;
-        mob->player.time.logon = time(0);
-        mob->player.weight = 200;
-        mob->player.height = 198;
-
-        for (i = 0; i < 3; i++) {
-            GET_COND(mob, i) = -1;
-        }
-        for (i = 0; i < MAX_SAVES; i++) {
-#if 0
-            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob,
-            WARRIOR_LEVEL_IND), 2);
-#endif
-            savebase = 40;
-            if (number(0, 1)) {
-                savebase += number(0, 3);
-            } else {
-                savebase -= number(0, 3);
-            }
-            mob->specials.apply_saving_throw[i] = MAX(savebase -
-                    (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
-        }
-
-    } else {
-        /*
-         * The old monsters are down below here
-         */
-
-        fscanf(mob_fi, "\n");
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->abilities.str = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->abilities.intel = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->abilities.wis = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->abilities.dex = tmp;
-
-        fscanf(mob_fi, " %ld \n", &tmp);
-        mob->abilities.con = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        fscanf(mob_fi, " %ld ", &tmp2);
-
-        mob->points.max_hit = number(tmp, tmp2);
-        mob->points.hit = mob->points.max_hit;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.armor = 10 * tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.mana = tmp;
-        mob->points.max_mana = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.move = tmp;
-        mob->points.max_move = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->points.gold = (int)((float) ((number(900, 1100) * tmp) / 1000));
-
-        fscanf(mob_fi, " %ld \n", &tmp);
-        if (tmp >= 0) {
-            GET_EXP(mob) = (DetermineExp(mob, tmp) + mob->points.gold);
-        } else {
-            GET_EXP(mob) = -tmp;
-        }
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.position = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->specials.default_pos = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->player.sex = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->player.class = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->player.time.birth = time(0);
-        mob->player.time.played = 0;
-        mob->player.time.logon = time(0);
-
-        fscanf(mob_fi, " %ld ", &tmp);
-        mob->player.weight = tmp;
-
-        fscanf(mob_fi, " %ld \n", &tmp);
-        mob->player.height = tmp;
-
-        for (i = 0; i < 3; i++) {
-            fscanf(mob_fi, " %ld ", &tmp);
-            GET_COND(mob, i) = tmp;
-        }
-        fscanf(mob_fi, " \n ");
-
-        for (i = 0; i < MAX_SAVES; i++) {
-            fscanf(mob_fi, " %ld ", &tmp);
-            mob->specials.apply_saving_throw[i] = tmp;
-        }
-
-        fscanf(mob_fi, " \n ");
-
-        /*
-         * Set the damage as some standard 1d4
-         */
-        mob->points.damroll = 0;
-        mob->specials.damnodice = 1;
-        mob->specials.damsizedice = 6;
-
-        /*
-         * Calculate THAC0 as a formular of Level
-         */
-        mob->points.hitroll = MAX(1, GET_LEVEL(mob, WARRIOR_LEVEL_IND) - 3);
-    }
-
-    mob->tmpabilities = mob->abilities;
-
-    for (i = 0; i < MAX_WEAR; i++) {
-        /*
-         * Initialisering Ok
-         */
-        mob->equipment[i] = NULL;
-    }
-
-#if 0
-    mob->desc = 0;
-#endif
-
-    if (!IS_SET(mob->specials.act, ACT_ISNPC)) {
-        SET_BIT(mob->specials.act, ACT_ISNPC);
-    }
-    mob->generic = 0;
-    mob->commandp = 0;
-    mob->commandp2 = 0;
-    mob->waitp = 0;
-
-    mob->last_tell = NULL;
-
-    /*
-     * Check to see if associated with a script, if so, set it up
-     */
-    if (IS_SET(mob->specials.act, ACT_SCRIPT)) {
-        REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
-    }
-
-    /** @todo move the script structure into the mob's structure or at least
-     *        onto its own tree, no linear searching!
-     */
-    for (i = 0; i < top_of_scripts; i++) {
-        if (script_data[i].vnum == nr) {
-            SET_BIT(mob->specials.act, ACT_SCRIPT);
-            mob->script = i;
-            break;
-        }
-    }
-
-    /*
-     * tell the spec_proc (if there is one) that we've been born
-     * insert in list
-     */
-
-    mob->next = character_list;
-    character_list = mob;
-
-#ifdef LOW_GOLD
-    if (mob->points.gold >= 50) {
-        mob->points.gold /= 5;
-    } else if (mob->points.gold < 10) {
-        mob->points.gold = 0;
-    }
-#endif
-
-    /*
-     * Meh this creates such a lot of spam
-     */
-#if 0
-    if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
-        char buf[200];
-        Log("%s has gold > level * 1500 (%d)", mob->player.short_descr,
-            mob->points.gold);
-    }
-#endif
-    /*
-     * set up things that all members of the race have
-     */
-    SetRacialStuff(mob);
-    SpaceForSkills(mob);
-    SetDefaultLang(mob);
-
-    /*
-     * change exp for wimpy mobs (lower)
-     */
-    if (IS_SET(mob->specials.act, ACT_WIMPY)) {
-        GET_EXP(mob) -= GET_EXP(mob) / 10;
-    }
-    /*
-     * change exp for agressive mobs (higher)
-     */
-    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
-        GET_EXP(mob) += GET_EXP(mob) / 10;
-        /*
-         * big bonus for fully aggressive mobs for now
-         */
-        if (!IS_SET(mob->specials.act, ACT_WIMPY)
-            || IS_SET(mob->specials.act, ACT_META_AGG)) {
-            GET_EXP(mob) += (GET_EXP(mob) / 2);
-        }
-    }
-
-    /*
-     * set up distributed movement system
-     */
-    mob->specials.tick = mob_tick_count++;
-
-    if (mob_tick_count == TICK_WRAP_COUNT) {
-        mob_tick_count = 0;
-    }
-    index = mobileIndex(nr);
-    index->number++;
-
-#ifdef BYTE_COUNT
-    fprintf(stderr, "Mobile [%d]: byte count: %d\n", nr, bc);
-#endif
-    return (bc);
-}
 
 int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
 {

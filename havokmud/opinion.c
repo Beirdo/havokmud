@@ -322,7 +322,7 @@ void ShowHates(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->hatefield, HATE_VNUM)) {
-        mob = read_mobile( ch->hates.vnum );
+        mob = mobileRead( ch->hates.vnum );
         if( mob ) {
             strcpy( buf2, GET_NAME(mob) );
             extract_char(mob);
@@ -457,7 +457,7 @@ void ShowFears(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->fearfield, HATE_VNUM)) {
-        mob = read_mobile( ch->fears.vnum );
+        mob = mobileRead( ch->fears.vnum );
         if( mob ) {
             strcpy( buf2, GET_NAME(mob) );
             extract_char(mob);

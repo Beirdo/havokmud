@@ -503,7 +503,6 @@ void            build_player_index(void);
 void            boot_saved_zones(void);
 void            renum_zone_table(int spec_zone);
 void            boot_zones(void);
-struct char_data *read_mobile(int nr);
 int             init_counter(void);
 void            zone_update(void);
 void            reset_zone(int zone, int cmd);

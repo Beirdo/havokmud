@@ -1144,7 +1144,7 @@ void reset_zone(int zone, int cmd)
                 if (index && index->number < ZCMD.arg2 &&
                     !fighting_in_room(ZCMD.arg3) && !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
-                    mob = read_mobile(ZCMD.arg1);
+                    mob = mobileRead(ZCMD.arg1);
                     if (!mob) {
                         log_sev("Error while loading mob in reset_zone(read)",
                                 1);
@@ -1177,7 +1177,7 @@ void reset_zone(int zone, int cmd)
                 if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
-                    mob = read_mobile(ZCMD.arg1);
+                    mob = mobileRead(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
                         last_cmd = 0;
@@ -1525,7 +1525,7 @@ void reset_zone(int zone, int cmd)
                 if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
-                    mob = read_mobile(ZCMD.arg1);
+                    mob = mobileRead(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Read)", 1);
                         last_cmd = 0;
@@ -1555,7 +1555,7 @@ void reset_zone(int zone, int cmd)
                 if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
-                    mob = read_mobile(ZCMD.arg1);
+                    mob = mobileRead(ZCMD.arg1);
                     if (!mob) {
                         log_sev("error loading mob in Reset_zone(Charm)", 1);
                         last_cmd = 0;
@@ -3371,7 +3371,7 @@ void ReadTextZone(FILE * fl)
                 index = mobileIndex(i);
                 if (index && index->number < j && !CheckKillFile(i)) {
                     /** @todo was REAL load */
-                    mob = read_mobile(i);
+                    mob = mobileRead(i);
                     char_to_room(mob, k);
 
                     last_cmd = 1;
@@ -3388,7 +3388,7 @@ void ReadTextZone(FILE * fl)
                 index = mobileIndex(i);
                 if (index && index->number < j && !CheckKillFile(i)) {
                     /** @todo was REAL load */
-                    mob = read_mobile(i);
+                    mob = mobileRead(i);
                     if (master) {
                         char_to_room(mob, master->in_room);
                         /*

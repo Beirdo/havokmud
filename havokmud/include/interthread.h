@@ -345,6 +345,7 @@ void PrintLimitedItems(void);
 void initializeMobiles( void );
 struct index_data *mobileIndex( int vnum );
 void mobileInsert(struct char_data *obj, long vnum);
+struct char_data *mobileRead(int nr);
 
 /*
  * keywords.c

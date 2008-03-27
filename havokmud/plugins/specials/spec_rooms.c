@@ -406,7 +406,7 @@ int pet_shops(struct char_data *ch, int cmd, char *arg,
         GET_GOLD(ch) -= GET_EXP(pet) * 10;
 
         /** @todo Fix this to use VIRTUAL.  pet->nr is a REAL */
-        pet = read_mobile(pet->nr);
+        pet = mobileRead(pet->nr);
         GET_EXP(pet) = 0;
         SET_BIT(pet->specials.affected_by, AFF_CHARM);
 
@@ -923,7 +923,7 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         /*
          * load the mob at the same lev as char 
          */
-        mob = read_mobile(MONK_MOB + GET_LEVEL(ch, MONK_LEVEL_IND) - 10);
+        mob = mobileRead(MONK_MOB + GET_LEVEL(ch, MONK_LEVEL_IND) - 10);
 
         if (!mob) {
             send_to_char("The fight is called off.. Go home.\n\r", ch);
@@ -1013,7 +1013,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         /*
          * load the mob at the same lev as char 
          */
-        mob = read_mobile(DRUID_MOB + GET_LEVEL(ch, DRUID_LEVEL_IND) - 10);
+        mob = mobileRead(DRUID_MOB + GET_LEVEL(ch, DRUID_LEVEL_IND) - 10);
 
         if (!mob) {
             send_to_char("The fight is called off. Go home.\n\r", ch);
@@ -2317,7 +2317,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         } 
 
-        if ((gnome = read_mobile(GNOME_MOB))) {
+        if ((gnome = mobileRead(GNOME_MOB))) {
             send_to_char("You courteously knock on the little door, and it "
                          "opens.\n\r", ch);
             char_to_room(gnome, ch->in_room);

@@ -3984,7 +3984,7 @@ struct char_data *CreateAMob(struct char_data *mob,
      *  MobAdjust bitflags 1 = make follower, 2 = guard on, 4 =
      *  attack a random char (if no char, be aggressive)
      */
-    mobtmp = read_mobile(vmobnum);
+    mobtmp = mobileRead(vmobnum);
     if (!mobtmp) {
         return NULL;
     }

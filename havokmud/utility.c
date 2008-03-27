@@ -5900,7 +5900,7 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
     send_to_char(buf, ch);
 
     for (i = m_start; i <= WORLD_SIZE; i++) {
-        if ((mob = read_mobile(i))) {
+        if ((mob = mobileRead(i))) {
 
             sprintf(buf, "mobiles/%ld", i);
             if ((vnum_f = fopen(buf, "wt")) == NULL) {

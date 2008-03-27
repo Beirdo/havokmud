@@ -1022,7 +1022,7 @@ int replicant(struct char_data *ch, int cmd, char *arg,
         act("Drops of $n's blood hit the ground, and spring up into another "
             "one!", TRUE, ch, 0, 0, TO_ROOM);
         /** @todo was REAL load */
-        mob = read_mobile(ch->nr);
+        mob = mobileRead(ch->nr);
         char_to_room(mob, ch->in_room);
         act("Two undamaged opponents face you now.", TRUE, ch, 0, 0, TO_ROOM);
         GET_HIT(ch) = GET_MAX_HIT(ch);
@@ -2508,10 +2508,10 @@ int keystone(struct char_data *ch, int cmd, char *arg,
 
         for (i = START_ROOM; i < END_ROOM; ++i) {
             if (number(0, 2) == 0) {
-                ghost = read_mobile(GhostSoldier);
+                ghost = mobileRead(GhostSoldier);
                 char_to_room(ghost, i);
             } else if (number(0, 7) == 0) {
-                ghost = read_mobile(GhostLieutenant);
+                ghost = mobileRead(GhostLieutenant);
                 char_to_room(ghost, i);
             }
         }
