@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: object_data.c 1670 2008-03-26 22:53:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2008 Gavin Hurlbut
 * All rights reserved
@@ -44,7 +44,7 @@
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
-    "$Id: object_data.c 1670 2008-03-26 22:53:22Z gjhurlbu $";
+    "$Id$";
 
 /**
  * @file
