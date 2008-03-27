@@ -127,6 +127,7 @@ void mobileInsert(struct char_data *mob, long vnum)
  */
 struct char_data *read_mobile(int nr)
 {
+    FILE           *f;
     struct char_data *mob;
     int             i;
     long            bc;
@@ -155,7 +156,7 @@ struct char_data *read_mobile(int nr)
     /*
      * mobile in external file
      */
-    sprintf(buf, "%s/%ld", MOB_DIR, nr);
+    sprintf(buf, "%s/%d", MOB_DIR, nr);
     if ((f = fopen(buf, "rt")) == NULL) {
         Log("can't open mobile file for mob %ld", nr);
         free_char(mob);
