@@ -22,7 +22,6 @@
 #define OBJ_FILE_FREE "\0\0\0"
 
 extern struct room_data *world;
-extern struct index_data *mob_index;
 extern int      top_of_objt;
 extern struct player_index_element *player_table;
 extern int      top_of_p_table;
@@ -438,6 +437,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     short int       saveroom;
     short int       action_table[9];
+    struct index_data *index;
 
     if (!ch->desc) {
         /* 
@@ -456,10 +456,11 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     action_table[7] = 142;
     action_table[8] = 147;
 
+    /** @todo don't we have a function for this already?! */
     for (temp_char = roomFindNum(ch->in_room)->people;
          (temp_char) && (!recep); temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && 
-            mob_index[temp_char->nr].func == receptionist) {
+        if (IS_MOB(temp_char) && (index = mobileIndex(temp_char->nr)) &&
+            index->func == receptionist) {
             recep = temp_char;
         }
     }

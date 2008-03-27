@@ -54,7 +54,6 @@ static char ident[] _UNUSED_ =
 #define MOB_DIR "mobiles"
 FILE           *mob_f;           /* file containing mob prototypes */
 
-struct index_data *mob_index;   /* index table for mobile file */
 int             top_of_mobt = 0;        /* top of mobile index table */
 int             top_of_sort_mobt = 0;
 int             top_of_alloc_mobt = 99999;
@@ -132,6 +131,7 @@ struct char_data *read_mobile(int nr)
     int             i;
     long            bc;
     char            buf[100];
+    struct index_data *index;
 
     i = nr;
     if (nr < 0) {
@@ -150,27 +150,21 @@ struct char_data *read_mobile(int nr)
     clear_char(mob);
     mob->nr = nr;
 
+    index = mobileIndex(nr);
+
     /*
      * mobile in external file
      */
-#if 0
-    if (mob_index[nr].pos == -1) {
-        sprintf(buf, "%s/%ld", MOB_DIR, nr);
-        if ((f = fopen(buf, "rt")) == NULL) {
-            Log("can't open mobile file for mob %ld", nr);
-            free_char(mob);
-            return (0);
-        }
-        fscanf(f, "#%*d\n");
-
-        bc += read_mob_from_new_file(mob, f);
-        fclose(f);
-    } else {
-        rewind(mob_f);
-        fseek(mob_f, mob_index[nr].pos, 0);
-        bc += read_mob_from_new_file(mob, mob_f);
+    sprintf(buf, "%s/%ld", MOB_DIR, nr);
+    if ((f = fopen(buf, "rt")) == NULL) {
+        Log("can't open mobile file for mob %ld", nr);
+        free_char(mob);
+        return (0);
     }
-#endif
+    fscanf(f, "#%*d\n");
+
+    bc += read_mob_from_new_file(mob, f);
+    fclose(f);
 
     total_mbc += bc;
     mob_count++;
@@ -181,62 +175,62 @@ struct char_data *read_mobile(int nr)
     /** @todo make this a table rather than a switch */
     switch( mob->specials.proc ) {
     case PROC_QUEST:
-        mob_index[mob->nr].func = *QuestMobProc;
+        index->func = *QuestMobProc;
         break;
     case PROC_SHOPKEEPER:
-        mob_index[mob->nr].func = *shopkeeper;
+        index->func = *shopkeeper;
         break;
     case PROC_GUILDMASTER:
-        mob_index[mob->nr].func = *generic_guildmaster;
+        index->func = *generic_guildmaster;
         break;
     case PROC_SWALLOWER:
-        mob_index[mob->nr].func = *Tyrannosaurus_swallower;
+        index->func = *Tyrannosaurus_swallower;
         break;
     case PROC_OLD_BREATH:
-        mob_index[mob->nr].func = *BreathWeapon;
+        index->func = *BreathWeapon;
         break;
     case PROC_FIRE_BREATH:
-        mob_index[mob->nr].func = *FireBreather;
+        index->func = *FireBreather;
         break;
     case PROC_GAS_BREATH:
-        mob_index[mob->nr].func = *GasBreather;
+        index->func = *GasBreather;
         break;
     case PROC_FROST_BREATH:
-        mob_index[mob->nr].func = *FrostBreather;
+        index->func = *FrostBreather;
         break;
     case PROC_ACID_BREATH:
-        mob_index[mob->nr].func = *AcidBreather;
+        index->func = *AcidBreather;
         break;
     case PROC_LIGHTNING_BREATH:
-        mob_index[mob->nr].func = *LightningBreather;
+        index->func = *LightningBreather;
         break;
     case PROC_DEHYDRATION_BREATH:
-        mob_index[mob->nr].func = *DehydBreather;
+        index->func = *DehydBreather;
         break;
     case PROC_VAPOR_BREATH:
-        mob_index[mob->nr].func = *VaporBreather;
+        index->func = *VaporBreather;
         break;
     case PROC_SOUND_BREATH:
-        mob_index[mob->nr].func = *SoundBreather;
+        index->func = *SoundBreather;
         break;
     case PROC_SHARD_BREATH:
-        mob_index[mob->nr].func = *ShardBreather;
+        index->func = *ShardBreather;
         break;
     case PROC_SLEEP_BREATH:
-        mob_index[mob->nr].func = *SleepBreather;
+        index->func = *SleepBreather;
         break;
     case PROC_LIGHT_BREATH:
-        mob_index[mob->nr].func = *LightBreather;
+        index->func = *LightBreather;
         break;
     case PROC_DARK_BREATH:
-        mob_index[mob->nr].func = *DarkBreather;
+        index->func = *DarkBreather;
         break;
     case PROC_RECEPTIONIST:
-        mob_index[mob->nr].func = *receptionist;
+        index->func = *receptionist;
         SET_BIT(mob->specials.act, ACT_SENTINEL);
         break;
     case PROC_REPAIRGUY:
-        mob_index[mob->nr].func = *RepairGuy;
+        index->func = *RepairGuy;
         break;
     case 0:
     default:
@@ -256,6 +250,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
                     tmp3,
                     bc = 0;
     char            letter;
+    struct index_data *index;
 
     if( !mob ) {
         return( -1 );
@@ -792,7 +787,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     if (mob_tick_count == TICK_WRAP_COUNT) {
         mob_tick_count = 0;
     }
-    mob_index[nr].number++;
+    index = mobileIndex(nr);
+    index->number++;
 
 #ifdef BYTE_COUNT
     fprintf(stderr, "Mobile [%d]: byte count: %d\n", nr, bc);
@@ -810,6 +806,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
                     tmp3,
                     bc = 0;
     float           att;
+    struct index_data *index;
 
     nr = mob->nr;
 
@@ -1064,13 +1061,15 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     if (mob_tick_count == TICK_WRAP_COUNT) {
         mob_tick_count = 0;
     }
-    mob_index[nr].number++;
+    index = mobileIndex(nr);
+    index->number++;
 
 #ifdef BYTE_COUNT
     fprintf(stderr, "Mobile [%d]: byte count: %d\n", nr, bc);
 #endif
     return (bc);
 }
+
 /*
  * ---------- Start of write_mob_to_file ----------
  */

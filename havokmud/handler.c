@@ -15,7 +15,6 @@ extern struct hash_header room_db;
 extern struct room_data *room_db;
 #endif
 extern struct char_data *character_list;
-extern struct index_data *mob_index;
 extern struct descriptor_data *descriptor_list;
 extern struct str_app_type str_app[];
 extern struct dex_app_type dex_app[];
@@ -1592,6 +1591,7 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
 
     extern long     mob_count;
     extern struct char_data *combat_list;
+    struct index_data *index;
 
     if (!IS_NPC(ch) && !ch->desc) {
         for (t_desc = descriptor_list; t_desc; t_desc = t_desc->next) {
@@ -1787,10 +1787,8 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
 
     if (IS_NPC(ch)) {
         if (ch->nr > -1) {
-            /* 
-             * if mobile 
-             */
-            mob_index[ch->nr].number--;
+            index = mobileIndex(ch->nr);
+            index->number--;
         }
         FreeHates(ch);
         FreeFears(ch);

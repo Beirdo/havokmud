@@ -4119,19 +4119,26 @@ void do_resize(struct char_data *ch, char *arg, int cmd)
 int MobLevBonus(struct char_data *ch)
 {
     int             t = 0;
+    int_func        func;
+    struct index_data *index;
 
-    if (mob_index[ch->nr].func == magic_user) {
-        t += 5;
-	}
-    if (mob_index[ch->nr].func == BreathWeapon) {
-        t += 7;
-	}
-    if (mob_index[ch->nr].func == fighter) {
-        t += 3;
-	}
-    if (mob_index[ch->nr].func == snake) {
-        t += 3;
-	}
+    index = mobileIndex(ch->nr);
+    if( index ) {
+        func = index->func;
+
+        if (func == magic_user) {
+            t += 5;
+        }
+        if (func == BreathWeapon) {
+            t += 7;
+        }
+        if (func == fighter) {
+            t += 3;
+        }
+        if (func == snake) {
+            t += 3;
+        }
+    }
 
     t += (ch->mult_att - 1) * 3;
 

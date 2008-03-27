@@ -307,9 +307,10 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
          */
         for (p = room->people; p; p = p->next_in_room) {
             if (IS_NPC(p)) {
+                index = mobileIndex(p->nr);
                 cmd = 'M';
                 arg1 = MobVnum(p);
-                arg2 = mob_index[p->nr].number;
+                arg2 = index->number;
                 arg3 = i;
                 Zwrite(fp, cmd, 0, arg1, arg2, arg3, p->player.short_descr);
 

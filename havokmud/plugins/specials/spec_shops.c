@@ -696,13 +696,20 @@ void boot_the_shops(void)
 void assign_the_shopkeepers(void)
 {
     int             temp1;
+    struct index_data *index;
 
     for (temp1 = 0; temp1 < number_of_shops; temp1++) {
         if (shop_index[temp1].keeper == -1) {
             Log("Shop in room %d has NO shopkeeper\n",
                 shop_index[temp1].in_room);
         } else {
-            mob_index[shop_index[temp1].keeper].func = shop_keeper;
+            index = mobileIndex(shop_index[temp1].keeper);
+            if( index ) {
+                index->func = shop_keeper;
+            } else {
+                Log("Shop in room %d has NO shopkeeper\n",
+                    shop_index[temp1].in_room);
+            }
         }
     }
 }

@@ -1519,8 +1519,9 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
         if (IS_MOB(k)) {
             sprintf(buf, "%sMobile special procedure: %s", color1, color2);
-            if( (proc = procGetNameByFunc( mob_index[k->nr].func,
-                                           PROC_MOBILE )) ) {
+            index = mobileIndex(k->nr);
+            if( index && (proc = procGetNameByFunc( index->func,
+                                                    PROC_MOBILE )) ) {
                 strcat( buf, proc );
                 strcat( buf, "\n\r" );
             } else {
@@ -2990,15 +2991,27 @@ void do_force(struct char_data *ch, char *argument, int cmd)
 
 void do_load_mobile(struct char_data *ch, char *argument, int number)
 {
-    struct char_data *mob;
+    struct char_data   *mob;
+    struct index_data  *index;
+    Keywords_t         *keywords;
 
     if (number < 0) {
-        for (number = 0; number < top_of_mobt; number++) {
-            if (isname(argument, mob_index[number].name)) {
-                break;
+        /** @todo replace with tree search */
+        keywords = StringToKeywords( argument, NULL );
+        if( keywords ) {
+            for (number = 0; number < top_of_mobt; number++) {
+                index = mobileIndex(number);
+                if ( index && KeywordsMatch( keywords, index->keywords ) ) {
+                    break;
+                }
             }
+
+            FreeKeywords( keywords, TRUE );
+        } else {
+            number = top_of_mobt;
         }
-        if (number == top_of_mobt) {
+
+        if ( number == top_of_mobt) {
             number = -1;
         }
     }
@@ -4245,9 +4258,10 @@ void do_show_mobiles( struct char_data *ch, struct string_block *sb,
      * @todo redo this to use the tree!
      */
     for (i = 0; i < top_of_mobt; i++) {
-        index = &mob_index[i];
-        if ((zone >= 0 && (index->vnum < bottom || index->vnum > top)) ||
-            (zone < 0 && !KeywordsMatch(key, &index->keywords))) {
+        index = mobileIndex(i);
+        if ( index &&
+             (zone >= 0 && (index->vnum < bottom || index->vnum > top)) ||
+             (zone < 0 && !KeywordsMatch(key, &index->keywords))) {
             continue;
         }
         /*

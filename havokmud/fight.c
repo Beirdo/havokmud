@@ -873,6 +873,7 @@ void raw_kill(struct char_data *ch, int killedbytype)
                    *tch;
     char            buf[256];
 #endif
+    struct index_data *index;
 
     if (IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) {
         raw_kill_arena(ch);
@@ -880,8 +881,8 @@ void raw_kill(struct char_data *ch, int killedbytype)
     }
 
     if (IS_MOB(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF) &&
-            mob_index[ch->nr].func) {
-        (*mob_index[ch->nr].func) (ch, 0, "", ch, EVENT_DEATH);
+            (index = mobileIndex(ch->nr)) && index->func) {
+        (*index->func) (ch, 0, "", ch, EVENT_DEATH);
     }
 
 

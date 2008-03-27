@@ -514,8 +514,8 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in mobile present?
      */
     for (k = rm->people; k; k = k->next_in_room) {
-        if (IS_MOB(k) && k != ch && mob_index[k->nr].func &&
-            (*mob_index[k->nr].func) (ch, cmd, arg, k, PULSE_COMMAND)) {
+        if (IS_MOB(k) && k != ch && (index = mobileIndex(k->nr)) && 
+            index->func && (*index->func) (ch, cmd, arg, k, PULSE_COMMAND)) {
             return(TRUE);
         }
     }

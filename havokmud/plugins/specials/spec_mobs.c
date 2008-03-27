@@ -31,7 +31,6 @@
 
 extern struct char_data *character_list;
 extern struct time_info_data time_info;
-extern struct index_data *mob_index;
 extern struct weather_data weather_info;
 extern struct QuestItem QuestList[4][IMMORTAL];
 
@@ -81,11 +80,13 @@ int ReadObjs(FILE * fl, struct obj_file_u *st);
 struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
 {
     struct char_data *temp_char;
+    struct index_data *index;
 
     if (room > NOWHERE) {
         for (temp_char = roomFindNum(room)->people; temp_char;
              temp_char = temp_char->next_in_room) {
-            if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
+            if (IS_MOB(temp_char) && (index = mobileIndex(temp_char->nr)) &&
+                index->func == func) {
                 return( temp_char );
             }
         }
@@ -421,11 +422,8 @@ int ghostsoldier(struct char_data *ch, int cmd, char *arg,
                    *good,
                    *master;
     int             max_good;
-    int             (*gs) (),
-                    (*gc) ();
-
-    gs = ghostsoldier;
-    gc = keystone;
+    int_func        func;
+    struct index_data *index;
 
     if (cmd) {
         return (FALSE);
@@ -441,9 +439,9 @@ int ghostsoldier(struct char_data *ch, int cmd, char *arg,
 
     for (tch = roomFindNum(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
-        if (mob_index[tch->nr].func != gs && mob_index[tch->nr].func != gc &&
-            GET_ALIGNMENT(tch) > max_good && !IS_IMMORTAL(tch) &&
-            GET_RACE(tch) >= 4) {
+        if ((index = mobileIndex(tch->nr)) && index->func != ghostsoldier && 
+             index->func != keystone && GET_ALIGNMENT(tch) > max_good && 
+             !IS_IMMORTAL(tch) && GET_RACE(tch) >= 4) {
             max_good = GET_ALIGNMENT(tch);
             good = tch;
         }
@@ -2281,6 +2279,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     static int      quest_lines[4] = { 6, 7, 5, 7 };
     static int      valik_dests[9] = { 104, 1638, 7902, 13551, 16764, 17330,
                                        19244, 21325, 25230 };
+    struct index_data *index;
 
     if ((cmd && cmd != 72 && cmd != 86) || !AWAKE(ch)) {
         return (FALSE);
@@ -2324,7 +2323,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             /*
              * the target is valik
              */
-            if (mob_index[vict->nr].func == Valik) {
+            if ((index = mobileIndex(vict->nr)) && index->func == Valik) {
                 act("You give $p to $N.", TRUE, ch, obj, vict, TO_CHAR);
                 act("$n gives $p to $N.", TRUE, ch, obj, vict, TO_ROOM);
             } else {
@@ -2340,7 +2339,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 return (FALSE);
             }
 
-            if (mob_index[vict->nr].func != Valik) {
+            if (!((index = mobileIndex(vict->nr)) && index->func == Valik)) {
                 return (FALSE);
             } else {
                 if (!(strcmp(arg, " What is the quest of the Rhyodin?"))) {
@@ -3484,6 +3483,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     dir,
                     count;
     char            buf[255];
+    struct index_data *index;
 
     if (type == PULSE_TICK) {
         if (ch->specials.position == POSITION_SITTING) {
@@ -3530,8 +3530,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     for (i = roomFindNum(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && i->nr == WHO_TO_CALL) {
-                            (*mob_index[i->nr].func) (i, 0, "", ch,
-                                                      EVENT_FOLLOW);
+                            index = mobileIndex(i->nr);
+                            (*index->func) (i, 0, "", ch, EVENT_FOLLOW);
                             sprintf(buf, "group %d.%s", count, GET_NAME(i));
                             command_interpreter(ch, buf);
                             count++;
@@ -3584,8 +3584,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                         for (j = roomFindNum(ch->in_room)->people; j;
                              j = j->next_in_room) {
                             if (IS_MOB(j) && j->nr == WHO_TO_CALL) {
-                                (*mob_index[j->nr].func) (j, 0, "", i,
-                                                          EVENT_ATTACK);
+                                index = movileIndex(j->nr);
+                                (*index->func) (j, 0, "", i, EVENT_ATTACK);
                             }
                         }
 
@@ -3612,8 +3612,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     for (i = roomFindNum(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && i->nr == WHO_TO_CALL) {
-                            (*mob_index[i->nr].func) (i, 0, "", i,
-                                                      EVENT_FOLLOW);
+                            index = mobileIndex(i->nr);
+                            (*index->func) (i, 0, "", i, EVENT_FOLLOW);
                         }
                     }
 
@@ -3653,7 +3653,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
 
         for (i = character_list; i; i = i->next) {
             if (IS_MOB(i) && i->nr == WHO_TO_CALL) {
-                (*mob_index[i->nr].func) (i, 0, "", ch, EVENT_GATHER);
+                index = mobileIndex(i->nr);
+                (*index->func) (i, 0, "", ch, EVENT_GATHER);
             }
         }
 
@@ -4535,6 +4536,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
     struct char_data *vict;
     struct obj_data *obj;
     struct obj_data *new;
+    struct index_data *index;
 
     if (IS_NPC(ch)) {
         if (cmd == 72) {
@@ -4549,7 +4551,7 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 return (FALSE);
             }
 
-            if (mob_index[vict->nr].func == RepairGuy) {
+            if ((index = mobileIndex(vict->nr)) && index->func == RepairGuy) {
                 send_to_char("Nah, you really wouldn't want to do that.", ch);
                 return (TRUE);
             }
@@ -4587,7 +4589,8 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
         if (!IS_NPC(vict)) {
             return (FALSE);
         }
-        if (mob_index[vict->nr].func == RepairGuy) {
+
+        if ((index = mobileIndex(vict->nr)) && index->func == RepairGuy) {
             /*
              * we have the repair guy, and we can give him the stuff 
              */

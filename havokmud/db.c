@@ -1140,7 +1140,8 @@ void reset_zone(int zone, int cmd)
                 /*
                  * read a mobile
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
+                index = mobileIndex(ZCMD.arg1);
+                if (index && index->number < ZCMD.arg2 &&
                     !fighting_in_room(ZCMD.arg3) && !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
                     mob = read_mobile(ZCMD.arg1);
@@ -1172,7 +1173,8 @@ void reset_zone(int zone, int cmd)
                 /*
                  * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
+                index = mobileIndex(ZCMD.arg1);
+                if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
                     mob = read_mobile(ZCMD.arg1);
@@ -1519,7 +1521,8 @@ void reset_zone(int zone, int cmd)
                 /*
                  * read a mobile
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
+                index = mobileIndex(ZCMD.arg1);
+                if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
                     mob = read_mobile(ZCMD.arg1);
@@ -1548,7 +1551,8 @@ void reset_zone(int zone, int cmd)
                 /*
                  * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
+                index = mobileIndex(ZCMD.arg1);
+                if (index && index->number < ZCMD.arg2 &&
                     !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
                     mob = read_mobile(ZCMD.arg1);
@@ -3207,6 +3211,7 @@ void SaveTheWorld( void )
     struct obj_data *o;
     struct room_data *room;
     FILE           *fp;
+    struct index_data *index;
 
     if (ctl == WORLD_SIZE) {
         ctl = 0;
@@ -3232,9 +3237,10 @@ void SaveTheWorld( void )
              */
             for (p = room->people; p; p = p->next_in_room) {
                 if (!IS_PC(p)) {
+                    index = mobileIndex(p->nr);
                     cmd = 'M';
                     arg1 = MobVnum(p);
-                    arg2 = mob_index[p->nr].number;
+                    arg2 = index->number;
                     arg3 = i;
                     Zwrite(fp, cmd, 0, arg1, arg2, arg3, p->player.short_descr);
                     fprintf(fp, "Z 1 %d 1\n", p->specials.zone);
@@ -3329,6 +3335,7 @@ void ReadTextZone(FILE * fl)
     struct room_data *rp;
     struct obj_data *obj,
                    *obj_to;
+    struct index_data *index;
 
     while (1) {
         count++;
@@ -3361,7 +3368,8 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile
                  */
-                if ((mob_index[i].number < j) && !CheckKillFile(i)) {
+                index = mobileIndex(i);
+                if (index && index->number < j && !CheckKillFile(i)) {
                     /** @todo was REAL load */
                     mob = read_mobile(i);
                     char_to_room(mob, k);
@@ -3377,7 +3385,8 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[i].number < j) && !CheckKillFile(i)) {
+                index = mobileIndex(i);
+                if (index && index->number < j && !CheckKillFile(i)) {
                     /** @todo was REAL load */
                     mob = read_mobile(i);
                     if (master) {

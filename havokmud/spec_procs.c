@@ -71,7 +71,6 @@ extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern struct time_info_data time_info;
-extern struct index_data *mob_index;
 extern struct weather_data weather_info;
 extern int      top_of_world;
 extern struct int_app_type int_app[26];
@@ -125,6 +124,7 @@ int named_object_on_ground(int room, void *c_data)
 struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
 {
     struct char_data *temp_char;
+    struct index_data *index;
 
     if( room <= NOWHERE ) {
         return( NULL );
@@ -132,7 +132,8 @@ struct char_data *FindMobInRoomWithFunction(int room, int (*func) ())
 
     for (temp_char = roomFindNum(room)->people; temp_char;
          temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == func) {
+        if (IS_MOB(temp_char) && (index = mobileIndex(temp_char->nr)) && 
+            index->func == func) {
             return( temp_char );
         }
     }
@@ -658,6 +659,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     struct char_data *i,
                    *tmp_ch;
     char            buf[80];
+    struct index_data *index;
 
     if (type == EVENT_DWARVES_STRIKE) {
         command_interpreter(ch, "shout Ack! Of all the stupid things! Those "
@@ -889,7 +891,8 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     case 34:
         if (number(0, 50) == 0) {
             for (i = character_list; i; i = i->next) {
-                if (mob_index[i->nr].func == Inquisitor) {
+                if ((index = mobileIndex(i->nr)) && 
+                    index->func == Inquisitor) {
                     command_interpreter(ch, "shout I wasn't expecting the "
                                             "Spanish Inquisition!");
                     i->generic = INQ_SHOUT;
@@ -2087,7 +2090,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
     char           *obj_name,
                    *player_name;
     int             dir;
-    int             (*Lattimore) ();
+    struct index_data *index;
 
     if (!cmd) {
         if (!ch->act_ptr) {
@@ -2352,8 +2355,7 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
         /*
          * the target is Lattimore
          */
-        Lattimore = lattimore;
-        if (mob_index[latt->nr].func == Lattimore) {
+        if ((index = mobileIndex(latt->nr)) && index->func == lattimore) {
             if (!latt->act_ptr) {
                 ch->act_ptr = (struct memory *) malloc(sizeof(struct memory));
                 mem = ch->act_ptr;
@@ -2561,7 +2563,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
     char           *player_name,
                    *obj_name,
                     name[15];
-    int             (*guard) ();
+    struct index_data *index;
 
     struct Names {
         char          **names;
@@ -2631,9 +2633,8 @@ int guardian(struct char_data *ch, int cmd, char *arg,
         if (!player_name || !(g = get_char_room_vis(ch, player_name))) {
             return (FALSE);
         }
-        guard = guardian;
 
-        if (mob_index[g->nr].func == guard) {
+        if ((index = mobileIndex(g->nr)) && index->func == guardian) {
             gstruct = (void *) g->act_ptr;
 
             act("You give $p to $N.", TRUE, ch, obj, g, TO_CHAR);

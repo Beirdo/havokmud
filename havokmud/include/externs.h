@@ -91,7 +91,6 @@ extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern struct time_info_data time_info;
-extern struct index_data *mob_index;
 extern struct weather_data weather_info;
 extern int      top_of_world;
 extern struct int_app_type int_app[];

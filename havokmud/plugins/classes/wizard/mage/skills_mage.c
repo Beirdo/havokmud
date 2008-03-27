@@ -4572,7 +4572,7 @@ void spell_silence(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
-    extern struct index_data *mob_index;
+    struct index_data *index;
 
     assert(ch && victim);
 
@@ -4591,8 +4591,8 @@ void spell_silence(int level, struct char_data *ch,
                      victim);
         if (!IS_PC(victim) && !victim->specials.fighting) {
             set_fighting(victim, ch);
-            if (mob_index[victim->nr].func) {
-                (*mob_index[victim->nr].func) (victim, 0, "");
+            if ((index = mobileIndex(victim->nr)) && index->func) {
+                (*index->func) (victim, 0, "");
             }
         }
     }

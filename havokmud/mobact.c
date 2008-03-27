@@ -262,10 +262,12 @@ void check_mobile_activity(int pulse)
 
 void mobile_activity(struct char_data *ch)
 {
-    struct char_data *tmp_ch;
+    struct char_data   *tmp_ch;
 
-    int             k;
-    struct char_data *vict;
+    int                 k;
+    struct char_data   *vict;
+    int_func            func;
+    struct index_data  *index;
 
     /*
      * Examine call for special procedure 
@@ -311,17 +313,18 @@ void mobile_activity(struct char_data *ch)
         DoScript(ch);
     }
 
-    if (!IS_SET(ch->specials.act, ACT_SPEC) && mob_index[ch->nr].func) {
+    index = mobileIndex(ch->nr);
+    func = (index ? index->func : NULL );
+    if (!IS_SET(ch->specials.act, ACT_SPEC) && func) {
         SET_BIT(ch->specials.act, ACT_SPEC);
     }
 
-    if ((IS_SET(ch->specials.act, ACT_SPEC) || mob_index[ch->nr].func) && 
-        !no_specials) {
-        if (!mob_index[ch->nr].func) {
+    if ((IS_SET(ch->specials.act, ACT_SPEC) || func) && !no_specials) {
+        if (!func) {
             Log("Attempting to call a non-existing mob func on %s (VNUM %ld)", 
                 GET_NAME(ch), ch->nr);
             REMOVE_BIT(ch->specials.act, ACT_SPEC);
-        } else if ((*mob_index[ch->nr].func) (ch, 0, "", ch, PULSE_TICK)) {
+        } else if ((*func) (ch, 0, "", ch, PULSE_TICK)) {
             return;
         }
     }
@@ -890,11 +893,13 @@ int MobFriend(struct char_data *ch, struct char_data *f)
 
 void PulseMobiles(int type)
 {
-    register struct char_data *ch;
+    struct char_data       *ch;
+    struct index_data      *index;
 
+    /** @todo reimplement with tree/list */
     for (ch = character_list; ch; ch = ch->next) {
-        if (IS_MOB(ch) && mob_index[ch->nr].func) {
-            (*mob_index[ch->nr].func) (ch, 0, "", ch, type);
+        if (IS_MOB(ch) && (index = mobileIndex(ch->nr)) && index->func) {
+            (*index->func) (ch, 0, "", ch, type);
         }
     }
 }
