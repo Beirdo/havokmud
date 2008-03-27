@@ -4649,7 +4649,7 @@ struct char_data *square_contains_enemy(struct room_data *square)
     struct char_data *i;
 
     for (i = square->people; i; i = i->next_in_room) {
-        if (IS_ENEMY(mob_index[i->nr].vnum)) {
+        if (IS_ENEMY(i->nr)) {
             return i;
         }
     }
@@ -4662,7 +4662,7 @@ int square_contains_friend(struct room_data *square)
     struct char_data *i;
 
     for (i = square->people; i; i = i->next_in_room) {
-        if (IS_FRIEND(mob_index[i->nr].vnum)) {
+        if (IS_FRIEND(i->nr)) {
             return TRUE;
         }
     }
@@ -4675,7 +4675,7 @@ int square_empty(struct room_data *square)
     struct char_data *i;
 
     for (i = square->people; i; i = i->next_in_room) {
-        if (IS_PIECE(mob_index[i->nr].vnum)) {
+        if (IS_PIECE(i->nr)) {
             return FALSE;
         }
     }
@@ -4701,7 +4701,7 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
      * keep original fighter() spec_proc for kings and knights 
      */
     if (ch->specials.fighting) {
-        switch (mob_index[ch->nr].vnum) {
+        switch (ch->nr) {
         case 1401:
         case 1404:
         case 1406:
@@ -4716,16 +4716,16 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
     if (!crp || !ON_BOARD(crp->number)) {
         return FALSE;
     }
-    if (side == WHITE && IS_BLACK(mob_index[ch->nr].vnum)) {
+    if (side == WHITE && IS_BLACK(ch->nr)) {
         return FALSE;
     }
-    if (side == BLACK && IS_WHITE(mob_index[ch->nr].vnum)) {
+    if (side == BLACK && IS_WHITE(ch->nr)) {
         return FALSE;
     }
     if (number(0, 15)) {
         return FALSE;
     }
-    switch (mob_index[ch->nr].vnum) {
+    switch (ch->nr) {
     case 1408:                  /* black pawns */
     case 1409:
     case 1410:
@@ -4755,7 +4755,7 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
             break;
         case 3:
             if (roomFindNum(ch->in_room) &&
-                roomFindNum(ch->in_room)->number == mob_index[ch->nr].vnum) {
+                roomFindNum(ch->in_room)->number == ch->nr) {
                 rp = forward_square(crp);
                 if (rp && square_empty(rp) && ON_BOARD(rp->number)) {
                     crp = rp;
@@ -7116,7 +7116,7 @@ int bahamut_prayer(struct char_data *ch, struct char_data *vict)
             GET_HIT(i) -= 25;
             send_to_char("$c0011A blinding holy light engulfs the room and" 
                          "sears your life away!\n\r", i);
-            if (mob_index[i->nr].vnum == BAHAMUT) {
+            if (i->nr == BAHAMUT) {
                 GET_HIT(i) += 25;
             }
         }
@@ -8426,7 +8426,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
     arg = get_argument(arg, &buf);
     if (buf && !strcasecmp("ship", buf) &&
         (ship = get_char_room("", ch->in_room))) {
-        j = mob_index[ship->nr].vnum;
+        j = ship->nr;
 
         send_to_char("You enter the ship.\n\r", ch);
         act("$n enters the ship.", FALSE, ch, 0, 0, TO_ROOM);

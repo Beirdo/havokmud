@@ -814,8 +814,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
             char_to_room(ch, rm - 1);
             me->river_speed = 0;
             return (TRUE);
-        } else if (mob_index[ch->nr].vnum >= MONK_MOB &&
-                   mob_index[ch->nr].vnum <= MONK_MOB + 40) {
+        } else if (ch->nr >= MONK_MOB && ch->nr <= MONK_MOB + 40) {
             extract_char(ch);
             /*
              * find pc in room; 
@@ -1074,8 +1073,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         } 
         
-        if (mob_index[ch->nr].vnum >= DRUID_MOB &&
-            mob_index[ch->nr].vnum <= DRUID_MOB + 40) {
+        if (ch->nr >= DRUID_MOB && ch->nr <= DRUID_MOB + 40) {
             extract_char(ch);
             /*
              * find pc in room; 

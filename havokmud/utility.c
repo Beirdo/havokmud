@@ -238,10 +238,11 @@ int exit_ok(struct room_direction_data *exit, struct room_data **rpp)
     return (*rpp != NULL);
 }
 
+/** @todo convert this to a macro */
 long MobVnum(struct char_data *c)
 {
     if (IS_NPC(c)) {
-        return (mob_index[c->nr].vnum);
+        return (c->nr);
     } else {
         return (0);
     }
@@ -2741,13 +2742,13 @@ void CallForGuard(struct char_data *ch, struct char_data *vict,
     }
     for (i = character_list; i && lev > 0; i = i->next) {
         if (IS_NPC(i) && i != ch && !i->specials.fighting) {
-            if (mob_index[i->nr].vnum == type1) {
+            if (i->nr == type1) {
                 if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
                     vict) {
                     SetHunting(i, vict);
                     lev--;
                 }
-            } else if (mob_index[i->nr].vnum == type2) {
+            } else if (i->nr == type2) {
                 if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
                     vict) {
                     SetHunting(i, vict);
@@ -3077,22 +3078,20 @@ void RemAllAffects(struct char_data *ch)
 int CheckForBlockedMove(struct char_data *ch, int cmd, char *arg, int room,
                         int dir, int class)
 {
-    char            buf[256],
-                    buf2[256];
-
     if (cmd > 6 || cmd < 1) {
         return (FALSE);
     }
-    strcpy(buf, "The guard humiliates you, and block your way.\n\r");
-    strcpy(buf2, "The guard humiliates $n, and blocks $s way.");
 
-    if ((IS_NPC(ch) && (IS_POLICE(ch))) || (GetMaxLevel(ch) >= DEMIGOD) ||
-        (IS_AFFECTED(ch, AFF_SNEAK))) {
+    if ((IS_NPC(ch) && IS_POLICE(ch)) || GetMaxLevel(ch) >= DEMIGOD ||
+        IS_AFFECTED(ch, AFF_SNEAK)) {
         return (FALSE);
     }
+
+
     if (ch->in_room == room && cmd == dir + 1 && !HasClass(ch, class)) {
-        act(buf2, FALSE, ch, 0, 0, TO_ROOM);
-        send_to_char(buf, ch);
+        act("The guard humiliates $n, and blocks $s way.", FALSE, ch, 0, 0, 
+            TO_ROOM);
+        send_to_char("The guard humiliates you, and blocks your way.\n\r", ch);
         return TRUE;
     }
     return FALSE;
@@ -4569,7 +4568,7 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
     /*
      * called steed check
      */
-    if (mob_index[horse->nr].vnum == STEED_TEMPLATE &&
+    if (horse->nr == STEED_TEMPLATE &&
         HasClass(ch, CLASS_PALADIN) &&
         GetMaxLevel(ch) >= GetMaxLevel(horse) + 10) {
         /*

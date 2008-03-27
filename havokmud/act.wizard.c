@@ -1371,8 +1371,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
         if (IS_MOB(k)) {
-            sprintf(buf, "%sV-Number [%s%ld%s]", color1, color2,
-                    mob_index[k->nr].vnum, color1);
+            sprintf(buf, "%sV-Number [%s%ld%s]", color1, color2, k->nr, color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
         }
 
@@ -4242,6 +4241,9 @@ void do_show_mobiles( struct char_data *ch, struct string_block *sb,
     key = StringToKeywords(zonenum, NULL);
     append_to_string_block(sb, "VNUM  rnum count names\n\r");
 
+    /**
+     * @todo redo this to use the tree!
+     */
     for (i = 0; i < top_of_mobt; i++) {
         index = &mob_index[i];
         if ((zone >= 0 && (index->vnum < bottom || index->vnum > top)) ||
@@ -5862,14 +5864,11 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     fprintf(f, "#%ld\n", vnum);
     write_mob_to_file(mob, f);
     fclose(f);
-    if (nr == -1) {
-        mobileInsert(mob, vnum);
-    } else {
-        mob_index[nr].pos = -1;
-    }
+    mobileInsert(mob, vnum);
     Log("Mobile %s saved as vnum %ld", mob->player.name, vnum);
 
-    oldSendOutput(ch, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
+    oldSendOutput(ch, "Mobile %s saved as vnum %ld\n\r", mob->player.name, 
+                  vnum);
 }
 
 void do_osave(struct char_data *ch, char *argument, int cmd)

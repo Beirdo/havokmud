@@ -552,7 +552,7 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
 
     for (temp_char = roomFindNum(ch->in_room)->people; !keeper && temp_char; 
          temp_char = temp_char->next_in_room) {
-        if (IS_MOB(temp_char) && mob_index[temp_char->nr].func == shop_keeper) {
+        if (IS_MOB(temp_char) && temp_char->nr == shop_keeper) {
             keeper = temp_char;
         }
     }

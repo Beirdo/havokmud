@@ -155,9 +155,9 @@ struct char_data *read_mobile(int nr)
      */
 #if 0
     if (mob_index[nr].pos == -1) {
-        sprintf(buf, "%s/%ld", MOB_DIR, mob_index[nr].vnum);
+        sprintf(buf, "%s/%ld", MOB_DIR, nr);
         if ((f = fopen(buf, "rt")) == NULL) {
-            Log("can't open mobile file for mob %ld", mob_index[nr].vnum);
+            Log("can't open mobile file for mob %ld", nr);
             free_char(mob);
             return (0);
         }
@@ -178,6 +178,7 @@ struct char_data *read_mobile(int nr)
     /*
      * assign common proc flags
      */
+    /** @todo make this a table rather than a switch */
     switch( mob->specials.proc ) {
     case PROC_QUEST:
         mob_index[mob->nr].func = *QuestMobProc;
@@ -718,8 +719,12 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     if (IS_SET(mob->specials.act, ACT_SCRIPT)) {
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
     }
+
+    /** @todo move the script structure into the mob's structure or at least
+     *        onto its own tree, no linear searching!
+     */
     for (i = 0; i < top_of_scripts; i++) {
-        if (script_data[i].vnum == mob_index[nr].vnum) {
+        if (script_data[i].vnum == nr) {
             SET_BIT(mob->specials.act, ACT_SCRIPT);
             mob->script = i;
             break;
@@ -790,7 +795,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob_index[nr].number++;
 
 #ifdef BYTE_COUNT
-    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].vnum, bc);
+    fprintf(stderr, "Mobile [%d]: byte count: %d\n", nr, bc);
 #endif
     return (bc);
 }
@@ -995,8 +1000,9 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     if (IS_SET(mob->specials.act, ACT_SCRIPT)) {
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
     }
+    /** @todo script structure inside mob structure or onto its own tree */
     for (i = 0; i < top_of_scripts; i++) {
-        if (script_data[i].vnum == mob_index[nr].vnum) {
+        if (script_data[i].vnum == nr) {
             SET_BIT(mob->specials.act, ACT_SCRIPT);
             mob->script = i;
             break;
@@ -1061,7 +1067,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     mob_index[nr].number++;
 
 #ifdef BYTE_COUNT
-    fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].vnum, bc);
+    fprintf(stderr, "Mobile [%d]: byte count: %d\n", nr, bc);
 #endif
     return (bc);
 }

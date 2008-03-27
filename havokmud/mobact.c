@@ -319,7 +319,7 @@ void mobile_activity(struct char_data *ch)
         !no_specials) {
         if (!mob_index[ch->nr].func) {
             Log("Attempting to call a non-existing mob func on %s (VNUM %ld)", 
-                GET_NAME(ch), mob_index[ch->nr].vnum);
+                GET_NAME(ch), ch->nr);
             REMOVE_BIT(ch->specials.act, ACT_SPEC);
         } else if ((*mob_index[ch->nr].func) (ch, 0, "", ch, PULSE_TICK)) {
             return;

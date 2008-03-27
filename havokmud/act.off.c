@@ -754,9 +754,10 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
         /* Empty Loop */
     }
 
+    /** @todo had mob_index here, revisit this code for re-implementation */
     if (count > LAST_BREATH_WEAPON) {
         for (scan = breath_monsters;
-             scan->vnum >= 0 && scan->vnum != mob_index[ch->nr].vnum;
+             scan->vnum >= 0 && scan->vnum != ch->nr;
              scan++) {
             /*
              * Empty loop

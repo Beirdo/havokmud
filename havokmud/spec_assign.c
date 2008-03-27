@@ -308,7 +308,7 @@ int is_murdervict(struct char_data *ch)
     };
 
     for (i = 0; i < MAX_MUTYPE; i++) {
-        if (mob_index[ch->nr].vnum == mutype[i]) {
+        if (ch->nr == mutype[i]) {
             return (TRUE);
         }
     }

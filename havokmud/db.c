@@ -1141,8 +1141,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !fighting_in_room(ZCMD.arg3) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
+                    !fighting_in_room(ZCMD.arg3) && !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
                     mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
@@ -1174,7 +1173,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile.  Charm them to follow prev.
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
+                    !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was a REAL load */
                     mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
@@ -1415,8 +1414,8 @@ void reset_zone(int zone, int cmd)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, mob"
                                      " %d, loc %d\n",
-                                zone, cmd_no, (int)ZCMD.arg1,
-                                (int)mob_index[mob->nr].vnum, ZCMD.arg3);
+                                zone, cmd_no, (int)ZCMD.arg1, (int)mob->nr, 
+                                ZCMD.arg3);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;
@@ -1521,7 +1520,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
+                    !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
                     mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
@@ -1550,7 +1549,7 @@ void reset_zone(int zone, int cmd)
                  * read a mobile.  Charm them to follow prev.
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
-                    !CheckKillFile(mob_index[ZCMD.arg1].vnum)) {
+                    !CheckKillFile(ZCMD.arg1)) {
                     /** @todo was REAL load */
                     mob = read_mobile(ZCMD.arg1);
                     if (!mob) {
@@ -1751,8 +1750,7 @@ void reset_zone(int zone, int cmd)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %d, "
                                      "mob %d, loc %d\n",
-                                zone, cmd_no, ZCMD.arg1,
-                                mob_index[mob->nr].vnum, ZCMD.arg3);
+                                zone, cmd_no, ZCMD.arg1, mob->nr, ZCMD.arg3);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;
@@ -3182,7 +3180,7 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
 
     for (p = character_list; p; p = p->next) {
         for (i = 0; i < top_of_scripts; i++) {
-            if (script_data[i].vnum == mob_index[p->nr].vnum) {
+            if (script_data[i].vnum == p->nr) {
                 SET_BIT(p->specials.act, ACT_SCRIPT);
                 Log("Setting SCRIPT bit for mobile %s, file %s.", GET_NAME(p),
                     script_data[i].filename);
@@ -3363,8 +3361,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile
                  */
-                if ((mob_index[i].number < j) &&
-                    !CheckKillFile(mob_index[i].vnum)) {
+                if ((mob_index[i].number < j) && !CheckKillFile(i)) {
                     /** @todo was REAL load */
                     mob = read_mobile(i);
                     char_to_room(mob, k);
@@ -3380,8 +3377,7 @@ void ReadTextZone(FILE * fl)
                 /*
                  * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[i].number < j) &&
-                    !CheckKillFile(mob_index[i].vnum)) {
+                if ((mob_index[i].number < j) && !CheckKillFile(i)) {
                     /** @todo was REAL load */
                     mob = read_mobile(i);
                     if (master) {
@@ -3515,7 +3511,7 @@ void ReadTextZone(FILE * fl)
                     } else {
                         sprintf(buf, "eq error - zone %d, cmd %d, item %ld, "
                                      "mob %ld, loc %d",
-                                zone, 1, i, mob_index[mob->nr].vnum, k);
+                                zone, 1, i, mob->nr, k);
                         log_sev(buf, 6);
                     }
                     last_cmd = 1;
