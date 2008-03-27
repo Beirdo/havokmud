@@ -238,16 +238,6 @@ int exit_ok(struct room_direction_data *exit, struct room_data **rpp)
     return (*rpp != NULL);
 }
 
-/** @todo convert this to a macro */
-long MobVnum(struct char_data *c)
-{
-    if (IS_NPC(c)) {
-        return (c->nr);
-    } else {
-        return (0);
-    }
-}
-
 void Zwrite(FILE * fp, char cmd, int tf, int arg1, int arg2, int arg3,
             char *desc)
 {

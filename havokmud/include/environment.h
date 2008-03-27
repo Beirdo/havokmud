@@ -171,6 +171,12 @@ typedef unsigned long long int uint64;
  */
 #define GetMaxLevel(ch) ( ch == NULL ? 0 : ch->player.max_level )
 
+/**
+ * @brief Returns the virtual number of a mobile, 0 if not a mobile
+ * @param ch the character/mobile structure
+ * @return virtual number of the mobile, 0 if not a mobile
+ */
+#define MobVnum(ch) ( ch == NULL ? 0 : (IS_NPC(c) ? c->nr : 0) )
 
 #endif
 
