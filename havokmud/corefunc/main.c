@@ -418,11 +418,8 @@ void boot_db(void)
     LogPrintNoArg( LOG_CRIT, "Loading rooms.");
     initializeRooms();
 
-#ifdef NOTYET
-    LogPrintNoArg( LOG_CRIT, "Generating index table for mobiles.");
-    mob_index = generate_indices(mob_f, &top_of_mobt, &top_of_sort_mobt,
-                                 &top_of_alloc_mobt, MOB_DIR);
-#endif
+    LogPrintNoArg( LOG_CRIT, "Generating binary tree of mobiles.");
+    initializeMobiles();
 
     LogPrintNoArg( LOG_CRIT, "Generating binary tree of objects.");
     initializeObjects();
