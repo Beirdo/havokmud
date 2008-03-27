@@ -908,14 +908,8 @@ void raw_kill(struct char_data *ch, int killedbytype)
     /*
      * remove berserk after they flee/die...
      */
-
-    if (IS_SET(ch->specials.affected_by2, AFF2_BERSERK)) {
-        REMOVE_BIT(ch->specials.affected_by2, AFF2_BERSERK);
-    }
-
-    if (IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
-        REMOVE_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
-    }
+    REMOVE_BIT(ch->specials.affected_by2, AFF2_BERSERK);
+    REMOVE_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
 
     /*
      *   return them from polymorph

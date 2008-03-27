@@ -280,7 +280,7 @@ void db_load_room_objects( int room );
 void db_load_rooms( BalancedBTree_t *tree );
 
 /*
- * obj_data.c
+ * object_data.c
  */
 void initializeObjects( void );
 struct index_data *objectIndex( int vnum );
@@ -338,6 +338,13 @@ bool HasBits(struct char_data *ch, int bits, int offset);
 bool HasExtraBits(struct char_data *ch, int bits);
 
 void PrintLimitedItems(void);
+
+/*
+ * mobile_data.c
+ */
+void initializeMobiles( void );
+struct index_data *mobileIndex( int vnum );
+void mobileInsert(struct char_data *obj, long vnum);
 
 /*
  * keywords.c

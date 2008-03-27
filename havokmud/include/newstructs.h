@@ -472,8 +472,7 @@ typedef struct {
 
 struct index_data {
     int             vnum;       /* virtual number of this mob/obj */
-    int             number;     /* number of existing units of this
-                                 * mob/obj */
+    int             number;     /* number of existing units of this mob/obj */
     int_func        func;       /* special procedure for this mob/obj */
     void           *data;
     Keywords_t      keywords;

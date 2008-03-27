@@ -633,10 +633,6 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
                     buf[MAX_STRING_LENGTH];
     int             i;
 
-    /*
-     * for (i=0;i<MAX_MOBOBJ;i++) { sprintf(buf,"%s has pos
-     * %d",mob_index[i].name, mob_index[i].pos); slog(buf); }
-     */
     argument = get_argument(argument, &name);
     argument = get_argument(argument, &mudname);
 
