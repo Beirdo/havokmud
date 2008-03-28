@@ -106,7 +106,7 @@ int search_block(char *arg, char **list, bool exact)
 
 
 /**
- * @brief Strips carriage returns (\r) from a string
+ * @brief Strips carriage returns from a string
  * @param output Output buffer
  * @param input Input buffer
  */

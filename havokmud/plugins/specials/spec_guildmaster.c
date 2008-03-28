@@ -29,16 +29,10 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
  * extern procedures
  */
 
-/** @author:      Banon (GH)
- ** @date:        June 19th, 2004
- ** @description: Lets get rid of redundant code.
- **               10 guildmasters with all the same code?? Blah!
- **/
-
 int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                          struct char_data *mob, int type, int class_bit,
                          int level_ind)
-{                               /* proc_type proc) */
+{
 
     char            guildmastername[128];
     char            buf[256],
@@ -54,10 +48,6 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
      */
 
     if (cmd == CMD_practice || cmd == CMD_study || cmd == CMD_gain) {
-		/* oldSendOutput(ch,"Gain:%d  Study:%d Practice:%d",
-		 *  CMD_gain, CMD_study, CMD_practice);
-         */
-
         sprintf(guildmastername,"%s",classes[level_ind].name);
 
         sprintf(guildmastername, "%s", classes[level_ind].name);
@@ -93,9 +83,6 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
             if (GET_EXP(ch) <
                 classes[level_ind].levels[GET_LEVEL(ch, level_ind) + 1].exp) {
                 do_mobTell2(ch, guildmaster, "You're not ready to gain yet!");
-                /*
-                 * send_to_char("Your not ready to gain yet!", ch);
-                 */
                 return (FALSE);
             } 
             
