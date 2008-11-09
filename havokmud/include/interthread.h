@@ -353,6 +353,7 @@ struct index_data *mobileIndex( int vnum );
 void mobileInsert(struct char_data *obj, long vnum);
 struct char_data *mobileRead(int nr);
 void mobileWriteToFile(struct char_data *mob, void * mob_fi);
+void mobileWrite(struct char_data *mob, void * mob_fi);
 
 /*
  * keywords.c

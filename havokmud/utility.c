@@ -5909,12 +5909,12 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
             }
 
             fprintf(vnum_f, "#%ld\n", i);
-            save_new_mobile_structure(mob, vnum_f);
+            mobileWrite(mob, vnum_f);
             fclose(vnum_f);
             mobileInsert(mob, i);
 
             fprintf(mob_file, "#%ld\n", i);
-            save_new_mobile_structure(mob, mob_file);
+            mobileWrite(mob, mob_file);
             count++;
             extract_char(mob);
         }

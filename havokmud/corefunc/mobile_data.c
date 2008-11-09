@@ -191,43 +191,9 @@ struct char_data *mobileRead(int nr)
 }
 
 
-/*
- * ---------- Start of write_mob_to_file ----------
+/**
+ * @todo Kill this stupid crap, replace with a db save
  */
-/*
- * write a mobile to a file
- */
-
- /*
-  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  *                                                                          *
-  *  Redone By Lennya, 20030802                                              *
-  *  Mob files will now have this format:                                    *
-  *                                                                          *
-  *  #vnum                                                                   *
-  *  name~                                                                   *
-  *  short description~                                                      *
-  *  long description~                                                       *
-  *  description                                                             *
-  *  ~                                                                       *
-  *  local sound                                                             *
-  *  ~                                                                       *
-  *  distant sound                                                           *
-  *  ~                                                                       *
-  *  ActionFlags  AffectFlags  Alignment  NumAttacks                         *
-  *  Level  HitRoll  ArmorClass/10  TotalHp  Damage(Example: 1d8+2)          *
-  *  -1  Gold  ExpFlag  Race                                                 *
-  *  Position  DefaultPosition  Sex  Immunities  Resistance  Susceptibilies  *
-  *  CommonProcedure                                                         *
-  *  talk string                                                             *
-  *  ~                                                                       *
-  *  quest solved string                                                     *
-  *  ~                                                                       *
-  *  wrong quest item string                                                 *
-  *  ~                                                                       *
-  *                                                                          *
-  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  */
 
 void mobileWriteToFile(struct char_data *mob, void * mob_fi)
 {
@@ -351,7 +317,10 @@ void mobileWriteToFile(struct char_data *mob, void * mob_fi)
     }
 }
 
-void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
+/**
+ * @todo Remove this crap, use a db write
+ */
+void mobileWrite(struct char_data *mob, void * mob_fi)
 {
     int             i,
                     xpflag;

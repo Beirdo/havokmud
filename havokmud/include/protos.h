@@ -3438,7 +3438,6 @@ void             construct_prompt(char *buf, struct char_data *ch);
 void ReadTextZone(FILE * fl);
 int CheckKillFile(long virtual);
 void CleanZone(int zone);
-void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi);
 int LoadZoneFile(FILE * fl, int zon);
 void ClassSpecificStuff(struct char_data *ch);
 void ObjFromCorpse(struct obj_data *c);
