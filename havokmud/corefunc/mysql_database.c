@@ -43,6 +43,13 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
+
+/**
+ * @file
+ * @brief Contains the API for the system to use to access the MySQL database.
+ */
+
+
 /* Externally accessible */
 struct class_def *classes;
 int             classCount;

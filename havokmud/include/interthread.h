@@ -27,6 +27,12 @@
 *
 *--------------------------------------------------------*/
 
+/**
+ * @file
+ * @brief Prototypes and definitions for inter-thread communication
+ */
+
+
 #ifndef interthread_h_
 #define interthread_h_
 
@@ -346,6 +352,7 @@ void initializeMobiles( void );
 struct index_data *mobileIndex( int vnum );
 void mobileInsert(struct char_data *obj, long vnum);
 struct char_data *mobileRead(int nr);
+void mobileWriteToFile(struct char_data *mob, void * mob_fi);
 
 /*
  * keywords.c

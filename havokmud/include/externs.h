@@ -1,3 +1,9 @@
+
+/**
+ * @file
+ * @brief OLD!  List of all external variables.
+ */
+
 #ifndef _externs_h
 #define _externs_h
 

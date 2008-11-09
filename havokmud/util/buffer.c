@@ -38,6 +38,11 @@
 #include <sys/time.h>
 #include "logging.h"
 
+/**
+ * @file
+ * @brief Circular Buffer Data Structure
+ */
+
 /* INTERNAL CONSTANT DEFINITIONS */
 
 /* INTERNAL TYPE DEFINITIONS */

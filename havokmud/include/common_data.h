@@ -27,6 +27,12 @@
 *
 *
 *--------------------------------------------------------*/
+
+/**
+ * @file
+ * @brief Definitions shared between several structures
+ */
+
 #ifndef common_data_h_
 #define common_data_h_
 

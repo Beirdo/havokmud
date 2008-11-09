@@ -34,6 +34,12 @@
 #include "logging.h"
 #include <stdlib.h>
 
+
+/**
+ * @file
+ * @brief Protected Data Structure (access controlled by mutex)
+ */
+
 /* INTERNAL CONSTANT DEFINITIONS */
 
 /* INTERNAL TYPE DEFINITIONS */

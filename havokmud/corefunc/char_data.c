@@ -37,6 +37,12 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 /**
+ * @file
+ * @brief Handles loading, saving of players
+ */
+
+
+/**
  * @todo replace this with a macro
  * @todo see what that NPC block is all about, seems pointless
  */

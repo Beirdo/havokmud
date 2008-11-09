@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id: queue.c 41 2004-12-12 01:15:22Z gjhurlbu $
+* $Id$
 *
 * Copyright 2005 Gavin Hurlbut
 * All rights reserved
@@ -39,6 +39,12 @@
 #include <sys/time.h>
 #include "logging.h"
 #include <string.h>
+
+
+/**
+ * @file
+ * @brief Queue Data Structure
+ */
 
 /* INTERNAL CONSTANT DEFINITIONS */
 

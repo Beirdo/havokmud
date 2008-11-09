@@ -34,6 +34,12 @@
 #include "logging.h"
 #include <stdlib.h>
 
+
+/**
+ * @file
+ * @brief Doubly Linked List Data Structure
+ */
+
 /* INTERNAL CONSTANT DEFINITIONS */
 
 /* INTERNAL TYPE DEFINITIONS */

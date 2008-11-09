@@ -27,6 +27,12 @@
 *
 *
 *--------------------------------------------------------*/
+
+/**
+ * @file
+ * @brief Doubly Linked List Data Structure
+ */
+
 #ifndef linked_list_h_
 #define linked_list_h_
 

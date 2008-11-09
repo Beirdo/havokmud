@@ -27,6 +27,12 @@
 *
 *--------------------------------------------------------*/
 
+/**
+ * @file
+ * @brief Queue Data Structure
+ */
+
+
 #ifndef queue_h_
 #define queue_h_
 

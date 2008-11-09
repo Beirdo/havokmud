@@ -27,6 +27,12 @@
 *
 *
 *--------------------------------------------------------*/
+
+/**
+ * @file
+ * @brief Circular Buffer Data Structure
+ */
+
 #ifndef buffer_h_
 #define buffer_h_
 

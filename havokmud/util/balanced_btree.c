@@ -34,6 +34,12 @@
 #include <string.h>
 #include "logging.h"
 
+/**
+ * @file
+ * @brief Balanced Binary Tree Data Structure
+ */
+
+
 /* INTERNAL CONSTANT DEFINITIONS */
 
 /* INTERNAL TYPE DEFINITIONS */

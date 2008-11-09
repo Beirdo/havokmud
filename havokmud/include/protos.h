@@ -1,3 +1,9 @@
+
+/**
+ * @file
+ * @brief OLD!  List of all function prototypes.
+ */
+
 #ifndef _protos_h
 #define _protos_h
 
@@ -3970,7 +3976,6 @@ void            do_mobTell2(struct char_data *ch,
 FILE           *MakeZoneFile(struct char_data *c, int zone);
 int             SaveZoneFile(FILE * fp, int start_room, int end_room);
 FILE           *OpenZoneFile(struct char_data *c, int zone);
-void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 
 void ShowHates(struct char_data *ch, char *buffer);
 void ShowFears(struct char_data *ch, char *buffer);

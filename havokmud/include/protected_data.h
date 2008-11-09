@@ -27,6 +27,12 @@
 *
 *
 *--------------------------------------------------------*/
+
+/**
+ * @file
+ * @brief Protected Data Structure (access controlled by a mutex)
+ */
+
 #ifndef protected_data_h_
 #define protected_data_h_
 

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2008 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
 * $Id$
 *
-* Copyright 2005 Gavin Hurlbut
+* Copyright 2008 Gavin Hurlbut
 * All rights reserved
 *
 * Comments :
@@ -29,22 +29,40 @@
 *----------------------------------------------------------
 */
 
+/**
+ * @file
+ * @brief Some global setup for the compiler, global macros
+ */
+
+
 #ifndef environment_h_
 #define environment_h_
 
 #ifdef __GNUC__
 /* We are compiling with GCC */
 
+/** 
+ * @def _UNUSED_
+ * @brief Allows a variable to never be accessed but still be compiled in 
+ */
 #define _UNUSED_ __attribute__ ((unused))
+
+/** 
+ * @def _PACKED_
+ * @brief Forces data structures not to word-align each member 
+ */
 #define _PACKED_ __attribute__ ((packed))
+
 #ifndef __cplusplus
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 #endif
+
 #ifndef _REENTRANT
 #define _REENTRANT
 #endif
+
 #define _THREAD_SAFE
 
 #else
@@ -94,6 +112,11 @@ typedef unsigned long long int uint64;
 #endif
 
 
+/**
+ * @brief Does a forced conversion to bool (can be an lval as well as rval)
+ * @param x the data item to treat as a bool
+ * @return TRUE if x != 0, FALSE if x == 0
+ */
 #define BOOL(x)  ((x) ? TRUE : FALSE)
 
 /**
@@ -140,14 +163,50 @@ typedef unsigned long long int uint64;
 #define PTR_AT_OFFSET(offset,buffer)    ((void *)((char *)(buffer) + \
                                                   (int)(offset)))
 
+/**
+ * @brief Gives the minimum of the two input values
+ * @param x first value to compare
+ * @param y second value to compare
+ * @return The minimum of x and y
+ */
 #define MIN(x,y)                    ( (x) < (y) ? (x) : (y) )
+
+/**
+ * @brief Gives the maximum of the two input values
+ * @param x first value to compare
+ * @param y second value to compare
+ * @return The maximum of x and y
+ */
 #define MAX(x,y)                    ( (x) > (y) ? (x) : (y) )
 
+/**
+ * @brief Gives a boolean output that indicates whether or not the bit "bit" is
+ *        set in the word "flag"
+ * @param flag The word to test against
+ * @param bit Which bit to test
+ * @return TRUE if the bit is set, FALSE otherwise
+ */
 #define IS_SET(flag, bit)           ( ((flag) & (bit)) != 0 )
 
+/**
+ * @brief Gives a boolean output that indicates whether or not the bit "bit" is
+ *        set in the word at offset "offset" within "buffer"
+ * @param buffer A buffer containing an arbitrary structure
+ * @param offset The offset within buffer that contains the uint32 flag word to
+ *        test
+ * @param bit Which bit to test
+ * @return TRUE if the bit is set, FALSE otherwise
+ */
 #define IS_SET_FLAG(buffer, offset, bit)    \
-                IS_SET( (*(long *)PTR_AT_OFFSET((offset),(buffer))), bit )
+                IS_SET( (*(uint32 *)PTR_AT_OFFSET((offset),(buffer))), bit )
 
+/**
+ * @brief Gives a boolean output that indicates whether or not the object "obj"
+ *        has the stats bit "stat" set
+ * @param obj The object to check
+ * @param stat Which stats bit to test
+ * @return TRUE if the bit is set, FALSE otherwise
+ */
 #define IS_OBJ_STAT(obj,elem,stat) (IS_SET((obj)->elem,stat))
 
 /**

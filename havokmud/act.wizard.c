@@ -5876,7 +5876,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     }
 
     fprintf(f, "#%ld\n", vnum);
-    write_mob_to_file(mob, f);
+    mobileWriteToFile(mob, f);
     fclose(f);
     mobileInsert(mob, vnum);
     Log("Mobile %s saved as vnum %ld", mob->player.name, vnum);

@@ -25,6 +25,12 @@
 *
 */
 
+/**
+ * @file
+ * @brief Balanced Binary Tree Structures
+ */
+
+
 #ifndef balanced_btree_h_
 #define balanced_btree_h_
 
