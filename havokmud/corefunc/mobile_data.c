@@ -447,7 +447,7 @@ void mobileWrite(struct char_data *mob, void * mob_fi)
     }
 }
 
-void InitScripts(void)
+void mobileInitScripts(void)
 {
     char            buf[255],
                     buf2[255];

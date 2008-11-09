@@ -393,7 +393,7 @@ void boot_db(void)
      */
     script_data = (struct scripts *) malloc(sizeof(struct scripts));
     CommandSetup();
-    InitScripts();
+    mobileInitScripts();
 #endif
 
 #ifdef NOTYET

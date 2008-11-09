@@ -3175,7 +3175,7 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
     db_load_textfiles();
 
     Log("Initializing Scripts.");
-    InitScripts();
+    mobileInitScripts();
 
     /*
      * jdb -- you don't appear to re-install the scripts after you reset

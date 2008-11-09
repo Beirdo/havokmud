@@ -531,7 +531,6 @@ int             load(void);
 void            gr(int s);
 int             workhours(void);
 void            reboot_text(struct char_data *ch, char *arg, int cmd);
-void            InitScripts(void);
 void            FreeZone(int zone_nr);
 
 /*
