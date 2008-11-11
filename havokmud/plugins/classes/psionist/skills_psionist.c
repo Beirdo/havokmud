@@ -11,7 +11,6 @@
 
 #include "protos.h"
 
-extern struct char_data *character_list;
 extern long     SystemFlags;
 extern int      ArenaNoGroup,
                 ArenaNoAssist,
@@ -2325,6 +2324,9 @@ void mind_psychic_impersonation(int level, struct char_data *ch,
         return;
     }
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (k = character_list; k; k = k->next) {
         if (k->specials.hunting == victim) {
             k->specials.hunting = 0;

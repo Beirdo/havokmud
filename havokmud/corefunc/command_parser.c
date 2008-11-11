@@ -90,8 +90,13 @@ void JustLoggedIn( PlayerStruct_t *player )
     load_char_objs(ch);
     SendOutput(player, WELC_MESSG);
 
+    /**
+     * @todo check where this character_list crap was going
+     */
+#if 0
     ch->next = character_list;
     character_list = ch;
+#endif
 
     homeroom = 3001;
     if (ch->in_room == NOWHERE || ch->in_room == AUTO_RENT) {

@@ -37,6 +37,9 @@ void do_disguise(struct char_data *ch, char *argument, int cmd)
     }
 
     if (number(1, 101) < ch->skills[SKILL_DISGUISE].learned) {
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (k = character_list; k; k = k->next) {
             if (k->specials.hunting == ch) {
                 k->specials.hunting = 0;

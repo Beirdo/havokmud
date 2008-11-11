@@ -68,7 +68,6 @@ int             CanSail(struct obj_data *obj, int direction);
 
 
 extern struct room_data *world;
-extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern struct time_info_data time_info;
 extern struct weather_data weather_info;
@@ -721,6 +720,9 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                                 "It seems to last forever.");
         return (TRUE);
     case 7:
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (!IS_NPC(i) && !number(0, 5)) {
                 if (!strcmp(GET_NAME(i), "Celestian")) {
@@ -771,6 +773,9 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         command_interpreter(ch, "say Bad news.  Termites.");
         return (TRUE);
     case 13:
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (!IS_NPC(i) && !number(0, 30)) {
                 sprintf(buf, "force %s shout I love Celestian!", GET_NAME(i));
@@ -805,6 +810,9 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         command_interpreter(ch, "say Does he say 'Good morning citizens.'?");
         return (TRUE);
     case 20:
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (!IS_NPC(i) && !number(0, 30)) {
                 sprintf(buf, "shout Top of the morning to you %s!", 
@@ -890,6 +898,9 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         break;
     case 34:
         if (number(0, 50) == 0) {
+            /**
+             * @todo Convert to new LinkedList methodology
+             */
             for (i = character_list; i; i = i->next) {
                 if ((index = mobileIndex(i->nr)) && 
                     index->func == Inquisitor) {
@@ -922,6 +933,9 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         command_interpreter(ch, "say Any questions?");
         return (TRUE);
     case 38:
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (!IS_NPC(i) && !number(0, 20) && i->in_room != NOWHERE) {
                 sprintf(buf, "force %s save", GET_NAME(i));
@@ -2516,6 +2530,9 @@ int keystone(struct char_data *ch, int cmd, char *arg,
             }
         }
 
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (t = character_list; t; t = t->next) {
             if (roomFindNum(ch->in_room)->zone == 
                 roomFindNum(t->in_room)->zone) {
@@ -4092,6 +4109,9 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
     PGuard = (struct char_data *) FindMobInRoomWithFunction(ch->in_room,
                                                             PrisonGuard);
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (t = character_list, i = 0; t; t = t2) {
         t2 = t->next;
         if (PGuard->in_room == t->in_room && PGuard != t && !IS_IMMORTAL(t)) {

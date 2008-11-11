@@ -1619,6 +1619,9 @@ void down_river(int pulse)
         return;
     }
 
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (ch = character_list; ch; ch = tmp) {
         tmp = ch->next;
 
@@ -2731,6 +2734,9 @@ void CallForGuard(struct char_data *ch, struct char_data *vict,
     if (lev == 0) {
         lev = 3;
     }
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (i = character_list; i && lev > 0; i = i->next) {
         if (IS_NPC(i) && i != ch && !i->specials.fighting) {
             if (i->nr == type1) {
@@ -3120,6 +3126,9 @@ void TeleportPulseStuff(int pulse)
         tick = 2;
     }
 
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (ch = character_list; ch; ch = next) {
         next = ch->next;
         if (IS_MOB(ch)) {
@@ -3725,6 +3734,9 @@ void RiverPulseStuff(int pulse)
     }
 
     if (!number(0, 4)) {
+        /**
+         * @todo convert to using new LinkedList methods
+         */
         for (ch = character_list; ch; ch = tmp) {
             tmp = ch->next;
             /*
@@ -4414,6 +4426,9 @@ struct char_data *FindMobDiffZoneSameRace(struct char_data *ch)
 
     num = number(1, 100);
 
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (t = character_list; t; t = t->next, num--) {
         if (GET_RACE(t) == GET_RACE(ch) && IS_NPC(t) && !IS_PC(t) && !num) {
             rp1 = roomFindNum(ch->in_room);
@@ -4826,12 +4841,18 @@ void IncrementZoneNr(int nr)
         return;
     }
     if (nr >= 0) {
+        /**
+         * @todo convert to using new LinkedList methods
+         */
         for (c = character_list; c; c = c->next) {
             if (c->specials.zone >= nr) {
                 c->specials.zone++;
             }
         }
     } else {
+        /**
+         * @todo convert to using new LinkedList methods
+         */
         for (c = character_list; c; c = c->next) {
             if (c->specials.zone >= nr) {
                 c->specials.zone--;

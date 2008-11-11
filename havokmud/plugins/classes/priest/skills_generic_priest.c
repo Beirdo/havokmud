@@ -418,6 +418,9 @@ void spell_commune(int level, struct char_data *ch,
         return;
     }
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (c = character_list; c; c = c->next) {
         rp = roomFindNum(c->in_room);
         if (!rp) {

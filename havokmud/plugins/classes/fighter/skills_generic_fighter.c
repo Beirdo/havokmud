@@ -474,6 +474,9 @@ void do_bellow(struct char_data *ch, char *arg, int cmd)
                      "your combat abilities.$c0007\n\r", ch);
         gain_exp(ch, 100);
 
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (vict = character_list; vict; vict = tmp) {
             tmp = vict->next;
             if (ch->in_room == vict->in_room && ch != vict &&

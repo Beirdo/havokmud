@@ -47,8 +47,6 @@ struct wizlistgen {
 int             top_of_world = 99999;   /* ref to the top element of world
                                          */
 
-struct char_data *character_list = 0;   /* global l-list of chars */
-
 struct zone_data *zone_table;   /* table of reset data */
 int             top_of_zone_table = 0;
 struct player_index_element *player_table = 0;  /* index to player file */
@@ -3182,6 +3180,10 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
      * the script db
      */
 
+
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (p = character_list; p; p = p->next) {
         for (i = 0; i < top_of_scripts; i++) {
             if (script_data[i].vnum == p->nr) {

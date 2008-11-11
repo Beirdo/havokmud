@@ -447,6 +447,9 @@ void mobileWrite(struct char_data *mob, void * mob_fi)
     }
 }
 
+/**
+ * @todo redo this to use the db
+ */
 void mobileInitScripts(void)
 {
     char            buf[255],
@@ -470,6 +473,9 @@ void mobileInitScripts(void)
      * -yes, just in case the script file was removed, saves pointer probs
      */
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (mob = character_list; mob; mob = mob->next) {
         if (IS_MOB(mob) && IS_SET(mob->specials.act, ACT_SCRIPT)) {
             mob->commandp = 0;

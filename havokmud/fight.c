@@ -3547,6 +3547,9 @@ void perform_violence(int pulse)
     /*
      * charging loop
      */
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (ch = character_list; ch; ch = ch->next) {
         /*
          * If charging deal with that

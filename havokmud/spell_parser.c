@@ -1992,6 +1992,9 @@ void affect_update(int pulse)
     int             regenroom = 0;
     struct index_data *index;
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i; i = next_char) {
         next_char = i->next;
         /*

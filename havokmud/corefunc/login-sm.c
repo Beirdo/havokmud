@@ -848,6 +848,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /*
          * Check if disconnected ...
          */
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
             if ((!strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch)) 
                  && !tmp_ch->playerDesc && !IS_NPC(tmp_ch)) ||

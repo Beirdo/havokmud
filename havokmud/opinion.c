@@ -749,8 +749,10 @@ void ZeroFeared(struct char_data *ch, struct char_data *v)
 void DeleteHatreds(struct char_data *ch)
 {
     struct char_data *i;
-    extern struct char_data *character_list;
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i; i = i->next) {
         if (Hates(i, ch)) {
             RemHated(i, ch);
@@ -761,8 +763,10 @@ void DeleteHatreds(struct char_data *ch)
 void DeleteFears(struct char_data *ch)
 {
     struct char_data *i;
-    extern struct char_data *character_list;
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i; i = i->next) {
         if (Fears(i, ch)) {
             RemFeared(i, ch);

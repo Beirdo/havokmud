@@ -14,7 +14,6 @@ extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
 #endif
-extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern struct str_app_type str_app[];
 extern struct dex_app_type dex_app[];
@@ -1487,6 +1486,9 @@ struct char_data *get_char(char *name)
     if (!(number = get_number(&tmp))) {
         return (0);
     }
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list, j = 1; i && (j <= number); i = i->next) {
         if (isname(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1495,6 +1497,9 @@ struct char_data *get_char(char *name)
             j++;
         }
     }
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list, j = 1; i && (j <= number); i = i->next) {
         if (isname2(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1513,6 +1518,9 @@ struct char_data *get_char_num(int nr)
 {
     struct char_data *i;
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i; i = i->next) {
         if (i->nr == nr) {
             return (i);
@@ -1703,6 +1711,9 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
     }
 
     if (IS_NPC(ch)) {
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (k = character_list; k; k = k->next) {
             if (k->specials.hunting) {
                 if (k->specials.hunting == ch) {
@@ -1720,6 +1731,9 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
             }
         }
     } else {
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (k = character_list; k; k = k->next) {
             if (k->specials.hunting && k->specials.hunting == ch) {
                 k->specials.hunting = 0;
@@ -1740,6 +1754,9 @@ void extract_char_smarter(struct char_data *ch, long saveroom)
      * pull the char from the list 
      */
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     if (ch == character_list) {
         character_list = ch->next;
     } else {
@@ -1877,6 +1894,9 @@ struct char_data *get_char_vis_world(struct char_data *ch, char *name,
         return (0);
     }
     j = count ? *count : 1;
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i && (j <= number); i = i->next) {
         if (isname(tmp, GET_NAME(i))) {
             if (CAN_SEE(ch, i)) {
@@ -1888,6 +1908,9 @@ struct char_data *get_char_vis_world(struct char_data *ch, char *name,
         }
     }
     j = count ? *count : 1;
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i && (j <= number); i = i->next) {
         if (isname2(tmp, GET_NAME(i))) {
             if (CAN_SEE(ch, i)) {

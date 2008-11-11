@@ -1779,6 +1779,9 @@ void spell_fireball(int level, struct char_data *ch,
         return;
     }
     dam = dice(level, 8);
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
         rdam = dam;
         temp = tmp_victim->next;
@@ -2508,6 +2511,9 @@ void spell_incendiary_cloud(int level, struct char_data *ch,
     act("Billowing clouds of incendiary gases pour from $n's fingertips!",
         FALSE, ch, 0, 0, TO_ROOM);
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
         rdam = dam;
         temp = tmp_victim->next;

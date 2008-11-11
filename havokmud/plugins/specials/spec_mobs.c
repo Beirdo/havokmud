@@ -29,7 +29,6 @@
 
 #define AST_MOB_NUM 2715
 
-extern struct char_data *character_list;
 extern struct time_info_data time_info;
 extern struct weather_data weather_info;
 extern struct QuestItem QuestList[4][IMMORTAL];
@@ -687,6 +686,9 @@ int Keftab(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
          * find a victim
          */
 
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (!IS_NPC(ch)) {
                 targ_item = SWORD_ANCIENTS;
@@ -3511,6 +3513,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 ch->generic++;
                 return (FALSE);
             } else if (ch->generic == 21) {
+                /**
+                 * @todo Convert to new LinkedList methodology
+                 */
                 for (i = character_list; i; i = i->next) {
                     if (IS_MOB(i) && i->nr == WHO_TO_HUNT) {
                         found = TRUE;
@@ -3553,6 +3558,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 spell_fly_group(40, ch, 0, 0);
                 return (FALSE);
             } else if (ch->generic == 23) {
+                /**
+                 * @todo Convert to new LinkedList methodology
+                 */
                 for (i = character_list; i; i = i->next) {
                     if (IS_MOB(i) && i->nr == WHO_TO_HUNT) {
                         found = TRUE;
@@ -3637,6 +3645,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (IS_MOB(i) && i->nr == WHO_TO_HUNT) {
                 found = TRUE;
@@ -3651,6 +3662,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (IS_MOB(i) && i->nr == WHO_TO_CALL) {
                 index = mobileIndex(i->nr);
@@ -10956,7 +10970,9 @@ int janaurius(struct char_data *ch, int cmd, char *arg,
     }
     if ((target = ch->specials.fighting)) {
         ch->generic = 1;
-        /** @todo use the tree to search */
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (i = character_list; i; i = i->next) {
             if (i->nr == 51166) {
                 AddHated(i, target);
@@ -12065,6 +12081,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
          * on person or in container in room
          */
         temp = 0;
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (tempchar = character_list; tempchar;
              tempchar = tempchar->next) {
             if (HasObject(tempchar, PHYLOBJVNUM)) {

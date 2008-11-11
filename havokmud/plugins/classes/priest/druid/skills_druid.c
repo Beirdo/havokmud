@@ -1631,6 +1631,9 @@ void spell_reincarnate(int level, struct char_data *ch,
 
                 reset_char(newch);
 
+                /**
+                 * @todo Convert to new LinkedList methodology
+                 */
                 newch->next = character_list;
                 character_list = newch;
 

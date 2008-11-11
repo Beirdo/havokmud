@@ -247,6 +247,9 @@ void check_mobile_activity(int pulse)
 {
     register struct char_data *ch;
 
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (ch = character_list; ch; ch = ch->next) {
         if (IS_MOB(ch) && ch->specials.fighting) {
             if (ch->specials.tick_to_lag) {
@@ -896,7 +899,9 @@ void PulseMobiles(int type)
     struct char_data       *ch;
     struct index_data      *index;
 
-    /** @todo reimplement with tree/list */
+    /**
+     * @todo convert to using new LinkedList methods
+     */
     for (ch = character_list; ch; ch = ch->next) {
         if (IS_MOB(ch) && (index = mobileIndex(ch->nr)) && index->func) {
             (*index->func) (ch, 0, "", ch, type);

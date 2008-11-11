@@ -1257,6 +1257,9 @@ void spell_earthquake(int level, struct char_data *ch,
     send_to_char("The earth trembles beneath your feet!\n\r", ch);
     act("$n makes the earth tremble and shiver", FALSE, ch, 0, 0, TO_ROOM);
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
         temp = tmp_victim->next;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {

@@ -37,11 +37,6 @@ void            construct_who_list(char *buf, int cmd,
 int             init_socket(int port);
 
 /*
- * external vars 
- */
-extern struct char_data *character_list;
-
-/*
  * internal vars 
  */
 extern int      dimd_s;

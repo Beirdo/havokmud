@@ -3107,6 +3107,9 @@ int which_number_mobile(struct char_data *ch, struct char_data *mob)
     int             number;
 
     name = fname(mob->player.name);
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list, number = 0; i; i = i->next) {
         if (isname(name, i->player.name) && i->in_room != NOWHERE) {
             number++;
@@ -3275,6 +3278,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     init_string_block(&sb);
 
+    /**
+     * @todo Convert to new LinkedList methodology
+     */
     for (i = character_list; i; i = i->next) {
         if (isname(name, i->player.name) && CAN_SEE(ch, i)) {
             if (i->in_room != NOWHERE && 

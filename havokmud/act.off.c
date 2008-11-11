@@ -24,7 +24,6 @@ extern char    *att_kick_miss_ch[];
 extern char    *att_kick_kill_room[];
 extern char    *att_kick_kill_victim[];
 extern char    *att_kick_kill_ch[];
-extern struct char_data *character_list;
 extern const char *fight_styles[];
 extern int      ArenaNoGroup,
                 ArenaNoAssist,

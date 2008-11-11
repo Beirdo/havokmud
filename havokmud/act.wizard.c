@@ -5457,6 +5457,9 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!strcmp(arg, "alldead")) {
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         for (victim = character_list; victim; victim = victim->next) {
             if (IS_LINKDEAD(victim) &&
                 !IS_SET(victim->specials.act, ACT_POLYSELF)) {
@@ -5559,6 +5562,9 @@ void do_ghost(struct char_data *ch, char *argument, int cmd)
 
         reset_char(tmp_ch);
         load_char_objs(tmp_ch);
+        /**
+         * @todo Convert to new LinkedList methodology
+         */
         tmp_ch->next = character_list;
         character_list = tmp_ch;
         tmp_ch->specials.tick = plr_tick_count++;

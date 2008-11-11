@@ -15,7 +15,6 @@
  * extern variables 
  */
 
-extern struct char_data *character_list;
 
 int RecGetObjRoom(struct obj_data *obj)
 {
@@ -104,6 +103,9 @@ void MakeSound(int pulse)
 
     /*
      *   mobiles
+     */
+    /**
+     * @todo Convert to new LinkedList methodology
      */
     for (ch = character_list; ch; ch = ch->next) {
         if (IS_NPC(ch) && (ch->player.sounds) && !number(0, 5) && 
