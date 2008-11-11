@@ -459,6 +459,7 @@ void mobileInitScripts(void)
     int             i,
                     count;
     struct char_data *mob;
+    extern struct char_data *character_list;
 
     if (!script_data) {
         top_of_scripts = 0;
