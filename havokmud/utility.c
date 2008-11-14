@@ -1050,555 +1050,118 @@ int getabunch(char *name, char *newname)
     return (num);
 }
 
+typedef struct {
+    int     base;
+    int     phit;
+    int     sab;
+} ExperienceTable_t;
+
+static ExperienceTable_t experienceTable[] = {
+    { 5, 1, 10 },           /* 0 */
+    { 10, 1, 15 },          /* 1 */
+    { 20, 2, 20 },          /* 2 */
+    { 35, 3, 25 },          /* 3 */
+    { 60, 4, 30 },          /* 4 */
+    { 90, 5, 40 },          /* 5 */
+    { 150, 6, 75 },         /* 6 */
+    { 225, 8, 125 },        /* 7 */
+    { 600, 12, 175 },       /* 8 */
+    { 900, 14, 300 },       /* 9 */
+    { 1100, 15, 450 },      /* 10 */
+    { 1300, 16, 700 },      /* 11 */
+    { 1550, 17, 700 },      /* 12 */
+    { 1800, 18, 950 },      /* 13 */
+    { 2100, 19, 950 },      /* 14 */
+    { 2400, 20, 1250 },     /* 15 */
+    { 2700, 23, 1250 },     /* 16 */
+    { 3000, 25, 1550 },     /* 17 */
+    { 3500, 28, 1550 },     /* 18 */
+    { 4000, 30, 2100 },     /* 19 */
+    { 4500, 33, 2100 },     /* 20 */
+    { 5000, 35, 2600 },     /* 21 */
+    { 6000, 40, 3000 },     /* 22 */
+    { 7000, 45, 3500 },     /* 23 */
+    { 8000, 50, 4000 },     /* 24 */
+    { 9000, 55, 4500 },     /* 25 */
+    { 10000, 60, 5000 },    /* 26 */
+    { 12000, 70, 6000 },    /* 27 */
+    { 14000, 80, 7000 },    /* 28 */
+    { 16000, 90, 8000 },    /* 29 */
+    { 20000, 100, 10000 },  /* 30 */
+    { 22000, 120, 12000 },  /* 31 */
+    { 22000, 120, 12000 },  /* 32 */
+    { 22000, 120, 12000 },  /* 33 */
+    { 22000, 120, 12000 },  /* 34 */
+    { 32000, 140, 14000 },  /* 35 */
+    { 32000, 140, 14000 },  /* 36 */
+    { 32000, 140, 14000 },  /* 37 */
+    { 32000, 140, 14000 },  /* 38 */
+    { 32000, 140, 14000 },  /* 39 */
+    { 42000, 160, 16000 },  /* 40 */
+    { 42000, 160, 16000 },  /* 41 */
+    { 52000, 180, 20000 },  /* 42 */
+    { 52000, 180, 20000 },  /* 43 */
+    { 72000, 200, 24000 },  /* 44 */
+    { 72000, 200, 24000 },  /* 45 */
+    { 92000, 225, 28000 },  /* 46 */
+    { 92000, 225, 28000 },  /* 47 */
+    { 122000, 250, 32000 }, /* 48 */
+    { 122000, 250, 32000 }, /* 49 */
+    { 150000, 275, 36000 }, /* 50 */
+    { 200000, 300, 40000 }, /* 51+ */
+};
+static int experienceTableCount = NELEMS(experienceTable);
+
+
 int DetermineExp(struct char_data *mob, int exp_flags)
 {
-
-    int             base;
-    int             phit;
-    int             sab;
+    ExperienceTable_t  *entry;
+    int                 index;
 
     if (exp_flags == 0) {
         exp_flags = 1;
     }
+
     /*
      * reads in the monster, and adds the flags together for simplicity, 1
      * exceptional ability is 2 special abilities
      */
-
-    if (GetMaxLevel(mob) < 0) {
-        return (1);
-    }
-    switch (GetMaxLevel(mob)) {
-
-    case 0:
-        base = 5;
-        phit = 1;
-        sab = 10;
-        break;
-
-    case 1:
-        base = 10;
-        phit = 1;
-        sab = 15;
-        break;
-
-    case 2:
-        base = 20;
-        phit = 2;
-        sab = 20;
-        break;
-
-    case 3:
-        base = 35;
-        phit = 3;
-        sab = 25;
-        break;
-
-    case 4:
-        base = 60;
-        phit = 4;
-        sab = 30;
-        break;
-
-    case 5:
-        base = 90;
-        phit = 5;
-        sab = 40;
-        break;
-
-    case 6:
-        base = 150;
-        phit = 6;
-        sab = 75;
-        break;
-
-    case 7:
-        base = 225;
-        phit = 8;
-        sab = 125;
-        break;
-
-    case 8:
-        base = 600;
-        phit = 12;
-        sab = 175;
-        break;
-
-    case 9:
-        base = 900;
-        phit = 14;
-        sab = 300;
-        break;
-
-    case 10:
-        base = 1100;
-        phit = 15;
-        sab = 450;
-        break;
-
-    case 11:
-        base = 1300;
-        phit = 16;
-        sab = 700;
-        break;
-
-    case 12:
-        base = 1550;
-        phit = 17;
-        sab = 700;
-        break;
-
-    case 13:
-        base = 1800;
-        phit = 18;
-        sab = 950;
-        break;
-
-    case 14:
-        base = 2100;
-        phit = 19;
-        sab = 950;
-        break;
-
-    case 15:
-        base = 2400;
-        phit = 20;
-        sab = 1250;
-        break;
-
-    case 16:
-        base = 2700;
-        phit = 23;
-        sab = 1250;
-        break;
-
-    case 17:
-        base = 3000;
-        phit = 25;
-        sab = 1550;
-        break;
-
-    case 18:
-        base = 3500;
-        phit = 28;
-        sab = 1550;
-        break;
-
-    case 19:
-        base = 4000;
-        phit = 30;
-        sab = 2100;
-        break;
-
-    case 20:
-        base = 4500;
-        phit = 33;
-        sab = 2100;
-        break;
-
-    case 21:
-        base = 5000;
-        phit = 35;
-        sab = 2600;
-        break;
-
-    case 22:
-        base = 6000;
-        phit = 40;
-        sab = 3000;
-        break;
-
-    case 23:
-        base = 7000;
-        phit = 45;
-        sab = 3500;
-        break;
-
-    case 24:
-        base = 8000;
-        phit = 50;
-        sab = 4000;
-        break;
-
-    case 25:
-        base = 9000;
-        phit = 55;
-        sab = 4500;
-        break;
-
-    case 26:
-        base = 10000;
-        phit = 60;
-        sab = 5000;
-        break;
-
-    case 27:
-        base = 12000;
-        phit = 70;
-        sab = 6000;
-        break;
-
-    case 28:
-        base = 14000;
-        phit = 80;
-        sab = 7000;
-        break;
-
-    case 29:
-        base = 16000;
-        phit = 90;
-        sab = 8000;
-        break;
-
-    case 30:
-        base = 20000;
-        phit = 100;
-        sab = 10000;
-        break;
-
-    case 32:
-    case 33:
-    case 34:
-    case 31:
-        base = 22000;
-        phit = 120;
-        sab = 12000;
-        break;
-
-    case 35:
-    case 36:
-    case 37:
-    case 38:
-    case 39:
-        base = 32000;
-        phit = 140;
-        sab = 14000;
-        break;
-
-    case 40:
-    case 41:
-        base = 42000;
-        phit = 160;
-        sab = 16000;
-        break;
-
-    case 42:
-    case 43:
-        base = 52000;
-        phit = 180;
-        sab = 20000;
-        break;
-
-    case 44:
-    case 45:
-        base = 72000;
-        phit = 200;
-        sab = 24000;
-        break;
-
-    case 46:
-    case 47:
-        base = 92000;
-        phit = 225;
-        sab = 28000;
-        break;
-
-    case 48:
-    case 49:
-        base = 122000;
-        phit = 250;
-        sab = 32000;
-        break;
-
-    case 50:
-        base = 150000;
-        phit = 275;
-        sab = 36000;
-        break;
-
-    default:
-        base = 200000;
-        phit = 300;
-        sab = 40000;
-        break;
-
+    index = GetMaxLevel(mob);
+    if( index < 0 ) {
+        return( 1 );
     }
 
-    return (base + (phit * GET_HIT(mob)) + (sab * exp_flags));
+    if( index > experienceTableCount ) {
+        index = experienceTableCount - 1;
+    }
+
+    entry = &experienceTable[index];
+    return( entry->base + (entry->phit * GET_HIT(mob)) + 
+            (entry->sab * exp_flags) );
 }
 
 int GetExpFlags(struct char_data *mob, int exp)
 {
 
-    int             base;
-    int             phit;
-    int             sab;
+    ExperienceTable_t  *entry;
+    int                 index;
 
     /*
      * reads in the monster, and adds the flags together for simplicity, 1
      * exceptional ability is 2 special abilities
      */
 
-    if (GetMaxLevel(mob) < 0)
-        return (1);
-
-    switch (GetMaxLevel(mob)) {
-
-    case 0:
-        base = 5;
-        phit = 1;
-        sab = 10;
-        break;
-
-    case 1:
-        base = 10;
-        phit = 1;
-        sab = 15;
-        break;
-
-    case 2:
-        base = 20;
-        phit = 2;
-        sab = 20;
-        break;
-
-    case 3:
-        base = 35;
-        phit = 3;
-        sab = 25;
-        break;
-
-    case 4:
-        base = 60;
-        phit = 4;
-        sab = 30;
-        break;
-
-    case 5:
-        base = 90;
-        phit = 5;
-        sab = 40;
-        break;
-
-    case 6:
-        base = 150;
-        phit = 6;
-        sab = 75;
-        break;
-
-    case 7:
-        base = 225;
-        phit = 8;
-        sab = 125;
-        break;
-
-    case 8:
-        base = 600;
-        phit = 12;
-        sab = 175;
-        break;
-
-    case 9:
-        base = 900;
-        phit = 14;
-        sab = 300;
-        break;
-
-    case 10:
-        base = 1100;
-        phit = 15;
-        sab = 450;
-        break;
-
-    case 11:
-        base = 1300;
-        phit = 16;
-        sab = 700;
-        break;
-
-    case 12:
-        base = 1550;
-        phit = 17;
-        sab = 700;
-        break;
-
-    case 13:
-        base = 1800;
-        phit = 18;
-        sab = 950;
-        break;
-
-    case 14:
-        base = 2100;
-        phit = 19;
-        sab = 950;
-        break;
-
-    case 15:
-        base = 2400;
-        phit = 20;
-        sab = 1250;
-        break;
-
-    case 16:
-        base = 2700;
-        phit = 23;
-        sab = 1250;
-        break;
-
-    case 17:
-        base = 3000;
-        phit = 25;
-        sab = 1550;
-        break;
-
-    case 18:
-        base = 3500;
-        phit = 28;
-        sab = 1550;
-        break;
-
-    case 19:
-        base = 4000;
-        phit = 30;
-        sab = 2100;
-        break;
-
-    case 20:
-        base = 4500;
-        phit = 33;
-        sab = 2100;
-        break;
-
-    case 21:
-        base = 5000;
-        phit = 35;
-        sab = 2600;
-        break;
-
-    case 22:
-        base = 6000;
-        phit = 40;
-        sab = 3000;
-        break;
-
-    case 23:
-        base = 7000;
-        phit = 45;
-        sab = 3500;
-        break;
-
-    case 24:
-        base = 8000;
-        phit = 50;
-        sab = 4000;
-        break;
-
-    case 25:
-        base = 9000;
-        phit = 55;
-        sab = 4500;
-        break;
-
-    case 26:
-        base = 10000;
-        phit = 60;
-        sab = 5000;
-        break;
-
-    case 27:
-        base = 12000;
-        phit = 70;
-        sab = 6000;
-        break;
-
-    case 28:
-        base = 14000;
-        phit = 80;
-        sab = 7000;
-        break;
-
-    case 29:
-        base = 16000;
-        phit = 90;
-        sab = 8000;
-        break;
-
-    case 30:
-        base = 20000;
-        phit = 100;
-        sab = 10000;
-        break;
-
-    case 32:
-    case 33:
-    case 34:
-    case 31:
-        base = 22000;
-        phit = 120;
-        sab = 12000;
-        break;
-
-    case 35:
-    case 36:
-    case 37:
-    case 38:
-    case 39:
-        base = 32000;
-        phit = 140;
-        sab = 14000;
-        break;
-
-    case 40:
-    case 41:
-        base = 42000;
-        phit = 160;
-        sab = 16000;
-        break;
-
-    case 42:
-    case 43:
-        base = 52000;
-        phit = 180;
-        sab = 20000;
-        break;
-
-    case 44:
-    case 45:
-        base = 72000;
-        phit = 200;
-        sab = 24000;
-        break;
-
-    case 46:
-    case 47:
-        base = 92000;
-        phit = 225;
-        sab = 28000;
-        break;
-
-    case 48:
-    case 49:
-        base = 122000;
-        phit = 250;
-        sab = 32000;
-        break;
-
-    case 50:
-        base = 150000;
-        phit = 275;
-        sab = 36000;
-        break;
-
-    default:
-        base = 200000;
-        phit = 300;
-        sab = 40000;
-        break;
-
+    index = GetMaxLevel(mob);
+    if( index < 0 ) {
+        return( 1 );
     }
 
-    return ((exp - base - (phit * GET_HIT(mob))) / sab);
+    if( index > experienceTableCount ) {
+        index = experienceTableCount - 1;
+    }
+
+    entry = &experienceTable[index];
+    return( (exp - entry->base - (entry->phit * GET_HIT(mob))) / entry->sab );
 }
 
 
