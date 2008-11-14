@@ -1602,6 +1602,122 @@ int GetExpFlags(struct char_data *mob, int exp)
 }
 
 
+bool down_river_condition( struct char_data *ch, void *arg ) 
+{
+    struct room_data   *rp;
+    int                 pulse;
+
+    if( !arg ) {
+        return( FALSE );
+    }
+    pulse = *(int *)pulse;
+
+    if( IS_NPC(ch) ) {
+        return( FALSE );
+    }
+
+    if( ch->in_room == NOWHERE ) {
+        return( FALSE );
+    }
+
+    rp = roomFindNum(ch->in_room);
+    if( !rp ) {
+        return( FALSE );
+    }
+
+    if( rp->sector_type != SECT_WATER_NOSWIM ) {
+        return( FALSE );
+    }
+
+    if( pulse % rp->river_speed != 0 ) {
+        return( FALSE );
+    }
+
+    if( rp->river_dir <= 5 && rp->river_dir >= 0 ) {
+        return( TRUE );
+    }
+
+    return( FALSE );
+}
+
+
+bool down_river_callback( struct char_data *ch, void *arg )
+{
+    struct obj_data *obj_object,
+                   *next_obj;
+    int             rd,
+                    or;
+    char            buf[80];
+    struct room_data *rp;
+    LinkedListItem_t   *item,
+                       *nextItem;
+
+    rp = roomFindNum(ch->in_room);
+    rd = rp->river_dir;
+
+    LinkedListLock( rp->contentList );
+    for( item = rp->contentList->head; item; item = nextItem ) {
+        nextItem = item->next;
+        obj_object = CONTENT_LINK_TO_OBJ(item);
+        if (rp->dir_option[rd]) {
+            objectTakeFromRoom(obj_object, LOCKED);
+            objectPutInRoom(obj_object,
+                            rp->dir_option[rd]->to_room, UNLOCKED);
+        }
+    }
+    LinkedListUnlock( rp->contentList );
+
+    /*
+     * flyers don't get moved
+     */
+    if( IS_AFFECTED(ch, AFF_FLYING) || MOUNTED(ch) ) {
+        return( FALSE );
+    }
+
+    if (rp->dir_option[rd] && rp->dir_option[rd]->to_room &&
+        (EXIT(ch, rd)->to_room != NOWHERE)) {
+        if (ch->specials.fighting) {
+            stop_fighting(ch);
+        }
+
+        if (IS_IMMORTAL(ch) &&
+            IS_SET(ch->specials.act, PLR_NOHASSLE)) {
+            send_to_char("The waters swirl beneath your feet.\n\r", ch);
+        } else {
+            sprintf(buf, "You drift %s...\n\r", direction[rd].dir);
+            send_to_char(buf, ch);
+            if (RIDDEN(ch)) {
+                send_to_char(buf, RIDDEN(ch));
+            }
+
+            char_from_room(ch);
+            if (RIDDEN(ch)) {
+                char_from_room(RIDDEN(ch));
+                char_to_room(RIDDEN(ch), rp->dir_option[rd]->to_room);
+            }
+
+            char_to_room(ch, rp->dir_option[rd]->to_room);
+
+            do_look(ch, NULL, 15);
+            if (RIDDEN(ch)) {
+                do_look(RIDDEN(ch), NULL, 15);
+            }
+        }
+
+        if (IS_SET(RM_FLAGS(ch->in_room), DEATH) && !IS_IMMORTAL(ch)) {
+            if (RIDDEN(ch)) {
+                NailThisSucker(RIDDEN(ch));
+            }
+            NailThisSucker(ch);
+        }
+    } else {
+        return( FALSE );
+    }
+
+    return( TRUE );
+}
+
+
 void down_river(int pulse)
 {
     struct char_data *ch,
@@ -1619,79 +1735,8 @@ void down_river(int pulse)
         return;
     }
 
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (ch = character_list; ch; ch = tmp) {
-        tmp = ch->next;
-
-        if (!IS_NPC(ch) && ch->in_room != NOWHERE &&
-            (rp = roomFindNum(ch->in_room)) &&
-            rp->sector_type == SECT_WATER_NOSWIM &&
-            !(pulse % rp->river_speed) &&
-            rp->river_dir <= 5 && rp->river_dir >= 0) {
-
-            rd = rp->river_dir;
-
-            LinkedListLock( rp->contentList );
-            for( item = rp->contentList->head; item; item = nextItem ) {
-                nextItem = item->next;
-                obj_object = CONTENT_LINK_TO_OBJ(item);
-                if (rp->dir_option[rd]) {
-                    objectTakeFromRoom(obj_object, LOCKED);
-                    objectPutInRoom(obj_object,
-                                    rp->dir_option[rd]->to_room, UNLOCKED);
-                }
-            }
-            LinkedListUnlock( rp->contentList );
-
-            /*
-             * flyers don't get moved
-             */
-            if (!IS_AFFECTED(ch, AFF_FLYING) && !MOUNTED(ch)) {
-                if (rp && rp->dir_option[rd] &&
-                    rp->dir_option[rd]->to_room &&
-                    (EXIT(ch, rd)->to_room != NOWHERE)) {
-                    if (ch->specials.fighting) {
-                        stop_fighting(ch);
-                    }
-
-                    if (IS_IMMORTAL(ch) &&
-                        IS_SET(ch->specials.act, PLR_NOHASSLE)) {
-                        send_to_char("The waters swirl beneath your feet.\n\r",
-                                     ch);
-                    } else {
-                        sprintf(buf, "You drift %s...\n\r", direction[rd].dir);
-                        send_to_char(buf, ch);
-                        if (RIDDEN(ch)) {
-                            send_to_char(buf, RIDDEN(ch));
-                        }
-
-                        char_from_room(ch);
-                        if (RIDDEN(ch)) {
-                            char_from_room(RIDDEN(ch));
-                            char_to_room(RIDDEN(ch),
-                                         rp->dir_option[rd]->to_room);
-                        }
-
-                        char_to_room(ch, rp->dir_option[rd]->to_room);
-
-                        do_look(ch, NULL, 15);
-                        if (RIDDEN(ch)) {
-                            do_look(RIDDEN(ch), NULL, 15);
-                        }
-                    }
-                    if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                        !IS_IMMORTAL(ch)) {
-                        if (RIDDEN(ch)) {
-                            NailThisSucker(RIDDEN(ch));
-                        }
-                        NailThisSucker(ch);
-                    }
-                }
-            }
-        }
-    }
+    playerFindAll( down_river_condition, &pulse, down_river_callback, NULL,
+                   NULL );
 }
 
 void do_WorldSave(struct char_data *ch, char *argument, int cmd)
@@ -2697,63 +2742,100 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
 #endif
 }
 
+bool CallForGuard_cond( struct char_data *i, void *arg )
+{
+    struct char_data   *ch;
+
+    if( !i || !arg ) {
+        return( FALSE );
+    }
+
+    ch = (struct char_data *)arg;
+
+    if( IS_NPC(i) && i != ch && !i->specials.fighting ) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+    
+struct CallForGuardArgs_t {
+    bool                stop;
+    int                 lev;
+    int                 type[2];
+    struct char_data   *victim;
+};
+
+bool CallForGuard_callback( struct char_data *i, void *arg )
+{
+    struct CallForGuardArgs_t  *args;
+
+    if( !arg ) {
+        return( FALSE );
+    }
+
+    args = (struct CallForGuardArgs_t *)arg;
+
+    if( !args->victim ) {
+        return( FALSE );
+    }
+
+    if (i->nr == args->type[0]) {
+        if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) ) {
+            SetHunting(i, args->vict);
+            args->lev--;
+            args->stop = ( args->lev <= 0 ? TRUE : FALSE );
+            return( TRUE );
+        }
+    } else if (i->nr == args->type[1]) {
+        if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) ) {
+            SetHunting(i, args->vict);
+            args->lev -= 2;
+            args->stop = ( args->lev <= 0 ? TRUE : FALSE );
+            return( TRUE );
+        }
+    }
+
+    return( FALSE );
+}
+
 void CallForGuard(struct char_data *ch, struct char_data *vict,
                   int lev, int area)
 {
     struct char_data *i;
-    int             type1,
-                    type2;
+    struct CallForGuardArgs_t   args;
 
     switch (area) {
     case MIDGAARD:
-        type1 = 3060;
-        type2 = 3069;
+        args.type[0] = 3060;
+        args.type[1] = 3069;
         break;
     case NEWTHALOS:
-        type1 = 3661;
-        type2 = 3682;
+        args.type[0] = 3661;
+        args.type[1] = 3682;
         break;
     case TROGCAVES:
-        type1 = 21114;
-        type2 = 21118;
+        args.type[0] = 21114;
+        args.type[1] = 21118;
         break;
     case OUTPOST:
-        type1 = 21138;
-        type2 = 21139;
+        args.type[0] = 21138;
+        args.type[1] = 21139;
         break;
     case PRYDAIN:
-        type1 = 6606;
-        type2 = 6614;
+        args.type[0] = 6606;
+        args.type[1] = 6614;
         break;
     default:
-        type1 = 3060;
-        type2 = 3069;
+        args.type[0] = 3060;
+        args.type[1] = 3069;
         break;
     }
 
-    if (lev == 0) {
-        lev = 3;
-    }
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (i = character_list; i && lev > 0; i = i->next) {
-        if (IS_NPC(i) && i != ch && !i->specials.fighting) {
-            if (i->nr == type1) {
-                if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
-                    vict) {
-                    SetHunting(i, vict);
-                    lev--;
-                }
-            } else if (i->nr == type2) {
-                if (!number(0, 5) && !IS_SET(i->specials.act, ACT_HUNTING) &&
-                    vict) {
-                    SetHunting(i, vict);
-                    lev -= 2;
-                }
-            }
-        }
-    }
+    args.lev = ( lev == 0 ? 3 : lev );
+    args.stop = ( args.lev <= 0 ? TRUE : FALSE );
+
+    playerFindAll( CallForGuard_cond, ch, CallForGuard_callback, &args,
+                   &args.stop );
 }
 
 void StandUp(struct char_data *ch)
@@ -3094,15 +3176,25 @@ int CheckForBlockedMove(struct char_data *ch, int cmd, char *arg, int room,
     return FALSE;
 }
 
-void TeleportPulseStuff(int pulse)
+bool TeleportPulseStuff_cond( struct char_data *ch, void *arg )
 {
-    struct char_data *ch;
+    if( !ch ) {
+        return( FALSE );
+    }
+
+    if( IS_MOB(ch) || IS_PC(ch) ) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool TeleportPulseStuff_callback( struct char_data *ch, void *arg )
+{
     struct char_data *next,
                    *tmp,
                    *bk,
                    *n2;
-    int             tick = 0,
-                    tm;
+    int             tick;
     struct room_data *rp,
                    *dest;
     struct obj_data *obj_object,
@@ -3110,6 +3202,99 @@ void TeleportPulseStuff(int pulse)
     LinkedListItem_t   *item,
                        *nextItem;
 
+    if( !ch || !arg ) {
+        return( FALSE );
+    }
+
+    tick = *(int *)arg;
+
+    if (IS_MOB(ch)) {
+        if (ch->specials.tick == tick && !ch->specials.fighting) {
+            mobile_activity(ch);
+            return( TRUE );
+        }
+        return( FALSE );
+    } 
+    
+    if (IS_PC(ch)) {
+        rp = roomFindNum(ch->in_room);
+        if (rp && rp->tele_targ > 0 && rp->tele_targ != rp->number &&
+            rp->tele_time > 0 && !(pulse % rp->tele_time)) {
+
+            dest = roomFindNum(rp->tele_targ);
+            if (!dest) {
+                Log("invalid tele_targ");
+                return( FALSE );
+            }
+
+            LinkedListLock( rp->contentList );
+            for( item = rp->contentList->head; item; item = nextItem ) {
+                nextItem = item->next;
+                obj_object = CONTENT_LINK_TO_OBJ(item);
+                objectTakeFromRoom(obj_object, LOCKED);
+                objectPutInRoom(obj_object, rp->tele_targ, UNLOCKED);
+            }
+            LinkedListUnlock( rp->contentList );
+
+            bk = 0;
+
+            while (rp->people) {
+                tmp = rp->people;
+                if (!tmp) {
+                    break;
+                }
+                if (tmp == bk) {
+                    break;
+                }
+                bk = tmp;
+
+                /*
+                 * the list of people in the room has changed
+                 */
+                char_from_room(tmp);
+                char_to_room(tmp, rp->tele_targ);
+
+                if (IS_SET(TELE_LOOK, rp->tele_mask) && IS_PC(tmp)) {
+                    do_look(tmp, NULL, 15);
+                }
+
+                if (IS_SET(dest->room_flags, DEATH) && !IS_IMMORTAL(tmp)) {
+                    if (tmp == next) {
+                        next = tmp->next;
+                    }
+                    NailThisSucker(tmp);
+                    return( TRUE );
+                }
+
+                if (dest->sector_type == SECT_AIR) {
+                    n2 = tmp->next;
+                    if (check_falling(tmp)) {
+                        if (tmp == next) {
+                            next = n2;
+                        }
+                    }
+                }
+            }
+
+            if (IS_SET(TELE_COUNT, rp->tele_mask)) {
+                /*
+                 * reset it for next count
+                 */
+                rp->tele_time = 0;
+            }
+
+            if (IS_SET(TELE_RANDOM, rp->tele_mask)) {
+                rp->tele_time = number(1, 10) * 100;
+            }
+        }
+        return( TRUE );
+    }
+
+    return( FALSE );
+}
+
+void TeleportPulseStuff(int pulse)
+{
     /*
      * check_mobile_activity(pulse); Teleport(pulse);
      */
@@ -3126,88 +3311,8 @@ void TeleportPulseStuff(int pulse)
         tick = 2;
     }
 
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (ch = character_list; ch; ch = next) {
-        next = ch->next;
-        if (IS_MOB(ch)) {
-            if (ch->specials.tick == tick && !ch->specials.fighting) {
-                mobile_activity(ch);
-            }
-        } else if (IS_PC(ch)) {
-            rp = roomFindNum(ch->in_room);
-            if (rp && rp->tele_targ > 0 && rp->tele_targ != rp->number &&
-                rp->tele_time > 0 && !(pulse % rp->tele_time)) {
-
-                dest = roomFindNum(rp->tele_targ);
-                if (!dest) {
-                    Log("invalid tele_targ");
-                    continue;
-                }
-
-                LinkedListLock( rp->contentList );
-                for( item = rp->contentList->head; item; item = nextItem ) {
-                    nextItem = item->next;
-                    obj_object = CONTENT_LINK_TO_OBJ(item);
-                    objectTakeFromRoom(obj_object, LOCKED);
-                    objectPutInRoom(obj_object, rp->tele_targ, UNLOCKED);
-                }
-                LinkedListUnlock( rp->contentList );
-
-                bk = 0;
-
-                while (rp->people) {
-                    tmp = rp->people;
-                    if (!tmp) {
-                        break;
-                    }
-                    if (tmp == bk) {
-                        break;
-                    }
-                    bk = tmp;
-
-                    /*
-                     * the list of people in the room has changed
-                     */
-                    char_from_room(tmp);
-                    char_to_room(tmp, rp->tele_targ);
-
-                    if (IS_SET(TELE_LOOK, rp->tele_mask) && IS_PC(tmp)) {
-                        do_look(tmp, NULL, 15);
-                    }
-
-                    if (IS_SET(dest->room_flags, DEATH) && !IS_IMMORTAL(tmp)) {
-                        if (tmp == next) {
-                            next = tmp->next;
-                        }
-                        NailThisSucker(tmp);
-                        continue;
-                    }
-
-                    if (dest->sector_type == SECT_AIR) {
-                        n2 = tmp->next;
-                        if (check_falling(tmp)) {
-                            if (tmp == next) {
-                                next = n2;
-                            }
-                        }
-                    }
-                }
-
-                if (IS_SET(TELE_COUNT, rp->tele_mask)) {
-                    /*
-                     * reset it for next count
-                     */
-                    rp->tele_time = 0;
-                }
-
-                if (IS_SET(TELE_RANDOM, rp->tele_mask)) {
-                    rp->tele_time = number(1, 10) * 100;
-                }
-            }
-        }
-    }
+    playerFindAll( TeleportPulseStuff_cond, NULL, TeleportPulseStuff_callback,
+                   &tick, NULL );
 }
 
 char           *advicelist[] = {
@@ -3643,6 +3748,39 @@ void TrollRegenPulseStuff(int pulse)
     }
 }
 
+bool MakeSound_cond( struct char_data *ch, void *arg )
+{
+    if (!IS_PC(ch) && ch->player.sounds && !number(0, 5) &&
+        strcmp(ch->player.sounds, "")) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool MakeSound_callback( struct char_data *ch, void *arg )
+{
+    if (ch->specials.default_pos > POSITION_SLEEPING) {
+        if (GET_POS(ch) > POSITION_SLEEPING) {
+            /*
+             * Make the sound
+             */
+            MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+        } else if (GET_POS(ch) == POSITION_SLEEPING) {
+            /*
+             * snore
+             */
+            sprintf(buffer, "%s snores loudly.\n\r", ch->player.short_descr);
+            MakeNoise(ch->in_room, buffer, "You hear a loud snore nearby.\n\r");
+        }
+    } else if (GET_POS(ch) == ch->specials.default_pos) {
+        /*
+         * Make the sound
+         */
+        MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+    }
+}
+
+
 void RiverPulseStuff(int pulse)
 {
     struct descriptor_data *i;
@@ -3733,43 +3871,11 @@ void RiverPulseStuff(int pulse)
         }
     }
 
+    /**
+     * @todo WTF is the MakeSound stuff doing inside RiverPulseStuff()??
+     */
     if (!number(0, 4)) {
-        /**
-         * @todo convert to using new LinkedList methods
-         */
-        for (ch = character_list; ch; ch = tmp) {
-            tmp = ch->next;
-            /*
-             * mobiles
-             */
-            if (!IS_PC(ch) && ch->player.sounds && !number(0, 5) &&
-                strcmp(ch->player.sounds, "")) {
-                /* don't make sound if empty sound string */
-                if (ch->specials.default_pos > POSITION_SLEEPING) {
-                    if (GET_POS(ch) > POSITION_SLEEPING) {
-                        /*
-                         * Make the sound
-                         */
-                        MakeNoise(ch->in_room, ch->player.sounds,
-                                  ch->player.distant_snds);
-                    } else if (GET_POS(ch) == POSITION_SLEEPING) {
-                        /*
-                         * snore
-                         */
-                        sprintf(buffer, "%s snores loudly.\n\r",
-                                ch->player.short_descr);
-                        MakeNoise(ch->in_room, buffer,
-                                  "You hear a loud snore nearby.\n\r");
-                    }
-                } else if (GET_POS(ch) == ch->specials.default_pos) {
-                    /*
-                     * Make the sound
-                     */
-                    MakeNoise(ch->in_room, ch->player.sounds,
-                              ch->player.distant_snds);
-                }
-            }
-        }
+        playerFindAll( MakeSound_cond, NULL, MakeSound_callback, NULL, NULL );
     }
 }
 
@@ -4417,28 +4523,80 @@ int NumCharmedFollowersInRoom(struct char_data *ch)
     return (0);
 }
 
-struct char_data *FindMobDiffZoneSameRace(struct char_data *ch)
-{
+struct FMDZSR_Args_t {
     int             num;
-    struct char_data *t;
+    struct char_data *ch;
+};
+
+bool FMDZSR_cond( struct char_data *t, void *arg )
+{
+    struct FMDZSR_Args_t   *args;
+
+    if( !t || !arg ) {
+        return( FALSE );
+    }
+
+    args = (RMDZSR_Args_t *)arg;
+
+    if( !args->ch ) {
+        return( FALSE );
+    }
+
+    args.num--;
+
+    if( args->num < 0 ) {
+        return( TRUE );
+    }
+
+    if (GET_RACE(t) == GET_RACE(args->ch) && IS_NPC(t) && !IS_PC(t) && 
+        !args->num) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool FMDZSR_callback( struct char_data *t, void *arg )
+{
+    struct FMDZSR_Args_t   *args;
     struct room_data *rp1,
                    *rp2;
 
-    num = number(1, 100);
-
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (t = character_list; t; t = t->next, num--) {
-        if (GET_RACE(t) == GET_RACE(ch) && IS_NPC(t) && !IS_PC(t) && !num) {
-            rp1 = roomFindNum(ch->in_room);
-            rp2 = roomFindNum(t->in_room);
-            if (rp1->zone != rp2->zone) {
-                return (t);
-            }
-        }
+    if( !t || !arg ) {
+        return( FALSE );
     }
-    return (NULL);
+
+    args = (RMDZSR_Args_t *)arg;
+
+    if( !args->ch ) {
+        return( FALSE );
+    }
+
+    if( args->num < 0 ) {
+        return( TRUE );
+    }
+
+    rp1 = roomFindNum(args->ch->in_room);
+    rp2 = roomFindNum(t->in_room);
+    if (rp1->zone != rp2->zone) {
+        return (t);
+    }
+}
+
+struct char_data *FindMobDiffZoneSameRace(struct char_data *ch)
+{
+    struct FMDZSR_Args_t    args;
+    bool            yes = TRUE;
+    struct char_data *t;
+
+    args.num = number(1, 100);
+    args.ch  = ch;
+
+    t = playerFindAll( FMDZSR_cond, &args, FMDZSR_callback, &args, &yes );
+    if( args.num < 0 ) {
+        return( NULL );
+    } else {
+        return( t );
+    }
 }
 
 int NoSummon(struct char_data *ch)
@@ -4833,6 +4991,33 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 #endif
 }
 
+bool IncrementZoneNr_cond( struct char_data *c, void *arg )
+{
+    int         nr;
+
+    if( !c || !arg ) {
+        return( FALSE );
+    }
+
+    nr = *(int *)arg;
+    if (c->specials.zone >= nr) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool IncrementZoneNr_incr_callback( struct char_data *c, void *arg )
+{
+    c->specials.zone++;
+    return( TRUE );
+}
+
+bool IncrementZoneNr_decr_callback( struct char_data *c, void *arg )
+{
+    c->specials.zone--;
+    return( TRUE );
+}
+
 void IncrementZoneNr(int nr)
 {
     struct char_data *c;
@@ -4841,22 +5026,12 @@ void IncrementZoneNr(int nr)
         return;
     }
     if (nr >= 0) {
-        /**
-         * @todo convert to using new LinkedList methods
-         */
-        for (c = character_list; c; c = c->next) {
-            if (c->specials.zone >= nr) {
-                c->specials.zone++;
-            }
+        playerFindAll( IncrementZoneNr_cond, &nr, IncrementZoneNr_incr_callback,
+                       NULL, NULL );
         }
     } else {
-        /**
-         * @todo convert to using new LinkedList methods
-         */
-        for (c = character_list; c; c = c->next) {
-            if (c->specials.zone >= nr) {
-                c->specials.zone--;
-            }
+        playerFindAll( IncrementZoneNr_cond, &nr, IncrementZoneNr_decr_callback,
+                       NULL, NULL );
         }
     }
 }

@@ -243,24 +243,41 @@ void MobScavenge(struct char_data *ch)
     }
 }
 
+bool check_mobile_activity_cond( struct char_data *ch, void *arg )
+{
+    if( !ch ) {
+        return( FALSE );
+    }
+
+    if (IS_MOB(ch) && ch->specials.fighting) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool check_mobile_activity_callback( struct char_data *ch, void *arg )
+{
+    if( !ch ) {
+        return( FALSE );
+    }
+
+    if (ch->specials.tick_to_lag) {
+        ch->specials.tick_to_lag -= PULSE_VIOLENCE;
+        return( FALSE );
+    }
+
+    if (number(1, 20) <= GET_DEX(ch)) {
+        mobile_activity(ch);
+        return( TRUE );
+    }
+
+    return( FALSE );
+}
+
 void check_mobile_activity(int pulse)
 {
-    register struct char_data *ch;
-
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (ch = character_list; ch; ch = ch->next) {
-        if (IS_MOB(ch) && ch->specials.fighting) {
-            if (ch->specials.tick_to_lag) {
-                ch->specials.tick_to_lag -= PULSE_VIOLENCE;
-                continue;
-            }
-            if (number(1, 20) <= GET_DEX(ch)) {
-                mobile_activity(ch);
-            }
-        }
-    }
+    playerFindAll( check_mobile_activity_cond, NULL,
+                   check_mobile_activity_callback, NULL, NULL );
 }
 
 void mobile_activity(struct char_data *ch)
@@ -894,19 +911,41 @@ int MobFriend(struct char_data *ch, struct char_data *f)
     return (FALSE);
 }
 
-void PulseMobiles(int type)
+
+bool PulseMobiles_cond( struct char_data *ch, void *arg )
 {
-    struct char_data       *ch;
     struct index_data      *index;
 
-    /**
-     * @todo convert to using new LinkedList methods
-     */
-    for (ch = character_list; ch; ch = ch->next) {
-        if (IS_MOB(ch) && (index = mobileIndex(ch->nr)) && index->func) {
-            (*index->func) (ch, 0, "", ch, type);
-        }
+    if( !ch ) {
+        return( FALSE );
     }
+
+    if (IS_MOB(ch) && (index = mobileIndex(ch->nr)) && index->func) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool PulseMobiles_callback( struct char_data *ch, void *arg )
+{
+    int                     type;
+    struct index_data      *index;
+
+    if( !ch || !arg ) {
+        return( FALSE );
+    }
+
+    type = *(int *)arg;
+
+    index = mobileIndex(ch->nr);
+    (*index->func) (ch, 0, "", ch, type);
+    return( TRUE );
+}
+
+void PulseMobiles(int type)
+{
+    playerFindAll( PulseMobiles_cond, NULL, PulseMobiles_callback, &type, 
+                   NULL );
 }
 
 void DoScript(struct char_data *ch)

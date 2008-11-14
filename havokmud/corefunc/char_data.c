@@ -186,6 +186,37 @@ int dice(int number, int size)
 }
 
 
+struct char_data *playerFindAll( bool (*cond_func)(struct char_data *, void *),
+                             void *arg,
+                             bool (*callback_func)(struct char_data *, void *), 
+                             void *arg2, bool *stopAfterFirst )
+{
+    extern struct char_data *character_list;
+    struct char_data   *ch,
+                       *tmp;
+    bool                ret;
+
+    if( !cond_func || !callback_func ) {
+        return( NULL );
+    }
+
+    /**
+     * @todo convert to using new LinkedList methods
+     */
+
+    for (ch = character_list; ch; ch = tmp) {
+        tmp = ch->next;
+
+        if( cond_func( ch, arg ) ) {
+            ret = callback_func( ch, arg2 );
+            if( ret && stopAfterFirst && *stopAfterFirst ) {
+                return( ch );
+            }
+        }
+    }
+
+    return( NULL );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

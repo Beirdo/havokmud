@@ -5437,6 +5437,47 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
     send_to_char("Nuked.\n\r", ch);
 }
 
+bool do_force_rent_cond( struct char_data *victim, void *arg )
+{
+    if( IS_LINKDEAD(victim) && !IS_SET(victim->specials.act, ACT_POLYSELF) ) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool do_force_rent_callback( struct char_data *victim, void *arg )
+{
+    struct char_data *ch;
+    struct obj_cost cost;
+
+    if (GetMaxLevel(victim) >= GetMaxLevel(ch)) {
+        if (CAN_SEE(ch, victim)) {
+            send_to_char("You can't forcerent them!\n\r", ch);
+        }
+        return( FALSE );
+    } else {
+        do_save(victim, "", 0);
+        if (victim->in_room != NOWHERE) {
+            char_from_room(victim);
+        }
+        char_to_room(victim, 4);
+        if (victim->desc) {
+            close_socket(victim->desc);
+        }
+        victim->desc = 0;
+        if (recep_offer(victim, NULL, &cost, TRUE)) {
+            cost.total_cost = 100;
+            objectSaveForChar(victim, &cost, 1);
+        } else {
+            Log("%s had a failed recp_offer, they are losing EQ!",
+                GET_NAME(victim));
+        }
+        extract_char(victim);
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
 void do_force_rent(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg;
@@ -5457,37 +5498,8 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!strcmp(arg, "alldead")) {
-        /**
-         * @todo Convert to new LinkedList methodology
-         */
-        for (victim = character_list; victim; victim = victim->next) {
-            if (IS_LINKDEAD(victim) &&
-                !IS_SET(victim->specials.act, ACT_POLYSELF)) {
-                if (GetMaxLevel(victim) >= GetMaxLevel(ch)) {
-                    if (CAN_SEE(ch, victim)) {
-                        send_to_char("You can't forcerent them!\n\r", ch);
-                    }
-                } else {
-                    do_save(victim, "", 0);
-                    if (victim->in_room != NOWHERE) {
-                        char_from_room(victim);
-                    }
-                    char_to_room(victim, 4);
-                    if (victim->desc) {
-                        close_socket(victim->desc);
-                    }
-                    victim->desc = 0;
-                    if (recep_offer(victim, NULL, &cost, TRUE)) {
-                        cost.total_cost = 100;
-                        objectSaveForChar(victim, &cost, 1);
-                    } else {
-                        Log("%s had a failed recp_offer, they are losing EQ!",
-                            GET_NAME(victim));
-                    }
-                    extract_char(victim);
-                }
-            }
-        }
+        playerFindAll( do_force_rent_cond, NULL, do_force_rent_callback,
+                       ch, NULL );
         return;
     }
 
