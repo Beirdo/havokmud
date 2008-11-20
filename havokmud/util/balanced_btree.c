@@ -768,8 +768,10 @@ BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
         retitem = item;
     } else if( res > 0 ) {
         /* item is greater, do a range check against end */
-        res = btree->keyCompare( item->key, end );
-        if( res <= 0 ) {
+        if( end ) {
+            res = btree->keyCompare( item->key, end );
+        }
+        if( res <= 0 || !end ) {
             /* item <= end */
             retitem = item;
         }
