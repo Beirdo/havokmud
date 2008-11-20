@@ -338,7 +338,7 @@ int main(int argc, char **argv)
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
 #ifdef SITELOCK
-    banHostTree = BalancedBTreeCreate( BTREE_KEY_STRING );
+    banHostTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
 #endif
 
     /*
@@ -349,8 +349,8 @@ int main(int argc, char **argv)
     db_setup();
     db_initial_load();
 
-    descNameTree = BalancedBTreeCreate( BTREE_KEY_STRING );
-    descNumTree  = BalancedBTreeCreate( BTREE_KEY_INT );
+    descNameTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+    descNumTree  = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
 
     LogPrintNoArg(LOG_CRIT, "Signal trapping.");
     signal_setup();

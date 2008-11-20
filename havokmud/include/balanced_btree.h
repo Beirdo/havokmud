@@ -80,7 +80,8 @@ extern "C" {
 #endif
 
 /* Function Prototypes */
-BalancedBTree_t *BalancedBTreeCreate( BalancedBTreeKeyType_t type );
+BalancedBTree_t *BalancedBTreeCreate( BalancedBTree_t *btree,
+                                      BalancedBTreeKeyType_t type );
 void BalancedBTreeDestroy( BalancedBTree_t *btree );
 void BalancedBTreeLock( BalancedBTree_t *btree );
 void BalancedBTreeUnlock( BalancedBTree_t *btree );

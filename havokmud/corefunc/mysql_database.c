@@ -2835,7 +2835,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         index->number = 0;
         index->data = NULL;
         index->func = NULL;
-        index->list = LinkedListCreate();
+        index->list = LinkedListCreate(NULL);
 
         data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
@@ -2907,8 +2907,9 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
         room->func = procGetFuncByName( row[11], PROC_ROOM );
         room->light = atoi(row[12]);
 
-        room->contentList = LinkedListCreate();
-        room->contentKeywordTree = BalancedBTreeCreate( BTREE_KEY_STRING );
+        room->contentList = LinkedListCreate(NULL);
+        room->contentKeywordTree = BalancedBTreeCreate( NULL, 
+                                                        BTREE_KEY_STRING );
 
         /* Load the room_flags and tele_mask */
         data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));

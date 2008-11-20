@@ -70,9 +70,9 @@ long            mob_count = 0;
 
 void initializeMobiles( void )
 {
-    mobileMasterTree = BalancedBTreeCreate( BTREE_KEY_INT );
-    mobileKeywordTree = BalancedBTreeCreate( BTREE_KEY_STRING );
-    mobileTypeTree = BalancedBTreeCreate( BTREE_KEY_INT );
+    mobileMasterTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
+    mobileKeywordTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+    mobileTypeTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
 #if 0
     db_load_mobile_tree( mobileMasterTree );
 #endif
@@ -105,7 +105,7 @@ void mobileInsert(struct char_data *mob, long vnum)
     StringToKeywords( GET_NAME(mob), &index->keywords );
     index->number = 0;
     index->func = NULL;
-    index->list = LinkedListCreate();
+    index->list = LinkedListCreate(NULL);
 
     item->key = &index->vnum;
     item->item = (void *)index;

@@ -21,7 +21,7 @@ LDFLAGS = @LDFLAGS@
 
 
 SRCS =	linked_list.c queue.c buffer.c protected_data.c balanced_btree.c
-SRCS += text_process.c
+SRCS += text_process.c memory.c
 ARCHIVE =	libhavokutils.a
 
 OBJS = ${SRCS:.c=.o}

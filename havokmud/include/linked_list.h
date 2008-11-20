@@ -80,7 +80,7 @@ extern "C" {
 #endif
 
 /* Function Prototypes */
-LinkedList_t *LinkedListCreate( void );
+LinkedList_t *LinkedListCreate( LinkedList_t *list );
 void LinkedListDestroy( LinkedList_t *list );
 void LinkedListLock( LinkedList_t *list );
 void LinkedListUnlock( LinkedList_t *list );

@@ -547,8 +547,8 @@ int special(struct char_data *ch, int cmd, char *arg)
 
 void InitializeCommands( void )
 {
-    commandName = BalancedBTreeCreate( BTREE_KEY_STRING );
-    commandNum  = BalancedBTreeCreate( BTREE_KEY_INT );
+    commandName = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+    commandNum  = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
 
     SetupCommands( coreCommands, coreCommandCount );
 }

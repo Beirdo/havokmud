@@ -83,9 +83,9 @@ void save_room(int room);
 
 void initializeObjects( void )
 {
-    objectMasterTree = BalancedBTreeCreate( BTREE_KEY_INT );
-    objectKeywordTree = BalancedBTreeCreate( BTREE_KEY_STRING );
-    objectTypeTree = BalancedBTreeCreate( BTREE_KEY_INT );
+    objectMasterTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
+    objectKeywordTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+    objectTypeTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
     db_load_object_tree( objectMasterTree );
 }
 
@@ -120,7 +120,7 @@ void objectInsert(struct obj_data *obj, long vnum)
     }
     index->number = 0;
     index->func = NULL;
-    index->list = LinkedListCreate();
+    index->list = LinkedListCreate(NULL);
 
     item->key = &index->vnum;
     item->item = (void *)index;
@@ -220,7 +220,7 @@ struct obj_data *objectRead(int nr)
     obj->carried_by = NULL;
     obj->equipped_by = NULL;
     obj->eq_pos = -1;
-    obj->containList = LinkedListCreate();
+    obj->containList = LinkedListCreate(NULL);
     obj->item_number = nr;
     obj->index = index;
     obj->in_obj = NULL;
@@ -1387,7 +1387,7 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
         if( key->words[i] ) {
             item = BalancedBTreeFind( tree, &key->words[i], LOCKED, FALSE );
             if( !item ) {
-                subtree = BalancedBTreeCreate( BTREE_KEY_POINTER );
+                subtree = BalancedBTreeCreate( NULL, BTREE_KEY_POINTER );
                 CREATE(item, BalancedBTreeItem_t, 1);
                 keyword = strdup( key->words[i] );
                 item->item = subtree;
@@ -1530,7 +1530,7 @@ void objectTypeTreeAdd( struct obj_data *obj )
 
     item = BalancedBTreeFind( objectTypeTree, &obj->type_flag, LOCKED, FALSE );
     if( !item ) {
-        tree = BalancedBTreeCreate( BTREE_KEY_POINTER );
+        tree = BalancedBTreeCreate( NULL, BTREE_KEY_POINTER );
         CREATE(item, BalancedBTreeItem_t, 1);
         CREATE(key, uint32, 1);
         *key = (uint32)obj->type_flag;

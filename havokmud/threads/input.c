@@ -76,7 +76,7 @@ void *InputThread( void *arg )
 
     LogPrintNoArg( LOG_NOTICE, "Starting InputThread" );
 
-    PlayerList = LinkedListCreate();
+    PlayerList = LinkedListCreate(NULL);
 
     while( 1 ) {
         connItem = (ConnInputItem_t *)QueueDequeueItem( ConnectInputQ, -1 );

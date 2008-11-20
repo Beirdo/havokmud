@@ -85,15 +85,15 @@ bool LinkedListIsLocked( LinkedList_t *list )
 }
 
 
-LinkedList_t *LinkedListCreate( void )
+LinkedList_t *LinkedListCreate( LinkedList_t *list )
 {
-    LinkedList_t *list;
-
-    list = (LinkedList_t *)malloc(sizeof(LinkedList_t));
-    if( list == NULL )
-    {
-        LogPrintNoArg( LOG_UNKNOWN, "Couldn't create linked list" );
-        return( NULL );
+    if( !list ) {
+        list = (LinkedList_t *)malloc(sizeof(LinkedList_t));
+        if( list == NULL )
+        {
+            LogPrintNoArg( LOG_UNKNOWN, "Couldn't create linked list" );
+            return( NULL );
+        }
     }
 
     list->head = NULL;

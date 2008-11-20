@@ -88,15 +88,16 @@ void BalancedBTreeUnlock( BalancedBTree_t *btree )
 }
 
 
-BalancedBTree_t *BalancedBTreeCreate( BalancedBTreeKeyType_t type )
+BalancedBTree_t *BalancedBTreeCreate( BalancedBTree_t *btree,
+                                      BalancedBTreeKeyType_t type )
 {
-    BalancedBTree_t *btree;
-
-    btree = (BalancedBTree_t *)malloc(sizeof(BalancedBTree_t));
-    if( btree == NULL )
-    {
-        LogPrintNoArg( LOG_CRIT, "Couldn't create btree" );
-        return( NULL );
+    if( !btree ) {
+        btree = (BalancedBTree_t *)malloc(sizeof(BalancedBTree_t));
+        if( btree == NULL )
+        {
+            LogPrintNoArg( LOG_CRIT, "Couldn't create btree" );
+            return( NULL );
+        }
     }
 
     btree->root = NULL;
