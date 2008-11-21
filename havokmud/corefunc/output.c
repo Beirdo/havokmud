@@ -31,6 +31,7 @@
 
 #include "environment.h"
 #include <pthread.h>
+#include "memory.h"
 #include "protos.h"
 #include "externs.h"
 #include "interthread.h"
@@ -78,7 +79,7 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
         return;
     }
 
-    outbuf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
+    outbuf = CREATE(OutputBuffer_t);
     if( !outbuf ) {
         return;
     }
@@ -89,9 +90,9 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
 
     ch = player->charData;
 
-    outbuf->buf = (char *)malloc(MAX_STRING_LENGTH);
+    outbuf->buf = CREATEN(char, MAX_STRING_LENGTH);
     if( !outbuf->buf ) {
-        free( outbuf );
+        memfree( outbuf );
         return;
     }
 
@@ -115,13 +116,13 @@ void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len )
 {
     OutputBuffer_t *buf;
 
-    buf = (OutputBuffer_t *)malloc(sizeof(OutputBuffer_t));
+    buf = CREATE(OutputBuffer_t);
     if( !buf || !string || !len ) {
         return;
     }
-    buf->buf = malloc(len);
+    buf->buf = CREATEN(char, len);
     if( !buf->buf ) {
-        free( buf );
+        memfree( buf );
         return;
     }
     memcpy(buf->buf, string, len);

@@ -31,6 +31,7 @@
 
 /* INCLUDE FILES */
 #include "environment.h"
+#include "memory.h"
 #include "queue.h"
 #include <pthread.h>
 #include <stdlib.h>
@@ -91,8 +92,8 @@ QueueObject_t * QueueCreate( uint32 numElements )
     }
     numElements = 1 << i;
 
-    queue = (QueueObject_t *)malloc(sizeof(QueueObject_t));
-    items = (QueueItem_t *)malloc(numElements * sizeof(QueueItem_t));
+    queue = CREATE(QueueObject_t);
+    items = CREATEN(QueueItem_t, numElements);
 
     queue->numElements = numElements;
     queue->numMask     = numElements - 1;
@@ -106,16 +107,16 @@ QueueObject_t * QueueCreate( uint32 numElements )
     queue->itemTable = items;
 
     /* Initialize the mutex */
-    queue->mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    queue->mutex = CREATE(pthread_mutex_t);
     status = pthread_mutex_init( queue->mutex, NULL );
 
     /* Initialize the condition variables */
     queue->full = FALSE;
-    queue->cNotFull = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
+    queue->cNotFull = CREATE(pthread_cond_t);
     status = pthread_cond_init( queue->cNotFull, NULL );
 
     queue->empty = TRUE;
-    queue->cNotEmpty = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
+    queue->cNotEmpty = CREATE(pthread_cond_t);
     status = pthread_cond_init( queue->cNotEmpty, NULL );
 
     return( queue );
@@ -322,13 +323,13 @@ void QueueClear( QueueObject_t *queue, bool freeItems )
         if( freeItems == TRUE )
         {
             /* Be sure to free all used items.  NOTE: this assumes the items 
-             * have been malloc'd.  If not, expect a segfault!
+             * have been memalloc'd.  If not, expect a segfault!
              */
             for( i = 0; i < queue->numElements; i++ )
             {
                 if( queue->itemTable[i] != NULL )
                 {
-                    free( queue->itemTable[i] );
+                    memfree( queue->itemTable[i] );
                     queue->itemTable[i] = NULL;
                 }
             }
@@ -383,12 +384,12 @@ void QueueDestroy( QueueObject_t *queue )
     /*
      * get rid of the item table
      */
-    free( queue->itemTable );
+    memfree( queue->itemTable );
 
     /*
      * get rid of the queue object
      */
-    free( queue );
+    memfree( queue );
 }
 
 void QueueLock( QueueObject_t *queue )

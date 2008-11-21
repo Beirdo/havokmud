@@ -32,6 +32,7 @@
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
+#include "memory.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -494,7 +495,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_GET_NAME:
         if (GET_NAME(ch)) {
-            free(GET_NAME(ch));
+            memfree(GET_NAME(ch));
             GET_NAME(ch) = NULL;
         }
         SendOutput(player, "What is thy name? ");
@@ -702,7 +703,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
      * wait for input of name
      */
         if (!ch) {
-            CREATE(player->charData, struct char_data, 1);
+            player->charData = CREATEN(struct char_data, 1);
             ch = player->charData;
             clear_char(ch);
             ch->playerDesc = player;
@@ -758,7 +759,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             /*
              * move forward creating new character
              */
-            CREATE(GET_NAME(ch), char, strlen(tmp_name) + 1);
+            GET_NAME(ch) = CREATEN(char, strlen(tmp_name) + 1);
             strcpy(GET_NAME(ch), CAP(tmp_name));
             EnterState(player, STATE_CONFIRM_NAME);
         }
@@ -887,7 +888,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 }
                 
                 if (ch->specials.hostip) {
-                    free(ch->specials.hostip);
+                    memfree(ch->specials.hostip);
                 }
 
                 ProtectedDataLock(player->connection->hostName);
@@ -925,7 +926,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         if (ch->specials.hostip) {
-            free(ch->specials.hostip);
+            memfree(ch->specials.hostip);
         }
         ProtectedDataLock(player->connection->hostName);
         ch->specials.hostip = 
@@ -1324,7 +1325,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             for (i = 0; i <= top_of_p_table; i++) {
                 if (!strcasecmp(player_table[i].name, GET_NAME(ch))) {
                     if (player_table[i].name) {
-                        free(player_table[i].name);
+                        memfree(player_table[i].name);
                     }
                     player_table[i].name = strdup("111111");
                     break;
@@ -1393,7 +1394,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 player->handlingQ = InputPlayerQ;
             }
 
-            stateItem = (InputStateItem_t *)malloc(sizeof(InputStateItem_t));
+            stateItem = CREATE(InputStateItem_t);
             if( !stateItem ) {
                 /*
                  * out of memory, doh!
@@ -1415,7 +1416,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 SendOutput(player, "Old description :\n\r");
                 if (ch->player.description) {
                     SendOutput(player, ch->player.description);
-                    free(ch->player.description);
+                    memfree(ch->player.description);
                 } else {
                     SendOutput(player, "None");
                 }

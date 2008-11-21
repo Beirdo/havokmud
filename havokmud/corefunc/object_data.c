@@ -29,6 +29,7 @@
 
 /* INCLUDE FILES */
 #include "environment.h"
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,12 +110,12 @@ void objectInsert(struct obj_data *obj, long vnum)
     struct index_data      *index;
     int                     i;
 
-    CREATE(index, struct index_data, 1);
-    CREATE(item, BalancedBTreeItem_t, 1);
+    index = CREATEN(struct index_data, 1);
+    item = CREATEN(BalancedBTreeItem_t, 1);
 
     index->vnum = vnum;
     index->keywords.count = obj->keywords.count;
-    CREATE(index->keywords.words, char *, obj->keywords.count);
+    index->keywords.words = CREATEN(char *, obj->keywords.count);
     for( i = 0; i < obj->keywords.count; i++ ) {
         index->keywords.words[i] = strdup( obj->keywords.words[i] );
     }
@@ -202,7 +203,7 @@ struct obj_data *objectRead(int nr)
         return( NULL );
     }
     
-    CREATE(obj, struct obj_data, 1);
+    obj = CREATEN(struct obj_data, 1);
     if (!obj) {
         LogPrintNoArg( LOG_CRIT, "Cannot create obj?!");
         return(NULL);
@@ -1378,7 +1379,7 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
     key = &obj->keywords;
 
     if( obj->keywordItem == NULL ) {
-        CREATE( obj->keywordItem, BalancedBTreeItem_t, key->count );
+        obj->keywordItem = CREATEN( BalancedBTreeItem_t, key->count );
     }
 
     BalancedBTreeLock( tree );
@@ -1388,7 +1389,7 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
             item = BalancedBTreeFind( tree, &key->words[i], LOCKED, FALSE );
             if( !item ) {
                 subtree = BalancedBTreeCreate( NULL, BTREE_KEY_POINTER );
-                CREATE(item, BalancedBTreeItem_t, 1);
+                item = CREATEN(BalancedBTreeItem_t, 1);
                 keyword = strdup( key->words[i] );
                 item->item = subtree;
                 item->key  = &keyword;
@@ -1531,8 +1532,8 @@ void objectTypeTreeAdd( struct obj_data *obj )
     item = BalancedBTreeFind( objectTypeTree, &obj->type_flag, LOCKED, FALSE );
     if( !item ) {
         tree = BalancedBTreeCreate( NULL, BTREE_KEY_POINTER );
-        CREATE(item, BalancedBTreeItem_t, 1);
-        CREATE(key, uint32, 1);
+        item = CREATEN(BalancedBTreeItem_t, 1);
+        key = CREATEN(uint32, 1);
         *key = (uint32)obj->type_flag;
         item->item = tree;
         item->key  = key;

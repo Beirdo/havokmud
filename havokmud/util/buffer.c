@@ -30,6 +30,7 @@
 
 /* INCLUDE FILES */
 #include "environment.h"
+#include "memory.h"
 #include "buffer.h"
 #include <pthread.h>
 #include <stdlib.h>
@@ -67,24 +68,24 @@ BufferObject_t * BufferCreate( uint32 size )
         return( NULL );
     }
 
-    buffer = (BufferObject_t *)malloc(sizeof(BufferObject_t));
+    buffer = CREATE(BufferObject_t);
 
-    buffer->data = (char *)malloc(size);
+    buffer->data = CREATEN(char, size);
     buffer->size = size;
     buffer->head = 0;
     buffer->tail = 0;
 
     /* Initialize the mutex */
-    buffer->mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    buffer->mutex = CREATE(pthread_mutex_t);
     status = pthread_mutex_init( buffer->mutex, NULL );
 
     /* Initialize the condition variables */
     buffer->full = FALSE;
-    buffer->cNotFull = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
+    buffer->cNotFull = CREATE(pthread_cond_t);
     status = pthread_cond_init( buffer->cNotFull, NULL );
 
     buffer->empty = TRUE;
-    buffer->cNotEmpty = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
+    buffer->cNotEmpty = CREATE(pthread_cond_t);
     status = pthread_cond_init( buffer->cNotEmpty, NULL );
 
     return( buffer );
@@ -96,7 +97,7 @@ void BufferDestroy( BufferObject_t *buffer )
         return;
     }
 
-    free( buffer->data );
+    memfree( buffer->data );
     pthread_cond_broadcast( buffer->cNotFull );
     pthread_cond_destroy( buffer->cNotFull );
 
@@ -105,7 +106,7 @@ void BufferDestroy( BufferObject_t *buffer )
 
     pthread_mutex_unlock( buffer->mutex );
     pthread_mutex_destroy( buffer->mutex );
-    free( buffer );
+    memfree( buffer );
 }
 
 void BufferLock( BufferObject_t *buffer )

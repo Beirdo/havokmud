@@ -32,6 +32,7 @@
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
+#include "memory.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -857,7 +858,7 @@ void do_siteban(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        item = CREATE(BalancedBTreeItem_t);
         if( !item ) {
             SendOutput( player, "Can't, out of memory!\n\r" );
             BalancedBTreeUnlock( banHostTree );
@@ -905,8 +906,8 @@ void do_siteban(struct char_data *ch, char *argument, int cmd)
         LogPrint( LOG_CRIT, "%s has removed host %s from the access denied "
                             "list.", GET_NAME(ch), arg2);
 
-        free( item->item );
-        free( item );
+        memfree( item->item );
+        memfree( item );
     } else if (strcasecmp(arg1, "list") == 0) {
         BalancedBTreeLock( banHostTree );
 
@@ -1114,7 +1115,7 @@ char *view_newhelp(int reportId)
         strcat(buf, buf2);
         length += strlen(buf2);
     }
-    free(report);
+    memfree(report);
 
     return( buf );
 }
@@ -1167,7 +1168,7 @@ char *view_report(int reportId)
         strcat(buf, buf2);
         length += strlen(buf2);
     }
-    free( report );
+    memfree( report );
 
     return( buf );
 }
@@ -1233,7 +1234,7 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
 
     if( buf ) {
         SendOutput( player, buf );
-        free( buf );
+        memfree( buf );
     }
 }
 

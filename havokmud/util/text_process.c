@@ -32,6 +32,7 @@
 /* INCLUDE FILES */
 #include "environment.h"
 #include "interthread.h"
+#include "memory.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -142,7 +143,7 @@ int get_number(char **name)
         *name = ppos;
 
         retval = (int)strtol( number, &ppos, 10 );
-        free( number );
+        memfree( number );
 
         if( ppos ) {
             /*
@@ -225,7 +226,7 @@ char           *strdup(const char *str)
     char           *copy;
 
     len = strlen(str) + 1;
-    if (!(copy = (char *) malloc((u_int) len))) {
+    if (!(copy = CREATEN(char, len))) {
         return ((char *) NULL);
     }
     bcopy(str, copy, len);
@@ -267,7 +268,7 @@ char *strndup(const char *s, size_t n)
 
     len = strnlen(s, n);
 
-    if (!(copy = (char *) malloc((u_int) len+1))) {
+    if (!(copy = CREATEN(char, len+1))) {
         return ((char *) NULL);
     }
     bcopy(s, copy, len);

@@ -29,6 +29,7 @@
 #include "environment.h"
 #include <pthread.h>
 #include <stdio.h>
+#include "memory.h"
 #include "balanced_btree.h"
 #include <stdlib.h>
 #include <string.h>
@@ -92,7 +93,7 @@ BalancedBTree_t *BalancedBTreeCreate( BalancedBTree_t *btree,
                                       BalancedBTreeKeyType_t type )
 {
     if( !btree ) {
-        btree = (BalancedBTree_t *)malloc(sizeof(BalancedBTree_t));
+        btree = CREATE(BalancedBTree_t);
         if( btree == NULL )
         {
             LogPrintNoArg( LOG_CRIT, "Couldn't create btree" );
@@ -138,7 +139,7 @@ void BalancedBTreeDestroy( BalancedBTree_t *btree )
     pthread_mutex_unlock( &btree->mutex );
     pthread_mutex_destroy( &btree->mutex );
 
-    free( btree );
+    memfree( btree );
 }
 
 
@@ -232,7 +233,7 @@ void BalancedBTreePrune( BalancedBTreeItem_t *item )
     }
 
     BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
-    free( item );
+    memfree( item );
 }
 
 
@@ -751,11 +752,11 @@ BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
 
     BalancedBTreeClearVisited( btree, LOCKED );
 
-    find = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+    find = CREATE(BalancedBTreeItem_t);
     find->key = begin;
 
     item = BalancedBTreeFindParent( btree, find );
-    free( find );
+    memfree( find );
 
     if( !item ) {
         item = btree->root;

@@ -31,6 +31,7 @@
 
 #define CAP(st)  (*(st) = UPPER(*(st)), st)
 
+#if 0
 #define CREATE(result, type, number)  do {\
         if (!((result) = (type *) calloc ((number), sizeof(type))))\
                 { perror("malloc failure"); abort(); }\
@@ -40,6 +41,7 @@
   if (!((result) = (type *) realloc ((result), sizeof(type) * (number))))\
                 { perror("realloc failure"); abort(); } \
                 } while(0)
+#endif
 
 #define SWITCH(a,b) { (a) ^= (b); \
                       (b) ^= (a); \

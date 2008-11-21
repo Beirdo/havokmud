@@ -29,6 +29,7 @@
 
 /* INCLUDE FILES */
 #include "environment.h"
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,7 +74,7 @@ char *KeywordsToString( Keywords_t *key, char *separator )
         }
     }
 
-    CREATE( string, char, len + 1 );
+    string = CREATEN( char, len + 1 );
     string[0] = '\0';
 
     for( i = 0; i < key->count; i++ ) {
@@ -98,7 +99,7 @@ Keywords_t *StringToKeywords( char *string, Keywords_t *key )
     }
 
     if( !key ) {
-        CREATE( key, Keywords_t, 1 );
+        key = CREATEN( Keywords_t, 1 );
     }
     memset(key, 0, sizeof(Keywords_t));
 

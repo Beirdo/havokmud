@@ -29,6 +29,7 @@
 
 /* INCLUDE FILES */
 #include "environment.h"
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,8 +99,8 @@ void mobileInsert(struct char_data *mob, long vnum)
     BalancedBTreeItem_t    *item;
     struct index_data      *index;
 
-    CREATE(index, struct index_data, 1);
-    CREATE(item, BalancedBTreeItem_t, 1);
+    index = CREATEN(struct index_data, 1);
+    item = CREATEN(BalancedBTreeItem_t, 1);
 
     index->vnum = vnum;
     StringToKeywords( GET_NAME(mob), &index->keywords );
@@ -159,7 +160,7 @@ struct char_data *mobileRead(int nr)
         return( NULL );
     }
 
-    CREATE(mob, struct char_data, 1);
+    mob = CREATEN(struct char_data, 1);
     if (!mob) {
         Log("Cannot create mob?!");
         return( NULL );
@@ -491,20 +492,20 @@ void mobileInitScripts(void)
     if (script_data) {
         for (; i < top_of_scripts; i++) {
             if (script_data[i].script) {
-                free(script_data[i].script);
+                memfree(script_data[i].script);
             }
             if (script_data[i].filename) {
-                free(script_data[i].filename);
+                memfree(script_data[i].filename);
             }
         }
         if (script_data) {
-            free(script_data);
+            memfree(script_data);
         }
         top_of_scripts = 0;
     }
 
     script_data = NULL;
-    script_data = (struct scripts *) malloc(sizeof(struct scripts));
+    script_data = CREATE(struct scripts);
 
     while (1) {
         if (fgets(buf, 254, f1) == NULL) {
@@ -534,14 +535,15 @@ void mobileInitScripts(void)
                  */
                 if (count == 0) {
                     script_data[top_of_scripts].script =
-                        (struct foo_data *)malloc(sizeof(struct foo_data));
+                                                     CREATE(struct foo_data);
                 } else {
+                    /** @todo get rid of realloc */
                     script_data[top_of_scripts].script = (struct foo_data *)
                         realloc(script_data[top_of_scripts].script,
                                 sizeof(struct foo_data) * (count + 1));
                 }
                 script_data[top_of_scripts].script[count].line =
-                    (char *) malloc(sizeof(char) * (strlen(buf) + 1));
+                    CREATEN(char, strlen(buf) + 1);
 
                 strcpy(script_data[top_of_scripts].script[count].line, buf);
 
@@ -550,7 +552,7 @@ void mobileInitScripts(void)
 
             script_data[top_of_scripts].vnum = i;
             script_data[top_of_scripts].filename =
-                (char *) malloc((strlen(buf2) + 1) * sizeof(char));
+                                            CREATEN(char, strlen(buf2) + 1);
             strcpy(script_data[top_of_scripts].filename, buf2);
             Log("Script %s assigned to mobile %d.", buf2, i);
             top_of_scripts++;

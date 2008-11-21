@@ -32,6 +32,7 @@
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
+#include "memory.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -199,7 +200,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
 #endif
 
     if (!isalpha((int)*line)) {
-        arg = (char *)malloc(strlen(line) + 2);
+        arg = CREATEN(char, strlen(line) + 2);
         if( !arg ) {
             LogPrintNoArg( LOG_CRIT, "Nasty error in command_interpreter!!!" );
             return;
@@ -227,7 +228,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     if (!cmd || GetMaxLevel(ch) < cmd->min_level) {
         SendOutput( player, "Pardon?\n\r");
         if( tmparg ) {
-            free(tmparg);
+            memfree(tmparg);
         }
         return;
     }
@@ -236,7 +237,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
         SendOutput( player, "Sorry, but that command has yet to be "
                             "implemented...\n\r" );
         if( tmparg ) {
-            free(tmparg);
+            memfree(tmparg);
         }
         return;
     }
@@ -244,7 +245,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     if (IS_AFFECTED(ch, AFF_PARALYSIS) && cmd->min_pos > POSITION_STUNNED) {
         SendOutput( player, "You are paralyzed, you can't do much!\n\r" );
         if( tmparg ) {
-            free(tmparg);
+            memfree(tmparg);
         }
         return;
     }
@@ -257,7 +258,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
         SendOutput( player, "You have been frozen in your steps, you cannot do "
                             "a thing!\n\r");
         if( tmparg ) {
-            free(tmparg);
+            memfree(tmparg);
         }
         return;
     }
@@ -298,7 +299,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
 
         }
         if( tmparg ) {
-            free(tmparg);
+            memfree(tmparg);
         }
         return;
     } 
@@ -342,7 +343,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
     }
 
     if( tmparg ) {
-        free(tmparg);
+        memfree(tmparg);
     }
 }
 
@@ -572,12 +573,12 @@ void AddCommand( CommandDef_t *cmd )
 {
     BalancedBTreeItem_t    *item;
 
-    item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+    item = CREATE(BalancedBTreeItem_t);
     item->key = &cmd->name;
     item->item = cmd;
     BalancedBTreeAdd( commandName, item, UNLOCKED, TRUE );
 
-    item = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+    item = CREATE(BalancedBTreeItem_t);
     item->key = &cmd->number;
     item->item = cmd;
     BalancedBTreeAdd( commandNum, item, UNLOCKED, TRUE );

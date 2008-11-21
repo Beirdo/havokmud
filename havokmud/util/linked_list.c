@@ -30,6 +30,7 @@
 /* INCLUDE FILES */
 #include "environment.h"
 #include <pthread.h>
+#include "memory.h"
 #include "linked_list.h"
 #include "logging.h"
 #include <stdlib.h>
@@ -88,7 +89,7 @@ bool LinkedListIsLocked( LinkedList_t *list )
 LinkedList_t *LinkedListCreate( LinkedList_t *list )
 {
     if( !list ) {
-        list = (LinkedList_t *)malloc(sizeof(LinkedList_t));
+        list = CREATE(LinkedList_t);
         if( list == NULL )
         {
             LogPrintNoArg( LOG_UNKNOWN, "Couldn't create linked list" );
@@ -111,7 +112,7 @@ void LinkedListDestroy( LinkedList_t *list )
     pthread_mutex_unlock( &list->mutex );
     pthread_mutex_destroy( &list->mutex );
 
-    free( list );
+    memfree( list );
 }
 
 void LinkedListAdd( LinkedList_t *list, LinkedListItem_t *item,

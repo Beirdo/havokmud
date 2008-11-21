@@ -30,6 +30,7 @@
 
 #include "config.h"
 #include "environment.h"
+#include "memory.h"
 #include <stdio.h>
 #include <string.h>
 #include <mysql.h>
@@ -610,7 +611,7 @@ void db_report_entry(int reportId, struct char_data *ch, char *report)
         return;
     }
 
-    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 4);
     memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
@@ -627,10 +628,10 @@ struct user_report *db_get_report(int reportId)
     pthread_mutex_t    *mutex;
     struct user_report *report;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
@@ -638,7 +639,7 @@ struct user_report *db_get_report(int reportId)
                     (void *)&report, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( report );
 }
@@ -647,7 +648,7 @@ void db_clean_report(int reportId)
 {
     MYSQL_BIND         *data;
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], reportId, MYSQL_TYPE_LONG );
@@ -689,7 +690,7 @@ void db_load_structures(void)
 
     LogPrintNoArg(LOG_CRIT, "Loading misc structures from SQL");
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     /* direction[] */
@@ -707,7 +708,7 @@ void db_load_structures(void)
                     mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finished loading misc structures from SQL");
 }
@@ -719,7 +720,7 @@ void db_load_messages(void)
 
     LogPrintNoArg(LOG_CRIT, "Loading fight messages from SQL");
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], 2, MYSQL_TYPE_LONG );
@@ -747,7 +748,7 @@ void db_load_kick_messages(void)
 
     LogPrintNoArg(LOG_CRIT, "Loading kick messages from SQL");
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], 4, MYSQL_TYPE_LONG );
@@ -771,7 +772,7 @@ void assign_mobiles( void )
 
     LogPrintNoArg(LOG_CRIT, "Loading mobile procs from SQL");
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], PROC_MOBILE, MYSQL_TYPE_LONG );
@@ -788,7 +789,7 @@ void assign_objects( void )
 
     LogPrintNoArg(LOG_CRIT, "Loading object procs from SQL");
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], PROC_OBJECT, MYSQL_TYPE_LONG );
@@ -805,7 +806,7 @@ void assign_rooms( void )
 
     LogPrintNoArg(LOG_CRIT, "Loading room procs from SQL");
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], PROC_ROOM, MYSQL_TYPE_LONG );
@@ -855,7 +856,7 @@ void db_load_textfiles(void)
 
     LogPrintNoArg(LOG_CRIT, "Loading Essential Text Files.");
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     for( i = 0; i < textfileCount; i++ ) {
@@ -864,7 +865,7 @@ void db_load_textfiles(void)
         /* Load up the defined file */
         LogPrint( LOG_CRIT, "Loading '%s' file", file->descr );
 
-        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 2);
         memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], file->id, MYSQL_TYPE_LONG );
@@ -875,7 +876,7 @@ void db_load_textfiles(void)
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 int db_save_textfile(struct char_data *ch)
@@ -918,10 +919,10 @@ int db_save_textfile(struct char_data *ch)
         break;
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    outbuf = (char *)malloc(MAX_STRING_LENGTH+2);
+    outbuf = CREATEN(char, MAX_STRING_LENGTH+2);
     memset( outbuf, 0, MAX_STRING_LENGTH+2 );
 
     strcpy(outbuf, "\n");
@@ -951,7 +952,7 @@ int db_save_textfile(struct char_data *ch)
     strcat(outbuf, "\n");
 
     /* Delete old file */
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], fileId, MYSQL_TYPE_LONG );
@@ -959,7 +960,7 @@ int db_save_textfile(struct char_data *ch)
     pthread_mutex_unlock( mutex );
 
     /* Insert new file */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], fileId, MYSQL_TYPE_LONG );
@@ -968,8 +969,8 @@ int db_save_textfile(struct char_data *ch)
     db_queue_query( 21, QueryTable, data, 3, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
-    free( outbuf );
+    memfree( mutex );
+    memfree( outbuf );
 
     return (TRUE);
 }
@@ -983,7 +984,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
     MYSQL_BIND             *data;
     pthread_mutex_t        *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
 
@@ -991,7 +992,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
      * First check to see if we have a reply to this message -- if so
      * axe it (done in the chain routine)
      */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
@@ -1001,7 +1002,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
     pthread_mutex_unlock( mutex );
 
     /* delete the message */
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], message_id, MYSQL_TYPE_LONG );
@@ -1010,7 +1011,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
     pthread_mutex_unlock( mutex );
 
     /* Renumber any following messages */
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], message_id, MYSQL_TYPE_LONG );
@@ -1019,7 +1020,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
     pthread_mutex_unlock( mutex );
 
     /* Renumber max posts for the board */
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
@@ -1027,7 +1028,7 @@ void db_delete_board_message(struct board_def *board, short message_id)
     pthread_mutex_unlock( mutex );
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 struct board_def *db_lookup_board(int vnum)
@@ -1036,10 +1037,10 @@ struct board_def *db_lookup_board(int vnum)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1047,7 +1048,7 @@ struct board_def *db_lookup_board(int vnum)
                     (void *)&board, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( board );
 }
@@ -1058,10 +1059,10 @@ struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], boardId, MYSQL_TYPE_LONG );
@@ -1070,7 +1071,7 @@ struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
                     (void *)&msg, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( msg );
 }
@@ -1082,18 +1083,18 @@ void db_free_board_message(struct bulletin_board_message *msg)
     }
 
     if( msg->author ) {
-        free( msg->author );
+        memfree( msg->author );
     }
 
     if( msg->title ) {
-        free( msg->title );
+        memfree( msg->title );
     }
 
     if( msg->text ) {
-        free( msg->text );
+        memfree( msg->text );
     }
 
-    free( msg );
+    memfree( msg );
 }
 
 typedef struct {
@@ -1110,10 +1111,10 @@ int db_get_board_replies(struct board_def *board, int msgId,
 
     args.msg = msg;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
@@ -1122,7 +1123,7 @@ int db_get_board_replies(struct board_def *board, int msgId,
                     (void *)&args, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( args.count );
 }
@@ -1137,19 +1138,19 @@ void db_free_board_replies(struct bulletin_board_message *msg, int count)
 
     for( i = 0; i < count; i++ ) {
         if( msg[i].author ) {
-            free( msg[i].author );
+            memfree( msg[i].author );
         }
 
         if( msg[i].title ) {
-            free( msg[i].title );
+            memfree( msg[i].title );
         }
 
         if( msg[i].text ) {
-            free( msg[i].text );
+            memfree( msg[i].text );
         }
     }
 
-    free( msg );
+    memfree( msg );
 }
 
 void db_post_message(struct board_def *board, 
@@ -1158,11 +1159,11 @@ void db_post_message(struct board_def *board,
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     /* Write the post */
-    data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 6);
     memset( data, 0, 6 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
@@ -1175,7 +1176,7 @@ void db_post_message(struct board_def *board,
     pthread_mutex_unlock( mutex );
 
     /* update the board's max post */
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], board->boardId, MYSQL_TYPE_LONG );
@@ -1183,14 +1184,14 @@ void db_post_message(struct board_def *board,
     pthread_mutex_unlock( mutex );
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 void db_store_mail(char *to, char *from, char *message_pointer)
 {
     MYSQL_BIND         *data;
 
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_string( &data[0], from, MYSQL_TYPE_VAR_STRING );
@@ -1205,10 +1206,10 @@ int             db_has_mail(char *recipient)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_string( &data[0], recipient, MYSQL_TYPE_VAR_STRING );
@@ -1216,7 +1217,7 @@ int             db_has_mail(char *recipient)
                     mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( count );
 }
@@ -1235,10 +1236,10 @@ int db_get_mail_ids(char *recipient, int *messageNum, int count)
     args.msgNum = messageNum;
     args.count  = count;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_string( &data[0], recipient, MYSQL_TYPE_VAR_STRING );
@@ -1247,7 +1248,7 @@ int db_get_mail_ids(char *recipient, int *messageNum, int count)
                     mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( args.count );
 }
@@ -1259,10 +1260,10 @@ char *db_get_mail_message(int messageId)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], messageId, MYSQL_TYPE_LONG );
@@ -1270,7 +1271,7 @@ char *db_get_mail_message(int messageId)
                     (void *)&msg, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( msg );
 }
@@ -1279,7 +1280,7 @@ void db_delete_mail_message(int messageId)
 {
     MYSQL_BIND         *data;
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], messageId, MYSQL_TYPE_LONG );
@@ -1292,10 +1293,10 @@ int CheckKillFile(long virtual)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], virtual, MYSQL_TYPE_LONG );
@@ -1303,7 +1304,7 @@ int CheckKillFile(long virtual)
                     (void *)&count, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( count );
 }
@@ -1315,10 +1316,10 @@ char *db_lookup_help( int type, char *keywords )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], type, MYSQL_TYPE_LONG );
@@ -1327,7 +1328,7 @@ char *db_lookup_help( int type, char *keywords )
                     (void *)&msg, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( msg );
 }
@@ -1343,10 +1344,10 @@ char *db_lookup_help_similar( int type, char *keywords )
     pthread_mutex_t    *mutex;
     LookupHelpArgs_t    args;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_string( &data[0], keywords, MYSQL_TYPE_VAR_STRING );
@@ -1356,7 +1357,7 @@ char *db_lookup_help_similar( int type, char *keywords )
                     (void *)&args, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return( args.msg );
 }
@@ -1376,7 +1377,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     int                 value;
     int                 seq;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
 
@@ -1396,7 +1397,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     }
 
     /* Replace the object */
-    data = (MYSQL_BIND *)malloc(24 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 24);
     memset( data, 0, 24 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1430,7 +1431,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
 
     for( i = 0; i < obj->keywords.count; i++ ) {
         /* Update the keywords */
-        data = (MYSQL_BIND *)malloc(6 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 6);
         memset( data, 0, 6 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1444,7 +1445,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     }
 
     /* Remove any unused keywords */
-    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 5);
     memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1470,7 +1471,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
 
             if( value ) {
                 /* Update this flag */
-                data = (MYSQL_BIND *)malloc(8 * sizeof(MYSQL_BIND));
+                data = CREATEN(MYSQL_BIND, 8);
                 memset( data, 0, 8 * sizeof(MYSQL_BIND) );
 
                 bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1490,7 +1491,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     }
 
     /* Remove any unused flags */
-    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 5);
     memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1505,7 +1506,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     for (descr = obj->ex_description, i = 0; 
          i < obj->ex_description_count; descr++, i++) {
         /* Update extra descriptions */
-        data = (MYSQL_BIND *)malloc(7 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 7);
         memset( data, 0, 7 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1517,12 +1518,12 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
         bind_string( &data[5], temp, MYSQL_TYPE_VAR_STRING );
         bind_string( &data[6], descr->description, MYSQL_TYPE_VAR_STRING );
         db_queue_query( 43, QueryTable, data, 7, NULL, NULL, mutex );
-        free( temp );
+        memfree( temp );
         pthread_mutex_unlock( mutex );
     }
 
     /* remove unused extra descriptions */
-    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 5);
     memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1536,7 +1537,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     for (i = 0, j = 0; i < MAX_OBJ_AFFECT; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
             /* update affects */
-            data = (MYSQL_BIND *)malloc(7 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 7);
             memset( data, 0, 7 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1555,7 +1556,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     }
 
     /* remove unused affects */
-    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 5);
     memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1567,7 +1568,7 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     pthread_mutex_unlock( mutex );
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 
@@ -1577,13 +1578,13 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     obj->index = objectIndex( vnum );
 
     /* load the object */
-    data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 4);
     memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1596,7 +1597,7 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 
     if( obj ) {
         /* load the keywords */
-        data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 4);
         memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1610,7 +1611,7 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 
     if( obj ) {
         /* load the flags */
-        data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 4);
         memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1624,7 +1625,7 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     
     if( obj ) {
         /* load extra descriptions */
-        data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 4);
         memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1638,7 +1639,7 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 
     if( obj ) {
         /* load affects */
-        data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 4);
         memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -1651,7 +1652,7 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     return(obj);
 }
@@ -1718,7 +1719,7 @@ int db_find_object_named(char *string, int owner, int ownerItem)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
 
@@ -1727,9 +1728,9 @@ int db_find_object_named(char *string, int owner, int ownerItem)
     count = 0;
 
     while( ( keyword = strsep( &string, "- \t\n\r" ) ) ) {
-        curr = (struct keyword_list *)malloc(sizeof(struct keyword_list));
+        curr = CREATE(struct keyword_list);
         curr->next = NULL;
-        curr->keyword = (char *)malloc(strlen(keyword)+2);
+        curr->keyword = CREATEN(char, strlen(keyword)+2);
         strcpy( curr->keyword, "^" );
         strcat( curr->keyword, keyword );
 
@@ -1750,7 +1751,7 @@ int db_find_object_named(char *string, int owner, int ownerItem)
     }
     vnum = -1;
 
-    data = (MYSQL_BIND *)malloc(count * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, count);
     memset( data, 0, count * sizeof(MYSQL_BIND) );
 
     for( i = 0, curr = keywordList; i < count; i++, curr = curr->next ) {
@@ -1760,12 +1761,12 @@ int db_find_object_named(char *string, int owner, int ownerItem)
                     result_find_object_named, (void *)&vnum, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     for( curr = keywordList; curr; curr = prev ) {
         prev = curr->next;
-        free( curr->keyword );
-        free( curr );
+        memfree( curr->keyword );
+        memfree( curr );
     }
 
     return( vnum );
@@ -1777,10 +1778,10 @@ void db_load_object_tree( BalancedBTree_t *tree )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_null_blob( &data[0], (void *)tree );
@@ -1788,14 +1789,14 @@ void db_load_object_tree( BalancedBTree_t *tree )
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay )
 {
     MYSQL_BIND         *data;
 
-    data = (MYSQL_BIND *)malloc(5 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 5);
     memset( data, 0, 5 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], gold, MYSQL_TYPE_LONG );
@@ -1811,7 +1812,7 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     MYSQL_BIND         *data;
 
     /* Clear the objects */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1820,7 +1821,7 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     db_queue_query( 56, QueryTable, data, 3, NULL, NULL, NULL );
     
     /* Clear the affects */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1829,7 +1830,7 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     db_queue_query( 63, QueryTable, data, 3, NULL, NULL, NULL );
     
     /* Clear the extra descriptions */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1838,7 +1839,7 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     db_queue_query( 64, QueryTable, data, 3, NULL, NULL, NULL );
     
     /* Clear the flags */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1847,7 +1848,7 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     db_queue_query( 65, QueryTable, data, 3, NULL, NULL, NULL );
     
     /* Clear the keywords */
-    data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 3);
     memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1862,7 +1863,7 @@ void db_write_char_extra(struct char_data *ch)
     int             i;
     int             seq;
 
-    data = (MYSQL_BIND *)malloc(12 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 12);
     memset( data, 0, 12 * sizeof(MYSQL_BIND) );
 
     if (IS_IMMORTAL(ch)) {
@@ -1892,7 +1893,7 @@ void db_write_char_extra(struct char_data *ch)
     if (ch->specials.A_list) {
         for (i = 0; i < 10; i++) {
             if (GET_ALIAS(ch, i)) {
-                data = (MYSQL_BIND *)malloc(4 * sizeof(MYSQL_BIND));
+                data = CREATEN(MYSQL_BIND, 4);
                 memset( data, 0, 4 * sizeof(MYSQL_BIND) );
 
                 bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -1906,7 +1907,7 @@ void db_write_char_extra(struct char_data *ch)
     }
 
     /* Clean up remaining aliases */
-    data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 2);
     memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -1919,16 +1920,16 @@ void db_load_char_extra(struct char_data *ch)
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
     bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
     db_queue_query( 60, QueryTable, data, 1, result_load_char_extra_1, ch, 
                     mutex );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
     bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
     db_queue_query( 61, QueryTable, data, 1, result_load_char_extra_2, ch, 
@@ -1936,7 +1937,7 @@ void db_load_char_extra(struct char_data *ch)
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 typedef struct {
@@ -1953,10 +1954,10 @@ void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
     pthread_mutex_t    *mutex;
     GetCharRentArgs_t   args;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
@@ -1971,7 +1972,7 @@ void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 struct _LoadCharObjsArgs_t;
@@ -1995,12 +1996,12 @@ void db_load_char_objects( struct char_data *ch )
     struct obj_data    *obj;
     int                 num;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    CREATE(args, LoadCharObjsArgs_t, 1);
-    CREATE(args->parentNum, int, 1);
-    CREATE(args->parentObj, struct obj_data *, 1);
+    args = CREATEN(LoadCharObjsArgs_t, 1);
+    args->parentNum = CREATEN(int, 1);
+    args->parentObj = CREATEN(struct obj_data *, 1);
     args->count  = 1;
     args->i = 0;
     args->parentNum[0] = -1;
@@ -2010,7 +2011,7 @@ void db_load_char_objects( struct char_data *ch )
 
     while( args ) {
         for( ; args->i < args->count; args->i++ ) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -2038,7 +2039,7 @@ void db_load_char_objects( struct char_data *ch )
             }
 
             /* Get the Keywords */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -2049,7 +2050,7 @@ void db_load_char_objects( struct char_data *ch )
             pthread_mutex_unlock( mutex );
 
             /* Get the Flags */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -2060,7 +2061,7 @@ void db_load_char_objects( struct char_data *ch )
             pthread_mutex_unlock( mutex );
 
             /* Get the Extra Descriptions */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -2071,7 +2072,7 @@ void db_load_char_objects( struct char_data *ch )
             pthread_mutex_unlock( mutex );
 
             /* Get the Affects */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
@@ -2090,14 +2091,14 @@ void db_load_char_objects( struct char_data *ch )
          * We finished that bunch, pop the stack and delete this one
          */
         prev = args->prev;
-        free( args->parentNum );
-        free( args->parentObj );
-        free( (void *)args );
+        memfree( args->parentNum );
+        memfree( args->parentObj );
+        memfree( (void *)args );
         args = prev;
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 void db_load_room_objects( int room )
@@ -2110,12 +2111,12 @@ void db_load_room_objects( int room )
     struct obj_data    *obj;
     int                 num;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    CREATE(args, LoadCharObjsArgs_t, 1);
-    CREATE(args->parentNum, int, 1);
-    CREATE(args->parentObj, struct obj_data *, 1);
+    args = CREATEN(LoadCharObjsArgs_t, 1);
+    args->parentNum = CREATEN(int, 1);
+    args->parentObj = CREATEN(struct obj_data *, 1);
     args->count  = 1;
     args->i = 0;
     args->parentNum[0] = -1;
@@ -2125,7 +2126,7 @@ void db_load_room_objects( int room )
 
     while( args ) {
         for( ; args->i < args->count; args->i++ ) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
@@ -2153,7 +2154,7 @@ void db_load_room_objects( int room )
             }
 
             /* Get the Keywords */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
@@ -2164,7 +2165,7 @@ void db_load_room_objects( int room )
             pthread_mutex_unlock( mutex );
 
             /* Get the Flags */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
@@ -2175,7 +2176,7 @@ void db_load_room_objects( int room )
             pthread_mutex_unlock( mutex );
 
             /* Get the Extra Descriptions */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
@@ -2186,7 +2187,7 @@ void db_load_room_objects( int room )
             pthread_mutex_unlock( mutex );
 
             /* Get the Affects */
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
@@ -2205,14 +2206,14 @@ void db_load_room_objects( int room )
          * We finished that bunch, pop the stack and delete this one
          */
         prev = args->prev;
-        free( args->parentNum );
-        free( args->parentObj );
-        free( (void *)args );
+        memfree( args->parentNum );
+        memfree( args->parentObj );
+        memfree( (void *)args );
         args = prev;
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 void db_load_rooms( BalancedBTree_t *tree )
@@ -2220,10 +2221,10 @@ void db_load_rooms( BalancedBTree_t *tree )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+    data = CREATEN(MYSQL_BIND, 1);
     memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
     bind_null_blob( &data[0], (void *)tree );
@@ -2231,7 +2232,7 @@ void db_load_rooms( BalancedBTree_t *tree )
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 }
 
 /*
@@ -2280,13 +2281,13 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
     }
 
     classCount = count;
-    classes = (struct class_def *)malloc(classCount * sizeof(struct class_def));
+    classes = CREATEN(struct class_def, classCount);
     if( !classes ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating classes[]" );
         exit(1);
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     for( i = 0; i < count; i++ ) {
@@ -2296,7 +2297,7 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
         classes[i].abbrev = strdup(row[2]);
 
         /* 4, classId, 0 */
-        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 2);
         memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
@@ -2307,7 +2308,7 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
         pthread_mutex_unlock( mutex );
 
         /* 4, classId, 1 */
-        data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 2);
         memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
@@ -2318,7 +2319,7 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
         pthread_mutex_unlock( mutex );
 
         /* 5 */
-        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 1);
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
@@ -2329,7 +2330,7 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
     }
     
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
 }
@@ -2350,10 +2351,10 @@ void chain_load_skills( MYSQL_RES *res, QueryItem_t *item )
         exit(1);
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    skills = (struct skill_def *)malloc((count + 1) * sizeof(struct skill_def));
+    skills = CREATEN(struct skill_def, count + 1);
     if( !skills ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating skills[]" );
         exit(1);
@@ -2370,7 +2371,7 @@ void chain_load_skills( MYSQL_RES *res, QueryItem_t *item )
         skills[i].skillType = atoi(row[2]);
 
         for(j = 0; j < SKILL_MSG_COUNT; j++) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], skillId, MYSQL_TYPE_LONG );
@@ -2383,7 +2384,7 @@ void chain_load_skills( MYSQL_RES *res, QueryItem_t *item )
     }
     
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finished loading skills[] from SQL");
 }
@@ -2412,10 +2413,10 @@ void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
         exit(1);
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    msgs = (struct message_list *)malloc(count * sizeof(struct message_list));
+    msgs = CREATEN(struct message_list, count);
     if( !msgs ) {
         LogPrint( LOG_CRIT, "Out of memory allocating %sMessages[]", 
                             types[type] );
@@ -2442,7 +2443,7 @@ void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
         }
 
         for( j = 0; j < count2; j++ ) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
@@ -2455,7 +2456,7 @@ void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
     }
     
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrint(LOG_CRIT, "Finished loading %s messages from SQL", types[type] );
 }
@@ -2476,8 +2477,7 @@ void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
         exit(1);
     }
 
-    socialMessages = (struct social_messg *)malloc(socialMessageCount * 
-                                                   sizeof(struct social_messg));
+    socialMessages = CREATEN(struct social_messg, socialMessageCount);
     if( !socialMessages ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating socialMessages[]" );
         exit(1);
@@ -2486,7 +2486,7 @@ void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
     memset( socialMessages, 0, 
             socialMessageCount * sizeof(struct social_messg) );
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
 
@@ -2498,7 +2498,7 @@ void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
         socialMessages[i].min_victim_position = atoi(row[2]);
 
         for( j = 0; j < SOCIAL_MSG_COUNT; j++ ) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
@@ -2511,7 +2511,7 @@ void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
     }
     
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finishing loading social messages from SQL");
 }
@@ -2531,8 +2531,7 @@ void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
         exit(1);
     }
 
-    poseMessages = (struct pose_type *)malloc(poseMessageCount * 
-                                              sizeof(struct pose_type));
+    poseMessages = CREATEN(struct pose_type, poseMessageCount);
     if( !poseMessages ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating poseMessages[]" );
         exit(1);
@@ -2540,7 +2539,7 @@ void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
 
     memset( poseMessages, 0, poseMessageCount * sizeof(struct pose_type) );
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     for (i = 0; i < poseMessageCount; i++) {
@@ -2548,15 +2547,15 @@ void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
         tmp = atoi(row[0]);
         poseMessages[i].level = tmp;
 
-        poseMessages[i].poser_msg = (char **)malloc(classCount * sizeof(char*));
-        poseMessages[i].room_msg  = (char **)malloc(classCount * sizeof(char*));
+        poseMessages[i].poser_msg = CREATEN(char *, classCount);
+        poseMessages[i].room_msg  = CREATEN(char *, classCount);
         if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
             LogPrintNoArg(LOG_CRIT, "Out of memory allocating poses" );
             exit(1);
         }
 
         for( j = 0; j < classCount; j++ ) {
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
@@ -2567,7 +2566,7 @@ void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
             pthread_mutex_unlock( mutex );
 
 
-            data = (MYSQL_BIND *)malloc(3 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 3);
             memset( data, 0, 3 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
@@ -2580,7 +2579,7 @@ void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finishing loading pose messages from SQL");
 }
@@ -2672,10 +2671,10 @@ void chain_load_races( MYSQL_RES *res, QueryItem_t *item )
         return;
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
-    races = (struct race_type *)malloc(raceCount * sizeof(struct race_type));
+    races = CREATEN(struct race_type, raceCount);
     if( !races ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating races[]" );
         exit(1);
@@ -2705,7 +2704,7 @@ void chain_load_races( MYSQL_RES *res, QueryItem_t *item )
             races[i].nativeLanguage = 0;
         }
 
-        races[i].racialMax = (int *)malloc(classCount * sizeof(int));
+        races[i].racialMax = CREATEN(int, classCount);
         if( !races[i].racialMax ) {
             LogPrintNoArg(LOG_CRIT, "Out of memory allocating "
                                     "races[i].racialMax" );
@@ -2715,7 +2714,7 @@ void chain_load_races( MYSQL_RES *res, QueryItem_t *item )
         memset( races[i].racialMax, 0, classCount * sizeof(int) );
 
         for( j = 0; j < classCount; j++ ) {
-            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 2);
             memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], races[i].race + 1, MYSQL_TYPE_LONG );
@@ -2727,7 +2726,7 @@ void chain_load_races( MYSQL_RES *res, QueryItem_t *item )
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     LogPrintNoArg(LOG_CRIT, "Finished loading races[] from SQL");
 }
@@ -2743,8 +2742,7 @@ void chain_load_languages( MYSQL_RES *res, QueryItem_t *item )
         return;
     }
 
-    languages = (struct lang_def *)malloc(languageCount * 
-                                          sizeof(struct lang_def));
+    languages = CREATEN(struct lang_def, languageCount);
     if( !languages ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating languages[]" );
         exit(1);
@@ -2769,7 +2767,7 @@ void chain_load_textfiles( MYSQL_RES *res, QueryItem_t *item )
 
     buffer = (char **)item->queryData[1].buffer;
     if( *buffer ) {
-        free( *buffer );
+        memfree( *buffer );
         *buffer = NULL;
     }
 
@@ -2817,7 +2815,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         return;
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     BalancedBTreeLock( tree );
@@ -2825,7 +2823,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        index = (struct index_data *)malloc(sizeof(struct index_data));
+        index = CREATE(struct index_data);
         if( !index ) {
             continue;
         }
@@ -2837,7 +2835,7 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
         index->func = NULL;
         index->list = LinkedListCreate(NULL);
 
-        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 1);
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
@@ -2845,14 +2843,14 @@ void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item )
                         (void *)index, mutex );
         pthread_mutex_unlock( mutex );
 
-        bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        bitem = CREATE(BalancedBTreeItem_t);
         bitem->key  = &index->vnum;
         bitem->item = (void *)index;
         BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     BalancedBTreeAdd( tree, NULL, LOCKED, TRUE );
     BalancedBTreeUnlock( tree );
@@ -2877,7 +2875,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
         return;
     }
 
-    mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    mutex = CREATE(pthread_mutex_t);
     pthread_mutex_init( mutex, NULL );
 
     BalancedBTreeLock( tree );
@@ -2885,7 +2883,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        room = (struct room_data *)malloc(sizeof(struct room_data));
+        room = CREATE(struct room_data);
         if( !room ) {
             continue;
         }
@@ -2912,7 +2910,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
                                                         BTREE_KEY_STRING );
 
         /* Load the room_flags and tele_mask */
-        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 1);
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
@@ -2921,7 +2919,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
         pthread_mutex_unlock( mutex );
 
         /* Load the extra descriptions */
-        data = (MYSQL_BIND *)malloc(1 * sizeof(MYSQL_BIND));
+        data = CREATEN(MYSQL_BIND, 1);
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
 
         bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
@@ -2931,7 +2929,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
 
         /* Load the exits */
         for( i = 0; i < 6; i++ ) {
-            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 2);
             memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
@@ -2945,7 +2943,7 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
             }
 
             /* Load the exit flags */
-            data = (MYSQL_BIND *)malloc(2 * sizeof(MYSQL_BIND));
+            data = CREATEN(MYSQL_BIND, 2);
             memset( data, 0, 2 * sizeof(MYSQL_BIND) );
 
             bind_numeric( &data[0], roomId, MYSQL_TYPE_LONG );
@@ -2955,14 +2953,14 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
             pthread_mutex_unlock( mutex );
         }
 
-        bitem = (BalancedBTreeItem_t *)malloc(sizeof(BalancedBTreeItem_t));
+        bitem = CREATE(BalancedBTreeItem_t);
         bitem->key  = &room->number;
         bitem->item = (void *)room;
         BalancedBTreeAdd( tree, bitem, LOCKED, FALSE );
     }
 
     pthread_mutex_destroy( mutex );
-    free( mutex );
+    memfree( mutex );
 
     BalancedBTreeAdd( tree, NULL, LOCKED, TRUE );
     BalancedBTreeUnlock( tree );
@@ -2986,7 +2984,7 @@ void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     count = mysql_num_rows(res);
     mcount = ( count ? count : 1 );
 
-    report = (struct user_report *)malloc(mcount * sizeof(struct user_report));
+    report = CREATEN(struct user_report, mcount);
     *rept = report;
     if( !report ) {
         LogPrintNoArg( LOG_CRIT, "Can't allocate a user report buffer!" );
@@ -3030,7 +3028,7 @@ void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     } 
 
     cls->skillCount = count;
-    cls->skills = (struct skillset *)malloc(count * sizeof(struct skillset));
+    cls->skills = CREATEN(struct skillset, count);
     if( !cls->skills ) {
         cls->skillCount = 0;
         LogPrintNoArg( LOG_CRIT, "Dumping skills due to lack of memory" );
@@ -3063,7 +3061,7 @@ void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
     
     cls->mainskillCount = count;
-    cls->mainskills = (struct skillset *)malloc(count* sizeof(struct skillset));
+    cls->mainskills = CREATEN(struct skillset, count);
 
     if( !cls->mainskills ) {
         cls->mainskillCount = 0;
@@ -3099,8 +3097,7 @@ void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     } 
     
     cls->levelCount = count;
-    cls->levels = (struct class_level_t *)
-                      malloc(count * sizeof(struct class_level_t));
+    cls->levels = CREATEN(struct class_level_t, count);
 
     if( !cls->levels ) {
         cls->levelCount = 0;
@@ -3142,8 +3139,7 @@ void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         exit(1);
     }
 
-    direction = (struct dir_data *)malloc(directionCount * 
-                                          sizeof(struct dir_data));
+    direction = CREATEN(struct dir_data, directionCount);
     if( !direction ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating direction[]" );
         exit(1);
@@ -3172,7 +3168,7 @@ void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         exit(1);
     }
 
-    clan_list = (struct clan *)malloc(clanCount * sizeof(struct clan));
+    clan_list = CREATEN(struct clan, clanCount);
     if( !direction ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating clan_list[]" );
         exit(1);
@@ -3198,8 +3194,7 @@ void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         exit(1);
     }
 
-    sectors = (struct sector_data *)malloc(sectorCount * 
-                                           sizeof(struct sector_data));
+    sectors = CREATEN(struct sector_data, sectorCount);
     if( !sectors ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating sectors[]" );
         exit(1);
@@ -3232,8 +3227,7 @@ void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         exit(1);
     }
 
-    bannedUsers = (struct banned_user *)malloc(bannedUserCount * 
-                                               sizeof(struct banned_user));
+    bannedUsers = CREATEN(struct banned_user, bannedUserCount);
     if( !bannedUsers ) {
         LogPrintNoArg( LOG_CRIT, "Out of memory allocating bannedUsers[]" );
         exit(1);
@@ -3292,7 +3286,7 @@ void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     row = mysql_fetch_row(res);
     
-    board = (struct board_def *)malloc(sizeof(struct board_def));
+    board = CREATE(struct board_def);
     *retboard = board;
     if( !board ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating a board structure!" );
@@ -3320,8 +3314,7 @@ void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     row = mysql_fetch_row(res);
     
-    msg = (struct bulletin_board_message *)
-              malloc(sizeof(struct bulletin_board_message));
+    msg = CREATE(struct bulletin_board_message);
     *retmsg = msg;
     if( !msg ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
@@ -3354,8 +3347,7 @@ void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
         return;
     }
 
-    msg = (struct bulletin_board_message *)
-              malloc(sizeof(struct bulletin_board_message) * args->count);
+    msg = CREATEN(struct bulletin_board_message, args->count);
     *args->msg = msg;
     if( !msg ) {
         LogPrintNoArg(LOG_CRIT, "Out of memory allocating a message "
@@ -3427,8 +3419,8 @@ void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     row = mysql_fetch_row(res);
 
-    msg = (char *)malloc( 64 + strlen(row[0]) + strlen(row[1]) + 
-                          strlen(row[2]) + strlen(row[3]) + 2 );
+    msg = CREATEN(char, 64 + strlen(row[0]) + strlen(row[1]) + 
+                             strlen(row[2]) + strlen(row[3]) + 2 );
     *retmsg = msg;
     sprintf(msg, " * * * * Havok Mail System * * * *\n\r"
                  "Date: %s\n\r"
@@ -3461,7 +3453,7 @@ void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     row = mysql_fetch_row(res);
 
-    msg = (char *)malloc( 8 + strlen(row[0]) + strlen(row[1]) + 2);
+    msg = CREATEN(char, 8 + strlen(row[0]) + strlen(row[1]) + 2);
     *retmsg = msg;
 
     sprintf(msg, "\"%s\"\n\r\n\r%s\n\r", row[0], row[1] );
@@ -3488,7 +3480,7 @@ void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     len = 200 + (count * 82) + 50 + strlen(args->keywords);
 
-    msg = (char *)malloc(len);
+    msg = CREATEN(char, len);
     args->msg = msg;
 
     sprintf(msg, "No exact matches found for \"%s\".  Top %d relevant "
@@ -3563,9 +3555,9 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 
     obj->keywords.count = count;
-    obj->keywords.words = (char **)malloc(count * sizeof(char *));
-    obj->keywords.length = (int *)malloc(count * sizeof(int));
-    obj->keywords.found = (int *)malloc(count * sizeof(int));
+    obj->keywords.words = CREATEN(char *, count);
+    obj->keywords.length = CREATEN(int, count);
+    obj->keywords.found = CREATEN(int, count);
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
@@ -3642,7 +3634,7 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     obj->ex_description_count = 0;
 
     if( res && (count = mysql_num_rows(res)) ) {
-        CREATE(obj->ex_description, Keywords_t, count);
+        obj->ex_description =  CREATEN(Keywords_t, count);
         obj->ex_description_count = count;
 
         for( i = 0; i < count; i++ ) {
@@ -3708,9 +3700,9 @@ void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 
     index->keywords.count  = count;
-    index->keywords.words  = (char **)malloc( count * sizeof(char *) );
-    index->keywords.length = (int *)malloc( count * sizeof(int) );
-    index->keywords.found  = (int *)malloc( count * sizeof(int) );
+    index->keywords.words  = CREATEN(char *, count);
+    index->keywords.length = CREATEN(int, count);
+    index->keywords.found  = CREATEN(int, count);
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
@@ -3817,9 +3809,9 @@ void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     ch = args->ch;
 
-    CREATE(newargs, LoadCharObjsArgs_t, 1);
-    CREATE(newargs->parentNum, int, count);
-    CREATE(newargs->parentObj, struct obj_data *, count);
+    newargs = CREATEN(LoadCharObjsArgs_t, 1);
+    newargs->parentNum = CREATEN(int, count);
+    newargs->parentObj = CREATEN(struct obj_data *, count);
     newargs->count = count;
     newargs->i = 0;
     newargs->prev = args;
@@ -3828,7 +3820,7 @@ void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        CREATE(obj, struct obj_data, 1);
+        obj = CREATEN(struct obj_data, 1);
 
         obj->item_number            = atoi(row[0]);
         obj->index                  = objectIndex( obj->item_number );
@@ -3886,9 +3878,9 @@ void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 
     room = args->room;
 
-    CREATE(newargs, LoadCharObjsArgs_t, 1);
-    CREATE(newargs->parentNum, int, count);
-    CREATE(newargs->parentObj, struct obj_data *, count);
+    newargs = CREATEN(LoadCharObjsArgs_t, 1);
+    newargs->parentNum = CREATEN(int, count);
+    newargs->parentObj = CREATEN(struct obj_data *, count);
     newargs->count = count;
     newargs->i = 0;
     newargs->prev = args;
@@ -3897,7 +3889,7 @@ void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        CREATE(obj, struct obj_data, 1);
+        obj = CREATEN(struct obj_data, 1);
 
         obj->item_number            = atoi(row[0]);
         obj->index                  = objectIndex( obj->item_number );
@@ -3994,7 +3986,7 @@ void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     room->ex_description_count = 0;
 
     if( res && (count = mysql_num_rows(res)) ) {
-        CREATE(room->ex_description, Keywords_t, count);
+        room->ex_description = CREATEN(Keywords_t, count);
         room->ex_description_count = count;
 
         for( i = 0; i < count; i++ ) {
@@ -4025,7 +4017,7 @@ void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     row = mysql_fetch_row(res);
     i = atoi(row[0]) - 1;
 
-    CREATE(dir, struct room_direction_data, 1);
+    dir = CREATEN(struct room_direction_data, 1);
     room->dir_option[i] = dir;
 
     dir->general_description = strdup(row[1]);

@@ -1,37 +1,38 @@
-/*
- *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
- *
- *  havokmud is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+    /*
+     *  This file is part of the havokmud package
+     *  Copyright (C) 2005 Gavin Hurlbut
+     *
+     *  havokmud is free software; you can redistribute it and/or modify
+     *  it under the terms of the GNU General Public License as published by
+     *  the Free Software Foundation; either version 2 of the License, or
+     *  (at your option) any later version.
+     *
+     *  This program is distributed in the hope that it will be useful,
+     *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+     *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     *  GNU General Public License for more details.
+     *
+     *  You should have received a copy of the GNU General Public License
+     *  along with this program; if not, write to the Free Software
+     *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+     */
 
-/*HEADER---------------------------------------------------
- * $Id$
- *
- * Copyright 2005 Gavin Hurlbut
- * All rights reserved
- */
+    /*HEADER---------------------------------------------------
+     * $Id$
+     *
+     * Copyright 2005 Gavin Hurlbut
+     * All rights reserved
+     */
 
-/**
- * @file
- * @brief Mainline code for the MUD
- */
+    /**
+     * @file
+     * @brief Mainline code for the MUD
+     */
 
 #include "config.h"
 #include "environment.h"
 #include "platform.h"
+#include "memory.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdarg.h>
@@ -47,123 +48,123 @@
 #include "balanced_btree.h"
 #include "interthread.h"
 
-static char ident[] _UNUSED_ =
-    "$Id$";
+    static char ident[] _UNUSED_ =
+        "$Id$";
 
-void display_usage(char *progname);
-void handleCmdLineArgs(int argc, char **argv);
-void StartThreads( void );
+    void display_usage(char *progname);
+    void handleCmdLineArgs(int argc, char **argv);
+    void StartThreads( void );
 
-/* 
- * max number of descriptors (connections) 
- * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
- */
+    /* 
+     * max number of descriptors (connections) 
+     * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
+     */
 #define MAX_CONNECTS    256        
 
 #define DFLT_PORT       4000          /* default port */
 #define MAX_HOSTNAME    256
 
 #if 0
-/* 
- * time delay corresponding to 4
- * passes/sec 
- */
+    /* 
+     * time delay corresponding to 4
+     * passes/sec 
+     */
 #define OPT_USEC 250000         
 #endif
 
-int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
-int             no_specials = 0;    /**< Disable special functions completely */
+    int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
+    int             no_specials = 0;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
-BalancedBTree_t    *banHostTree;    /**< Balanced BTree of banned hosts, sorted
-                                         by hostname */
+    BalancedBTree_t    *banHostTree;    /**< Balanced BTree of banned hosts, sorted
+                                             by hostname */
 #endif
 
-BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted 
-                                         by player name */
-BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
-                                         by socket descriptor number */
+    BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted 
+                                             by player name */
+    BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
+                                             by socket descriptor number */
 
-bool            GlobalAbort = FALSE;
-long            SystemFlags;
-long            total_connections;
-long            total_max_players;
+    bool            GlobalAbort = FALSE;
+    long            SystemFlags;
+    long            total_connections;
+    long            total_max_players;
 
-struct time_info_data time_info;        /* the infomation about the time */
-struct weather_data weather_info;       /* the infomation about the
-                                         * weather */
-int             mudshutdown = 0;        /* clean shutdown */
-int             reboot_now = 0;     /* reboot the game after a shutdown */
-time_t          Uptime;         /* time that the game has been up */
+    struct time_info_data time_info;        /* the infomation about the time */
+    struct weather_data weather_info;       /* the infomation about the
+                                             * weather */
+    int             mudshutdown = 0;        /* clean shutdown */
+    int             reboot_now = 0;     /* reboot the game after a shutdown */
+    time_t          Uptime;         /* time that the game has been up */
 
-/*
- *********************************************************************
- *  main game loop and related stuff                                    *
- ********************************************************************* */
+    /*
+     *********************************************************************
+     *  main game loop and related stuff                                    *
+     ********************************************************************* */
 
-int __main()
-{
-    return (1);
-}
+    int __main()
+    {
+        return (1);
+    }
 
-/**
- * @brief Show command line arguments
- * @param progname the name of the program being run
- *
- * Shows the command line arguments used by the program onto stderr
- */
-void display_usage(char *progname)
-{
-    fprintf(stderr, "Usage:\n"
-                    "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
-                    "[-P sqlPass]\n"
-                    "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
-                    "[port]\n\n",
-                    progname );
-    fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
-                    "\t-s\tDisable special procedures\n"
-                    "\t-D\tDefine the MySQL database (default %s)\n",
-                    DFLT_DIR, DEF_MYSQL_DB );
-    fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
-                    "\t-P\tDefine the MySQL password (default %s)\n"
-                    "\t-H\tDefine the MySQL host (default %s)\n"
-                    "\t-p\tDefine the MUD port (dsfault %d)\n",
-                    DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
-                    DFLT_PORT );
-    fprintf(stderr, "\t-A\tDisable ALL color\n"
-                    "\t-N\tDisable DNS lookups\n"
-                    "\t-R\tEnable newbie authorizing\n"
-                    "\t-L\tLog all users\n"
-                    "\t-h\tShow this help page\n"
-                    "\t-V\tShow version and exit\n\n" );
-    fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
-                    "PORT at the\n"
-                    "\tend of the command line\n\n" );
-}
+    /**
+     * @brief Show command line arguments
+     * @param progname the name of the program being run
+     *
+     * Shows the command line arguments used by the program onto stderr
+     */
+    void display_usage(char *progname)
+    {
+        fprintf(stderr, "Usage:\n"
+                        "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
+                        "[-P sqlPass]\n"
+                        "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
+                        "[port]\n\n",
+                        progname );
+        fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
+                        "\t-s\tDisable special procedures\n"
+                        "\t-D\tDefine the MySQL database (default %s)\n",
+                        DFLT_DIR, DEF_MYSQL_DB );
+        fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
+                        "\t-P\tDefine the MySQL password (default %s)\n"
+                        "\t-H\tDefine the MySQL host (default %s)\n"
+                        "\t-p\tDefine the MUD port (dsfault %d)\n",
+                        DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
+                        DFLT_PORT );
+        fprintf(stderr, "\t-A\tDisable ALL color\n"
+                        "\t-N\tDisable DNS lookups\n"
+                        "\t-R\tEnable newbie authorizing\n"
+                        "\t-L\tLog all users\n"
+                        "\t-h\tShow this help page\n"
+                        "\t-V\tShow version and exit\n\n" );
+        fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
+                        "PORT at the\n"
+                        "\tend of the command line\n\n" );
+    }
 
-/**
- * @brief Parses the command line arguments
- * @param argc Count of arguments
- * @param argv Vector of the command line arguments
- *
- * Parses the command line arguments and sets up the defaults for the system
- */
-void handleCmdLineArgs(int argc, char **argv)
-{
-    int             opt;
-    extern char    *optarg;
-    extern int      optind;
-    char           *dir;
+    /**
+     * @brief Parses the command line arguments
+     * @param argc Count of arguments
+     * @param argv Vector of the command line arguments
+     *
+     * Parses the command line arguments and sets up the defaults for the system
+     */
+    void handleCmdLineArgs(int argc, char **argv)
+    {
+        int             opt;
+        extern char    *optarg;
+        extern int      optind;
+        char           *dir;
 
-    mud_port = -1;
-    dir = NULL;
+        mud_port = -1;
+        dir = NULL;
 
-    while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
-        switch (opt) {
-        case 'd':
-            if( dir ) {
-                free( dir );
+        while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
+            switch (opt) {
+            case 'd':
+                if( dir ) {
+                    memfree( dir );
             }
             dir = strdup(optarg);
             break;
@@ -177,7 +178,7 @@ void handleCmdLineArgs(int argc, char **argv)
         case 'D':
             /* Database */
             if( mySQL_db ) {
-                free( mySQL_db );
+                memfree( mySQL_db );
             }
             mySQL_db = strdup(optarg);
             break;
@@ -185,7 +186,7 @@ void handleCmdLineArgs(int argc, char **argv)
         case 'U':
             /* Database user */
             if( mySQL_user ) {
-                free( mySQL_user );
+                memfree( mySQL_user );
             }
             mySQL_user = strdup(optarg);
             break;
@@ -193,7 +194,7 @@ void handleCmdLineArgs(int argc, char **argv)
         case 'P':
             /* Database password */
             if( mySQL_passwd ) {
-                free( mySQL_passwd );
+                memfree( mySQL_passwd );
             }
             mySQL_passwd = strdup(optarg);
             break;
@@ -201,7 +202,7 @@ void handleCmdLineArgs(int argc, char **argv)
         case 'H':
             /* Database host */
             if( mySQL_host ) {
-                free( mySQL_host );
+                memfree( mySQL_host );
             }
             mySQL_host = strdup(optarg);
             break;
@@ -275,7 +276,7 @@ void handleCmdLineArgs(int argc, char **argv)
         exit(1);
     }
 
-    free( dir );
+    memfree( dir );
 }
 
 /**
@@ -391,7 +392,7 @@ void boot_db(void)
     /*
      * some machines are pre-allocation specific when dealing with realloc
      */
-    script_data = (struct scripts *) malloc(sizeof(struct scripts));
+    script_data = CREATE(struct scripts);
     CommandSetup();
     mobileInitScripts();
 #endif

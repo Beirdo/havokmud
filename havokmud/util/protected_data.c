@@ -30,6 +30,7 @@
 /* INCLUDE FILES */
 #include "environment.h"
 #include <pthread.h>
+#include "memory.h"
 #include "protected_data.h"
 #include "logging.h"
 #include <stdlib.h>
@@ -78,7 +79,7 @@ ProtectedData_t *ProtectedDataCreate( void )
 {
     ProtectedData_t *blob;
 
-    blob = (ProtectedData_t *)malloc(sizeof(ProtectedData_t));
+    blob = CREATE(ProtectedData_t);
     if( blob == NULL )
     {
         LogPrintNoArg( LOG_UNKNOWN, "Couldn't create protected data blob" );
@@ -97,7 +98,7 @@ void ProtectedDataDestroy( ProtectedData_t *blob )
     pthread_mutex_unlock( &blob->mutex );
     pthread_mutex_destroy( &blob->mutex );
 
-    free( blob );
+    memfree( blob );
 }
 
 
