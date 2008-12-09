@@ -1,8 +1,8 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 
-AC_INIT(havokmud, [1.10/1.11], [gjhurlbu@users.sourceforge.net])
-AC_CONFIG_SRCDIR([act.comm.c])
+AC_INIT(havokmud, [2.0.0], [gjhurlbu@users.sourceforge.net])
+AC_CONFIG_SRCDIR([version.h])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([scripts])
 AC_REVISION($Revision: 1.1.2.6 $)
@@ -275,6 +275,5 @@ HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
 
 CFLAGS=$CFLAGS_SAVE
 
-AC_CONFIG_FILES([Makefile convert/Makefile threads/Makefile util/Makefile 
-                 corefunc/Makefile])
+AC_CONFIG_FILES([Makefile threads/Makefile util/Makefile corefunc/Makefile])
 AC_OUTPUT
