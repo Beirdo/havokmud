@@ -191,6 +191,7 @@ struct char_data *playerFindAll( bool (*cond_func)(struct char_data *, void *),
                              bool (*callback_func)(struct char_data *, void *), 
                              void *arg2, bool *stopAfterFirst )
 {
+#if 0
     extern struct char_data *character_list;
     struct char_data   *ch,
                        *tmp;
@@ -215,6 +216,7 @@ struct char_data *playerFindAll( bool (*cond_func)(struct char_data *, void *),
         }
     }
 
+#endif
     return( NULL );
 }
 

@@ -101,11 +101,15 @@ void hupsig(int signal)
     LogPrintNoArg(LOG_CRIT, "Received SIGHUP, SIGINT, or SIGTERM. Shutting "
                             "down");
 
+#if 0
     raw_force_all("return");
     raw_force_all("save");
+#endif
 
     for (i = 0; i < 30; i++) {
+#if 0
         SaveTheWorld();
+#endif
     }
 
     mudshutdown = reboot_now = 1;

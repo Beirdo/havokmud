@@ -205,6 +205,11 @@ char *ru_sorcerer[] = {
     NULL
 };
 
+#if 1
+const struct pc_race_choice race_choice[1];
+int race_choice_count;
+#endif
+
 
 /**
  * @brief Trims the leading spaces and copies the name
@@ -566,14 +571,18 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
  */
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
+#if 0
     int             player_i;
+#endif
     int             class,
                     race,
                     found,
                     index = 0;
     char            tmp_name[20];
+#if 0
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
+#endif
     struct char_data *ch;
     int             i = 0;
     int             tmpi = 0;
@@ -705,7 +714,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (!ch) {
             player->charData = CREATEN(struct char_data, 1);
             ch = player->charData;
+#if 0
             clear_char(ch);
+#endif
             ch->playerDesc = player;
         }
 
@@ -730,11 +741,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         ProtectedDataUnlock(player->connection->hostName);
 
+#if 0
         if ((player_i = load_char(tmp_name, &tmp_store)) > -1) {
             /*
              * connecting an existing character ...
              */
+#if 0
             store_to_char(&tmp_store, player->charData);
+#endif
             strcpy(ch->pwd, tmp_store.pwd);
 #ifdef TODO
             d->pos = player_table[player_i].nr;
@@ -763,6 +777,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             strcpy(GET_NAME(ch), CAP(tmp_name));
             EnterState(player, STATE_CONFIRM_NAME);
         }
+#endif
         break;
 
     case STATE_CONFIRM_NAME:
@@ -852,6 +867,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /**
          * @todo Convert to new LinkedList methodology
          */
+#if 0
         for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
             if ((!strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch)) 
                  && !tmp_ch->playerDesc && !IS_NPC(tmp_ch)) ||
@@ -861,7 +877,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 SendOutputRaw(player, echo_on, 6);
                 SendOutput(player, "Reconnecting.\n\r");
 
+#if 0
                 free_char(ch);
+#endif
                 tmp_ch->playerDesc = player;
                 player->charData = tmp_ch;
                 tmp_ch->specials.timer = 0;
@@ -880,7 +898,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 ch->persist = 0;
 
                 if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
+#if 0
                     act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
+#endif
                     ProtectedDataLock(player->connection->hostName);
                     LogPrint(LOG_INFO, "%s[%s] has reconnected.", GET_NAME(ch),
                              (char *)player->connection->hostName->data);
@@ -906,6 +926,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 return;
             }
         }
+#endif
 
         db_load_char_extra(ch);
         if (ch->specials.hostip == NULL) {
@@ -1208,7 +1229,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             /*
              * now that classes are set, initialize
              */
+#if 0
             init_char(ch);
+#endif
 
             /*
              * create an entry in the file
@@ -1216,7 +1239,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #ifdef TODO
             d->pos = create_entry(GET_NAME(ch));
 #endif
+#if 0
             save_char(ch, AUTO_RENT);
+#endif
             EnterState(player, STATE_SHOW_MOTD);
             return;
         } 
@@ -1586,7 +1611,9 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         /*
          * now that classes are set, initialize
          */
+#if 0
         init_char(ch);
+#endif
 
         /*
          * create an entry in the file
@@ -1594,7 +1621,9 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
 #ifdef TODO
         d->pos = create_entry(GET_NAME(ch));
 #endif
+#if 0
         save_char(ch, AUTO_RENT);
+#endif
 
         for( i = 0; newbie_note[i]; i++ ) {
             SendOutput(player, newbie_note[i]);
@@ -1622,8 +1651,10 @@ void show_class_selection(PlayerStruct_t *player, int r)
             /* Found it, show the classes */
             for( j = 0; j < race_choice[i].classCount; j++ ) {
                 sprintf( buf, "%d) ", j + 1 );
+#if 0
                 sprintclasses((unsigned)race_choice[i].classesAvail[j],
                               buf2);
+#endif
                 strcat(buf, buf2);
                 strcat(buf, "\n\r");
                 SendOutput(player, buf);

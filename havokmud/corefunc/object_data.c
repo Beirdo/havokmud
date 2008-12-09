@@ -666,11 +666,13 @@ bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
 
     if (ITEM_TYPE(obj) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(obj) > 0) {
         num = number(1, 101);
+#if 0
         if (CanSeeTrap(num, ch)) {
             return (TRUE);
         } else {
             return (FALSE);
         }
+#endif
     }
 
     if (IS_AFFECTED(ch, AFF_BLIND)) {
@@ -1031,8 +1033,10 @@ void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
         return;
     }
 
+#if 0
     SysLogPrint( LOG_INFO, "Saving %s (%d): %d gold", fname(ch->player.name), 
                            ch->playerId, GET_GOLD(ch) );
+#endif
 
     /*
      * update the rent cost and gold
@@ -1052,7 +1056,9 @@ void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
         }
 
         if (delete) {
+#if 0
             unequip_char(ch, i);
+#endif
         }
 
         itemNum = objectStore(obj, player, ch->playerId, -1, itemNum, -1, 
@@ -1256,11 +1262,15 @@ void load_char_objs(struct char_data *ch)
      */
     now = time(0);
     if (lastUpdate + 12 * SECS_PER_REAL_HOUR < now) {
+#if 0
         RestoreChar(ch);
+#endif
     }
 
     if (lastUpdate + 24 * SECS_PER_REAL_HOUR < now) {
+#if 0
         RemAllAffects(ch);
+#endif
     }
 
     if (ch->in_room == NOWHERE && lastUpdate + 1 * SECS_PER_REAL_HOUR > now) {
@@ -1344,7 +1354,9 @@ void load_char_objs(struct char_data *ch)
     /*
      * Save char, to avoid strange data if crashing 
      */
+#if 0
     save_char(ch, AUTO_RENT);
+#endif
 }
 
 

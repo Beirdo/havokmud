@@ -45,7 +45,9 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
+#if 0
 extern struct zone_data *zone_table;
+#endif
 
 void SendToAllCond( char *messg, int (*condfunc)(PlayerStruct_t *, void *),
                     void *arg );
@@ -199,6 +201,7 @@ void send_to_outdoor(char *messg)
 
 int CondIsInDesert( PlayerStruct_t *player, void *arg )
 {
+#if 0
     struct room_data *rp;
 
     return( (OUTSIDE(player->charData) && 
@@ -206,6 +209,9 @@ int CondIsInDesert( PlayerStruct_t *player, void *arg )
              (rp = roomFindNum(player->charData->in_room)) != NULL && 
              (IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) || 
               rp->sector_type == SECT_DESERT)) ? 1 : 0 );
+#else
+    return( FALSE );
+#endif
 }
 
 void send_to_desert(char *messg)
@@ -215,6 +221,7 @@ void send_to_desert(char *messg)
 
 int CondIsOutdoorsOther( PlayerStruct_t *player, void *arg ) 
 {
+#if 0
     struct room_data *rp;
 
     return( (OUTSIDE(player->charData) && 
@@ -223,6 +230,9 @@ int CondIsOutdoorsOther( PlayerStruct_t *player, void *arg )
              !IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) && 
              !IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC) && 
              rp->sector_type != SECT_DESERT) ? 1 : 0 );
+#else
+    return( FALSE );
+#endif
 }
 
 void send_to_out_other(char *messg)
@@ -232,12 +242,16 @@ void send_to_out_other(char *messg)
 
 int CondIsInArctic( PlayerStruct_t *player, void *arg )
 {
+#if 0
     struct room_data *rp;
 
     return( (OUTSIDE(player->charData) && 
              !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR) && 
              (rp = roomFindNum(player->charData->in_room)) != NULL && 
              IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC)) ? 1 : 0 );
+#else
+    return( FALSE );
+#endif
 }
 
 void send_to_arctic(char *messg)

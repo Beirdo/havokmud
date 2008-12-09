@@ -1,33 +1,33 @@
-    /*
-     *  This file is part of the havokmud package
-     *  Copyright (C) 2005 Gavin Hurlbut
-     *
-     *  havokmud is free software; you can redistribute it and/or modify
-     *  it under the terms of the GNU General Public License as published by
-     *  the Free Software Foundation; either version 2 of the License, or
-     *  (at your option) any later version.
-     *
-     *  This program is distributed in the hope that it will be useful,
-     *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-     *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     *  GNU General Public License for more details.
-     *
-     *  You should have received a copy of the GNU General Public License
-     *  along with this program; if not, write to the Free Software
-     *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-     */
+/*
+ *  This file is part of the havokmud package
+ *  Copyright (C) 2005 Gavin Hurlbut
+ *
+ *  havokmud is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
-    /*HEADER---------------------------------------------------
-     * $Id$
-     *
-     * Copyright 2005 Gavin Hurlbut
-     * All rights reserved
-     */
+/*HEADER---------------------------------------------------
+ * $Id$
+ *
+ * Copyright 2005 Gavin Hurlbut
+ * All rights reserved
+ */
 
-    /**
-     * @file
-     * @brief Mainline code for the MUD
-     */
+/**
+ * @file
+ * @brief Mainline code for the MUD
+ */
 
 #include "config.h"
 #include "environment.h"
@@ -48,123 +48,123 @@
 #include "balanced_btree.h"
 #include "interthread.h"
 
-    static char ident[] _UNUSED_ =
-        "$Id$";
+static char ident[] _UNUSED_ =
+    "$Id$";
 
-    void display_usage(char *progname);
-    void handleCmdLineArgs(int argc, char **argv);
-    void StartThreads( void );
+void display_usage(char *progname);
+void handleCmdLineArgs(int argc, char **argv);
+void StartThreads( void );
 
-    /* 
-     * max number of descriptors (connections) 
-     * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
-     */
+/* 
+ * max number of descriptors (connections) 
+ * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
+ */
 #define MAX_CONNECTS    256        
 
 #define DFLT_PORT       4000          /* default port */
 #define MAX_HOSTNAME    256
 
 #if 0
-    /* 
-     * time delay corresponding to 4
-     * passes/sec 
-     */
+/* 
+ * time delay corresponding to 4
+ * passes/sec 
+ */
 #define OPT_USEC 250000         
 #endif
 
-    int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
-    int             no_specials = 0;    /**< Disable special functions completely */
+int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
+int             no_specials = 0;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
-    BalancedBTree_t    *banHostTree;    /**< Balanced BTree of banned hosts, sorted
-                                             by hostname */
+BalancedBTree_t    *banHostTree;    /**< Balanced BTree of banned hosts, sorted
+                                         by hostname */
 #endif
 
-    BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted 
-                                             by player name */
-    BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
-                                             by socket descriptor number */
+BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted 
+                                         by player name */
+BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
+                                         by socket descriptor number */
 
-    bool            GlobalAbort = FALSE;
-    long            SystemFlags;
-    long            total_connections;
-    long            total_max_players;
+bool            GlobalAbort = FALSE;
+long            SystemFlags;
+long            total_connections;
+long            total_max_players;
 
-    struct time_info_data time_info;        /* the infomation about the time */
-    struct weather_data weather_info;       /* the infomation about the
-                                             * weather */
-    int             mudshutdown = 0;        /* clean shutdown */
-    int             reboot_now = 0;     /* reboot the game after a shutdown */
-    time_t          Uptime;         /* time that the game has been up */
+struct time_info_data time_info;        /* the infomation about the time */
+struct weather_data weather_info;       /* the infomation about the
+                                         * weather */
+int             mudshutdown = 0;        /* clean shutdown */
+int             reboot_now = 0;     /* reboot the game after a shutdown */
+time_t          Uptime;         /* time that the game has been up */
 
-    /*
-     *********************************************************************
-     *  main game loop and related stuff                                    *
-     ********************************************************************* */
+/*
+ *********************************************************************
+ *  main game loop and related stuff                                    *
+ ********************************************************************* */
 
-    int __main()
-    {
-        return (1);
-    }
+int __main()
+{
+    return (1);
+}
 
-    /**
-     * @brief Show command line arguments
-     * @param progname the name of the program being run
-     *
-     * Shows the command line arguments used by the program onto stderr
-     */
-    void display_usage(char *progname)
-    {
-        fprintf(stderr, "Usage:\n"
-                        "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
-                        "[-P sqlPass]\n"
-                        "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
-                        "[port]\n\n",
-                        progname );
-        fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
-                        "\t-s\tDisable special procedures\n"
-                        "\t-D\tDefine the MySQL database (default %s)\n",
-                        DFLT_DIR, DEF_MYSQL_DB );
-        fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
-                        "\t-P\tDefine the MySQL password (default %s)\n"
-                        "\t-H\tDefine the MySQL host (default %s)\n"
-                        "\t-p\tDefine the MUD port (dsfault %d)\n",
-                        DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
-                        DFLT_PORT );
-        fprintf(stderr, "\t-A\tDisable ALL color\n"
-                        "\t-N\tDisable DNS lookups\n"
-                        "\t-R\tEnable newbie authorizing\n"
-                        "\t-L\tLog all users\n"
-                        "\t-h\tShow this help page\n"
-                        "\t-V\tShow version and exit\n\n" );
-        fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
-                        "PORT at the\n"
-                        "\tend of the command line\n\n" );
-    }
+/**
+ * @brief Show command line arguments
+ * @param progname the name of the program being run
+ *
+ * Shows the command line arguments used by the program onto stderr
+ */
+void display_usage(char *progname)
+{
+    fprintf(stderr, "Usage:\n"
+                    "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
+                    "[-P sqlPass]\n"
+                    "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
+                    "[port]\n\n",
+                    progname );
+    fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
+                    "\t-s\tDisable special procedures\n"
+                    "\t-D\tDefine the MySQL database (default %s)\n",
+                    DFLT_DIR, DEF_MYSQL_DB );
+    fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
+                    "\t-P\tDefine the MySQL password (default %s)\n"
+                    "\t-H\tDefine the MySQL host (default %s)\n"
+                    "\t-p\tDefine the MUD port (dsfault %d)\n",
+                    DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
+                    DFLT_PORT );
+    fprintf(stderr, "\t-A\tDisable ALL color\n"
+                    "\t-N\tDisable DNS lookups\n"
+                    "\t-R\tEnable newbie authorizing\n"
+                    "\t-L\tLog all users\n"
+                    "\t-h\tShow this help page\n"
+                    "\t-V\tShow version and exit\n\n" );
+    fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
+                    "PORT at the\n"
+                    "\tend of the command line\n\n" );
+}
 
-    /**
-     * @brief Parses the command line arguments
-     * @param argc Count of arguments
-     * @param argv Vector of the command line arguments
-     *
-     * Parses the command line arguments and sets up the defaults for the system
-     */
-    void handleCmdLineArgs(int argc, char **argv)
-    {
-        int             opt;
-        extern char    *optarg;
-        extern int      optind;
-        char           *dir;
+/**
+ * @brief Parses the command line arguments
+ * @param argc Count of arguments
+ * @param argv Vector of the command line arguments
+ *
+ * Parses the command line arguments and sets up the defaults for the system
+ */
+void handleCmdLineArgs(int argc, char **argv)
+{
+    int             opt;
+    extern char    *optarg;
+    extern int      optind;
+    char           *dir;
 
-        mud_port = -1;
-        dir = NULL;
+    mud_port = -1;
+    dir = NULL;
 
-        while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
-            switch (opt) {
-            case 'd':
-                if( dir ) {
-                    memfree( dir );
+    while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
+        switch (opt) {
+        case 'd':
+            if( dir ) {
+                memfree( dir );
             }
             dir = strdup(optarg);
             break;
@@ -279,6 +279,11 @@
     memfree( dir );
 }
 
+#if 1
+int      spy_flag;
+#endif 
+
+
 /**
  * @brief MUD mainline
  * @param argc Count of arguments
@@ -374,11 +379,13 @@ int main(int argc, char **argv)
 
 void boot_db(void)
 {
+#if 0
     int             i;
 
     char           *s;
     long            d,
                     e;
+#endif
 
     LogPrintNoArg( LOG_CRIT, "Resetting the game time:");
     reset_time();
@@ -410,11 +417,13 @@ void boot_db(void)
     clean_playerfile();
 #endif
 
+#if 0
     LogPrintNoArg( LOG_CRIT, "Loading zone table.");
     boot_zones();
 
     LogPrintNoArg( LOG_CRIT, "Loading saved zone table.");
     boot_saved_zones();
+#endif
 
     LogPrintNoArg( LOG_CRIT, "Loading rooms.");
     initializeRooms();
@@ -425,18 +434,22 @@ void boot_db(void)
     LogPrintNoArg( LOG_CRIT, "Generating binary tree of objects.");
     initializeObjects();
 
+#if 0
     LogPrintNoArg( LOG_CRIT, "Renumbering zone table.");
     renum_zone_table(0);
 
     LogPrintNoArg( LOG_CRIT, "Generating player index.");
     build_player_index();
+#endif
 
     LogPrintNoArg( LOG_CRIT, "Assigning function pointers:");
     if (!no_specials) {
         LogPrintNoArg( LOG_CRIT, "   Mobiles.");
         assign_mobiles();
+#if 0
         boot_the_shops();
         assign_the_shopkeepers();
+#endif
 
         LogPrintNoArg( LOG_CRIT, "   Objects.");
         assign_objects();
@@ -445,6 +458,7 @@ void boot_db(void)
         assign_rooms();
     }
 
+#if 0
     LogPrintNoArg( LOG_CRIT, "   Commands.");
     assign_command_pointers();
 
@@ -453,11 +467,13 @@ void boot_db(void)
 
     LogPrintNoArg( LOG_CRIT, "Updating characters with saved items:");
     update_obj_file();
+#endif
 
 #ifdef LIMITED_ITEMS
     PrintLimitedItems();
 #endif
 
+#if 0
     for (i = 0; i <= top_of_zone_table; i++) {
         s = zone_table[i].name;
         d = (i ? (zone_table[i - 1].top + 1) : 0);
@@ -477,6 +493,7 @@ void boot_db(void)
             reset_zone(1, 0);
         }
     }
+#endif
 
     reset_q.head = reset_q.tail = 0;
 
@@ -494,11 +511,15 @@ void boot_db(void)
  */
 void reset_time(void)
 {
+#if 0
     long            beginning_of_time = 650336715;
+#endif
 
     struct time_info_data mud_time_passed(time_t t2, time_t t1);
 
+#if 0
     time_info = mud_time_passed(time(0), beginning_of_time);
+#endif
 
     moontype = time_info.day;
 

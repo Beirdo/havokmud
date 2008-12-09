@@ -125,6 +125,7 @@ typedef struct {
 
 static CommonProcDef_t procDefs[] = {
     { NULL, 0 },                    /* PROC_NONE */
+#if 0
     { shopkeeper, 0 },              /* PROC_SHOPKEEPER */
     { generic_guildmaster, 0 },     /* PROC_GUILDMASTER */
     { Tyrannosaurus_swallower, 0 }, /* PROC_SWALLOWER */
@@ -145,6 +146,7 @@ static CommonProcDef_t procDefs[] = {
     { DarkBreather, 0 },            /* PROC_DARK_BREATH */
     { receptionist, ACT_SENTINEL }, /* PROC_RECEPTIONIST */
     { RepairGuy, 0 }                /* PROC_REPAIRGUY */
+#endif
 };
 static int procDefCount = NELEMENTS(procDefs);
 
@@ -156,17 +158,19 @@ struct char_data *mobileRead(int nr)
 
     index = mobileIndex( nr );
     if( !index ) {
-        Log("Mobile (V) %d does not exist in database.", nr);
+        LogPrint( LOG_INFO, "Mobile (V) %d does not exist in database.", nr);
         return( NULL );
     }
 
-    mob = CREATEN(struct char_data, 1);
+    mob = CREATE(struct char_data);
     if (!mob) {
-        Log("Cannot create mob?!");
+        LogPrintNoArg( LOG_INFO, "Cannot create mob?!");
         return( NULL );
     }
 
+#if 0
     clear_char(mob);
+#endif
 
 #if 0
     if( !db_read_mobile(mob, nr) ) {
@@ -198,6 +202,7 @@ struct char_data *mobileRead(int nr)
 
 void mobileWriteToFile(struct char_data *mob, void * mob_fi)
 {
+#if 0
     int             i,
                     xpflag;
     long            tmp;
@@ -316,6 +321,7 @@ void mobileWriteToFile(struct char_data *mob, void * mob_fi)
     } else {
         fwrite_string(mob_fi, "");
     }
+#endif
 }
 
 /**
@@ -323,6 +329,7 @@ void mobileWriteToFile(struct char_data *mob, void * mob_fi)
  */
 void mobileWrite(struct char_data *mob, void * mob_fi)
 {
+#if 0
     int             i,
                     xpflag;
     long            tmp;
@@ -446,6 +453,7 @@ void mobileWrite(struct char_data *mob, void * mob_fi)
     } else {
         fwrite_string(mob_fi, "");
     }
+#endif
 }
 
 /**
@@ -485,7 +493,7 @@ void mobileInitScripts(void)
         }
     }
     if (!(f1 = fopen("scripts.dat", "r"))) {
-        Log("Unable to open file \"scripts.dat\".");
+        LogPrintNoArg( LOG_INFO, "Unable to open file \"scripts.dat\".");
         return;
     }
 
@@ -518,7 +526,7 @@ void mobileInitScripts(void)
 
         sprintf(buf, "scripts/%s", buf2);
         if (!(f2 = fopen(buf, "r"))) {
-            Log("Unable to open script \"%s\" for reading.", buf2);
+            LogPrint( LOG_INFO, "Unable to open script \"%s\" for reading.", buf2);
         } else {
             script_data = (struct scripts *) realloc(script_data,
                                (top_of_scripts + 1) * sizeof(struct scripts));
@@ -554,16 +562,16 @@ void mobileInitScripts(void)
             script_data[top_of_scripts].filename =
                                             CREATEN(char, strlen(buf2) + 1);
             strcpy(script_data[top_of_scripts].filename, buf2);
-            Log("Script %s assigned to mobile %d.", buf2, i);
+            LogPrint( LOG_INFO, "Script %s assigned to mobile %d.", buf2, i);
             top_of_scripts++;
             fclose(f2);
         }
     }
 
     if (top_of_scripts) {
-        Log("%d scripts assigned.", top_of_scripts);
+        LogPrint( LOG_INFO, "%d scripts assigned.", top_of_scripts);
     } else {
-        Log("No scripts found to assign.");
+        LogPrintNoArg( LOG_INFO, "No scripts found to assign.");
     }
 
     fclose(f1);

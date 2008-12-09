@@ -78,12 +78,16 @@ void completely_cleanout_room(struct room_data *rp)
             SendOutput( player, "The hand of god sweeps across the land and "
                                 "you are swept into the Void.\n");
         }
+#if 0
         char_from_room(ch);
+#endif
 
         /*
          * send character to the void
          */
+#if 0
         char_to_room(ch, 0);
+#endif
     }
 
     LinkedListLock( rp->contentList );

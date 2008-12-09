@@ -54,13 +54,13 @@ char *view_newhelp(int reportId);
 char *view_report(int reportId);
 
 CommandDef_t coreCommands[] = {
+#if 0
     { "north", do_move, 1, POSITION_STANDING, 0 },
     { "east", do_move, 2, POSITION_STANDING, 0 },
     { "south", do_move, 3, POSITION_STANDING, 0 },
     { "west", do_move, 4, POSITION_STANDING, 0 },
     { "up", do_move, 5, POSITION_STANDING, 0 },
     { "down", do_move, 6, POSITION_STANDING, 0 },
-#if 0
     { "enter", do_enter, 7, POSITION_STANDING, 0 },
     { "exits", do_exits, 8, POSITION_RESTING, 0 },
     { "kiss", do_action, 9, POSITION_RESTING, 1 },

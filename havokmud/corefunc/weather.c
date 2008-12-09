@@ -81,7 +81,9 @@ void another_hour(int mode)
         /*
          * as a test, save a piece of the world every mud hour 
          */
+#if 0
         SaveTheWorld();
+#endif
         if (tmp == gMoonRise) {
             if (moontype < 4) {
                 strcpy(moon, "new");
@@ -156,7 +158,9 @@ void another_hour(int mode)
             case 20:
             case 27:
             case 34:
+#if 0
                 PulseMobiles(EVENT_WEEK);
+#endif
                 break;
             }
 
@@ -173,7 +177,9 @@ void another_hour(int mode)
                 time_info.day = 0;
                 time_info.month++;
                 GetMonth(time_info.month);
+#if 0
                 PulseMobiles(EVENT_MONTH);
+#endif
 
                 if (time_info.month > 16) {
                     time_info.month = 0;
@@ -391,13 +397,19 @@ void GetMonth(int month)
         send_to_outdoor(" It is chilly outside \n\r");
     } else if (month == 4) {
         send_to_outdoor(" The flowers start to bloom \n\r");
+#if 0
         PulseMobiles(EVENT_SPRING);
+#endif
     } else if (month == 8) {
         send_to_outdoor(" It is warm and humid. \n\r");
+#if 0
         PulseMobiles(EVENT_SUMMER);
+#endif
     } else if (month == 12) {
         send_to_outdoor(" It starts to get a little windy \n\r");
+#if 0
         PulseMobiles(EVENT_FALL);
+#endif
     } else if (month == 13) {
         send_to_outdoor(" The air is getting chilly \n\r");
     } else if (month == 14) {
@@ -406,7 +418,9 @@ void GetMonth(int month)
         send_to_outdoor(" It starts to get cold \n\r");
     } else if (month == 16) {
         send_to_outdoor(" It is bitterly cold outside \n\r");
+#if 0
         PulseMobiles(EVENT_WINTER);
+#endif
     }
 }
 

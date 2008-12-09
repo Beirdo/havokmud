@@ -75,7 +75,9 @@ void JustLoggedIn( PlayerStruct_t *player )
     int             homeroom;
 
     ch = player->charData;
+#if 0
     reset_char(ch);
+#endif
     total_connections++;
     if (!IS_IMMORTAL(ch) ||
         ch->invis_level <= 58) {
@@ -120,19 +122,27 @@ void JustLoggedIn( PlayerStruct_t *player )
         homeroom = ch->in_room;
     }
 
+#if 0
     char_to_room(ch, homeroom);
+#endif
     ch->player.hometown = homeroom;
 
     ch->specials.tick = plr_tick_count++;
     if (plr_tick_count == PLR_TICK_WRAP) {
         plr_tick_count = 0;
     }
+#if 0
     act("$n has entered the game.", TRUE, ch, 0, 0, TO_ROOM);
+#endif
 
     if (!GetMaxLevel(ch)) {
+#if 0
         do_start(player->charData);
+#endif
     }
+#if 0
     do_look(ch, NULL, 15);
+#endif
 
     /*
      * do an auction check, grant reimbs as needed
@@ -145,7 +155,9 @@ void JustLoggedIn( PlayerStruct_t *player )
 
         objectGiveToChar(obj, ch);
         SendOutput(player, "Your item is returned to you.\n\r");
+#if 0
         do_save(ch, "", 0);
+#endif
     }
 
     if (ch->specials.minbid) {
@@ -153,7 +165,9 @@ void JustLoggedIn( PlayerStruct_t *player )
         ch->specials.minbid = 0;
         SendOutput(player, "You are returned your deposit for this "
                            "auction.\n\r");
+#if 0
         do_save(ch, "", 0);
+#endif
     }
     player->prompt_mode = 1;
 }
@@ -471,7 +485,9 @@ int special(struct char_data *ch, int cmd, char *arg)
     LinkedListItem_t           *item;
 
     if (ch->in_room == NOWHERE) {
+#if 0
         char_to_room(ch, 3001);
+#endif
         return(FALSE);
     }
 
