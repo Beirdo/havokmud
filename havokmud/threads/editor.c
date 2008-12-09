@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
- * $Id: login.c 1513 2005-12-31 19:57:25Z gjhurlbu $
+ * $Id$
  *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
@@ -38,9 +38,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
-    "$Id: login.c 1513 2005-12-31 19:57:25Z gjhurlbu $";
+    "$Id$";
 
 void AddEditorInput( PlayerStruct_t *player, char *line);
 
@@ -202,7 +203,7 @@ void AddEditorInput( PlayerStruct_t *player, char *line)
             line[player->editStringLen] = '\0';
         }
 
-        CREATE(*player->editString, char, strlen(line) + 3);
+        *player->editString = CREATEN( char, strlen(line) + 3);
         strcpy(*player->editString, line);
     } else {
         if (strlen(line) + strlen(*player->editString) > 
