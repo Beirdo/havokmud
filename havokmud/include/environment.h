@@ -85,6 +85,12 @@ static char environment_h_ident[] _UNUSED_ =
 
 #define O_LARGEFILE 0
 
+/* Some Cygwin hacks
+ */
+#ifdef __CYGWIN__
+#undef __STRICT_ANSI__
+#endif
+
 
 /* NOTE: to use 'long long' in GCC, you need -Wno-long-long if using -pedantic
  * -Wall -Werror (which you should be)
