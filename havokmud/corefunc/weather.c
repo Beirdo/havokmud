@@ -34,7 +34,6 @@
 #include "platform.h"
 #include <stdio.h>
 #include <string.h>
-#include "protos.h"
 #include "logging.h"
 #include "interthread.h"
 
@@ -55,9 +54,8 @@ int             gMoonRise = 22;
 
 int             gLightLevel = 4;        /* defaults to sunlight */
 
-/*
- * Here comes the code 
- */
+void ChangeSeason(int month);
+
 
 void weather_and_time(int mode)
 {

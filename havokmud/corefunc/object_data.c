@@ -37,8 +37,8 @@
 #include <dirent.h>
 #include "structs.h"
 #include "newstructs.h"
-#include "protos.h"
 #include "utils.h"
+#include "trap.h"
 #include "logging.h"
 #include "interthread.h"
 #include "balanced_btree.h"

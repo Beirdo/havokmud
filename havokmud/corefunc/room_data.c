@@ -34,7 +34,6 @@
 #include <string.h>
 #include "structs.h"
 #include "newstructs.h"
-#include "protos.h"
 #include "utils.h"
 #include "logging.h"
 #include "interthread.h"

@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "protos.h"
 #include "externs.h"
 
 #define REGISTER_PROC(name, type) { #name, name, type }

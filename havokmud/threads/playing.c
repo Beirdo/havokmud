@@ -32,7 +32,6 @@
 
 #include "environment.h"
 #include <pthread.h>
-#include "protos.h"
 #include "externs.h"
 #include "interthread.h"
 #include "queue.h"

@@ -36,7 +36,8 @@
 #include <mysql.h>
 #include <stdlib.h>
 
-#include "protos.h"
+#include "structs.h"
+#include "utils.h"
 #include "externs.h"
 #include "logging.h"
 #include "interthread.h"

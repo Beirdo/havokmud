@@ -35,12 +35,12 @@
 #include "memory.h"
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
 
-#include "protos.h"
 #include "externs.h"
 #include "utils.h"
 #include "version.h"
@@ -54,6 +54,8 @@ static char ident[] _UNUSED_ =
 void display_usage(char *progname);
 void handleCmdLineArgs(int argc, char **argv);
 void StartThreads( void );
+void boot_db(void);
+void reset_time(void);
 
 /* 
  * max number of descriptors (connections) 
@@ -122,10 +124,9 @@ void display_usage(char *progname)
                     "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
                     "[port]\n\n",
                     progname );
-    fprintf(stderr, "\t-d\tDefine the library dir (default %s)\n"
-                    "\t-s\tDisable special procedures\n"
+    fprintf(stderr, "\t-s\tDisable special procedures\n"
                     "\t-D\tDefine the MySQL database (default %s)\n",
-                    DFLT_DIR, DEF_MYSQL_DB );
+                    DEF_MYSQL_DB );
     fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
                     "\t-P\tDefine the MySQL password (default %s)\n"
                     "\t-H\tDefine the MySQL host (default %s)\n"
@@ -266,7 +267,7 @@ void handleCmdLineArgs(int argc, char **argv)
     }
 
     if( !dir ) {
-        dir = strdup(DFLT_DIR);
+        dir = strdup("./lib");
     }
 
     LogPrint(LOG_CRIT, "Using %s as data directory.", dir);
@@ -446,6 +447,7 @@ void boot_db(void)
     if (!no_specials) {
         LogPrintNoArg( LOG_CRIT, "   Mobiles.");
         assign_mobiles();
+
 #if 0
         boot_the_shops();
         assign_the_shopkeepers();
@@ -495,7 +497,9 @@ void boot_db(void)
     }
 #endif
 
+#if 0
     reset_q.head = reset_q.tail = 0;
+#endif
 
     /*
      * cycle through pfiles to see if anyone

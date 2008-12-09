@@ -41,7 +41,8 @@
 #include <unistd.h>
 #include "protected_data.h"
 
-#include "protos.h"
+#include "structs.h"
+#include "utils.h"
 #include "externs.h"
 #include "interthread.h"
 #include "balanced_btree.h"

@@ -733,7 +733,6 @@ void            commando(int number, int min_pos, void (*pointer) (),
 int             old_search_block(char *argument, int begin, int length,
                                  char **list, int mode);
 void            command_interpreter(struct char_data *ch, char *argument);
-char           *get_argument(char *line_in, char **arg_out);
 char           *get_argument_nofill(char *line_in, char **arg_out);
 char           *get_argument_delim(char *line_in, char **arg_out, char delim);
 int             is_number(char *str);
@@ -1494,9 +1493,6 @@ void            do_flurry(struct char_data *ch, char *argument, int cmd);
  * From spec_assign.c 
  */
 int             is_murdervict(struct char_data *ch);
-void            assign_mobiles(void);
-void            assign_objects(void);
-void            assign_rooms(void);
 int             fighter_mage(struct char_data *ch, int cmd, char *arg,
                              struct char_data *mob, int type);
 int             fighter_cleric(struct char_data *ch, int cmd, char *arg,

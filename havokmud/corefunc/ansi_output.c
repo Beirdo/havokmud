@@ -31,7 +31,6 @@
 
 #include "environment.h"
 #include <pthread.h>
-#include "protos.h"
 #include "externs.h"
 #include "interthread.h"
 #include "queue.h"
@@ -40,6 +39,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include "ansi.h"
+#include "vt100c.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

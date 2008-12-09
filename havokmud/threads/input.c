@@ -31,8 +31,8 @@
 
 #include "environment.h"
 #include <pthread.h>
-#include "protos.h"
 #include "externs.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>

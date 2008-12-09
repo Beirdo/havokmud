@@ -41,7 +41,8 @@
 #include <unistd.h>
 #include "protected_data.h"
 
-#include "protos.h"
+#include "structs.h"
+#include "utils.h"
 #include "externs.h"
 #include "interthread.h"
 
@@ -539,7 +540,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "\n\r\n[PRESS RETURN]");
         break;
     case STATE_SHOW_LOGIN_MENU:
+#if 0
         SendOutput(player, MENU);
+#endif
         break;
     case STATE_EDIT_EXTRA_DESCR:
         SendOutput(player, "<type /w to save.>\n\r");
@@ -1451,7 +1454,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         case '3':
+#if 0
             SendOutput(player, STORY);
+#endif
             EnterState(player, STATE_PRESS_ENTER);
             break;
 

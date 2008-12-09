@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#include "protos.h"
 #include "externs.h"
 #include "interthread.h"
 #include "logging.h"

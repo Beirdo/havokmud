@@ -41,7 +41,8 @@
 #include <unistd.h>
 #include "protected_data.h"
 
-#include "protos.h"
+#include "structs.h"
+#include "utils.h"
 #include "externs.h"
 #include "interthread.h"
 
@@ -91,7 +92,9 @@ void JustLoggedIn( PlayerStruct_t *player )
     }
 
     load_char_objs(ch);
+#if 0
     SendOutput(player, WELC_MESSG);
+#endif
 
     /**
      * @todo check where this character_list crap was going

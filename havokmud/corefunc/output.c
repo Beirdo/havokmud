@@ -32,10 +32,12 @@
 #include "environment.h"
 #include <pthread.h>
 #include "memory.h"
-#include "protos.h"
+#include "structs.h"
+#include "utils.h"
 #include "externs.h"
 #include "interthread.h"
 #include "queue.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>

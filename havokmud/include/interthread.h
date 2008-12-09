@@ -209,6 +209,7 @@ char *skip_spaces(char *string);
 int search_block(char *arg, char **list, bool exact);
 void remove_cr(char *output, char *input);
 int get_number(char **name);
+char *get_argument(char *line_in, char **arg_out);
 
 /*
  * char_data.c
@@ -384,6 +385,13 @@ struct room_data *roomFindNum(int virtual);
 void cleanout_room(struct room_data *rp);
 void completely_cleanout_room(struct room_data *rp);
 int roomCountObject(int nr, struct room_data *rp);
+
+/*
+ * From special_funcs.c
+ */
+void            assign_mobiles(void);
+void            assign_objects(void);
+void            assign_rooms(void);
 
 /*************************************************************************
  * Support for different platforms

@@ -61,7 +61,9 @@ extern time_t   Uptime;
 extern long     room_count;
 extern long     mob_count;
 extern int      spell_status[];
+#if 0
 extern struct radix_list radix_head[];
+#endif
 extern const char *weekdays[];
 extern const char *month_name[];
 extern const char *fight_styles[];
@@ -73,8 +75,10 @@ extern int      MaxArenaLevel,
                 MinArenaLevel;
 extern int spell_info_count;
 
+#if 0
 extern struct spell_info_type spell_info[];
 extern int      spell_index[MAX_SPL_LIST];
+#endif
 extern char    *ItemDamType[];
 extern int      ItemSaveThrows[22][5];
 extern struct dex_app_type dex_app[];
