@@ -78,7 +78,7 @@ AC_CACHE_CHECK([the path to MySQL libraries], ac_cv_option_mysql_libs)
 MYSQL_LIBS=-L$ac_cv_option_mysql_libs
 LDFLAGS="$LDFLAGS $MYSQL_LIBS"
 
-
+AC_CHECK_LIB([z], [compress])
 AC_CHECK_LIB([mysqlclient], [mysql_init])
 
 
