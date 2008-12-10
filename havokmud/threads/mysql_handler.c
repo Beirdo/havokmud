@@ -82,7 +82,6 @@ void *MysqlThread( void *arg )
     MYSQL_RES          *res;
     int                 i;
 
-    LogPrintNoArg( LOG_NOTICE, "Starting MySQL thread" );
     mysql_thread_init();
 
     while( !GlobalAbort ) {

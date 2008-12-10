@@ -65,8 +65,6 @@ void *PlayingThread( void *arg )
 
     me = (PlayingThreadArgs_t *)arg;
 
-    LogPrint( LOG_NOTICE, "Started %s", me->name );
-
     while( 1 ) {
         item = (InputStateItem_t *)QueueDequeueItem( me->inputQ, -1 );
         player = item->player;

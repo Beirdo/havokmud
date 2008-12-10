@@ -47,6 +47,7 @@ QueueObject_t *InputPlayerQ;    /**< between Input and Player threads */
 QueueObject_t *InputImmortQ;    /**< between Input and Immortal threads */
 QueueObject_t *LoggingQ;        /**< feeds the Logging thread */
 
+pthread_t mainThreadId;
 static pthread_t connectionThreadId;
 static pthread_t inputThreadId;
 static pthread_t loginThreadId;
@@ -79,26 +80,29 @@ void StartThreads( void )
     InputPlayerQ  = QueueCreate( 256 );
     InputImmortQ  = QueueCreate( 256 );
 
-    pthread_create( &loggingThreadId, NULL, LoggingThread, NULL );
-    pthread_create( &dnsThreadId, NULL, DnsThread, NULL );
+    thread_create( &loggingThreadId, LoggingThread, NULL, "LoggingThread", 
+                   NULL );
+    thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
 
     connectThreadArgs.port = 4000;
     connectThreadArgs.timeout_sec = 0;
     connectThreadArgs.timeout_usec = 100000;
-    pthread_create( &connectionThreadId, NULL, ConnectionThread, 
-                    &connectThreadArgs );
+    thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
+                   "ConnectionThread", NULL );
 
-    pthread_create( &inputThreadId, NULL, InputThread, NULL );
-    pthread_create( &loginThreadId, NULL, LoginThread, NULL );
-    pthread_create( &editorThreadId, NULL, EditorThread, NULL );
+    thread_create( &inputThreadId, InputThread, NULL, "InputThread", NULL );
+    thread_create( &loginThreadId, LoginThread, NULL, "LoginThread", NULL );
+    thread_create( &editorThreadId, EditorThread, NULL, "EditorThread", NULL );
 
     mortalPlayingArgs.inputQ = InputPlayerQ;
-    pthread_create( &mortalPlayingThreadId, NULL, PlayingThread, 
-                    &mortalPlayingArgs );
+    thread_create( &mortalPlayingThreadId, PlayingThread, &mortalPlayingArgs,
+                   "MortalPlayingThread", NULL );
     
     immortPlayingArgs.inputQ = InputImmortQ;
-    pthread_create( &immortPlayingThreadId, NULL, PlayingThread, 
-                    &immortPlayingArgs );
+    thread_create( &immortPlayingThreadId, PlayingThread, &immortPlayingArgs,
+                   "ImmortPlayingThread", NULL );
+
+    mainThreadId = pthread_self();
 
     pthread_join( immortPlayingThreadId, NULL );
     pthread_join( mortalPlayingThreadId, NULL );

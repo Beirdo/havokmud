@@ -785,6 +785,14 @@ typedef enum {
     PROC_REPAIRGUY
 } CommonProcTypes_t;
 
+typedef void (*SigFunc_t)( int, void * ); 
+ 
+typedef struct { 
+    SigFunc_t               sighupFunc; 
+    void                   *sighupArg; 
+} ThreadCallback_t; 
+
+
 #endif
 
 /*

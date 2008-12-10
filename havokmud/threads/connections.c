@@ -103,7 +103,7 @@ void *ConnectionThread( void *arg )
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
 
-    LogPrint( LOG_NOTICE, "Starting Connection Thread, port %d", portNum );
+    LogPrint( LOG_NOTICE, "Listening on port %d", portNum );
 
     /*
      * Start listening

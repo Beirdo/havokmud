@@ -393,6 +393,20 @@ void            assign_mobiles(void);
 void            assign_objects(void);
 void            assign_rooms(void);
 
+
+/*
+ * From thread_api.c
+ */
+void thread_create( pthread_t *pthreadId, void * (*routine)(void *),  
+                    void *arg, char *name, ThreadCallback_t *callbacks ); 
+void thread_register( pthread_t *pthreadId, char *name,  
+                      ThreadCallback_t *callbacks ); 
+char *thread_name( pthread_t pthreadId ); 
+void thread_deregister( pthread_t pthreadId ); 
+void ThreadAllKill( int signum ); 
+SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg ); 
+
+
 /*************************************************************************
  * Support for different platforms
  *************************************************************************/

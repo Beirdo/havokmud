@@ -124,8 +124,6 @@ void *LoggingThread( void *arg )
 {
     LoggingItem_t      *item;
 
-    LogPrintNoArg( LOG_NOTICE, "Started LoggingThread" );
-
     while( 1 ) {
         item = (LoggingItem_t *)QueueDequeueItem( LoggingQ, -1 );
 

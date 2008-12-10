@@ -63,8 +63,6 @@ void *DnsThread( void *arg )
     struct sockaddr_in  sa;
     struct hostent     *from;
 
-    LogPrintNoArg( LOG_NOTICE, "Started DnsThread" );
-
     while( 1 ) {
         item = QueueDequeueItem( ConnectDnsQ, -1 );
         if( !item ) {

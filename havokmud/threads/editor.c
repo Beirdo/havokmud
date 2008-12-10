@@ -65,8 +65,6 @@ void *EditorThread( void *arg )
     char               *line;
     InputStateType_t    type;
 
-    LogPrintNoArg( LOG_NOTICE, "Started EditorThread" );
-
     while( 1 ) {
         item = (InputStateItem_t *)QueueDequeueItem( InputEditorQ, -1 );
         player = item->player;
