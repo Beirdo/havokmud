@@ -314,7 +314,6 @@ void *ConnectionThread( void *arg )
                     /*
                      * Kick the next output
                      */
-                    LogPrint( LOG_INFO, "Kicking output Q: %p", item );
                     connKickOutput( item );
                     fdCount--;
                 }
@@ -471,6 +470,7 @@ void connKickOutput( ConnectionItem_t *connItem )
     }
 
     player = connItem->player;
+    LogPrint( LOG_INFO, "Kicking output Q: %p", player );
 
     bufDesc = (OutputBuffer_t *)QueueDequeueItem( player->outputQ, 0 );
     if( !bufDesc ) {

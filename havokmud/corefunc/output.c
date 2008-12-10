@@ -108,6 +108,7 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
     }
 
     QueueEnqueueItem( player->outputQ, outbuf );
+    connKickOutput( player->connection );
 }
 
 /**
