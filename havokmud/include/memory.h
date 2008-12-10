@@ -48,6 +48,8 @@ static char memory_h_ident[] _UNUSED_ =
 
 #define CREATE(type)	(type *)memalloc(sizeof(type))
 #define CREATEN(type,n)	(type *)memalloc((n)*sizeof(type))
+#define CREATER(type)	(type *)malloc(sizeof(type))
+#define CREATERN(type,n)	(type *)malloc((n)*sizeof(type))
 
 struct _MemoryFragment_t;
 struct _MemoryBlock_t;

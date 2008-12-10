@@ -344,6 +344,10 @@ int main(int argc, char **argv)
     srandom(time(0));
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
+    LogPrintNoArg(LOG_CRIT, "Starting threads.");
+    StartThreads();
+
+
 #ifdef SITELOCK
     banHostTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
 #endif
@@ -364,10 +368,7 @@ int main(int argc, char **argv)
 
     boot_db();
 
-    LogPrintNoArg(LOG_CRIT, "Starting threads.");
     spy_flag = FALSE;
-
-    StartThreads();
 
     if (reboot_now) {
         LogPrintNoArg(LOG_CRIT, "Rebooting.");

@@ -734,7 +734,7 @@ BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
                                                     Locked_t locked,
                                                     void *begin, void *end )
 {
-    BalancedBTreeItem_t    *find;
+    BalancedBTreeItem_t     find;
     BalancedBTreeItem_t    *item;
     BalancedBTreeItem_t    *retitem;
     int                     res;
@@ -752,14 +752,17 @@ BalancedBTreeItem_t *BalancedBTreeFindLeastInRange( BalancedBTree_t *btree,
 
     BalancedBTreeClearVisited( btree, LOCKED );
 
-    find = CREATE(BalancedBTreeItem_t);
-    find->key = begin;
+    find.key = begin;
 
-    item = BalancedBTreeFindParent( btree, find );
-    memfree( find );
+    item = BalancedBTreeFindParent( btree, &find );
 
     if( !item ) {
         item = btree->root;
+    }
+
+    if( !item ) {
+        /* Empty tree */
+        return( NULL );
     }
 
     /* Check the item */
@@ -821,7 +824,7 @@ BalancedBTreeItem_t *BalancedBTreeFindNextInRange( BalancedBTree_t *btree,
             item = item->parent;
         }
 
-        if( !item->visited ) {
+        if( item && !item->visited ) {
             res = btree->keyCompare( item->key, begin );
             if( res >= 0 ) {
                 /* item->key >= begin */
