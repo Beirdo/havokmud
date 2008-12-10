@@ -402,6 +402,7 @@ void thread_create( pthread_t *pthreadId, void * (*routine)(void *),
 void thread_register( pthread_t *pthreadId, char *name,  
                       ThreadCallback_t *callbacks ); 
 char *thread_name( pthread_t pthreadId ); 
+void thread_colors( pthread_t pthreadId, char **bg, char **fg );
 void thread_deregister( pthread_t pthreadId ); 
 void ThreadAllKill( int signum ); 
 SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg ); 

@@ -58,6 +58,8 @@
 static char ident[] _UNUSED_ = 
     "$Id$";
 
+extern pthread_t mainThreadId;
+
 LogLevel_t LogLevel = LOG_UNKNOWN;  /**< The log level mask to apply, messages
                                          must be at at least this priority to
                                          be output */
@@ -123,14 +125,19 @@ void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
 void *LoggingThread( void *arg )
 {
     LoggingItem_t      *item;
+    char               *bg, *fg, *dbg, *dfg;
+
+    thread_colors( mainThreadId, &dbg, &dfg );
 
     while( 1 ) {
         item = (LoggingItem_t *)QueueDequeueItem( LoggingQ, -1 );
 
         if( item->level <= LogLevel ) {
-            printf( "%d.%06d %s:%d (%s) - %s\n", item->time_sec, 
+            thread_colors( item->threadId, &bg, &fg );
+            printf( "%s%s%d.%06d %s:%d (%s) - %s%s%s\n", bg, fg, 
+                    item->time_sec, 
                     item->time_usec, item->file, item->line, item->function, 
-                    item->message );
+                    item->message, dbg, dfg );
         }
 
         free( item->message );

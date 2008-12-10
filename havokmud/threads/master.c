@@ -80,6 +80,9 @@ void StartThreads( void )
     InputPlayerQ  = QueueCreate( 256 );
     InputImmortQ  = QueueCreate( 256 );
 
+    mainThreadId = pthread_self();
+    thread_register( &mainThreadId, "MainThread", NULL );
+
     thread_create( &loggingThreadId, LoggingThread, NULL, "LoggingThread", 
                    NULL );
     thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
@@ -101,8 +104,6 @@ void StartThreads( void )
     immortPlayingArgs.inputQ = InputImmortQ;
     thread_create( &immortPlayingThreadId, PlayingThread, &immortPlayingArgs,
                    "ImmortPlayingThread", NULL );
-
-    mainThreadId = pthread_self();
 
     pthread_join( immortPlayingThreadId, NULL );
     pthread_join( mortalPlayingThreadId, NULL );
