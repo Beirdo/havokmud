@@ -305,11 +305,13 @@ void *ConnectionThread( void *arg )
                      * We have space to output, so write if we have anything
                      * to write
                      */
+                    LogPrint( LOG_INFO, "Output sent to: %p", item );
                     if( item->outBufDesc ) {
                         write( item->fd, item->outBufDesc->buf, 
                                item->outBufDesc->len );
-                        free( item->outBufDesc->buf );
-                        free( item->outBufDesc );
+                        memfree( item->outBufDesc->buf );
+                        memfree( item->outBufDesc );
+                        item->outBufDesc = NULL;
                     }
                     /*
                      * Kick the next output
@@ -471,6 +473,11 @@ void connKickOutput( ConnectionItem_t *connItem )
 
     player = connItem->player;
     LogPrint( LOG_INFO, "Kicking output Q: %p", player );
+
+    if( connItem->outBufDesc ) {
+        connAddFd( connItem->fd, &saveWriteFds );
+        return;
+    }
 
     bufDesc = (OutputBuffer_t *)QueueDequeueItem( player->outputQ, 0 );
     if( !bufDesc ) {

@@ -715,7 +715,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
      * wait for input of name
      */
         if (!ch) {
-            player->charData = CREATEN(struct char_data, 1);
+            player->charData = CREATE(struct char_data);
             ch = player->charData;
 #if 0
             clear_char(ch);
