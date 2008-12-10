@@ -40,6 +40,7 @@
 #include "queue.h"
 #include "linked_list.h"
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -80,15 +81,7 @@ void *InputThread( void *arg )
         connItem = (ConnInputItem_t *)QueueDequeueItem( ConnectInputQ, -1 );
         player = connItem->player;
         type = connItem->type;
-        free(connItem);
-
-        stateItem = (InputStateItem_t *)malloc(sizeof(InputStateItem_t));
-        if( !stateItem ) {
-            /*
-             * out of memory, doh!
-             */
-            continue;
-        }
+        memfree(connItem);
 
         switch( type ) {
         case CONN_NEW_CONNECT:
@@ -97,7 +90,7 @@ void *InputThread( void *arg )
              */
             player->state = STATE_INITIAL;
 
-            stateItem = (InputStateItem_t *)malloc(sizeof(InputStateItem_t));
+            stateItem = CREATE(InputStateItem_t);
             if( !stateItem ) {
                 /*
                  * out of memory, doh!
@@ -106,6 +99,8 @@ void *InputThread( void *arg )
                 continue;
             }
 
+            LogPrint( LOG_INFO, "Initializing state for connection: %p", 
+                      player );
             stateItem->player = player;
             stateItem->type   = INPUT_INITIAL;
             stateItem->line   = NULL;
@@ -139,6 +134,7 @@ void *InputThread( void *arg )
                 /*
                  * Hmmm, no input to process...  move along!
                  */
+                LogPrint( LOG_INFO, "No input to process: %p", player );
                 continue;
             }
 
@@ -149,10 +145,13 @@ void *InputThread( void *arg )
                 len += player->in_remain_len;
             }
 
-            buf = (char *)malloc(len);
+
+            LogPrint(LOG_INFO, "Got %d bytes", len);
+            buf = (char *)malloc(len+1);
             bufend = buf;
             
             if( player->in_remain ) {
+		LogPrint(LOG_INFO, "Added %d remaining", player->in_remain_len);
                 memcpy( buf, player->in_remain, player->in_remain_len );
                 bufend += player->in_remain_len;
                 free( player->in_remain );
@@ -167,20 +166,29 @@ void *InputThread( void *arg )
             /*
              * OK, we got the total buffer, now we need to split it into lines.
              */
-            for( bufend = buf + len; buf != bufend ; buf += i+1 ) {
-                while( *buf == '\n' || *buf == '\r' || *buf < 32 ) {
-                    if( buf != bufend ) {
+            for( bufend = buf + len; buf < bufend ; buf += i+1 ) {
+                while( *buf && buf < bufend ) {
+                    if( *buf == '\n' || *buf == '\r' || *buf < 32 ) {
                         buf++;
+                    } else {
+                        break;
                     }
                 }
 
-                bufloc = strstr( buf, "\n" );
+                if( *buf == '\0' || buf >= bufend ) {
+                    i = 0;
+                    continue;
+                }
+
+                bufloc = strstr( buf, "\r" );
+		if( !bufloc ) {
+		    bufloc = strstr( buf, "\n" );
+                }
                 if( bufloc ) {
                     i = bufloc - buf;
                     *bufloc = '\0';
 
-                    stateItem = (InputStateItem_t *)
-                                   malloc(sizeof(InputStateItem_t));
+                    stateItem = CREATE(InputStateItem_t);
                     if( !stateItem ) {
                         /*
                          * out of memory, doh!
@@ -188,6 +196,7 @@ void *InputThread( void *arg )
                         continue;
                     }
 
+		    LogPrint( LOG_INFO, "Sending input for %p", player );
                     stateItem->player = player;
                     stateItem->type   = INPUT_AVAIL;
                     stateItem->line   = strdup( buf );

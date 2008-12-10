@@ -36,6 +36,7 @@
 #include "queue.h"
 #include <stdlib.h>
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -62,20 +63,21 @@ void *LoginThread( void *arg )
         player = item->player;
         line = item->line;
         type = item->type;
-
-        free( item );
+        memfree( item );
 
         switch( type ) {
         case INPUT_INITIAL:
             /*
              * Brand new connection, display the banner
              */
+            player->charData = CREATE( struct char_data );
             LoginSendBanner(player);
             break;
         case INPUT_AVAIL:
             /*
              * User input, feed it to the state machine
              */
+            LogPrint( LOG_INFO, "Got: \"%s\"", line );
             LoginStateMachine(player, line);
             break;
         default:

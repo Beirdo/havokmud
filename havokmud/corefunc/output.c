@@ -100,8 +100,12 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
         return;
     }
 
-    outbuf->len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI),
-                                   buf, outbuf->buf );
+    if( ch ) {
+        outbuf->len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI),
+                                       buf, outbuf->buf );
+    } else {
+        outbuf->len = ParseAnsiColors( FALSE, buf, outbuf->buf );
+    }
 
     QueueEnqueueItem( player->outputQ, outbuf );
 }

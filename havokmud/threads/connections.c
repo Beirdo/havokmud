@@ -47,6 +47,7 @@
 #include "buffer.h"
 #include "queue.h"
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -213,8 +214,8 @@ void *ConnectionThread( void *arg )
                     /*
                      * Pass the info on to the other threads...
                      */
-                    connItem = (ConnInputItem_t *)
-                                  malloc(sizeof(ConnInputItem_t));
+                    LogPrint( LOG_INFO, "New connection: %p", player );
+                    connItem = CREATE(ConnInputItem_t);
                     if( connItem ) {
                         connItem->type = CONN_NEW_CONNECT;
                         connItem->player = player;
@@ -261,6 +262,7 @@ void *ConnectionThread( void *arg )
                         /*
                          * No buffer space, the buffer's unlocked, move on
                          */
+                        LogPrint( LOG_INFO, "No buffer space: %p", item );
                         continue;
                     }
 
@@ -288,9 +290,9 @@ void *ConnectionThread( void *arg )
                     /*
                      * Tell the input thread
                      */
-                    connItem = (ConnInputItem_t *)
-                                  malloc(sizeof(ConnInputItem_t));
+                    connItem = CREATE(ConnInputItem_t);
                     if( connItem ) {
+                        LogPrint( LOG_INFO, "New data: %p", item->player );
                         connItem->type = CONN_INPUT_AVAIL;
                         connItem->player = item->player;
 
@@ -312,6 +314,7 @@ void *ConnectionThread( void *arg )
                     /*
                      * Kick the next output
                      */
+                    LogPrint( LOG_INFO, "Kicking output Q: %p", item );
                     connKickOutput( item );
                     fdCount--;
                 }
