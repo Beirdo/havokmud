@@ -117,41 +117,76 @@ void chain_delete_board_message( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_object_tree( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item );
 
-void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
-void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg, 
+                        long insertid );
+void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid );
+void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid );
+void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid );
+void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid );
+void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                        long insertid );
+void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                      long insertid );
+void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid );
+void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                             long insertid );
+void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                         long insertid );
+void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid );
+void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid );
+void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid );
+void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                 long insertid );
+void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                 long insertid );
+void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
 
 
 QueryTable_t    QueryTable[] = {
@@ -2971,7 +3006,8 @@ void chain_load_rooms( MYSQL_RES *res, QueryItem_t *item )
  * Query result callbacks
  */
 
-void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                        long insertid )
 {
     struct user_report **rept;
     struct user_report *report;
@@ -3012,7 +3048,8 @@ void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid )
 {
     int                 count;
     struct class_def   *cls;
@@ -3045,7 +3082,8 @@ void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid )
 {
     int                 count;
     struct class_def   *cls;
@@ -3080,7 +3118,8 @@ void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid )
 {
     int                 count;
     struct class_def   *cls;
@@ -3116,7 +3155,8 @@ void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     char               *msg;
     MYSQL_ROW           row;
@@ -3129,7 +3169,8 @@ void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     int             i;
 
@@ -3158,7 +3199,8 @@ void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     int             i;
 
@@ -3185,7 +3227,8 @@ void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     int             i;
     MYSQL_ROW       row;
@@ -3209,7 +3252,8 @@ void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid )
 {
     /*
      * 0 - full match
@@ -3258,7 +3302,8 @@ void result_load_bannedUsers( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     LogPrintNoArg(LOG_CRIT, "Finished loading banned usernames from SQL");
 }
 
-void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                        long insertid )
 {
     int            *value;
     MYSQL_ROW       row;
@@ -3271,7 +3316,8 @@ void result_load_races( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     struct board_def  **retboard;
     struct board_def   *board;
@@ -3299,7 +3345,8 @@ void result_lookup_board( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     board->minLevel = atoi(row[2]);
 }
 
-void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     struct bulletin_board_message **retmsg;
     struct bulletin_board_message *msg;
@@ -3331,7 +3378,8 @@ void result_get_board_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     msg->reply_to = atoi(row[5]);
 }
 
-void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     BoardRepliesArgs_t *args;
     struct bulletin_board_message *msg;
@@ -3368,7 +3416,8 @@ void result_get_board_replies( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                      long insertid )
 {
     int          *retval;
     MYSQL_ROW     row;
@@ -3386,7 +3435,8 @@ void result_has_mail( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     MailIdsArgs_t  *args;
     int             i;
@@ -3405,7 +3455,8 @@ void result_get_mail_ids( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid )
 {
     char          **retmsg;
     char           *msg;
@@ -3429,7 +3480,8 @@ void result_get_mail_message( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
                  "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
 }
 
-void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                             long insertid )
 {
     int            *count;
 
@@ -3439,7 +3491,8 @@ void result_check_kill_file( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                         long insertid )
 {
     char          **retmsg;
     char           *msg;
@@ -3461,7 +3514,8 @@ void result_lookup_help( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                 long insertid )
 {
     LookupHelpArgs_t   *args;
     char               *msg;
@@ -3499,7 +3553,8 @@ void result_lookup_help_similar( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     strcat(msg, "Please retry help using one of these keywords.\n\r");
 }
 
-void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     struct obj_data           **retobj;
     struct obj_data            *obj;
@@ -3537,7 +3592,8 @@ void result_read_object_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     obj->eq_pos                 = atoi(row[18]);
 }
 
-void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     struct obj_data           **retobj;
     struct obj_data            *obj;
@@ -3568,7 +3624,8 @@ void result_read_object_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     struct obj_data   **retobj;
     struct obj_data    *obj;
@@ -3618,7 +3675,8 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     struct obj_data           **retobj;
     struct obj_data            *obj;
@@ -3648,7 +3706,8 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     struct obj_data           **retobj;
     struct obj_data            *obj;
@@ -3671,7 +3730,8 @@ void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     int                *retvnum;
     int                 vnum;
@@ -3687,7 +3747,8 @@ void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                              long insertid )
 {
     int                 count;
     int                 i;
@@ -3714,7 +3775,8 @@ void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 }
 
 
-void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     MYSQL_ROW           row;
     struct char_data   *ch;
@@ -3762,7 +3824,8 @@ void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
 #endif
 }
 
-void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                               long insertid )
 {
     MYSQL_ROW           row;
     struct char_data   *ch;
@@ -3785,7 +3848,8 @@ void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                           long insertid )
 {
     MYSQL_ROW           row;
     GetCharRentArgs_t  *args;
@@ -3802,7 +3866,8 @@ void result_get_char_rent( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     *args->lastUpdate = atoi(row[3]);
 }
 
-void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                 long insertid )
 {
     MYSQL_ROW           row;
     LoadCharObjsArgs_t **argPoint;
@@ -3873,7 +3938,8 @@ void result_load_char_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     *argPoint = newargs;
 }
 
-void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                 long insertid )
 {
     MYSQL_ROW           row;
     LoadCharObjsArgs_t **argPoint;
@@ -3940,7 +4006,8 @@ void result_load_room_objects_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     *argPoint = newargs;
 }
 
-void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     struct room_data   *room;
     unsigned int       *var;
@@ -3986,7 +4053,8 @@ void result_load_rooms_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     struct room_data           *room;
     Keywords_t                 *descr;
@@ -4014,7 +4082,8 @@ void result_load_rooms_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     }
 }
 
-void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     struct room_data           *room;
     int                         i;
@@ -4048,7 +4117,8 @@ void result_load_rooms_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
     dir->exit_info = 0;
 }
 
-void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg )
+void result_load_rooms_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
 {
     struct room_data   *room;
     struct room_direction_data *dir;

@@ -34,16 +34,22 @@
 #include "externs.h"
 #include "interthread.h"
 #include "queue.h"
+#include <sys/time.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "logging.h"
 #include <mysql.h>
+#include <mysql/errmsg.h>
 #include <string.h>
 #include "protected_data.h"
 #include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
+
+#define MYSQL_PING_THRESHOLD	(60 * 60)
 
 typedef struct {
     MYSQL  *sql;
@@ -55,8 +61,10 @@ static ProtectedData_t *sql;
 pthread_t       sqlThreadId;
 
 /* Internal protos */
+bool db_server_connect( MYSQL *mysql );
 char *db_quote(char *string);
-MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count );
+MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
+                     bool *connected, long *insertid );
 
 
 QueueObject_t   *QueryQ;
@@ -79,48 +87,112 @@ int   mySQL_port   = 3306;
 void *MysqlThread( void *arg )
 {
     QueryItem_t        *item;
+    MysqlData_t        *protItem;
     QueryTable_t       *query;
     MYSQL_RES          *res;
     int                 i;
+    time_t              lastAccess;
+    struct timeval      now;
+    int                 timeout;
+    bool                connected;
+    long                insertid;
+
+    db_setup();
 
     mysql_thread_init();
 
+    gettimeofday( &now, NULL );
+    lastAccess = now.tv_sec;
+
     while( !GlobalAbort ) {
-        item = (QueryItem_t *)QueueDequeueItem( QueryQ, -1 );
+        item = (QueryItem_t *)QueueDequeueItem( QueryQ, 1000 );
         if( !item ) {
             continue;
         }
 
-        query = &item->queryTable[item->queryId];
-        res = db_query( query->queryPattern, item->queryData, 
-                        item->queryDataCount );
-        if( res ) {
-            if( item->queryCallback ) {
-                item->queryCallback( res, item->queryData, 
-                                     item->queryCallbackArg );
-            } else if( query->queryChainFunc ) {
-                query->queryChainFunc( res, item );
+        connected = TRUE;
+
+        do {
+            gettimeofday( &now, NULL );
+            timeout = now.tv_sec - lastAccess;
+            lastAccess = now.tv_sec;
+
+            if( timeout >= MYSQL_PING_THRESHOLD ) {
+                LogPrint( LOG_NOTICE, "MySQL session idle for %ds, pinging",
+                          timeout );
+                connected = FALSE;
             }
-            mysql_free_result(res);
-        }
 
-        if( item->queryMutex ) {
-            pthread_mutex_unlock( item->queryMutex );
-        }
+            if( !connected ) {
+                /* Ping the server, if it's gone, reconnect */
+                ProtectedDataLock( sql );
+                protItem = (MysqlData_t *)sql->data;
 
-        if( !query->queryChainFunc ) {
-            for( i = 0; i < item->queryDataCount; i++ ) {
-                if( !item->queryData[i].is_null || 
-                    !(*item->queryData[i].is_null) ) {
-                    memfree( item->queryData[i].buffer );
+                while( !GlobalAbort && !connected ) {
+                    connected = (mysql_ping( protItem->sql ) != 0 ? FALSE :
+                                 TRUE);
+                    if( !connected ) {
+                        LogPrintNoArg( LOG_NOTICE, "MySQL session disconnected,"
+                                                   " reconnecting." );
+                        connected = db_server_connect( protItem->sql );
+                    }
+
+                    if( !connected ) {
+                        LogPrintNoArg( LOG_NOTICE, "MySQL reconnection failed, "
+                                                   "retrying in 60s" );
+                        sleep( 60 );
+                    }
+                }
+                ProtectedDataUnlock( sql );
+            }
+
+            if( !GlobalAbort ) {
+                connected = TRUE;
+
+                query = &item->queryTable[item->queryId];
+                res = db_query( query->queryPattern, item->queryData, 
+                                item->queryDataCount, &connected, &insertid );
+    
+                if( !connected ) {
+                    LogPrintNoArg( LOG_NOTICE, "MySQL connection is gone, "
+                                               "reconnecting" );
                 }
             }
-        }
+        } while( !GlobalAbort && !connected );
 
-        memfree( item );
+        if( !GlobalAbort ) {
+            if( res || insertid ) {
+                if( item->queryCallback ) {
+                    item->queryCallback( res, item->queryData, 
+                                         item->queryCallbackArg, insertid );
+                } else if( query->queryChainFunc ) {
+                    query->queryChainFunc( res, item );
+                }
+                mysql_free_result(res);
+            }
+
+            if( item->queryMutex ) {
+                pthread_mutex_unlock( item->queryMutex );
+            }
+
+            if( !query->queryChainFunc ) {
+                for( i = 0; i < item->queryDataCount; i++ ) {
+                    if( !item->queryData[i].is_null || 
+                        !(*item->queryData[i].is_null) ) {
+                        memfree( item->queryData[i].buffer );
+                    }
+                }
+            }
+
+            if( item->queryData ) {
+                memfree( item->queryData );
+            }
+            memfree( item );
+        }
     }
 
     LogPrintNoArg( LOG_NOTICE, "Ending MySQL thread" );
+    mysql_thread_end();
     return(NULL);
 }
 
@@ -128,8 +200,6 @@ void *MysqlThread( void *arg )
 void db_setup(void)
 {
     MysqlData_t    *item;
-    my_bool         my_true;
-    unsigned long   serverVers;
 
     if( !mySQL_db ) {
         mySQL_db = memstrlink(DEF_MYSQL_DB);
@@ -169,14 +239,30 @@ void db_setup(void)
         exit(1);
     }
 
+    if( !db_server_connect( item->sql ) ) {
+#if 0
+        exit(1);
+#endif
+    }
+
+    QueryQ = QueueCreate( 1024 );
+
+}
+
+bool db_server_connect( MYSQL *mysql )
+{
+    my_bool         my_true;
+    unsigned long   serverVers;
+    static char     buf[30];
+
     LogPrint( LOG_CRIT, "Using database %s at %s:%d", mySQL_db, mySQL_host, 
               mySQL_port);
 
-    if( !mysql_real_connect(item->sql, mySQL_host, mySQL_user, mySQL_passwd, 
+    if( !mysql_real_connect(mysql, mySQL_host, mySQL_user, mySQL_passwd, 
                             mySQL_db, mySQL_port, NULL, 0) ) {
         LogPrint(LOG_CRIT, "Unable to connect to the database - %s",
-                           mysql_error(item->sql) );
-        exit(1);
+                           mysql_error(mysql) );
+        return(FALSE);
     }
 
 #ifdef MYSQL_OPT_RECONNECT
@@ -187,17 +273,18 @@ void db_setup(void)
     (void)my_true;
 #endif
 
-    LogPrint( LOG_CRIT, "MySQL client version %d.%d.%d", 
-                        MYSQL_VERSION_ID / 10000,
-                        (MYSQL_VERSION_ID / 100 ) % 100,
-                        MYSQL_VERSION_ID % 100 );
-    serverVers = mysql_get_server_version( item->sql );
-    LogPrint( LOG_CRIT, "MySQL server version %d.%d.%d", 
-                        serverVers / 10000, (serverVers / 100) % 100,
-                        serverVers % 100 );
+    snprintf( buf, 30, "%d.%d.%d", MYSQL_VERSION_ID / 10000,
+                       (MYSQL_VERSION_ID / 100 ) % 100,
+                       MYSQL_VERSION_ID % 100 );
+    LogPrint( LOG_CRIT, "MySQL client version %s", buf );
 
-    QueryQ = QueueCreate( 1024 );
+    serverVers = mysql_get_server_version( mysql );
+    snprintf( buf, 30, "%ld.%ld.%ld", serverVers / 10000, 
+                       (serverVers / 100) % 100,
+                       serverVers % 100 );
+    LogPrint( LOG_CRIT, "MySQL server version %s", buf );
 
+    return( TRUE );
 }
 
 void db_thread_init( void )
@@ -238,7 +325,8 @@ char *db_quote(char *string)
 }
 
 
-MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
+MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
+                     bool *connected, long *insertid )
 {
     MYSQL_RES      *res;
     MysqlData_t    *item;
@@ -249,6 +337,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
     static char     buf[128];
     char           *string;
     char           *sqlbuf;
+    int             retval;
 
     ProtectedDataLock( sql );
 
@@ -256,7 +345,8 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
     sqlbuf = item->sqlbuf;
     sqlbuf[0] = '\0';
     buflen = item->buflen - 1;
-    count = 0;
+    count = 0; 
+    *connected = TRUE;
 
     do {
         insert = strchr( query, '?' );
@@ -267,6 +357,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
 
         if( !args ) {
             LogPrintNoArg( LOG_CRIT, "SQL malformed query!!" );
+            ProtectedDataUnlock( sql );
             return( NULL );
         }
 
@@ -275,6 +366,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
         if( buflen < len ) {
             /* Oh oh! */
             LogPrintNoArg( LOG_CRIT, "SQL buffer overflow!!" );
+            ProtectedDataUnlock( sql );
             return( NULL );
         }
         strncat( sqlbuf, query, len );
@@ -293,12 +385,18 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
             if( buflen < len ) {
                 /* Oh oh! */
                 LogPrintNoArg( LOG_CRIT, "SQL buffer overflow!!" );
+                ProtectedDataUnlock( sql );
                 return( NULL );
             }
             strncat( sqlbuf, "NULL", 4 );
             buflen -= len;
         } else {
             switch( args->buffer_type ) {
+            case MYSQL_TYPE_TINY:
+                snprintf( buf, 128, "%c", *(char *)(args->buffer) );
+                string = db_quote( buf );
+                len = strlen(string) + 2;
+                break;
             case MYSQL_TYPE_SHORT:
                 len = snprintf( buf, 128, "%d", *(short int *)(args->buffer) );
                 break;
@@ -328,6 +426,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
             if( buflen < len ) {
                 /* Oh oh! */
                 LogPrintNoArg( LOG_CRIT, "SQL buffer overflow!!" );
+                ProtectedDataUnlock( sql );
                 return( NULL );
             }
 
@@ -345,8 +444,24 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
         args++;
     } while( insert );
 
-    mysql_query(item->sql, sqlbuf);
+    if( mysql_query(item->sql, sqlbuf) != 0 ) {
+        retval = mysql_errno(item->sql);
+        LogPrint( LOG_CRIT, "MySQL error %d: %s", retval, 
+                            mysql_error(item->sql) );
+        LogPrint( LOG_CRIT, "MySQL query: %s", sqlbuf );
+
+        if( retval == CR_SERVER_GONE_ERROR || retval == CR_SERVER_LOST ) {
+            *connected = FALSE;
+            ProtectedDataUnlock( sql );
+            return( NULL );
+        }
+    }
+
     res = mysql_store_result(item->sql);
+
+    if( insertid ) {
+        *insertid = mysql_insert_id(item->sql);
+    }
 
     ProtectedDataUnlock( sql );
 

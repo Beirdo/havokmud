@@ -263,7 +263,8 @@ typedef struct {
 } QueryTable_t;
 
 
-typedef void (*QueryResFunc_t)( MYSQL_RES *res, MYSQL_BIND *input, void *arg );
+typedef void (*QueryResFunc_t)( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                                long insertid );
 
 typedef struct _QueryItem_t {
     int                 queryId;

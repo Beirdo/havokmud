@@ -146,6 +146,7 @@ void *EditorThread( void *arg );
 void *DnsThread( void *arg );
 void *LoggingThread( void *arg );
 void *PlayingThread( void *arg );
+void *MysqlThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks

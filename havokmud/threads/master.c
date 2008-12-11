@@ -56,6 +56,7 @@ static pthread_t dnsThreadId;
 static pthread_t loggingThreadId;
 static pthread_t mortalPlayingThreadId;
 static pthread_t immortPlayingThreadId;
+static pthread_t mysqlThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
@@ -105,6 +106,9 @@ void StartThreads( void )
     thread_create( &immortPlayingThreadId, PlayingThread, &immortPlayingArgs,
                    "ImmortPlayingThread", NULL );
 
+    thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
+
+    pthread_join( mysqlThreadId, NULL );
     pthread_join( immortPlayingThreadId, NULL );
     pthread_join( mortalPlayingThreadId, NULL );
     pthread_join( editorThreadId, NULL );
