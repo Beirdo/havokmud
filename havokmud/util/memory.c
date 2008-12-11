@@ -106,6 +106,8 @@ void meminit( void )
     BalancedBTreeCreate( &fragmentDeferPool.addrTree, BTREE_KEY_POINTER );
 
     BalancedBTreeCreate( &memoryStringTree, BTREE_KEY_STRING );
+
+    LogPrint( LOG_INFO, "Memory Page Size: %d", memoryPageSize );
 }
 
 void *memalloc( int size )

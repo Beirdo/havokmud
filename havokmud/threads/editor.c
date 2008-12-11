@@ -71,7 +71,7 @@ void *EditorThread( void *arg )
         line = item->line;
         type = item->type;
 
-        free( item );
+        memfree( item );
 
         switch( type ) {
         case INPUT_AVAIL:

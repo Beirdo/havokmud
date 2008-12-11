@@ -37,6 +37,7 @@
 #include "queue.h"
 #include <stdlib.h>
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -71,7 +72,7 @@ void *PlayingThread( void *arg )
         line = item->line;
         type = item->type;
 
-        free( item );
+        memfree( item );
 
         switch( type ) {
         case INPUT_INITIAL:

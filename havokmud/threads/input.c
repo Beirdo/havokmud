@@ -147,14 +147,14 @@ void *InputThread( void *arg )
 
 
             LogPrint(LOG_INFO, "Got %d bytes", len);
-            buf = (char *)malloc(len+1);
+            buf = CREATEN(char, len);
             bufend = buf;
             
             if( player->in_remain ) {
 		LogPrint(LOG_INFO, "Added %d remaining", player->in_remain_len);
                 memcpy( buf, player->in_remain, player->in_remain_len );
                 bufend += player->in_remain_len;
-                free( player->in_remain );
+                memfree( player->in_remain );
                 player->in_remain = NULL;
                 player->in_remain_len = 0;
             }
@@ -181,8 +181,8 @@ void *InputThread( void *arg )
                 }
 
                 bufloc = strstr( buf, "\r" );
-		if( !bufloc ) {
-		    bufloc = strstr( buf, "\n" );
+                if( !bufloc ) {
+                    bufloc = strstr( buf, "\n" );
                 }
                 if( bufloc ) {
                     i = bufloc - buf;
@@ -196,14 +196,14 @@ void *InputThread( void *arg )
                         continue;
                     }
 
-		    LogPrint( LOG_INFO, "Sending input for %p", player );
+                    LogPrint( LOG_INFO, "Sending input for %p", player );
                     stateItem->player = player;
                     stateItem->type   = INPUT_AVAIL;
-                    stateItem->line   = strdup( buf );
+                    stateItem->line   = memstrdup( buf );
                     QueueEnqueueItem( player->handlingQ, stateItem );
                 } else {
                     i = bufend - buf;
-                    player->in_remain     = (char *)malloc(i);
+                    player->in_remain = CREATEN(char, i);
                     if (player->in_remain) {
                         player->in_remain_len = i;
                         memcpy( player->in_remain, buf, i );
@@ -212,7 +212,7 @@ void *InputThread( void *arg )
             }
 
             buf = bufend - len;
-            free( buf );
+            memfree( buf );
             break;
         case CONN_FLUSH_INPUT:
             /*
@@ -241,22 +241,22 @@ void *InputThread( void *arg )
             while( (outputItem = 
                      (OutputBuffer_t *)QueueDequeueItem(outputQ, 0)) ) {
                 if( outputItem->buf ) {
-                    free( outputItem->buf );
+                    memfree( outputItem->buf );
                 }
-                free( outputItem );
+                memfree( outputItem );
             }
             QueueDestroy( outputQ );
 
             BufferDestroy( player->in_buffer );
             if( player->in_remain ) {
-                free( player->in_remain );
+                memfree( player->in_remain );
             }
 
             if( player->charData ) {
-                free( player->charData );
+                memfree( player->charData );
             }
 
-            free( player );
+            memfree( player );
             break;
         default:
             break;
@@ -299,7 +299,7 @@ void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
             /*
              * Gotta remove this one!
              */
-            free( item->line );
+            memfree( item->line );
             i = QueueRemoveItem( queue, i, LOCKED );
             free( item );
         }

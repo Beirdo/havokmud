@@ -40,6 +40,7 @@
 #include <mysql.h>
 #include <string.h>
 #include "protected_data.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -111,12 +112,12 @@ void *MysqlThread( void *arg )
             for( i = 0; i < item->queryDataCount; i++ ) {
                 if( !item->queryData[i].is_null || 
                     !(*item->queryData[i].is_null) ) {
-                    free( item->queryData[i].buffer );
+                    memfree( item->queryData[i].buffer );
                 }
             }
         }
 
-        free( item );
+        memfree( item );
     }
 
     LogPrintNoArg( LOG_NOTICE, "Ending MySQL thread" );
@@ -131,22 +132,22 @@ void db_setup(void)
     unsigned long   serverVers;
 
     if( !mySQL_db ) {
-        mySQL_db = strdup(DEF_MYSQL_DB);
+        mySQL_db = memstrlink(DEF_MYSQL_DB);
     }
 
     if( !mySQL_user ) {
-        mySQL_user = strdup(DEF_MYSQL_USER);
+        mySQL_user = memstrlink(DEF_MYSQL_USER);
     }
 
     if( !mySQL_passwd ) {
-        mySQL_passwd = strdup(DEF_MYSQL_PASSWD);
+        mySQL_passwd = memstrlink(DEF_MYSQL_PASSWD);
     }
 
     if( !mySQL_host ) {
-        mySQL_host = strdup(DEF_MYSQL_HOST);
+        mySQL_host = memstrlink(DEF_MYSQL_HOST);
     }
 
-    item = (MysqlData_t *)malloc(sizeof(MysqlData_t));
+    item = CREATE(MysqlData_t);
     if( !item ) {
         LogPrintNoArg( LOG_CRIT, "Unable to create a MySQL structure!!");
         exit(1);
@@ -221,10 +222,10 @@ char *db_quote(char *string)
     }
 
     if( !count ) {
-        return( strdup(string) );
+        return( memstrlink(string) );
     }
 
-    retString = (char *)malloc(len + count + 1);
+    retString = CREATEN(char, len + count + 1);
     for(i = 0, j = 0; i < len; i++, j++) {
         if( string[i] == '\'' || string[i] == '\"' ) {
             retString[j++] = '\\';
@@ -334,7 +335,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count )
                 strcat( sqlbuf, "'" );
                 if( string ) {
                     strncat( sqlbuf, string, len );
-                    free( string );
+                    memfree( string );
                 }
                 strcat( sqlbuf, "'" );
             } else {
@@ -363,7 +364,7 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
     static unsigned int sequence = 0;
     QueryItem_t        *item;
 
-    item = (QueryItem_t *)malloc(sizeof(QueryItem_t));
+    item = CREATE(QueryItem_t);
     memset( item, 0, sizeof(QueryItem_t) );
 
     item->queryId = queryId;
@@ -421,7 +422,7 @@ void bind_numeric( MYSQL_BIND *data, long long int value,
         return;
     }
 
-    ptr = malloc(len);
+    ptr = CREATEN(char, len);
     if( !ptr ) {
         data->is_null = &isnull;
         return;
@@ -471,7 +472,7 @@ void bind_string( MYSQL_BIND *data, char *value, enum enum_field_types type )
         return;
     }
 
-    ptr = strdup( value );
+    ptr = memstrlink( value );
     if( !ptr ) {
         data->is_null = &isnull;
         return;
@@ -506,7 +507,7 @@ unsigned long mysql_get_server_version(MYSQL *mysql)
     char           *dot;
     unsigned long   version;
 
-    verstring = strdup( mysql_get_server_info(mysql) );
+    verstring = memstrlink( mysql_get_server_info(mysql) );
     orig = verstring;
 
     dot = strchr( verstring, '.' );
@@ -525,7 +526,7 @@ unsigned long mysql_get_server_version(MYSQL *mysql)
     }
     version += atol( verstring );
 
-    free( orig );
+    memfree( orig );
 
     return( version );
 }

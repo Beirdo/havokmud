@@ -164,7 +164,7 @@ void *ConnectionThread( void *arg )
             connAddFd(newFd, &saveReadFds);
             connAddFd(newFd, &saveExceptFds);
 
-            item = (ConnectionItem_t *)malloc(sizeof(ConnectionItem_t));
+            item = CREATE(ConnectionItem_t);
             if( !item ) {
                 /*
                  * No memory!
@@ -178,7 +178,7 @@ void *ConnectionThread( void *arg )
 
                 item->hostName = ProtectedDataCreate();
                 ProtectedDataLock( item->hostName );
-                item->hostName->data = malloc(16);
+                item->hostName->data = CREATEN(char, 16);
                 i = sa.sin_addr.s_addr;
                 sprintf((char *)item->hostName->data, "%d.%d.%d.%d", 
                         (i & 0x000000FF), (i & 0x0000FF00) >> 8, 
@@ -186,7 +186,7 @@ void *ConnectionThread( void *arg )
                 ProtectedDataUnlock( item->hostName );
 
                 if (!IS_SET(SystemFlags, SYS_SKIPDNS)) {
-                    dnsItem = (ConnDnsItem_t *)malloc(sizeof(ConnDnsItem_t));
+                    dnsItem = CREATE(ConnDnsItem_t);
                     if( dnsItem ) {
                         dnsItem->connection = item;
                         dnsItem->ipAddr = sa.sin_addr.s_addr;
@@ -194,7 +194,7 @@ void *ConnectionThread( void *arg )
                     }
                 }
 
-                player = (PlayerStruct_t *)malloc(sizeof(PlayerStruct_t));
+                player = CREATE(PlayerStruct_t);
                 if( !player ) {
                     /*
                      * No memory!
@@ -202,7 +202,7 @@ void *ConnectionThread( void *arg )
                     LogPrintNoArg( LOG_EMERG, "Out of memory!" );
                     BufferDestroy(item->buffer);
                     close(newFd);
-                    free(item);
+                    memfree(item);
                 } else {
                     memset(player, 0, sizeof(PlayerStruct_t));
                     item->player = player;
@@ -412,9 +412,9 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
      * must be locked before entering...
      */
     BufferDestroy( item->buffer );
-    free( item );
+    memfree( item );
 
-    connItem = (ConnInputItem_t *)malloc(sizeof(ConnInputItem_t));
+    connItem = CREATE(ConnInputItem_t);
     if( connItem ) {
         connItem->type = CONN_DELETE_CONNECT;
         connItem->player = player;

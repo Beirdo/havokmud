@@ -43,6 +43,7 @@
 #include "externs.h"
 #include "interthread.h"
 #include "queue.h"
+#include "memory.h"
 
 /* INTERNAL CONSTANT DEFINITIONS */
 
@@ -84,7 +85,7 @@ void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
     struct timeval tv;
     va_list arguments;
 
-    item = (LoggingItem_t *)malloc(sizeof(LoggingItem_t));
+    item = CREATE(LoggingItem_t);
     if( !item ) {
         return;
     }
@@ -97,9 +98,9 @@ void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
     gettimeofday( &tv, NULL );
     item->time_sec  = tv.tv_sec;
     item->time_usec = tv.tv_usec;
-    item->message   = (char *)malloc(LOGLINE_MAX+1);
+    item->message   = CREATEN(char, LOGLINE_MAX+1);
     if( !item->message ) {
-        free( item );
+        memfree( item );
         return;
     }
 
@@ -140,8 +141,8 @@ void *LoggingThread( void *arg )
                     item->message, dbg, dfg );
         }
 
-        free( item->message );
-        free( item );
+        memfree( item->message );
+        memfree( item );
     }
 
     return( NULL );

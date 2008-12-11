@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include "protected_data.h"
 #include "logging.h"
+#include "memory.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -77,13 +78,13 @@ void *DnsThread( void *arg )
             connect = item->connection;
             ProtectedDataLock(connect->hostName);
             if( connect->hostName->data ) {
-                free( connect->hostName->data );
+                memfree( connect->hostName->data );
             }
-            connect->hostName->data = strdup(from->h_name);
+            connect->hostName->data = memstrlink(from->h_name);
             ProtectedDataUnlock(connect->hostName);
         }
 
-        free( item );
+        memfree( item );
     }
 
     return( NULL );
