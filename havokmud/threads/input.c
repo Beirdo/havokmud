@@ -172,7 +172,7 @@ void *InputThread( void *arg )
              */
             for( bufend = buf + len; buf < bufend ; buf += i+1 ) {
                 while( *buf && buf < bufend ) {
-                    if( *buf == '\n' || *buf == '\r' || *buf < 32 ) {
+                    if( *buf != '\n' && *buf < 32 ) {
                         buf++;
                     } else {
                         break;
@@ -184,13 +184,14 @@ void *InputThread( void *arg )
                     continue;
                 }
 
-                bufloc = strstr( buf, "\r" );
-                if( !bufloc ) {
-                    bufloc = strstr( buf, "\n" );
-                }
+                bufloc = strstr( buf, "\n" );
                 if( bufloc ) {
                     i = bufloc - buf;
                     *bufloc = '\0';
+
+                    while( *(--bufloc) == '\r' ) {
+                        *bufloc = '\0';
+                    }
 
                     stateItem = CREATE(InputStateItem_t);
                     if( !stateItem ) {
