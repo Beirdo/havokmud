@@ -408,6 +408,12 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
 
     prev = (ConnectionItem_t *)(item->link.prev);
 
+    ProtectedDataLock(item->hostName);
+    if( item->hostName->data ) {
+        memfree( item->hostName->data );
+    }
+    ProtectedDataDestroy(item->hostName);
+
     /*
      * must be locked before entering...
      */
