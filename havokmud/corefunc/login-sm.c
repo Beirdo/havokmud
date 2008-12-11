@@ -339,7 +339,7 @@ void show_menu(PlayerStruct_t *player)
 
     SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu [%s]"
                        "$c0009=-\n\r\n\r", GET_NAME(ch));
-    SendOutput(player, "$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",
+    SendOutput(player, "$c00151) $c0012Gender. [$c0015%s$c0012]\n\r",
                        Sex[((int) GET_SEX(ch))]);
     SendOutput(player, "$c00152) $c0012ANSI Colors.\n\r");
 
@@ -349,9 +349,10 @@ void show_menu(PlayerStruct_t *player)
          */
         GET_RACE(ch) = 1;
     }
-
+#if 0
     SendOutput(player, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
                            races[GET_RACE(ch)].racename);
+#endif
 
     cls[0] = '\0';
     for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
@@ -760,6 +761,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #endif
             EnterState(player, STATE_GET_PASSWORD);
         } else {
+#endif
             /*
              * player unknown gotta make a new
              */
@@ -781,6 +783,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             GET_NAME(ch) = CREATEN(char, strlen(tmp_name) + 1);
             strcpy(GET_NAME(ch), CAP(tmp_name));
             EnterState(player, STATE_CONFIRM_NAME);
+#if 0
         }
 #endif
         break;

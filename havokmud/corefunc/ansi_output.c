@@ -89,9 +89,9 @@ int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf)
             }
 
             /* 
-             * Skip the rest of the MUD color code
+             * Skip the rest of the MUD color code (4 chars, 3 here, 1 in loop)
              */
-            i += 4;
+            i += 3;
         } else {
             buf[j++] = txt[i];
             /*
