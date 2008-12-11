@@ -70,6 +70,7 @@ void *DnsThread( void *arg )
             continue;
         }
 
+        LogPrint( LOG_INFO, "Resolving %s", item->connection->hostName->data );
         sa.sin_addr.s_addr = item->ipAddr;
 
         from = gethostbyaddr((char *)&sa.sin_addr, sizeof(sa.sin_addr), 
@@ -80,7 +81,8 @@ void *DnsThread( void *arg )
             if( connect->hostName->data ) {
                 memfree( connect->hostName->data );
             }
-            connect->hostName->data = memstrlink(from->h_name);
+            connect->hostName->data = memstrlink((char *)from->h_name);
+            LogPrint( LOG_INFO, "Resolved to %s", connect->hostName->data );
             ProtectedDataUnlock(connect->hostName);
         }
 

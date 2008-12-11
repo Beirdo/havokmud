@@ -107,7 +107,7 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
         outbuf->len = ParseAnsiColors( FALSE, buf, outbuf->buf );
     }
 
-    LogPrint( LOG_INFO, "Sending output: %s", outbuf);
+    LogPrint( LOG_INFO, "Sending output: %s", outbuf->buf );
     QueueEnqueueItem( player->outputQ, outbuf );
     connKickOutput( player->connection );
 }

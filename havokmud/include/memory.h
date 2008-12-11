@@ -84,6 +84,7 @@ typedef struct _MemoryPool_t {
 typedef struct _MemoryString_t {
 	int					count;
 	BalancedBTreeItem_t	item;
+        char *addr;
 	char				buf[1];	/* NOTE: +strlen at alloc, must be last item */
 } MemoryString_t;
 

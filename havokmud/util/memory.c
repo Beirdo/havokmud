@@ -505,7 +505,8 @@ char *memstrlink( char *orig )
         string = (MemoryString_t *)memalloc(sizeof(MemoryString_t) + len);
         strcpy( string->buf, orig );
         string->count = 1;
-        string->item.key  = &string->buf;
+        string->addr = &string->buf[0];
+        string->item.key  = &string->addr;
         string->item.item = string;
         BalancedBTreeAdd( &memoryStringTree, &string->item, LOCKED, TRUE );
     }
