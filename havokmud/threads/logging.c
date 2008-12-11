@@ -135,10 +135,10 @@ void *LoggingThread( void *arg )
 
         if( item->level <= LogLevel ) {
             thread_colors( item->threadId, &bg, &fg );
-            printf( "%s%s%d.%06d %s:%d (%s) - %s%s%s\n", bg, fg, 
+            printf( "%s%s%d.%03d %s:%d (%s) - %s%s%s\n", bg, fg, 
                     item->time_sec, 
-                    item->time_usec, item->file, item->line, item->function, 
-                    item->message, dbg, dfg );
+                    item->time_usec/1000, item->file, item->line, 
+                    item->function, item->message, dbg, dfg );
         }
 
         memfree( item->message );

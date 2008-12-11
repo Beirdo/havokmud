@@ -156,20 +156,11 @@ void handleCmdLineArgs(int argc, char **argv)
     int             opt;
     extern char    *optarg;
     extern int      optind;
-    char           *dir;
 
     mud_port = -1;
-    dir = NULL;
 
-    while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
+    while( (opt = getopt(argc, argv, "lsD:U:P:H:p:ANRLhV")) != -1 ) {
         switch (opt) {
-        case 'd':
-            if( dir ) {
-                memfree( dir );
-            }
-            dir = strdup(optarg);
-            break;
-
         case 's':
             no_specials = 1;
             LogPrintNoArg(LOG_CRIT, "Suppressing assignment of special "
@@ -265,19 +256,6 @@ void handleCmdLineArgs(int argc, char **argv)
         printf("Illegal port #\n");
         exit(1);
     }
-
-    if( !dir ) {
-        dir = strdup("./lib");
-    }
-
-    LogPrint(LOG_CRIT, "Using %s as data directory.", dir);
-
-    if (chdir(dir) < 0) {
-        perror("chdir");
-        exit(1);
-    }
-
-    memfree( dir );
 }
 
 #if 1

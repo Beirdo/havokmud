@@ -404,6 +404,8 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
     ch = player->charData;
 
+    LogPrint( LOG_INFO, "Entering state %d from %d", newstate, player->state );
+
     switch( newstate ) {
     case STATE_CHOOSE_SEX:
         SendOutput(player, "What is your sex (M/F) ? ");

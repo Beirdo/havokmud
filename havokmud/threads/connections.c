@@ -292,7 +292,9 @@ void *ConnectionThread( void *arg )
                      */
                     connItem = CREATE(ConnInputItem_t);
                     if( connItem ) {
+#ifdef DEBUG_INPUT
                         LogPrint( LOG_INFO, "New data: %p", item->player );
+#endif
                         connItem->type = CONN_INPUT_AVAIL;
                         connItem->player = item->player;
 
@@ -305,7 +307,9 @@ void *ConnectionThread( void *arg )
                      * We have space to output, so write if we have anything
                      * to write
                      */
+#ifdef DEBUG_OUTPUT
                     LogPrint( LOG_INFO, "Output sent to: %p", item );
+#endif
                     if( item->outBufDesc ) {
                         write( item->fd, item->outBufDesc->buf, 
                                item->outBufDesc->len );
@@ -478,7 +482,9 @@ void connKickOutput( ConnectionItem_t *connItem )
     }
 
     player = connItem->player;
+#ifdef DEBUG_OUTPUT
     LogPrint( LOG_INFO, "Kicking output Q: %p", player );
+#endif
 
     if( connItem->outBufDesc ) {
         connAddFd( connItem->fd, &saveWriteFds );

@@ -146,12 +146,16 @@ void *InputThread( void *arg )
             }
 
 
+#ifdef DEBUG_INPUT
             LogPrint(LOG_INFO, "Got %d bytes", len);
+#endif
             buf = CREATEN(char, len);
             bufend = buf;
             
             if( player->in_remain ) {
+#ifdef DEBUG_INPUT
 		LogPrint(LOG_INFO, "Added %d remaining", player->in_remain_len);
+#endif
                 memcpy( buf, player->in_remain, player->in_remain_len );
                 bufend += player->in_remain_len;
                 memfree( player->in_remain );
@@ -196,7 +200,9 @@ void *InputThread( void *arg )
                         continue;
                     }
 
+#ifdef DEBUG_INPUT
                     LogPrint( LOG_INFO, "Sending input for %p", player );
+#endif
                     stateItem->player = player;
                     stateItem->type   = INPUT_AVAIL;
                     stateItem->line   = memstrdup( buf );
