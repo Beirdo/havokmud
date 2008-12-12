@@ -32,9 +32,9 @@ all : ${EXE}
 #${EXE} : ${OBJS}
 #	${LD} -g -o $@ $+ ${LDFLAGS} ${LIBS}
 
-${EXE} make.out : ${NEWLIBFILES} force
+${EXE} : ${NEWLIBFILES} force
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	-${LD} -g -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS} 2> make.out
+	${LD} -g -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 
 util/libhavokutils.a:

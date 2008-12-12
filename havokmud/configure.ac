@@ -2,8 +2,8 @@
 AC_PREREQ(2.59)
 
 AC_INIT(havokmud, [2.0.0], [gjhurlbu@users.sourceforge.net])
-AC_CONFIG_SRCDIR([version.h])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SRCDIR([include/version.h])
+AC_CONFIG_HEADER([include/config.h])
 AC_CONFIG_AUX_DIR([scripts])
 AC_REVISION($Revision: 1.1.2.6 $)
 
