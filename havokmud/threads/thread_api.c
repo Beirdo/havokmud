@@ -34,7 +34,7 @@
 #include "balanced_btree.h"
 #include "logging.h"
 #include "memory.h"
-#include "ansi.h"
+#include "ansi_vt100.h"
 
 
 static char ident[] _UNUSED_= 

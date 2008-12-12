@@ -38,8 +38,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include "ansi.h"
-#include "vt100c.h"
+#include "ansi_vt100.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
