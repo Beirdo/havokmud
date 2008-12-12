@@ -38,7 +38,6 @@
 #include "structs.h"
 #include "newstructs.h"
 #include "utils.h"
-#include "script.h"
 #include "logging.h"
 #include "interthread.h"
 #include "balanced_btree.h"

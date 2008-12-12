@@ -63,6 +63,10 @@
 #define _REENTRANT
 #endif
 
+#ifndef __EXTENSIONS__
+#define __EXTENSIONS__
+#endif
+
 #define _THREAD_SAFE
 
 #else

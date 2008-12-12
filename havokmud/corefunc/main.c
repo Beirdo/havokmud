@@ -31,7 +31,6 @@
 
 #include "config.h"
 #include "environment.h"
-#include "platform.h"
 #include "memory.h"
 #include <ctype.h>
 #include <string.h>
