@@ -302,7 +302,7 @@ void objectGiveToChar(struct obj_data *object, struct char_data *ch);
 void objectTakeFromChar(struct obj_data *object);
 void objectPutInRoom(struct obj_data *object, long room, Locked_t locked);
 void objectTakeFromRoom(struct obj_data *object, Locked_t locked);
-void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete);
+void objectSaveForChar(struct char_data *ch, int delete);
 void load_char_objs(struct char_data *ch);
 struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
                                   struct room_data *rm );

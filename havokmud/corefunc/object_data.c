@@ -1022,7 +1022,7 @@ void objectTakeFromRoom(struct obj_data *object, Locked_t locked)
 /**
  * @brief write the vital data of a player to the player file 
  */
-void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
+void objectSaveForChar(struct char_data *ch, int delete)
 {
     int                 i;
     int                 itemNum;
@@ -1037,11 +1037,6 @@ void objectSaveForChar(struct char_data *ch, struct obj_cost *cost, int delete)
     SysLogPrint( LOG_INFO, "Saving %s (%d): %d gold", fname(ch->player.name), 
                            ch->playerId, GET_GOLD(ch) );
 #endif
-
-    /*
-     * update the rent cost and gold
-     */
-    db_update_char_rent( ch->playerId, GET_GOLD(ch), cost->total_cost, 0 );
 
     itemNum = 1;
 

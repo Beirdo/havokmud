@@ -3539,20 +3539,9 @@ void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 
     row = mysql_fetch_row(res);
 
-#if 0
-    do_bamfout(ch, row[0], 0);
-    do_bamfin(ch, row[1], 0);
-#endif
     GET_ZONE(ch) = atoi(row[2]);
-#if 0
-    do_set_prompt(ch, row[3], 0);
-    do_set_bprompt(ch, row[4], 0);
-#endif
     if( row[5] ) {
         sprintf(temp, "email %s", row[5]);
-#if 0
-        do_set_flags(ch, temp, 0);
-#endif
     }
 
     ch->specials.hostip = strdup(row[7]);
@@ -3560,11 +3549,6 @@ void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     if( row[6] ) {
         ch->specials.rumor = strdup(row[8]);
     }
-
-#if 0
-    do_setsev(ch, row[8], 0);
-    do_invis(ch, row[9], 242);       
-#endif
 }
 
 void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
@@ -3585,9 +3569,6 @@ void result_load_char_extra_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
         row = mysql_fetch_row(res);
 
         sprintf(temp, "%s %s", row[0], row[1] );
-#if 0
-        do_alias(ch, temp, 260);
-#endif
     }
 }
 

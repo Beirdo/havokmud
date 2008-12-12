@@ -95,7 +95,6 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( fido, PROC_MOBILE ),
     REGISTER_PROC( fighter, PROC_MOBILE ),
     REGISTER_PROC( fighter_mage, PROC_MOBILE ),
-    REGISTER_PROC( FightingGuildMaster, PROC_MOBILE ),
     REGISTER_PROC( FireBreather, PROC_MOBILE ),
     REGISTER_PROC( FrostBreather, PROC_MOBILE ),
     REGISTER_PROC( GasBreather, PROC_MOBILE ),

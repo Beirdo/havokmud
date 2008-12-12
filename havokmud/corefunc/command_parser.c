@@ -139,12 +139,9 @@ void JustLoggedIn( PlayerStruct_t *player )
 
     if (!GetMaxLevel(ch)) {
 #if 0
-        do_start(player->charData);
+        /* create a new player */
 #endif
     }
-#if 0
-    do_look(ch, NULL, 15);
-#endif
 
     player->prompt_mode = 1;
 }

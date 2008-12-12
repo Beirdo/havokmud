@@ -270,17 +270,6 @@ typedef enum {
 #define MAX_ROOMS           5000
 
 /*
- * FIghting styles!!!
- */
-typedef enum {
-    FIGHTING_STYLE_STANDARD = 0,
-    FIGHTING_STYLE_BERSERKED,
-    FIGHTING_STYLE_AGGRESSIVE,
-    FIGHTING_STYLE_DEFENSIVE,
-    FIGHTING_STYLE_EVASIVE
-} FightingStyles_t;
-
-/*
  * minimum # of zones needed to keep tqp alive
  */
 #define MIN_INIT_TQP 22
@@ -808,7 +797,6 @@ struct char_data {
     char           *last_tell;          /* Who last telled something to
                                          * the char */
     int             old_exp;    /* For energe restore -MW */
-    int             style;      /* Fighting Style!!! */
     char            pwd[12];    /* password */
 };
 
@@ -853,12 +841,6 @@ struct weather_data {
  *  file element for object file. BEWARE: Changing it will ruin the file  *
  *********************************************************************** */
 
-struct obj_cost {
-    /* used in act.other.c:do_save as well as in reception2.c */
-    int             total_cost;
-    int             no_carried;
-    bool            ok;
-};
 
 #define MAX_OBJ_SAVE 200        /* Used in OBJ_FILE_U *DO*NOT*CHANGE* */
 #ifndef MAX_OBJ_AFFECT
