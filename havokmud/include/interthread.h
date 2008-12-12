@@ -45,7 +45,7 @@
 #include "logging.h"
 #include "balanced_btree.h"
 #include "oldstructs.h"
-#include "newstructs.h"
+#include "structs.h"
 
 /* CVS generated ID string (optional for h files) */
 static char interthread_h_ident[] _UNUSED_ = 

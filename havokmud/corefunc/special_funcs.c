@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "newstructs.h"
+#include "structs.h"
 #include "externs.h"
 
 #define REGISTER_PROC(name, type) { #name, name, type }

@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include "oldstructs.h"
-#include "newstructs.h"
+#include "structs.h"
 #include "utils.h"
 #include "logging.h"
 #include "interthread.h"

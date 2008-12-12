@@ -27,8 +27,8 @@
 *
 *--------------------------------------------------------*/
 
-#ifndef _newstructs_h_
-#define _newstructs_h_
+#ifndef _structs_h_
+#define _structs_h_
 
 #include "environment.h"
 #include <pthread.h>
