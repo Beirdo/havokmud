@@ -418,8 +418,6 @@ CommandDef_t coreCommands[] = {
     { "noyell", do_plr_nogossip, 301, POSITION_RESTING, 0 },
 
     { "gossip", do_yell, 302, POSITION_RESTING, 0 },
-    { "noauction", do_plr_noauction, 303, POSITION_RESTING, 0 },
-    { "auction", do_auction, 304, POSITION_RESTING, 0 },
     { "discon", do_disconnect, 305, POSITION_RESTING, IMMORTAL },
     { "freeze", do_freeze, 306, POSITION_SLEEPING, 55 },
     { "drain", do_drainlevel, 307, POSITION_SLEEPING, IMPLEMENTOR },
@@ -664,9 +662,6 @@ CommandDef_t coreCommands[] = {
     { "setobjspeed", do_setobjspeed, 523, POSITION_RESTING, 53 },
     { "wclean", do_wclean, 524, POSITION_RESTING, 58 },
     { "glance", do_glance, 525, POSITION_SITTING, 1 },
-    { "arena", do_arena, 525, POSITION_SITTING, 1 },
-    { "startarena", do_startarena, 525, POSITION_SITTING, 55 },
-    { "whoarena", do_whoarena, 525, POSITION_RESTING, 0 },
     { "frolic", do_action, 526, POSITION_STANDING, 0 },
 
     { "land", do_land, 527, POSITION_STANDING, 0 },
@@ -720,7 +715,6 @@ CommandDef_t coreCommands[] = {
     { "draw", do_draw, 567, POSITION_FIGHTING, 0 },
     { "zconv", do_zconv, 568, POSITION_STANDING, 60 },
     { "bprompt", do_set_bprompt, 569, POSITION_RESTING, 0 },
-    { "bid", do_bid, 570, POSITION_RESTING, 0 },
     { "resist", do_resistances, 571, POSITION_RESTING, 0 },
 
     { "style", do_style, 572, POSITION_STANDING, 0 },

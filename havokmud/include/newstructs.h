@@ -623,7 +623,6 @@ struct obj_data {
 #define LARGE                   BV(11)
 #define NO_DEATH                BV(12)
 #define SAVE_ROOM               BV(13)
-#define ARENA_ROOM              BV(14)
 #define NO_FLY                  BV(15)
 #define REGEN_ROOM              BV(16)
 #define FIRE_ROOM               BV(17)

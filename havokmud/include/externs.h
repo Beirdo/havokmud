@@ -37,8 +37,6 @@ extern const char *weekdays[];
 extern const char *month_name[];
 extern const char *fight_styles[];
 
-extern int      MaxArenaLevel,
-                MinArenaLevel;
 extern int spell_info_count;
 
 #if 0
@@ -107,27 +105,9 @@ extern int      drink_aff[][3];
 
 extern int      map[7][7];
 
-
-extern char    *att_kick_hit_room[];
-extern char    *att_kick_hit_victim[];
-extern char    *att_kick_hit_ch[];
-extern char    *att_kick_miss_room[];
-extern char    *att_kick_miss_victim[];
-extern char    *att_kick_miss_ch[];
-extern char    *att_kick_kill_room[];
-extern char    *att_kick_kill_victim[];
-extern char    *att_kick_kill_ch[];
-
-
 extern char    *drinknames[];
 
 extern int      qp_patience;
-
-extern int      auct_loop;
-extern int      minbid;
-extern int      intbid;
-extern struct char_data *auctioneer;
-extern struct char_data *bidder;
 
 extern int      gLightLevel;
 extern unsigned char moontype;

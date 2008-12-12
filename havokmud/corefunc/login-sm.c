@@ -96,8 +96,8 @@ char *newbie_note[] = {
     " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r" 
     "    for solving most of your questions. If you are still confused feel\n\r"
     "    free to ask.\n\r",
-    " 3) PLEASE do not curse over public channels including GOSSIP, SHOUT\n\r"
-    "    AUCTION, etc.  Punishment for doing so begins with removing your\n\r"
+    " 3) PLEASE do not curse over public channels including GOSSIP, SHOUT,\n\r"
+    "    etc.  Punishment for doing so begins with removing your\n\r"
     "    ability to use public channels.\n\r",
     " 4) Not all public channels work world wide. YELL and TELL for example\n\r"
     "    only work in the zone you're in. There are spells and skills to\n\r"

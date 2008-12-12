@@ -254,10 +254,6 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( level_limiter, PROC_OBJECT ),
     REGISTER_PROC( mazekeeper_portal, PROC_OBJECT ),
 
-    REGISTER_PROC( arena_arrow_dispel_trap, PROC_ROOM ),
-    REGISTER_PROC( arena_dispel_trap, PROC_ROOM ),
-    REGISTER_PROC( arena_fireball_trap, PROC_ROOM ),
-    REGISTER_PROC( arena_prep_room, PROC_ROOM ),
     REGISTER_PROC( bahamut_home, PROC_ROOM ),
     REGISTER_PROC( bank, PROC_ROOM ),
     REGISTER_PROC( ChurchBell, PROC_ROOM ),

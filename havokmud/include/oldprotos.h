@@ -94,8 +94,6 @@ void            InitScreen(struct char_data *ch);
 void            do_report(struct char_data *ch, char *argument, int cmd);
 void            do_say(struct char_data *ch, char *argument, int cmd);
 void            do_shout(struct char_data *ch, char *argument, int cmd);
-void            do_bid(struct char_data *ch, char *argument, int cmd);
-void            do_auction(struct char_data *ch, char *argument, int cmd);
 void            do_yell(struct char_data *ch, char *argument, int cmd);
 void            do_commune(struct char_data *ch, char *argument, int cmd);
 void            do_tell(struct char_data *ch, char *argument, int cmd);
@@ -320,8 +318,6 @@ void            do_plr_noshout(struct char_data *ch, char *argument,
                                int cmd);
 void            do_plr_nogossip(struct char_data *ch, char *argument,
                                 int cmd);
-void            do_plr_noauction(struct char_data *ch, char *argument,
-                                 int cmd);
 void            do_plr_notell(struct char_data *ch, char *argument,
                               int cmd);
 void            do_alias(struct char_data *ch, char *arg, int cmd);
@@ -1445,16 +1441,6 @@ int             fighter_cleric(struct char_data *ch, int cmd, char *arg,
                                struct char_data *mob, int type);
 int             cleric_mage(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
-int             arena_prep_room(struct char_data *ch, int cmd, char *arg,
-                                struct room_data *rp, int type);
-int             arena_arrow_dispel_trap(struct char_data *ch, int cmd,
-                                        char *arg, struct room_data *rp,
-                                        int type);
-int             arena_fireball_trap(struct char_data *ch, int cmd,
-                                    char *arg, struct room_data *rp,
-                                    int type);
-int             arena_dispel_trap(struct char_data *ch, int cmd, char *arg,
-                                  struct room_data *rp, int type);
 
 /*
  * From spec_procs.c 
@@ -2865,10 +2851,8 @@ int             CheckForBlockedMove(struct char_data *ch, int cmd,
 void            TeleportPulseStuff(int pulse);
 void            AdvicePulseStuff(int pulse);
 void            DarknessPulseStuff(int pulse);
-void            ArenaPulseStuff(int pulse);
 void            traveling_qp(int pulse);
 void            PlaysongPulseStuff(int pulse);
-void            AuctionPulseStuff(int pulse);
 void            TrollRegenPulseStuff(int pulse);
 void            RiverPulseStuff(int pulse);
 int             apply_soundproof(struct char_data *ch);
@@ -2995,7 +2979,6 @@ void            do_wizreport(struct char_data *ch, char *argument,
                              int cmd);
 void            do_donate(struct char_data *ch, char *argument, int cmd);
 void            do_reply(struct char_data *ch, char *argument, int cmd);
-void            raw_kill_arena(struct char_data *ch);
 
 /*
  * from act.move.c (I don't know why the others aren't here)
@@ -3505,9 +3488,6 @@ void            do_lgos(struct char_data *ch, char *argument, int cmd);
 void            show_race_choice(struct descriptor_data *d);
 #endif
 void            do_glance(struct char_data *ch, char *argument, int cmd);
-void            do_startarena(struct char_data *ch, char *argument, int cmd);
-void            do_arena(struct char_data *ch, char *argument, int cmd);
-void            do_whoarena(struct char_data *ch, char *argument, int cmd);
 
 void            update_char_objects(struct char_data *ch);
 void            do_save(struct char_data *ch, char *arg, int cmd);

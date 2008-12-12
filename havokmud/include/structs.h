@@ -73,11 +73,6 @@ typedef struct alias_type {
     char           *com[10];    /* 10 aliases */
 } Alias;
 
-/*
- * Arena Stuff
- */
-#define PREP_ROOM_EXITS 13
-#define ARENA_ENTRANCE 39900
 
 #define MAX_CLASS 12
 #define OLD_MAX_CLASS 4
@@ -206,7 +201,6 @@ typedef enum {
 #define SYS_NO_POLY     BV(10)      /* Spell Polymorph Self is disabled */
 #define SYS_NOOOC       BV(11)      /* Provide from OOCing worldwird - Manwe */
 #define SYS_LOCOBJ      BV(12)      /* Disable Locate Object - Manwe */
-#define SYS_WLD_ARENA   BV(13)      /* Makes the entire world flagged arena */
 #define SYS_NO_DEINIT   BV(14)      /* makes zone not deinit */
 #define SYS_NO_TWEAK    BV(15)      /* makes items not tweak */
 #define SYS_ZONELOCATE  BV(16)      /* makes locate in zone only */
@@ -304,8 +298,6 @@ typedef enum {
 #define PULSE_MAILCHECK     240
 #define PULSE_ADVICE        200
 #define PULSE_DARKNESS      250
-#define PULSE_ARENA         100 /* see if there's a winner in arena */
-#define PULSE_AUCTION       80  /* every 20 seconds */
 #define PULSE_TROLLREGEN    14  /* every once in a while */
 #define PULSE_TQP           40  /* do a travel check for qp, every 10 sec */
 #define PULSE_ZONE          240
@@ -392,14 +384,6 @@ typedef struct {
  * ======================================================================
  */
 
-struct auction_data {
-    struct obj_data *obj;
-    int             minbid;
-    struct char_data *taker;
-
-};
-
-
 /*
  * ========================================================================
  */
@@ -436,9 +420,6 @@ typedef enum {
     WEAR_EAR_L,
     WEAR_EYES,
     LOADED_WEAPON
-#if 0
-    , AUCTION_SLOT
-#endif
 } WearPos_t;
 #define MAX_WEAR_POS   LOADED_WEAPON
 
@@ -540,7 +521,6 @@ typedef enum {
 #define PLR_DEAF        BV(6)   /* The player does not hear shouts */
 #define PLR_ECHO        BV(7)   /* Messages (tells, shout,etc) echo back */
 #define PLR_NOGOSSIP    BV(8)   /* New, gossip channel */
-#define PLR_NOAUCTION   BV(9)   /* New AUCTION channel */
 #define PLR_NOOOC       BV(10)  /* Can't hear the OOC channel */
 #define PLR_NOSHOUT     BV(11)  /* the player is not allowed to shout */
 #define PLR_NOTELL      BV(12)  /* The player does not hear tells */
@@ -761,9 +741,6 @@ struct char_special_data {
                                                          * (Bonuses) */
 
     int             questwon;
-    struct auction_data *auctionx;      /* not used */
-    struct obj_data *auction;
-    int             minbid;
 
     int             a_deaths;
     int             a_kills;

@@ -584,7 +584,6 @@ static struct obj_flag_bits room_flags_flags[] = {
     { LARGE, 0 },
     { NO_DEATH, 0 },
     { SAVE_ROOM, 0 },
-    { ARENA_ROOM, 0 },
     { NO_FLY, 0 },
     { REGEN_ROOM, 0 },
     { FIRE_ROOM, 0 },

@@ -70,7 +70,6 @@ int fill_word(char *argument);
 
 void JustLoggedIn( PlayerStruct_t *player )
 {
-    struct obj_data *obj;
     int             count_players;
     struct char_data *ch;
     int             homeroom;
@@ -147,31 +146,6 @@ void JustLoggedIn( PlayerStruct_t *player )
     do_look(ch, NULL, 15);
 #endif
 
-    /*
-     * do an auction check, grant reimbs as needed
-     */
-    if (ch->specials.auction) {
-        obj = ch->specials.auction;
-        ch->specials.auction = 0;
-        obj->equipped_by = 0;
-        obj->eq_pos = -1;
-
-        objectGiveToChar(obj, ch);
-        SendOutput(player, "Your item is returned to you.\n\r");
-#if 0
-        do_save(ch, "", 0);
-#endif
-    }
-
-    if (ch->specials.minbid) {
-        GET_GOLD(ch) += ch->specials.minbid;
-        ch->specials.minbid = 0;
-        SendOutput(player, "You are returned your deposit for this "
-                           "auction.\n\r");
-#if 0
-        do_save(ch, "", 0);
-#endif
-    }
     player->prompt_mode = 1;
 }
 
