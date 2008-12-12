@@ -62,9 +62,6 @@ int             skillCount;
 struct dir_data *direction;
 int             directionCount;
 
-struct clan    *clan_list;
-int             clanCount;
-
 struct sector_data *sectors;
 int             sectorCount;
 
@@ -76,9 +73,6 @@ int             bannedUserCount;
 
 struct social_messg *socialMessages = NULL;
 int                 socialMessageCount = 0;
-
-struct message_list  *kickMessages;
-int                   kickMessageCount;
 
 struct pose_type   *poseMessages;
 int                 poseMessageCount;
@@ -98,7 +92,6 @@ void db_load_structures(void);
 void db_load_messages(void);
 void db_load_bannedUsers(void);
 void db_load_socials(void);
-void db_load_kick_messages(void);
 void db_load_poses(void);
 void db_load_races(void);
 void db_load_languages(void);
@@ -220,9 +213,11 @@ QueryTable_t    QueryTable[] = {
     /* 8 */
     { "SELECT forward, reverse, trapBits, exit, listExit, direction, "
       "description FROM directions ORDER BY forward ASC", NULL, NULL, FALSE },
+#if 0
     /* 9 */
     { "SELECT clanId, clanName, shortName, description, homeRoom "
       "FROM playerClans ORDER BY clanId ASC", NULL, NULL, FALSE },
+#endif
     /* 10 */
     { "SELECT sectorType, mapChar, moveLoss FROM sectorType ORDER BY "
       "sectorId ASC", NULL, NULL, FALSE },
@@ -395,7 +390,7 @@ QueryTable_t    QueryTable[] = {
     /* 57 */
     { "UPDATE `players` SET `bamfin` = ?, `bamfout` = ?, `setsev` = ?, "
       "`invisLevel` = ?, `editZone` = ?, `prompt` = ?, `battlePrompt` = ?, "
-      "`email` = ?, `clan` = ?, `hostIp` = ?, `rumor` = ? WHERE `playerId` = ?",
+      "`email` = ?, `hostIp` = ?, `rumor` = ? WHERE `playerId` = ?",
       NULL, NULL, FALSE },
     /* 58 */
     { "REPLACE INTO `playerAliases` (`playerId`, `seqNum`, `index`, "
@@ -405,7 +400,7 @@ QueryTable_t    QueryTable[] = {
       NULL, NULL, FALSE },
     /* 60 */
     { "SELECT `bamfout`, `bamfin`, `editZone`, `prompt`, `battlePrompt`, "
-      "`email`, `clan`, `hostIp`, `rumor`, `setsev`, `invisLevel` FROM "
+      "`email`, `hostIp`, `rumor`, `setsev`, `invisLevel` FROM "
       "`players` WHERE `playerId` = ?", NULL, NULL, FALSE },
     /* 61 */
     { "SELECT `index`, `alias` FROM `playerAliases` WHERE `playerId` = ? "
@@ -699,7 +694,6 @@ void db_initial_load(void)
     db_load_messages();
     db_load_bannedUsers();
     db_load_socials();
-    db_load_kick_messages();
     db_load_poses();
     db_load_races();
     db_load_languages();
@@ -731,11 +725,6 @@ void db_load_structures(void)
 
     /* direction[] */
     db_queue_query( 8, QueryTable, NULL, 0, result_load_structures_1, NULL, 
-                    mutex );
-    pthread_mutex_unlock( mutex );
-
-    /* clan_list[] */
-    db_queue_query( 9, QueryTable, NULL, 0, result_load_structures_2, NULL, 
                     mutex );
     pthread_mutex_unlock( mutex );
 
@@ -776,20 +765,6 @@ void db_load_socials(void)
     LogPrintNoArg(LOG_CRIT, "Loading social messages from SQL");
 
     db_queue_query( 13, QueryTable, NULL, 0, NULL, NULL, NULL );
-}
-
-void db_load_kick_messages(void)
-{
-    MYSQL_BIND         *data;
-
-    LogPrintNoArg(LOG_CRIT, "Loading kick messages from SQL");
-
-    data = CREATEN(MYSQL_BIND, 1);
-    memset( data, 0, 1 * sizeof(MYSQL_BIND) );
-
-    bind_numeric( &data[0], 4, MYSQL_TYPE_LONG );
-
-    db_queue_query( 11, QueryTable, data, 1, NULL, NULL, NULL );
 }
 
 void db_load_poses(void)
@@ -1899,8 +1874,8 @@ void db_write_char_extra(struct char_data *ch)
     int             i;
     int             seq;
 
-    data = CREATEN(MYSQL_BIND, 12);
-    memset( data, 0, 12 * sizeof(MYSQL_BIND) );
+    data = CREATEN(MYSQL_BIND, 11);
+    memset( data, 0, 11 * sizeof(MYSQL_BIND) );
 
     if (IS_IMMORTAL(ch)) {
         bind_string( &data[0], ch->specials.poofin, MYSQL_TYPE_VAR_STRING );
@@ -1919,11 +1894,10 @@ void db_write_char_extra(struct char_data *ch)
     bind_string( &data[5], ch->specials.prompt, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[6], ch->specials.bprompt, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[7], ch->specials.email, MYSQL_TYPE_VAR_STRING );
-    bind_string( &data[8], ch->specials.clan, MYSQL_TYPE_VAR_STRING );
-    bind_string( &data[9], ch->specials.hostip, MYSQL_TYPE_VAR_STRING );
-    bind_string( &data[10], ch->specials.rumor, MYSQL_TYPE_VAR_STRING );
-    bind_numeric( &data[11], ch->playerId, MYSQL_TYPE_LONG );
-    db_queue_query( 57, QueryTable, data, 12, NULL, NULL, NULL );
+    bind_string( &data[8], ch->specials.hostip, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[9], ch->specials.rumor, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[10], ch->playerId, MYSQL_TYPE_LONG );
+    db_queue_query( 57, QueryTable, data, 11, NULL, NULL, NULL );
 
     seq = 1;
     if (ch->specials.A_list) {
@@ -2439,7 +2413,7 @@ void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
     pthread_mutex_t    *mutex;
     struct message_list *msgs;
 
-    static char        *types[] = { "", "", "fight", "", "kick" };
+    static char        *types[] = { "", "", "fight", "" };
 
     type = *(int *)item->queryData[0].buffer;
 
@@ -2464,9 +2438,7 @@ void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
         fightMessageCount = count;
         count2 = FIGHT_MSG_COUNT;
     } else {
-        kickMessages = msgs;
-        kickMessageCount = count;
-        count2 = KICK_MSG_COUNT;
+        count2 = 0;
     }
 
     memset( msgs, 0, count * sizeof(struct message_list) );
@@ -3199,33 +3171,6 @@ void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     }
 }
 
-void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                               long insertid )
-{
-    int             i;
-
-    MYSQL_ROW       row;
-
-    if( !res || !(clanCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No clans defined in the database!" );
-        exit(1);
-    }
-
-    clan_list = CREATEN(struct clan, clanCount);
-    if( !direction ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating clan_list[]" );
-        exit(1);
-    }
-
-    for( i = 0; i < clanCount; i++ ) {
-        row = mysql_fetch_row(res);
-        clan_list[i].number    = atoi(row[0]);
-        clan_list[i].name      = strdup(row[1]);
-        clan_list[i].shortname = strdup(row[2]);
-        clan_list[i].desc      = strdup(row[3]);
-        clan_list[i].home      = atoi(row[4]);
-    }
-}
 
 void result_load_structures_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                                long insertid )
@@ -3805,22 +3750,15 @@ void result_load_char_extra_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 #endif
     }
 
-    if( row[6] ) {
-        sprintf(temp, "clan %s", row[6]);
-#if 0
-        do_set_flags(ch, temp, 0);
-#endif
-    }
-
     ch->specials.hostip = strdup(row[7]);
 
-    if( row[8] ) {
+    if( row[6] ) {
         ch->specials.rumor = strdup(row[8]);
     }
 
 #if 0
-    do_setsev(ch, row[9], 0);
-    do_invis(ch, row[10], 242);       
+    do_setsev(ch, row[8], 0);
+    do_invis(ch, row[9], 242);       
 #endif
 }
 

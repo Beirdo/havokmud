@@ -189,10 +189,6 @@ int             which_number_mobile(struct char_data *ch,
                                     struct char_data *mob);
 char           *numbered_person(struct char_data *ch,
                                 struct char_data *person);
-void            do_where_person(struct char_data *ch, struct char_data *p,
-                                struct string_block *sb);
-void            do_where_object(struct char_data *ch, struct obj_data *obj,
-                                int recurse, struct string_block *sb);
 void            do_where(struct char_data *ch, char *argument, int cmd);
 void            do_levels(struct char_data *ch, char *argument, int cmd);
 void            do_consider(struct char_data *ch, char *argument, int cmd);
@@ -409,12 +405,6 @@ void            do_restore(struct char_data *ch, char *argument, int cmd);
 void            do_noshout(struct char_data *ch, char *argument, int cmd);
 void            do_nohassle(struct char_data *ch, char *argument, int cmd);
 void            do_stealth(struct char_data *ch, char *argument, int cmd);
-void            print_room(int rnum, struct room_data *rp,
-                           struct string_block *sb);
-void            print_death_room(int rnum, struct room_data *rp,
-                                 struct string_block *sb);
-void            print_private_room(int r, struct room_data *rp,
-                                   struct string_block *sb);
 void            do_show(struct char_data *ch, char *argument, int cmd);
 void            do_invis(struct char_data *ch, char *argument, int cmd);
 void            do_create(struct char_data *ch, char *argument, int cmd);
@@ -463,13 +453,8 @@ void            close_socket_fd(int desc);
 int             main(int argc, char **argv);
 int             run_the_game(int port);
 void            game_loop(int s);
-int             get_from_q(struct txt_q *queue, char *dest);
 
-#if BLOCK_WRITE
 void            write_to_output(char *txt, struct descriptor_data *t);
-#else
-void            write_to_q(char *txt, struct txt_q *queue);
-#endif
 
 struct timeval  timediff(struct timeval *a, struct timeval *b);
 void            flush_queues(struct descriptor_data *d);
@@ -513,11 +498,6 @@ int             init_counter(void);
 void            zone_update(void);
 void            reset_zone(int zone, int cmd);
 int             is_empty(int zone_nr);
-int             load_char(char *name, struct char_file_u *char_element);
-void            store_to_char(struct char_file_u *st,
-                              struct char_data *ch);
-void            char_to_store(struct char_data *ch,
-                              struct char_file_u *st);
 int             create_entry(char *name);
 void            save_char(struct char_data *ch, sh_int load_room);
 int             compare(struct player_index_element *arg1,
@@ -657,11 +637,6 @@ void            BurnWings(struct char_data *ch);
 char           *fname(char *namelist);
 int             split_string(char *str, char *sep, char **argv);
 int             isname(const char *str, const char *namelist);
-void            init_string_block(struct string_block *sb);
-void            append_to_string_block(struct string_block *sb, char *str);
-void            page_string_block(struct string_block *sb,
-                                  struct char_data *ch);
-void            destroy_string_block(struct string_block *sb);
 void            affect_modify(struct char_data *ch, byte loc, long mod,
                               long bitv, bool add);
 void            affect_total(struct char_data *ch);
@@ -2472,10 +2447,6 @@ void            cast_sense_life(int level, struct char_data *ch,
 void            cast_identify(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_dragon_breath(int level, struct char_data *ch,
-                                   char *arg, int type,
-                                   struct char_data *tar_ch,
-                                   struct obj_data *potion);
 void            cast_fire_breath(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
@@ -2945,7 +2916,6 @@ int             check_nomagic(struct char_data *ch, char *msg_ch,
 int             NumCharmedFollowersInRoom(struct char_data *ch);
 struct char_data *FindMobDiffZoneSameRace(struct char_data *ch);
 int             NoSummon(struct char_data *ch);
-int             GetNewRace(struct char_file_u *s);
 int             GetApprox(int num, int perc);
 int             MountEgoCheck(struct char_data *ch,
                               struct char_data *horse);
@@ -3242,8 +3212,6 @@ int             shadowtouch(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
 int             moldexplosion(struct char_data *ch, int cmd, char *arg,
                               struct char_data *mob, int type);
-int             boneshardbreather(struct char_data *ch, int cmd, char *arg,
-                                  struct char_data *mob, int type);
 int             mistgolemtrap(struct char_data *ch, int cmd, char *arg,
                               struct char_data *mob, int type);
 int             mirrorofopposition(struct char_data *ch, int cmd,
@@ -3285,7 +3253,6 @@ void            do_expel(struct char_data *ch, char *argument, int cmd);
 void            do_induct(struct char_data *ch, char *argument, int cmd);
 void            do_chat(struct char_data *ch, char *argument, int cmd);
 void            do_qchat(struct char_data *ch, char *argument, int cmd);
-void            do_clanlist(struct char_data *ch, char *arg, int cmd);
 
 void            mind_wall_of_thought(int level, struct char_data *ch,
                                       struct char_data *victim,
@@ -3521,9 +3488,6 @@ void spell_globe_major_inv(int level, struct char_data *ch,
 void spell_prot_energy_drain(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void spell_prot_dragon_breath(int level, struct char_data *ch,
-                              struct char_data *victim,
-                              struct obj_data *obj);
 void spell_anti_magic_shell(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj);
 void spell_comp_languages(int level, struct char_data *ch,
@@ -3536,21 +3500,6 @@ void spell_prot_energy(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
 void spell_prot_elec(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void spell_prot_dragon_breath_fire(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
-void spell_prot_dragon_breath_frost(int level, struct char_data *ch,
-                                    struct char_data *victim,
-                                    struct obj_data *obj);
-void spell_prot_dragon_breath_elec(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
-void spell_prot_dragon_breath_acid(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
-void spell_prot_dragon_breath_gas(int level, struct char_data *ch,
-                                  struct char_data *victim,
-                                  struct obj_data *obj);
 void spell_giant_growth(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj);
 void spell_mana_shield(int level, struct char_data *ch,
@@ -3633,10 +3582,6 @@ void            cast_prot_energy_drain(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
-void            cast_prot_dragon_breath(int level, struct char_data *ch,
-                                        char *arg, int type,
-                                        struct char_data *tar_ch,
-                                        struct obj_data *tar_obj);
 void            cast_anti_magic_shell(int level, struct char_data *ch,
                                       char *arg, int type,
                                       struct char_data *tar_ch,
@@ -3657,31 +3602,6 @@ void            cast_incendiary_cloud(int level, struct char_data *ch,
 void cast_prismatic_spray(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *victim,
                           struct obj_data *tar_obj);
-void            cast_prot_dragon_breath_fire(int level,
-                                             struct char_data *ch,
-                                             char *arg, int type,
-                                             struct char_data *tar_ch,
-                                             struct obj_data *tar_obj);
-void            cast_prot_dragon_breath_frost(int level,
-                                              struct char_data *ch,
-                                              char *arg, int type,
-                                              struct char_data *tar_ch,
-                                              struct obj_data *tar_obj);
-void            cast_prot_dragon_breath_elec(int level,
-                                             struct char_data *ch,
-                                             char *arg, int type,
-                                             struct char_data *tar_ch,
-                                             struct obj_data *tar_obj);
-void            cast_prot_dragon_breath_acid(int level,
-                                             struct char_data *ch,
-                                             char *arg, int type,
-                                             struct char_data *tar_ch,
-                                             struct obj_data *tar_obj);
-void            cast_prot_dragon_breath_gas(int level,
-                                            struct char_data *ch,
-                                            char *arg, int type,
-                                            struct char_data *tar_ch,
-                                            struct obj_data *tar_obj);
 
 
 void            cast_comp_languages(int level, struct char_data *ch,

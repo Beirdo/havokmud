@@ -748,7 +748,6 @@ CommandDef_t coreCommands[] = {
     { "expel", do_expel, 591, POSITION_STANDING, 1 },
     { "chat", do_chat, 592, POSITION_RESTING, 1 },
     { "qchat", do_qchat, 594, POSITION_RESTING, 1 },
-    { "clanlist", do_clanlist, 595, POSITION_RESTING, 1 },
     { "call steed", do_steed, 596, POSITION_STANDING, 1 },
     { "top10", do_top10, 597, POSITION_RESTING, 59 },
     { "tweak", do_tweak, 598, POSITION_STANDING, 55 },

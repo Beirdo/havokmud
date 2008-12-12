@@ -586,7 +586,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     index = 0;
     char            tmp_name[20];
 #if 0
-    struct char_file_u tmp_store;
     struct char_data *tmp_ch;
 #endif
     struct char_data *ch;
@@ -1374,18 +1373,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 assert(0);
             }
             rewind(char_file);
-            fseek(char_file, (long) (player_table[i].nr *
-                                     sizeof(struct char_file_u)), 0);
 
             /*
              * read in the char, change the name, write back
              */
-            fread(&ch_st, sizeof(struct char_file_u), 1, char_file);
             sprintf(ch_st.name, "111111");
             rewind(char_file);
-            fseek(char_file, (long) (player_table[i].nr *
-                                     sizeof(struct char_file_u)), 0);
-            fwrite(&ch_st, sizeof(struct char_file_u), 1, char_file);
             fclose(char_file);
             sprintf(buf, "rent/%s", lower(GET_NAME(ch)));
             remove(buf);

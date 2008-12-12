@@ -12,11 +12,6 @@ struct scripts {
     struct foo_data *script;    /* actual script */
 }              *script_data;
 
-struct script_com {
-    void            (*p) (char *arg, struct char_data * ch);
-    char           *arg;
-}              *comp;
-
 #endif
 
 /*

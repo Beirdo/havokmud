@@ -96,15 +96,6 @@ typedef struct alias_type {
 
 
 /*
- * Quest stuff
- */
-
-struct QuestItem {
-    int             item;
-    char           *where;
-};
-
-/*
  * efficiency stuff
  */
 #define MIN_GLOB_TRACK_LEV 31   /* mininum level for global track */
@@ -346,21 +337,6 @@ typedef enum {
 #define EMPTY_POTION 29
 #define EMPTY_SCROLL 32
 #define QUEST_POTION 27
-
-struct nodes {
-    int             visited;
-    int             ancestor;
-};
-
-struct room_q {
-    long            room_nr;
-    struct room_q  *next_q;
-};
-
-struct string_block {
-    int             size;
-    char           *data;
-};
 
 /*
  * memory stuff
@@ -867,23 +843,10 @@ struct char_point_data {
     int             gold;       /* Money carried */
     int             bankgold;   /* gold in the bank.  */
     int             exp;        /* The experience of the player */
-    int             clan;       /* clan number */
     int             leadership_exp;     /* leadership experience */
 
     int             hitroll;    /* Any bonus or penalty to the hit roll */
     int             damroll;    /* Any bonus or penalty to the damage roll */
-};
-
-struct pc_data {
-    long            plr;        /* plr_* flags */
-    int             dimd_credits;       /* credits used in remote comm */
-    long            comm;       /* flags used for remote communications */
-};
-
-#define MAX_WEAPONSKILLS 8
-struct weaponskills {
-    int             slot[MAX_WEAPONSKILLS];
-    int             grade[MAX_WEAPONSKILLS];
 };
 
 struct char_special_data {
@@ -1073,8 +1036,6 @@ struct char_data {
     int             race;
     int             hunt_dist;  /* max dist the player can hunt */
 
-    struct pc_data *pc;         /* pcdata */
-
     long            hatefield;
     long            fearfield;
 
@@ -1121,7 +1082,6 @@ struct char_data {
                                          * the char */
     int             old_exp;    /* For energe restore -MW */
     int             style;      /* Fighting Style!!! */
-    struct weaponskills weaponskills;   /* the weaponry shiznit -Lennya */
     char            pwd[12];    /* password */
 };
 
@@ -1158,64 +1118,6 @@ struct weather_data {
     int             change;     /* How fast and what way does it change. */
     WeatherSky_t    sky;        /* How is the sky. */
     WeatherLight_t  sunlight;   /* And how much sun. */
-};
-
-/*
- ***********************************************************************
- *  file element for player file. BEWARE: Changing it will ruin the file  *
- *********************************************************************** */
-
-struct char_file_u {
-    int             class;
-    byte            sex;
-    byte            level[ABS_MAX_CLASS];
-    unsigned short int q_points;        /* Quest points of player */
-    time_t          birth;      /* Time of birth of character */
-    int             played;     /* Number of secs played in total */
-    int             race;
-    unsigned int    weight;
-    unsigned int    height;
-    char            title[80];
-    char            extra_str[255];
-    sh_int          hometown;
-    char            description[240];
-    bool            talks[MAX_TOUNGE];
-    long            extra_flags;
-    sh_int          load_room;  /* Which room to place char in */
-    struct char_ability_data abilities;
-    struct char_point_data points;
-    struct char_skill_data skills[MAX_SKILLS];
-    struct affected_type affected[MAX_AFFECT];
-    /*
-     * specials
-     */
-    byte            spells_to_learn;
-    int             alignment;
-    long            affected_by;
-    long            affected_by2;
-    time_t          last_logon; /* Time (in secs) of last logon */
-    long            act;        /* ACT Flags */
-
-    /*
-     * char data
-     */
-    char            name[20];
-    char            alias[30];  /* for later use.... */
-    char            pwd[11];
-    sh_int          apply_saving_throw[MAX_SAVES];
-    int             conditions[MAX_CONDITIONS];
-    int             startroom;  /* which room the player should start in */
-    long            user_flags; /* no-delete,use ansi,etc... */
-    int             speaks;     /* language currently speakin in */
-
-    int             a_deaths;
-    int             a_kills;
-    int             m_deaths;
-    long            m_kills;
-
-    int             remortclass;
-    int             slot[MAX_WEAPONSKILLS];
-    int             grade[MAX_WEAPONSKILLS];
 };
 
 
@@ -1268,16 +1170,6 @@ struct obj_file_u {
  ***********************************************************
  *  The following structures are related to descriptor_data   *
  *********************************************************** */
-
-struct txt_block {
-    char           *text;
-    struct txt_block *next;
-};
-
-struct txt_q {
-    struct txt_block *head;
-    struct txt_block *tail;
-};
 
 /*
  * modes of connectedness
@@ -1386,12 +1278,7 @@ struct descriptor_data {
     int             bufptr;
     int             bufspace;
     struct txt_block *large_outbuf;
-#if BLOCK_WRITE
     char           *output;
-#else
-    struct txt_q    output;     /* q of strings to send */
-#endif
-    struct txt_q    input;      /* q of unprocessed input */
     struct char_data *character;        /* linked to char */
     struct char_data *original; /* original char */
     struct snoop_data snoop;    /* to snoop people.  */
@@ -1409,58 +1296,10 @@ struct descriptor_data {
 };
 
 
-struct dex_skill_type {
-    sh_int          p_pocket;
-    sh_int          p_locks;
-    sh_int          traps;
-    sh_int          sneak;
-    sh_int          hide;
-};
-
-struct dex_app_type {
-    sh_int          reaction;
-    sh_int          miss_att;
-    sh_int          defensive;
-};
-
-struct str_app_type {
-    sh_int          tohit;      /* To Hit (THAC0) Bonus/Penalty */
-    sh_int          todam;      /* Damage Bonus/Penalty */
-    sh_int          carry_w;    /* Maximum weight that can be carrried */
-    sh_int          wield_w;    /* Maximum weight that can be wielded */
-};
-
-struct wis_app_type {
-    byte            bonus;      /* how many bonus skills a player can */
-    /*
-     * practice pr. level
-     */
-};
-
-struct int_app_type {
-    byte            learn;      /* how many % a player learns a
-                                 * spell/skill */
-};
-
-struct con_app_type {
-    sh_int          hitp;
-    sh_int          shock;
-};
-
-struct chr_app_type {
-    sh_int          num_fol;
-    sh_int          reaction;
-};
-
 /************************************************************/
 
 typedef void    (*funcp) ();
 
-struct breather {
-    int             vnum;
-    int             cost;
-    funcp          *breaths;
-};
 
 struct skillset {
     char           *name;
@@ -1489,13 +1328,6 @@ struct edit_txt_msg {
     char           *date;
     char           *author;
     char           *body;
-};
-
-struct class_titles {
-    char           *male;
-    char           *female;
-    char           *neutral;
-
 };
 
 /*
@@ -1615,14 +1447,6 @@ enum {
     CMD_recallhome, CMD_scribe
 } CommandList;
 
-struct map_coord {
-    int             x;
-    int             y;
-    int             room;
-    int             home;
-
-};
-
 struct command_def {
     char           *name;
     void          (*func)();
@@ -1684,38 +1508,10 @@ struct message_list {
 };
 
 
-/*
- **  just for polymorph spell(s)
- */
-
-struct PolyType {
-    char            name[20];
-    int             level;
-    long            number;
-};
-
-
 struct pc_race_choice {
     int             raceNum;
     const int      *classesAvail;
     int             classCount;
-};
-
-struct dragon_breath {
-    char       *spews;
-    void       (*func)();
-};
-
-#define MAX_BREATH 2
-struct dragon_def {
-    int         race;
-    struct dragon_breath breath[MAX_BREATH];
-    int         breathCount;
-};
-
-struct syllable {
-    char            org[10];
-    char            new[10];
 };
 
 struct dir_data {
@@ -1759,20 +1555,6 @@ struct social_messg {
     char           *msg[SOCIAL_MSG_COUNT];
 };
 
-#define MSG_KICK_KILL_SELF          0
-#define MSG_KICK_KILL_VICTIM        1
-#define MSG_KICK_KILL_ROOM          2
-#define MSG_KICK_MISS_SELF          3
-#define MSG_KICK_MISS_VICTIM        4
-#define MSG_KICK_MISS_ROOM          5
-#define MSG_KICK_HIT_SELF           6
-#define MSG_KICK_HIT_VICTIM         7
-#define MSG_KICK_HIT_ROOM           8
-#define KICK_MSG_COUNT              9
-
-struct kick_messg {
-    char               *msg[KICK_MSG_COUNT];
-};
 
 struct pose_type {
     /*

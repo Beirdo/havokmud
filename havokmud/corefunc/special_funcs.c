@@ -63,7 +63,6 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( blinder, PROC_MOBILE ),
     REGISTER_PROC( blink, PROC_MOBILE ),
     REGISTER_PROC( board_ship, PROC_MOBILE ),
-    REGISTER_PROC( boneshardbreather, PROC_MOBILE ),
     REGISTER_PROC( braxis_swamp_dragon, PROC_MOBILE ),
     REGISTER_PROC( BreathWeapon, PROC_MOBILE ),
     REGISTER_PROC( butcher, PROC_MOBILE ),
