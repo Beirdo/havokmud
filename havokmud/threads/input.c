@@ -264,6 +264,16 @@ void *InputThread( void *arg )
                 memfree( player->charData );
             }
 
+            if( player->account ) {
+                if( player->account->email ) {
+                    memfree( player->account->email );
+                }
+                if( player->account->pwd ) {
+                    memfree( player->account->pwd );
+                }
+                memfree( player->account );
+            }
+
             memfree( player );
             break;
         default:

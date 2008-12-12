@@ -62,6 +62,11 @@ typedef struct {
 
 typedef enum {
     STATE_INITIAL,
+    STATE_GET_EMAIL,
+    STATE_CONFIRM_EMAIL,
+    STATE_GET_NEW_USER_PASSWORD,
+    STATE_CONFIRM_PASSWORD,
+/* sorted to here */
     STATE_CHOOSE_SEX,
     STATE_CHOOSE_ANSI,
     STATE_CHOOSE_RACE,
@@ -73,14 +78,9 @@ typedef enum {
     STATE_SHOW_CREATION_MENU,
     STATE_SHOW_LOGIN_MENU,
     STATE_GET_PASSWORD,
-    STATE_CONFIRM_PASSWORD,
-    STATE_CONFIRM_NAME,
-    STATE_GET_NEW_USER_PASSWORD,
     STATE_GET_NEW_PASSWORD,
     STATE_CONFIRM_NEW_PASSWORD,
-    STATE_GET_NAME,
     STATE_REROLL,
-    STATE_CHECK_MAGE_TYPE,
     STATE_WAIT_FOR_AUTH,
     STATE_WIZLOCKED,
     STATE_SHOW_WMOTD,
@@ -109,6 +109,11 @@ typedef struct
     ProtectedData_t        *hostName;
 } ConnectionItem_t;
 
+typedef struct {
+    char               *email;
+    char               *pwd;
+} PlayerAccount_t;
+
 typedef struct _PlayerStruct_t
 {
     LinkedListItem_t    link;
@@ -123,6 +128,8 @@ typedef struct _PlayerStruct_t
     int                 in_remain_len;
 
     QueueObject_t      *outputQ;
+
+    PlayerAccount_t    *account;
 
     struct char_data   *charData;
     struct char_data   *originalData;

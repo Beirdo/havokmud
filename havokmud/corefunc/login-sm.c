@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2008 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
  * $Id$
  *
- * Copyright 2005 Gavin Hurlbut
+ * Copyright 2008 Gavin Hurlbut
  * All rights reserved
  */
 
@@ -50,11 +50,9 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 
-#define MAX_NAME_LENGTH 11
+#define MAX_NAME_LENGTH 20
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
-void show_race_choice(PlayerStruct_t *player);
-void show_class_selection(PlayerStruct_t *player, int r);
 void show_menu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
@@ -83,145 +81,19 @@ unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
-char *newbie_note[] = {
-    "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
-    "along better at Havok.\n\r\n\r",
-    " 1) The immortals of Havok have put alot of time into making Havok as\n\r"
-    "    fun as possible, as well as ensuring that Havok is a stable and\n\r"
-    "    reliable place to play.  They deserve your respect and courtesy\n\r"
-    "    and by playing Havok you agree to show them both.\n\r",
-    " 2) We try to get people to role play, but we do not force you. If\n\r" 
-    "    you enjoy role playing please do so, if you do not please do not\n\r" 
-    "    interfere with those that do.\n\r",
-    " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r" 
-    "    for solving most of your questions. If you are still confused feel\n\r"
-    "    free to ask.\n\r",
-    " 3) PLEASE do not curse over public channels including GOSSIP, SHOUT,\n\r"
-    "    etc.  Punishment for doing so begins with removing your\n\r"
-    "    ability to use public channels.\n\r",
-    " 4) Not all public channels work world wide. YELL and TELL for example\n\r"
-    "    only work in the zone you're in. There are spells and skills to\n\r"
-    "    communicate world wide if you need them. SHOUT and OOC are world\n\r"
-    "    wide and cost you MANA and VITIALITY points.\n\r",
-    " 5) Please do not use 'funny' or 'wacky' names. We try to encourage\n\r "
-    "    role-playing and if you use those type of names it does not help\n\r" 
-    "    matters. Do not use a name that is used in the Forgotten Realms\n\r"
-    "    setting (such as Elminster, Drizzit etc..).  There are NPC's that\n\r"
-    "    use these names and it will cause confusion. If you do not abide\n\r"
-    "    by these rules an immortal might ask you to change your name.\n\r",
-    " 6) Remember that we try to add a bit of realism and things such as\n\r"
-    "    starving to death or dying of thirst CAN happen.\n\r",
-    "\n\r\n\r",
-    NULL
-};
-
-char *racehelp[] = {
-    "\n\r"
-    "Dwarves:   Shorter. Less Movement. Infravision. Higher con, Lower dex,\n\r"
-    "           faster hit point gain.  less damage from poison, racial "
-        "hatreds\n\r"
-    "Moon Elf:  More Movement. Faster Mana gain, Higher dex, Lower con\n\r"
-    "           Detect secret doors, racial hatreds, Infra vision\n\r"
-    "Gold Elf:  Same as Moon, except more intellengent and less wisdom.\n\r"
-    "Wild Elf:  Same as Moon except stronger, less intellengent.\n\r"
-    "Sea Elf:   Same as moon except healthier and stronger, less "
-        "dexterious.\n\r",
-    "Dark Elf:  Same as elves, but higher dex, infravision, class limits "
-        "are\n\r"
-    "           different. Minus to hit in lighted rooms.\n\r"
-    "Humans:    Average...Unlimited in all classes only race that is.\n\r"
-    "           Least amount of racial hatreds than all classes.\n\r"
-    "           Most class selections in the multi-class ranges.\n\r"
-    "           Humans can be Barbarians.\n\r",
-    "Halflings: Very short.  Higher dex, Lower str.  Less move, faster hit \n\r"
-    "           point gain, less damage from poison. faster move gain\n\r"
-    "Rock Gnomes:    Short. Higher intel, Lower wis.. Less move, infravision, "
-        "faster\n\r"
-    "           mana gain\n\r\n\r"
-    "Forest Gnomes: Same as Rock Gnome, except High Wis, Dex, Low Int, Str\n\r"
-    "Half-Elves:Infravision, detect secret doors, good move and mana gain, "
-        "large\n\r"
-    "           multi-class selection. Only race that can multi-class\n\r"
-    "           the Druid class.\n\r",
-    "Half-Orcs: Infravision, high con, low charisma Good move point gain.\n\r"
-    "Half-Ogres:Infravision, high strength and con, low dex and intel. Good "
-        "move\n\r"
-    "           and hit point gain. Large size and weight. Cleric, warrior "
-        "classes\n\r"
-    "           only.\n\r"
-    "Half-Giants:Infravision, highest strength bonus, high con, low intel, "
-        "wis and\n\r"
-    "            dex. Good hit point and move gain. Very large. Warrior\n\r"
-    "            and Barbarian class ONLY. Giants get a hit point boost\n\r"
-    "            at level 1.\n\r"
-    "\n\r\n\r",
-    NULL
-};
-
-
-char *class_help[] = {
-    "Cleric:       Good defense.  Healing spells\n\r"
-    "Druid:        Real outdoors types.  Spells, not many items\n\r"
-    "Fighter:      Big, strong and stupid.  Nuff said.\n\r"
-    "Magic-users:  Weak, puny, smart and very powerful at high levels.\n\r"
-    "Thieves:      Quick, agile, sneaky.  Nobody trusts them.\n\r"
-    "Monks:        Masters of the martial arts.  They can only be single "
-    "classed\n\r"
-    "Barbarians:   Strong fighters, trackers and survivers. More move, "
-    "faster\n\r"
-    "              hit point regeneration. Limited magic use. Single class ",
-    "only and\n\r"
-    "              only Humans and Half-Giants can be Barbarians.\n\r"
-    "Paladins:     Holy warriors, defenders of good. Good fighters, some "
-    "cleric\n\r"
-    "              abilities.\n\r"
-    "Rangers:      Woodland hunters. These guys are one with the ways of "
-    "the\n\r"
-    "              the forest life. Some druid type skills and warrior.\n\r"
-    "Psionists:    Mind benders, they use the power of the mind to do\n\r"
-    "              unthought-of things\n\r"
-    "\n\rREMEMBER single class characters have a better hit point ratio than "
-    "multi's.\n\r"
-    "\n\r\n\r",
-    NULL
-};
-
-char *ru_sorcerer[] = {
-    "\n\r"
-    "You have chosen the magic user class, there are two types of mages here "
-    "at\n\r"
-    "Havok. The Standard Mage uses mana for his power, the Sorcerer uses "
-    "his\n\r"
-    "memorization for his powers. Sorcerers will sit and memorize a spell of "
-    "their\n\r"
-    "choice and then after doing so can 'recall' this spell. Sorcerers are "
-    "said\n\r",
-    "to be weaker at lower levels than most classes, but after they attain "
-    "higher\n\r"
-    "experince they can become one of the most powerful.\n\r"
-    "\n\r\n\r"
-    "Enter 'yes' if you want to be a Sorcerer type of mage, hit return if "
-    "you\n\r"
-    "do not want to be a Sorcerer (yes/no) :",
-    NULL
-};
-
-#if 1
-const struct pc_race_choice race_choice[1];
-int race_choice_count;
-#endif
-
+bool parseName(char *arg, char *name);
+int checkAssName(char *name);
 
 /**
  * @brief Trims the leading spaces and copies the name
  * @param arg input string
  * @param name output name
- * @return 1 if the name is invalid, 0 if valid
+ * @return FALSE if the name is invalid, TRUE if valid
  *
  * An invalid name is indicated if the name is too long, or has non-alpha 
  * characters in it, or is empty
  */
-int _parse_name(char *arg, char *name)
+bool parseName(char *arg, char *name)
 {
     int             i;
 
@@ -230,19 +102,19 @@ int _parse_name(char *arg, char *name)
      */
     arg = skip_spaces(arg);
     if( !arg ) {
-        return( 1 );
+        return( FALSE );
     }
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
         if ((*arg < 0) || !isalpha((int)*arg) || i > MAX_NAME_LENGTH) {
-            return (1);
+            return( FALSE );
         }
     }
 
     if (!i) {
-        return (1);
+        return ( FALSE );
     }
-    return (0);
+    return( TRUE );
 }
 
 /**
@@ -256,7 +128,7 @@ int _parse_name(char *arg, char *name)
  * found (as dictated by the banned user list per banned user name), the name 
  * will be rejected
  */
-int _check_ass_name(char *name)
+int checkAssName(char *name)
 {
     /*
      * 0 - full match
@@ -390,7 +262,6 @@ void show_menu(PlayerStruct_t *player)
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
     struct char_data   *ch;
-    int                 i;
 
     if( !player ) {
         return;
@@ -408,7 +279,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Would you like ansi colors? (Yes or No)");
         break;
     case STATE_CHOOSE_RACE:
+#if 0
         show_race_choice(player);
+#endif
         SendOutput(player, "For help type '?'- will list level limits. \n\r"
                            " RACE:  ");
         ch->player.class = 0;
@@ -418,7 +291,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         GET_ALIGNMENT(ch) = 0;
         GET_CON(ch) = 0;
         SendOutput(player, "\n\rSelect your class now.\n\r");
+#if 0
         show_class_selection(player, GET_RACE(ch));
+#endif
         SendOutput(player, "Enter ? for help.\n\r\n\rClass :");
         break;
     case STATE_CHOOSE_MAIN_CLASS:
@@ -469,19 +344,17 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Password: ");
         SendOutputRaw(player, echo_off, 4);
         break;
-    case STATE_CONFIRM_NAME:
-        SendOutput(player, "Did I get that right, %s (Y/N)? ", GET_NAME(ch));
+    case STATE_CONFIRM_EMAIL:
+        SendOutput(player, "Did I get that right, %s (Y/N)? ", 
+                           player->account->email );
         break;
     case STATE_GET_NEW_USER_PASSWORD:
-        SendOutput(player, "Give me a password for %s: ", GET_NAME(ch));
+        SendOutput(player, "Give me a password for %s: ", 
+                           player->account->email);
         SendOutputRaw(player, echo_off, 4);
         break;
-    case STATE_GET_NAME:
-        if (GET_NAME(ch)) {
-            memfree(GET_NAME(ch));
-            GET_NAME(ch) = NULL;
-        }
-        SendOutput(player, "What is thy name? ");
+    case STATE_GET_EMAIL:
+        SendOutput(player, "What is your account name (email address)? ");
         break;
     case STATE_PLAYING:
         break;
@@ -501,12 +374,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "\n\rYou have %d rerolls left, press R to reroll, "
                            "any other key to keep.\n\r", ch->reroll);
         break;
-    case STATE_CHECK_MAGE_TYPE:
-        for( i = 0; ru_sorcerer[i]; i++ ) {
-            SendOutput(player, ru_sorcerer[i]);
-        }
-        break;
-    case STATE_WAIT_FOR_AUTH:
         SendOutput(player, "Please Wait for authorization.\n\r");
         break;
     case STATE_WIZLOCKED:
@@ -537,6 +404,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "(yes/no) ");
         break;
     case STATE_INITIAL:
+    default:
         break;
     }
 
@@ -556,15 +424,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #endif
     int             class,
                     race,
-                    found,
+                    found = 0,
                     index = 0;
     char            tmp_name[20];
 #if 0
     struct char_data *tmp_ch;
 #endif
     struct char_data *ch;
-    int             i = 0;
-    int             tmpi = 0;
     int             pick = 0;
     PlayerStruct_t *oldPlayer;
     InputStateItem_t   *stateItem;
@@ -574,7 +440,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
     switch (player->state) {
     case STATE_INITIAL:
-        EnterState(player, STATE_GET_NAME);
+        EnterState(player, STATE_GET_EMAIL);
         break;
 
     case STATE_SHOW_CREATION_MENU:
@@ -658,27 +524,23 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-       if (*arg == '?') {
-            for( i = 0; racehelp[i]; i++ ) {
-                SendOutput(player, racehelp[i]);
-            }
-            EnterState(player, STATE_CHOOSE_RACE);
-            return;
-        } 
-       
+#if 0
         tmpi = atoi(arg);
         if (tmpi >= 1 && tmpi <= race_choice_count) {
             GET_RACE(ch) = race_choice[tmpi - 1].raceNum;
             EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
+#endif
             SendOutput(player, "\n\rThat's not a race.\n\rRACE?:");
             EnterState(player, STATE_CHOOSE_RACE);
+#if 0
         }
+#endif
         break;
 
-    case STATE_GET_NAME:
+    case STATE_GET_EMAIL:
     /*
-     * wait for input of name
+     * wait for input of email address
      */
         if (!ch) {
             player->charData = CREATE(struct char_data);
@@ -695,8 +557,14 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        if (_parse_name(arg, tmp_name)) {
+        if (!parseName(arg, tmp_name)) {
             SendOutput(player, "Illegal name, please try another.\r\n");
+            SendOutput(player, "Name: ");
+            return;
+        }
+
+        if( checkAssName(tmp_name) ) {
+            SendOutput(player, "\n\rIllegal name, please try another.\r\n");
             SendOutput(player, "Name: ");
             return;
         }
@@ -710,18 +578,20 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         ProtectedDataUnlock(player->connection->hostName);
 
+	if( player->account ) {
+            if( player->account->email ) {
+                memfree( player->account->email );
+            }
+            memfree( player->account );
+            player->account = NULL;
+        }
+
 #if 0
-        if ((player_i = load_char(tmp_name, &tmp_store)) > -1) {
+        player->account = db_load_account(tmp_name);
+        if( player->account ) {
             /*
-             * connecting an existing character ...
+             * connecting an existing account ...
              */
-#if 0
-            store_to_char(&tmp_store, player->charData);
-#endif
-            strcpy(ch->pwd, tmp_store.pwd);
-#ifdef TODO
-            d->pos = player_table[player_i].nr;
-#endif
             EnterState(player, STATE_GET_PASSWORD);
         } else {
 #endif
@@ -729,29 +599,25 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * player unknown gotta make a new
              */
             if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
-                SendOutput(player, "Sorry, no new characters at this time\n\r");
+                SendOutput(player, "Sorry, no new accounts at this time\n\r");
                 EnterState(player, STATE_WIZLOCKED);
-                return;
-            }
-
-            if (_check_ass_name(tmp_name)) {
-                SendOutput(player, "\n\rIllegal name, please try another.");
-                SendOutput(player, "Name: ");
                 return;
             }
 
             /*
              * move forward creating new character
              */
-            GET_NAME(ch) = CREATEN(char, strlen(tmp_name) + 1);
-            strcpy(GET_NAME(ch), CAP(tmp_name));
-            EnterState(player, STATE_CONFIRM_NAME);
+            player->account = CREATE(PlayerAccount_t);
+	    memset( player->account, 0, sizeof(PlayerAccount_t) );
+
+            player->account->email = memstrlink(tmp_name);
+            EnterState(player, STATE_CONFIRM_EMAIL);
 #if 0
         }
 #endif
         break;
 
-    case STATE_CONFIRM_NAME:
+    case STATE_CONFIRM_EMAIL:
         /*
          * wait for conf. of new name
          * skip whitespaces
@@ -768,12 +634,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         switch(tolower(*arg)) {
         case 'y':
             SendOutputRaw(player, echo_on, 4);
-            SendOutput(player, "New character.\n\r");
+            SendOutput(player, "New account.\n\r");
             EnterState(player, STATE_GET_NEW_USER_PASSWORD);
             break;
         case 'n':
             SendOutput(player, "Ok, what IS it, then? ");
-            EnterState(player, STATE_GET_NAME);
+            EnterState(player, STATE_GET_EMAIL);
             break;
         default:
             SendOutput(player, "Please type Yes or No? ");
@@ -943,8 +809,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-        strncpy(ch->pwd, (char *)crypt(arg, ch->player.name), 10);
-        ch->pwd[10] = '\0';
+        if( player->account->pwd ) {
+            memfree( player->account->pwd );
+        }
+
+        player->account->pwd = memstrlink((char *)crypt(arg, ch->player.name));
 
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_PASSWORD);
@@ -956,7 +825,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || strncmp((char *) crypt(arg, ch->pwd), ch->pwd, 10)) {
+        if (!arg || strncmp((char *)crypt(arg, player->account->pwd), 
+                            player->account->pwd, 10)) {
             SendOutputRaw(player, echo_on, 6);
 
             SendOutput(player, "Passwords don't match.\n\r");
@@ -1139,14 +1009,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-        if( *arg == '?' ) {
-            for( i = 0; class_help[i]; i++ ) {
-                SendOutput(player, class_help[i]);
-            }
-            EnterState(player, STATE_CHOOSE_CLASS);
-            return;
-        }
-
         class = atoi(arg);
         race  = GET_RACE(ch);
 
@@ -1156,6 +1018,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
+#if 0
         for( i = 0, found = FALSE; !found && i < race_choice_count; i++ ) {
             if( race_choice[i].raceNum == race ) {
                 /*
@@ -1172,6 +1035,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 found = TRUE;
             }
         }
+#endif
                     
         if (ch->player.class == 0) {
             SendOutput(player, "Invalid selection!\n\r");
@@ -1486,7 +1350,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 void DoCreationMenu( PlayerStruct_t *player, char arg )
 {
     int             bitcount;
-    int             i;
     struct char_data *ch;
 
     ch = player->charData;
@@ -1572,10 +1435,6 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         save_char(ch, AUTO_RENT);
 #endif
 
-        for( i = 0; newbie_note[i]; i++ ) {
-            SendOutput(player, newbie_note[i]);
-        }
-
         EnterState(player, STATE_SHOW_MOTD);
         break;
     default:
@@ -1585,6 +1444,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     }
 }
 
+#if 0
 void show_class_selection(PlayerStruct_t *player, int r)
 {
     int             found;
@@ -1652,6 +1512,7 @@ void show_race_choice(PlayerStruct_t *player)
                        "$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,"
                        "ps=psi,ne=necromancer\n\r\n\r");
 }
+#endif
 
 void LoginSendBanner( PlayerStruct_t *player )
 {
@@ -1660,7 +1521,7 @@ void LoginSendBanner( PlayerStruct_t *player )
                        "display the password\n\r"
                        "sequence unless you change your settings. Please do not"
                        " be discouraged.\n\r\n\r");
-    EnterState(player, STATE_GET_NAME);
+    EnterState(player, STATE_GET_EMAIL);
 }
 
 /**
