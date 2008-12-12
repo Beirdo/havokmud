@@ -23,7 +23,7 @@
 
 #define TRAP_EFF_MOVE      1    /* trigger on movement */
 #define TRAP_EFF_OBJECT    2    /* trigger on get or put */
-#define TRAP_EFF_ROOM      4    /* affect all in froom */
+#define TRAP_EFF_ROOM      4    /* effect all in room */
 #define TRAP_EFF_NORTH     8    /* movement in this dir */
 #define TRAP_EFF_EAST     16
 #define TRAP_EFF_SOUTH    32

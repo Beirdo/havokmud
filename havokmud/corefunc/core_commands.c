@@ -761,7 +761,6 @@ CommandDef_t coreCommands[] = {
     { "reimburse", do_reimb, 604, POSITION_STANDING, 53 },
 #endif
     { "remort", do_not_here, 605, POSITION_STANDING, 50 },
-    { "affects", do_attribute, 606, POSITION_DEAD, 1 },
 /*
  * 607
  * 608
@@ -1218,10 +1217,12 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
 
     for( i = 0; i < report_count && !buf; i++ ) {
         if (!strcmp(namefile, reports[i].file)) {
+#if 0
             if( reports[i].bit && !IS_SET(ch->specials.act, reports[i].bit) ) {
                 SendOutput( player, "You do not have the power to do this");
                 return;
             }
+#endif
             buf = (reports[i].func)(reports[i].reportId);
         }
     }

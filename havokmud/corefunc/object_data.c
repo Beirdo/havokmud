@@ -675,16 +675,16 @@ bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
 #endif
     }
 
-    if (IS_AFFECTED(ch, AFF_BLIND)) {
+    if (ch->specials.blind) {
         return (FALSE);
     }
-    if (IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
+    if (ch->specials.true_sight) {
         return (TRUE);
     }
     if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, extra_flags, ITEM_GLOW)) {
         return (FALSE);
     }
-    if (IS_AFFECTED(ch, AFF_DETECT_INVISIBLE)) {
+    if (ch->specials.detect_invis) {
         return (TRUE);
     }
     if (IS_OBJ_STAT(obj, extra_flags, ITEM_INVISIBLE)) {
@@ -1257,19 +1257,12 @@ void load_char_objs(struct char_data *ch)
 
     /*
      * if the character has been out for 12 real hours, they are fully
-     * healed upon re-entry.  if they stay out for 24 full hours, all
-     * affects are removed, including bad ones. 
+     * healed upon re-entry.
      */
     now = time(0);
     if (lastUpdate + 12 * SECS_PER_REAL_HOUR < now) {
 #if 0
         RestoreChar(ch);
-#endif
-    }
-
-    if (lastUpdate + 24 * SECS_PER_REAL_HOUR < now) {
-#if 0
-        RemAllAffects(ch);
 #endif
     }
 

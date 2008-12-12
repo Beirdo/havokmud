@@ -47,9 +47,6 @@
                       (b) ^= (a); \
                       (a) ^= (b); }
 
-#define IS_AFFECTED(ch,skill)  (IS_SET((ch)->specials.affected_by, (skill)))
-#define IS_AFFECTED2(ch,skill) (IS_SET((ch)->specials.affected_by2,(skill)))
-
 #if 0
 #define IS_DARK(room) \
     (!IS_SET(roomFindNum(room)->room_flags, EVER_LIGHT) && \
@@ -203,7 +200,7 @@
 #define GET_SPECFLAGS(ch) ((ch)->player.user_flags)
 
 #define AWAKE(ch) (GET_POS(ch) > POSITION_SLEEPING && \
-                   !IS_AFFECTED(ch, AFF_PARALYSIS) )
+                   !(ch)->specials.paralyzed )
 
 #ifndef LAG_MOBILES
 #define WAIT_STATE(ch, cycle) \

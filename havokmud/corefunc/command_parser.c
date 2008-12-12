@@ -208,8 +208,6 @@ void CommandParser( PlayerStruct_t *player, char *line )
     }
 #endif
 
-    REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
-
 #ifdef TODO
     if (MOUNTED(ch) && ch->in_room != MOUNTED(ch)->in_room) {
         Dismount(ch, MOUNTED(ch), POSITION_STANDING);
@@ -259,7 +257,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
         return;
     }
 
-    if (IS_AFFECTED(ch, AFF_PARALYSIS) && cmd->min_pos > POSITION_STUNNED) {
+    if (ch->specials.paralyzed && cmd->min_pos > POSITION_STUNNED) {
         SendOutput( player, "You are paralyzed, you can't do much!\n\r" );
         if( tmparg ) {
             memfree(tmparg);
@@ -267,7 +265,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
         return;
     }
 
-    if (IS_SET(ch->specials.act, PLR_FREEZE) && IS_PC(ch)) {
+    if (ch->specials.frozen && IS_PC(ch)) {
         /*
          * They can't move, must have pissed off an immo!
          * make sure polies can move, some mobs have this bit set
@@ -339,7 +337,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
             LogPrint( LOG_INFO, "[%ld] %s:%s", ch->in_room, ch->player.name, 
                                 line);
         }
-    } else if (IS_AFFECTED2(ch, AFF2_LOG_ME)) {
+    } else if (ch->specials.log_me) {
         /*
          * user flagged as log person
          */

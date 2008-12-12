@@ -12,7 +12,6 @@
 #include "comm.h"
 #include "db.h"
 #include "handler.h"
-#include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
 #include "script.h"
@@ -637,17 +636,6 @@ void            BurnWings(struct char_data *ch);
 char           *fname(char *namelist);
 int             split_string(char *str, char *sep, char **argv);
 int             isname(const char *str, const char *namelist);
-void            affect_modify(struct char_data *ch, byte loc, long mod,
-                              long bitv, bool add);
-void            affect_total(struct char_data *ch);
-void            affect_to_char(struct char_data *ch,
-                               struct affected_type *af);
-void            affect_remove(struct char_data *ch,
-                              struct affected_type *af);
-void            affect_from_char(struct char_data *ch, int skill);
-bool            affected_by_spell(struct char_data *ch, int skill);
-void            affect_join(struct char_data *ch, struct affected_type *af,
-                            bool avg_dur, bool avg_mod);
 void            char_from_room(struct char_data *ch);
 void            char_to_room(struct char_data *ch, long room);
 int             apply_ac(struct char_data *ch, int eq_pos);
@@ -674,27 +662,12 @@ int             generic_find(char *arg, int bitvector,
                              struct obj_data **tar_obj);
 void            AddAffects(struct char_data *ch, struct obj_data *o);
 
-/*
- * From hash.c 
- */
-
-void            init_hash_table(struct hash_header *ht, int rec_size,
-                                int table_size);
-void            init_world(struct room_data *room_db[]);
-void            destroy_hash_table(struct hash_header *ht, void (*gman) ());
-void            _hash_enter(struct hash_header *ht, long key, void *data);
 struct room_data *room_find(struct room_data *room_db[], long key);
-void           *hash_find(struct hash_header *ht, long key);
 int             room_enter(struct room_data *rb[], long key,
                            struct room_data *rm);
-int             hash_enter(struct hash_header *ht, long key, void *data);
 struct room_data *room_find_or_create(struct room_data *rb[], long key);
-void           *hash_find_or_create(struct hash_header *ht, long key);
 int             room_remove(struct room_data *rb[], long key);
-void           *hash_remove(struct hash_header *ht, long key);
 void            room_iterate(struct room_data *rb[], void (*func) (),
-                             void *cdata);
-void            hash_iterate(struct hash_header *ht, void (*func) (),
                              void *cdata);
 
 /*
@@ -1432,8 +1405,6 @@ void            do_heroic_rescue(struct char_data *ch, char *arguement,
 void            do_brew(struct char_data *ch, char *argument, int cmd);
 void            do_scribe(struct char_data *ch, char *argument, int cmd);
 
-void            check_memorize(struct char_data *ch,
-                               struct affected_type *af);
 void            do_memorize(struct char_data *ch, char *argument, int cmd);
 void            do_disarm(struct char_data *ch, char *argument, int cmd);
 void            do_track(struct char_data *ch, char *argument, int cmd);
@@ -2116,7 +2087,6 @@ void            spello(int nr, byte beat, byte pos, byte mlev, byte clev,
                        sh_int sf, byte brewable, byte blev, byte nlev);
 
 int             SPELL_LEVEL(struct char_data *ch, int sn);
-void            affect_update(int pulse);
 void            update_mem(int pulse);
 void            stop_memorizing(struct char_data *ch);
 void            do_id(struct char_data *ch, char *argument, int cmd);

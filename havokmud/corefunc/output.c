@@ -201,7 +201,7 @@ void SendToAllAwake(char *messg)
 int CondIsOutdoors( PlayerStruct_t *player, void *arg )
 {
     return( (OUTSIDE(player->charData) && 
-             !IS_SET(player->charData->specials.act, PLR_NOOUTDOOR)) ? 1 : 0 );
+             !player->charData->specials.no_outdoor) ? 1 : 0 );
 }
 
 void send_to_outdoor(char *messg)

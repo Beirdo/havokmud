@@ -187,7 +187,9 @@ struct char_data *mobileRead(int nr)
         if( procDefs[procNum].func ) {
             index->func = procDefs[procNum].func;
         }
+#if 0
         SET_BIT( mob->specials.act, procDefs[procNum].actbit );
+#endif
     }
 
     mob_count++;
@@ -242,7 +244,6 @@ void mobileWriteToFile(struct char_data *mob, void * mob_fi)
     REMOVE_BIT(tmp, ACT_AFRAID);
 
     fprintf(mob_fi, "%ld ", tmp);
-    fprintf(mob_fi, " %ld ", mob->specials.affected_by);
     fprintf(mob_fi, " %d ", mob->specials.alignment);
     fprintf(mob_fi, " %.1f \n", mob->mult_att);
 
@@ -369,7 +370,6 @@ void mobileWrite(struct char_data *mob, void * mob_fi)
     REMOVE_BIT(tmp, ACT_AFRAID);
 
     fprintf(mob_fi, "%ld ", tmp);
-    fprintf(mob_fi, " %ld ", mob->specials.affected_by);
     fprintf(mob_fi, " %d ", mob->specials.alignment);
     fprintf(mob_fi, " %.1f \n", mob->mult_att);
 

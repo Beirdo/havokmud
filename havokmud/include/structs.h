@@ -473,64 +473,6 @@ typedef enum {
     THIRST
 } Conditions_t;
 
-/*
- * Bitvector for 'affected_by'
- */
-#define AFF_BLIND             BV(0)
-#define AFF_INVISIBLE         BV(1)
-#define AFF_DETECT_EVIL       BV(2)
-#define AFF_DETECT_GOOD       BV(3)
-#define AFF_DETECT_INVISIBLE  BV(4)
-#define AFF_DETECT_MAGIC      BV(5)
-#define AFF_SENSE_LIFE        BV(6)
-#define AFF_LIFE_PROT         BV(7)
-#define AFF_SANCTUARY         BV(8)
-#define AFF_DRAGON_RIDE       BV(9)
-#define AFF_GROWTH            BV(10)
-#define AFF_CURSE             BV(11)
-#define AFF_FLYING            BV(12)
-#define AFF_POISON            BV(13)
-#define AFF_TREE_TRAVEL       BV(14)
-#define AFF_PARALYSIS         BV(15)
-#define AFF_INFRAVISION       BV(16)
-#define AFF_WATERBREATH       BV(17)
-#define AFF_SLEEP             BV(18)
-#define AFF_TRAVELLING        BV(19)
-#define AFF_SNEAK             BV(20)
-#define AFF_HIDE              BV(21)
-#define AFF_SILENCE           BV(22)
-#define AFF_CHARM             BV(23)
-#define AFF_DARKNESS          BV(24)
-#define AFF_TRUE_SIGHT        BV(25)
-#define AFF_SCRYING           BV(26)
-#define AFF_FIRESHIELD        BV(27)
-#define AFF_GROUP             BV(28)
-#define AFF_TELEPATHY         BV(29)
-#define AFF_CHILLSHIELD       BV(30)
-#define AFF_BLADE_BARRIER     BV(31)
-
-
-/*
- * affects 2
- */
-#define AFF2_ANIMAL_INVIS      BV(0)
-#define AFF2_HEAT_STUFF        BV(1)
-#define AFF2_LOG_ME            BV(2)
-#define AFF2_BERSERK           BV(3)
-#define AFF2_CON_ORDER         BV(4)
-#define AFF2_AFK               BV(5)
-#define AFF2_PROTECT_FROM_EVIL BV(6)
-#define AFF2_PROTECT_FROM_GOOD BV(7)
-#define AFF2_FOLLOW            BV(8)
-#define AFF2_HASTE             BV(9)
-#define AFF2_SLOW              BV(10)
-#define AFF2_WINGSBURNED       BV(11)
-#define AFF2_STYLE_BERSERK     BV(12)
-#define AFF2_QUEST             BV(13)
-#define AFF2_NO_OUTDOOR        BV(14)
-#define AFF2_WINGSTIRED        BV(15)
-#define AFF2_INVIS_TO_UNDEAD   BV(16)
-#define AFF2_SKILL_SNEAK       BV(17)
 
 /*
  * Flag spells as brewable or single class
@@ -540,78 +482,6 @@ typedef enum {
 #define DUAL_CLASS_SPELL       BV(2)
 #define TRI_CLASS_SPELL        BV(3)
 
-/*
- * modifiers to char's abilities
- */
-
-typedef enum {
-    APPLY_NONE = 0,
-    APPLY_STR,
-    APPLY_DEX,
-    APPLY_INT,
-    APPLY_WIS,
-    APPLY_CON,
-    APPLY_CHR,
-    APPLY_SEX,
-    APPLY_LEVEL,
-    APPLY_AGE,
-    APPLY_CHAR_WEIGHT,
-    APPLY_CHAR_HEIGHT,
-    APPLY_MANA,
-    APPLY_HIT,
-    APPLY_MOVE,
-    APPLY_GOLD,
-    APPLY_SPELL2,
-    APPLY_AC,
-    APPLY_ARMOR,
-    APPLY_HITROLL,
-    APPLY_DAMROLL,
-    APPLY_SAVING_PARA,
-    APPLY_SAVING_ROD,
-    APPLY_SAVING_PETRI,
-    APPLY_SAVING_BREATH,
-    APPLY_SAVING_SPELL,
-    APPLY_SAVE_ALL,
-    APPLY_IMMUNE,
-    APPLY_SUSC,
-    APPLY_M_IMMUNE,
-    APPLY_SPELL,
-    APPLY_WEAPON_SPELL,
-    APPLY_EAT_SPELL,
-    APPLY_BACKSTAB,
-    APPLY_KICK,
-    APPLY_SNEAK,
-    APPLY_HIDE,
-    APPLY_BASH,
-    APPLY_PICK,
-    APPLY_STEAL,
-    APPLY_TRACK,
-    APPLY_HITNDAM,
-    APPLY_SPELLFAIL,
-    APPLY_ATTACKS,
-    APPLY_HASTE,
-    APPLY_SLOW,
-    APPLY_BV2,
-    APPLY_FIND_TRAPS,
-    APPLY_RIDE,
-    APPLY_RACE_SLAYER,
-    APPLY_ALIGN_SLAYER,
-    APPLY_MANA_REGEN,
-    APPLY_HIT_REGEN,
-    APPLY_MOVE_REGEN,
-    APPLY_MOD_THIRST,
-    APPLY_MOD_HUNGER,
-    APPLY_MOD_DRUNK,
-    APPLY_T_STR,
-    APPLY_T_INT,
-    APPLY_T_DEX,
-    APPLY_T_WIS,
-    APPLY_T_CON,
-    APPLY_T_CHR,
-    APPLY_T_HPS,
-    APPLY_T_MOVE,
-    APPLY_T_MANA,
-} CharacterApply_t;
 
 /*
  * 'class' for PC's
@@ -874,16 +744,18 @@ struct char_special_data {
     struct char_data *charging; /* we are charging this person */
     int             charge_dir; /* direction charging */
 
-    long            affected_by;        /* Bitvector for spells/skills
-                                         * affected by */
-    long            affected_by2;       /* Other special things */
-
     bool            npc;
     bool            polyself;
     bool            script;
+    bool            no_outdoor;
+    bool            frozen;
 
-    long            act;        /* flags for NPC behavior */
-    long            act_class;  /* flags for NPCs to act like a class */
+    bool	    paralyzed;
+    bool            blind;
+    bool            true_sight;
+    bool            detect_invis;
+
+    bool            log_me;
 
     int             apply_saving_throw[MAX_SAVES];      /* Saving throw
                                                          * (Bonuses) */
@@ -949,16 +821,6 @@ struct char_skill_data {
     int             nummem;     /* number of times this spell is memorized */
 };
 
-struct affected_type {
-    int             type;       /* The type of spell that caused this */
-    int             duration;   /* For how long its effects will last */
-    long            modifier;   /* This is added to apropriate ability */
-    long            location;   /* Tells which ability to
-                                 * change(APPLY_XXX) */
-    long            bitvector;  /* Tells which bits to set (AFF_XXX) */
-    struct affected_type *next;
-};
-
 struct follow_type {
     struct char_data *follower;
     struct follow_type *next;
@@ -1005,7 +867,6 @@ struct char_data {
     struct char_player_data player;     /* Normal data */
     struct char_ability_data abilities; /* Abilities */
     struct char_ability_data tmpabilities;      /* The abilities we use */
-    struct affected_type *affected;     /* affected by what spells */
     struct char_point_data points;      /* Points */
     struct char_special_data specials;  /* Special plaing constant */
 
@@ -1106,7 +967,6 @@ struct obj_file_elem {
     char            desc[256];
     byte            wearpos;
     byte            depth;
-    struct obj_affected_type affected[MAX_OBJ_AFFECT];
 };
 
 struct obj_file_u {
@@ -1255,12 +1115,6 @@ struct descriptor_data {
 
 typedef void    (*funcp) ();
 
-
-struct affect_list {
-    char           *affectname;
-    int             affectnumber;
-    int             affecttype;
-};
 
 struct edit_txt_msg {
     int             file;       /* 0 = none, 1 = news, 2 = motd, 3 = wmotd */

@@ -127,11 +127,7 @@ extern int   mySQL_port;
 
 extern struct time_info_data time_info;
 extern struct weather_data weather_info;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
 extern struct room_data *room_db[];
-#endif
 
 extern BalancedBTree_t *objectKeywordTree;
 extern BalancedBTree_t *objectTypeTree;

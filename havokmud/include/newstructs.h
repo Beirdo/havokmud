@@ -449,15 +449,6 @@ typedef enum {
 #define CONT_LOCKED         BV(3)
 
 
-#ifndef MAX_OBJ_AFFECT
-#define MAX_OBJ_AFFECT 5
-#endif
-
-struct obj_affected_type {
-    short           location;   /* Which ability to change (APPLY_XXX) */
-    long            modifier;   /* How much it changes by */
-};
-
 #define KEYWORD_FULL_MATCH      BV(0)
 #define KEYWORD_PARTIAL_MATCH   BV(1)
 
@@ -553,9 +544,6 @@ struct obj_data {
     int             timer;          /**< Timer for object */
 
     long            bitvector;      /**< To set chars bits */
-    struct obj_affected_type
-                    affected[MAX_OBJ_AFFECT];   /**< Which abilities in PC
-                                                 * to change */
 
     int             sector;             /**< for large rooms */
     int             char_vnum;          /**< for ressurection */

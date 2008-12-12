@@ -83,8 +83,6 @@ extern char    *exit_bits[];
  * for chars
  */
 extern char    *equipment_types[];
-extern char    *affected_bits[];
-extern char    *affected_bits2[];
 extern char    *immunity_names[];
 extern char    *special_user_flags[];
 extern char    *apply_types[];

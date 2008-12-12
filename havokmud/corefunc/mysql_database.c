@@ -156,8 +156,6 @@ void result_read_object_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                            long insertid );
 void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                            long insertid );
-void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                           long insertid );
 void result_find_object_named( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                                long insertid );
 void result_load_object_tree( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
@@ -1545,39 +1543,6 @@ void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem,
     db_queue_query( 44, QueryTable, data, 5, NULL, NULL, mutex );
     pthread_mutex_unlock( mutex );
 
-    for (i = 0, j = 0; i < MAX_OBJ_AFFECT; i++) {
-        if (obj->affected[i].location != APPLY_NONE) {
-            /* update affects */
-            data = CREATEN(MYSQL_BIND, 7);
-            memset( data, 0, 7 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], room, MYSQL_TYPE_LONG );
-            bind_numeric( &data[3], ownerItem, MYSQL_TYPE_LONG );
-            bind_numeric( &data[4], j, MYSQL_TYPE_LONG );
-            bind_numeric( &data[5], obj->affected[i].location, 
-                          MYSQL_TYPE_LONG );
-            bind_numeric( &data[6], obj->affected[i].modifier, 
-                          MYSQL_TYPE_LONG );
-            db_queue_query( 45, QueryTable, data, 7, NULL, NULL, mutex );
-            pthread_mutex_unlock( mutex );
-            j++;
-        }
-    }
-
-    /* remove unused affects */
-    data = CREATEN(MYSQL_BIND, 5);
-    memset( data, 0, 5 * sizeof(MYSQL_BIND) );
-
-    bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
-    bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
-    bind_numeric( &data[2], room, MYSQL_TYPE_LONG );
-    bind_numeric( &data[3], ownerItem, MYSQL_TYPE_LONG );
-    bind_numeric( &data[4], j, MYSQL_TYPE_LONG );
-    db_queue_query( 46, QueryTable, data, 5, NULL, NULL, mutex );
-    pthread_mutex_unlock( mutex );
-
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 }
@@ -1644,20 +1609,6 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
         bind_numeric( &data[2], room, MYSQL_TYPE_LONG );
         bind_numeric( &data[3], ownerItem, MYSQL_TYPE_LONG );
         db_queue_query( 50, QueryTable, data, 4, result_read_object_4, 
-                        (void *)&obj, mutex );
-        pthread_mutex_unlock( mutex );
-    }
-
-    if( obj ) {
-        /* load affects */
-        data = CREATEN(MYSQL_BIND, 4);
-        memset( data, 0, 4 * sizeof(MYSQL_BIND) );
-
-        bind_numeric( &data[0], vnum, MYSQL_TYPE_LONG );
-        bind_numeric( &data[1], owner, MYSQL_TYPE_LONG );
-        bind_numeric( &data[2], room, MYSQL_TYPE_LONG );
-        bind_numeric( &data[3], ownerItem, MYSQL_TYPE_LONG );
-        db_queue_query( 51, QueryTable, data, 4, result_read_object_5, 
                         (void *)&obj, mutex );
         pthread_mutex_unlock( mutex );
     }
@@ -1830,15 +1781,6 @@ void db_clear_objects( int ownerId, int room, int itemNum )
     bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
     bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
     db_queue_query( 56, QueryTable, data, 3, NULL, NULL, NULL );
-    
-    /* Clear the affects */
-    data = CREATEN(MYSQL_BIND, 3);
-    memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-    bind_numeric( &data[0], ownerId, MYSQL_TYPE_LONG );
-    bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
-    bind_numeric( &data[2], itemNum, MYSQL_TYPE_LONG );
-    db_queue_query( 63, QueryTable, data, 3, NULL, NULL, NULL );
     
     /* Clear the extra descriptions */
     data = CREATEN(MYSQL_BIND, 3);
@@ -2081,17 +2023,6 @@ void db_load_char_objects( struct char_data *ch )
                             &obj, mutex );
             pthread_mutex_unlock( mutex );
 
-            /* Get the Affects */
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], ch->playerId, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], -1, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], num, MYSQL_TYPE_LONG );
-            db_queue_query( 71, QueryTable, data, 3, result_read_object_5, 
-                            &obj, mutex );
-            pthread_mutex_unlock( mutex );
-
             if( IS_RARE(obj) ) {
                 obj->index->number--;
             }
@@ -2193,17 +2124,6 @@ void db_load_room_objects( int room )
             bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
             bind_numeric( &data[2], num, MYSQL_TYPE_LONG );
             db_queue_query( 70, QueryTable, data, 3, result_read_object_4, 
-                            &obj, mutex );
-            pthread_mutex_unlock( mutex );
-
-            /* Get the Affects */
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], 0, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], room, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], num, MYSQL_TYPE_LONG );
-            db_queue_query( 71, QueryTable, data, 3, result_read_object_5, 
                             &obj, mutex );
             pthread_mutex_unlock( mutex );
 
@@ -3556,29 +3476,6 @@ void result_read_object_4( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 
             StringToKeywords( row[0], descr );
             descr->description = strdup(row[1]);
-        }
-    }
-}
-
-void result_read_object_5( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                           long insertid )
-{
-    struct obj_data           **retobj;
-    struct obj_data            *obj;
-    int                         count;
-    int                         i;
-
-    MYSQL_ROW                   row;
-
-    retobj = (struct obj_data **)arg;
-    obj = *retobj;
-
-    if( res && (count = mysql_num_rows(res)) ) {
-        for( i = 0; i < count && i < MAX_OBJ_AFFECT; i++ ) {
-            row = mysql_fetch_row(res);
-
-            obj->affected[i].location = atoi(row[0]);
-            obj->affected[i].modifier = atoi(row[1]);
         }
     }
 }
