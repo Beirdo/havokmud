@@ -25,13 +25,6 @@ typedef char    byte;
 #define FOREST_DARK     2
 #define NO_DARK         3
 
-#define CMD_LOOK       15
-#define CMD_WRITE      149
-#define CMD_READ       63
-#define CMD_REMOVE     66
-#define CMD_REPLY      515
-#define CMD_RELOAD     284
-
 #define ONE_WORD                  24
 #define ONE_LINE                  96
 #define ONE_PARAGRAPH            576
@@ -132,26 +125,6 @@ typedef struct alias_type {
                              */
 #define PLR_TICK_WRAP   24      /* this should be a divisor of 24 (hours) */
 
-/*
- **  multiclassing stuff
- */
-
-typedef enum {
-    MAGE_LEVEL_IND = 0,
-    CLERIC_LEVEL_IND,
-    WARRIOR_LEVEL_IND,
-    THIEF_LEVEL_IND,
-    DRUID_LEVEL_IND,
-    MONK_LEVEL_IND,
-    BARBARIAN_LEVEL_IND,
-    SORCERER_LEVEL_IND,
-    PALADIN_LEVEL_IND,
-    RANGER_LEVEL_IND,
-    PSI_LEVEL_IND,
-    NECROMANCER_LEVEL_IND
-} TempClassIndex_t;
-
-#define CLASS_COUNT  NECROMANCER_LEVEL_IND + 1
 
 /*
  * user flags
@@ -176,7 +149,6 @@ typedef enum {
 #define CLOAKED         BV(13)  /* Used for mortal cloaking of their eq */
 #define ZONE_SOUNDS     BV(14)
 #define CHAR_PRIVATE    BV(15)
-#define CLAN_LEADER     BV(16)
 #define NEW_USER        BV(17)
 #define HERO_STATUS     BV(18)
 #define GHOST           BV(19)
@@ -217,18 +189,6 @@ typedef enum {
     SPEAK_ALL,
     SPEAK_GODLIKE
 } SpeakLanguages_t;
-
-typedef enum {
-    NORMAL_DAMAGE = 0,
-    FIRE_DAMAGE,
-    COLD_DAMAGE,
-    ELEC_DAMAGE,
-    BLOW_DAMAGE,
-    ACID_DAMAGE,
-    FIRESHIELD,
-    CHILLSHIELD,
-    BLADE_BARRIER
-} DamageTypes_t;
 
 #define HATE_SEX   BV(0)
 #define HATE_RACE  BV(1)
@@ -456,31 +416,6 @@ typedef enum {
 
 
 /*
- * Flag spells as brewable or single class
- */
-#define BREWABLE_SPELL         BV(0)
-#define SINGLE_CLASS_SPELL     BV(1)
-#define DUAL_CLASS_SPELL       BV(2)
-#define TRI_CLASS_SPELL        BV(3)
-
-
-/*
- * 'class' for PC's
- */
-#define CLASS_MAGIC_USER  BV(0)
-#define CLASS_CLERIC      BV(1)
-#define CLASS_WARRIOR     BV(2)
-#define CLASS_THIEF       BV(3)
-#define CLASS_DRUID       BV(4)
-#define CLASS_MONK        BV(5)
-#define CLASS_BARBARIAN   BV(6)
-#define CLASS_SORCERER    BV(7)
-#define CLASS_PALADIN     BV(8)
-#define CLASS_RANGER      BV(9)
-#define CLASS_PSI         BV(10)
-#define CLASS_NECROMANCER BV(11)
-
-/*
  * sex
  */
 typedef enum {
@@ -543,7 +478,6 @@ typedef enum {
 #define PLR_AUTOSAC     BV(26)
 #define PLR_AUTOGOLD    BV(27)
 #define PLR_AUTOSPLIT   BV(28)
-#define PLR_CLAN_LEADER BV(29)
 #define PLR_LEGEND      BV(30)
 
 /*
@@ -963,49 +897,6 @@ struct obj_file_u {
  *  The following structures are related to descriptor_data   *
  *********************************************************** */
 
-/*
- * modes of connectedness
- * @todo got to here
- */
-
-#define CON_PLYNG           0
-#define CON_NME             1
-#define CON_NMECNF          2
-#define CON_PWDNRM          3
-#define CON_PWDGET          4
-#define CON_PWDCNF          5
-#define CON_QSEX            6
-#define CON_RMOTD           7
-#define CON_SLCT            8
-#define CON_EXDSCR          9
-#define CON_QCLASS          10
-#define CON_LDEAD           11
-#define CON_PWDNEW          12
-#define CON_PWDNCNF         13
-#define CON_WIZLOCK         14
-#define CON_QRACE           15
-#define CON_RACPAR          16
-#define CON_AUTH            17
-#define CON_CITY_CHOICE     18
-#define CON_STAT_LIST       19
-#define CON_QDELETE         20
-#define CON_QDELETE2        21
-#define CON_STAT_LISTV      22
-#define CON_WMOTD           23
-#define CON_EDITING         24
-#define CON_DELETE_ME       25
-#define CON_CHECK_MAGE_TYPE 26
-#define CON_OBJ_EDITING     27
-#define CON_MOB_EDITING     28
-#define CON_REROLL          29
-#define CON_PRESS_ENTER     30
-#define CON_ALREADY_PLAYING 31
-#define CON_ANSI            32
-#define CON_CREATION_MENU   33
-#define CON_ALIGNMENT       34
-#define CON_EMAILREG        36
-#define CON_TFD_EDITING     37
-#define CON_MCLASS          38
 
 struct snoop_data {
     struct char_data *snooping;

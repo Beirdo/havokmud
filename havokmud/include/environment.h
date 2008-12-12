@@ -221,12 +221,7 @@ typedef unsigned long long int uint64;
 
 #define WEAR_FLAG(o,f)  IS_SET(o->wear_flags, f)
 #define EXTRA_FLAG(o,f) IS_SET(o->extra_flags, f)
-#define CLASS_FLAG(o,f) IS_SET(o->anti_class, f)
 #define ANTI_FLAG(o,f)  IS_SET(o->anti_flags, f)
-#define ONLY_CLASS_FLAG(o,f)  (CLASS_FLAG(o, f) && \
-                               CLASS_FLAG(o, ITEM_ONLY_CLASS))
-#define ANTI_CLASS_FLAG(o,f)  (CLASS_FLAG(o, f) && \
-                               !CLASS_FLAG(o, ITEM_ONLY_CLASS))
 
 /**
  * @brief Returns the maximum level this player has on any class

@@ -331,7 +331,6 @@ int _check_ass_name(char *name)
 void show_menu(PlayerStruct_t *player)
 {
     struct char_data   *ch;
-    int                 bit;
     char                cls[50];
 
     ch = player->charData;
@@ -355,11 +354,6 @@ void show_menu(PlayerStruct_t *player)
 #endif
 
     cls[0] = '\0';
-    for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
-        if (HasClass(ch, pc_num_class(bit))) {
-            strcat(cls, classes[bit].abbrev);
-        }
-    }
     if (!(strcmp(cls, ""))) {
         sprintf(cls, "None Selected");
     }
@@ -396,7 +390,6 @@ void show_menu(PlayerStruct_t *player)
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
     struct char_data   *ch;
-    int                 chosen = 0;
     int                 i;
 
     if( !player ) {
@@ -432,12 +425,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "\n\rSelect your main class from the options "
                            "below.\n\r");
 
-        for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
-            if (HasClass(ch, pc_num_class(chosen))) {
-                SendOutput(player, "[%2d] %s\n\r", chosen + 1,
-                                   classes[chosen].name);
-            }
-        }
         SendOutput(player, "\n\rMain Class :");
         break;
     case STATE_CHOOSE_STATS:
@@ -464,22 +451,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "makes you evil, and\n\r"
                            "the spell heal makes you good\n\r");
 
-        if (HasClass(ch, CLASS_PALADIN)) {
-            SendOutput(player, "Please select your alignment "
-                               "($c000WGood$c000w)");
-        } else if (HasClass(ch, CLASS_DRUID)) {
-            SendOutput(player, "Please select your alignment (Neutral)");
-        } else if (HasClass(ch, CLASS_NECROMANCER)) {
-            SendOutput(player, "Please select your alignment "
-                               "($c000REvil$c000w)");
-        } else if (HasClass(ch, CLASS_RANGER)) {
-            SendOutput(player, "Please select your alignment "
-                               "($c000WGood$c000w/Neutral$c000w)");
-        } else {
-            SendOutput(player, "Please select your alignment "
-                               "($c000WGood$c000w/Neutral$c000w/"
-                               "$c000REvil$c000w)");
-        }
+        SendOutput(player, "Please select your alignment "
+                           "($c000WGood$c000w/Neutral$c000w/"
+                           "$c000REvil$c000w)");
         break;
 
     case STATE_SHOW_MOTD:
@@ -623,31 +597,21 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case 'n':
-            if (!HasClass(ch, CLASS_PALADIN) &&
-                !HasClass(ch, CLASS_NECROMANCER)) {
-                GET_ALIGNMENT(ch) = 1;
-                SendOutput(player, "You have chosen to be Neutral in "
-                                   "alignment.\n\r\n\r");
-                EnterState(player, STATE_SHOW_CREATION_MENU);
-            }
+            GET_ALIGNMENT(ch) = 1;
+            SendOutput(player, "You have chosen to be Neutral in "
+                               "alignment.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
         case 'g':
-            if (!HasClass(ch, CLASS_DRUID) &&
-                !HasClass(ch, CLASS_NECROMANCER)) {
-                GET_ALIGNMENT(ch) = 1000;
-                SendOutput(player, "You have chosen to be a follower of "
-                                   "light.\n\r\n\r");
-                EnterState(player, STATE_SHOW_CREATION_MENU);
-            }
+            GET_ALIGNMENT(ch) = 1000;
+            SendOutput(player, "You have chosen to be a follower of "
+                               "light.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
         case 'e':
-            if (!HasClass(ch, CLASS_DRUID) &&
-                !HasClass(ch, CLASS_PALADIN) &&
-                !HasClass(ch, CLASS_RANGER)) {
-                GET_ALIGNMENT(ch) = -1000;
-                SendOutput(player, "You have chosen the dark side.\n\r\n\r");
-                EnterState(player, STATE_SHOW_CREATION_MENU);
-            }
+            GET_ALIGNMENT(ch) = -1000;
+            SendOutput(player, "You have chosen the dark side.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
         default:
@@ -1216,11 +1180,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         if( found ) {
-            if (HasClass(ch, CLASS_MAGIC_USER)) {
-                EnterState(player, STATE_CHECK_MAGE_TYPE);
-                return;
-            }
-
             EnterState(player, STATE_SHOW_CREATION_MENU);
         } else {
             SendOutput(player, "Your race seems to be incorrect, please "
@@ -1287,15 +1246,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } else {
             EnterState(player, STATE_WIZLOCKED);
         }
-        break;
-
-    case STATE_CHECK_MAGE_TYPE:
-        arg = skip_spaces(arg);
-        if (arg && tolower(*arg) == 'y') {
-            ch->player.class -= CLASS_MAGIC_USER;
-            ch->player.class += CLASS_SORCERER;
-        }
-        EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
     case STATE_SHOW_MOTD:
@@ -1535,7 +1485,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
 void DoCreationMenu( PlayerStruct_t *player, char arg )
 {
-    int             bit;
     int             bitcount;
     int             i;
     struct char_data *ch;
@@ -1578,11 +1527,6 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     case 'd':
     case 'D':
         bitcount = 0;
-        for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
-            if (HasClass(ch, pc_num_class(bit))) {
-                bitcount++;
-            }
-        }
         if (bitcount <= 0) {
             SendOutput(player, "Please enter a valid class.");
             return;
@@ -1903,42 +1847,6 @@ void roll_abilities(PlayerStruct_t *player)
     /*
      * class specific hps stuff
      */
-    if (HasClass(ch, CLASS_MAGIC_USER) ||
-        HasClass(ch, CLASS_SORCERER) ||
-        HasClass(ch, CLASS_NECROMANCER)) {
-        ch->points.max_hit += number(1, 4);
-    }
-    if (HasClass(ch, CLASS_THIEF) ||
-        HasClass(ch, CLASS_PSI) ||
-        HasClass(ch, CLASS_MONK)) {
-        ch->points.max_hit += number(1, 6);
-    }
-    if (HasClass(ch, CLASS_CLERIC) ||
-        HasClass(ch, CLASS_DRUID)) {
-        ch->points.max_hit += number(1, 8);
-    }
-    if (HasClass(ch, CLASS_WARRIOR) ||
-        HasClass(ch, CLASS_BARBARIAN) ||
-        HasClass(ch, CLASS_PALADIN) ||
-        HasClass(ch, CLASS_RANGER)) {
-        ch->points.max_hit += number(1, 10);
-
-        if (ch->abilities.str == 18) {
-            ch->abilities.str_add = number(0, 100);
-        }
-        if (ch->abilities.str > 18 &&
-            (GET_RACE(ch) != RACE_HALF_GIANT || GET_RACE(ch) == RACE_TROLL)) {
-            ch->abilities.str_add =
-                number(((ch->abilities.str - 18) * 10), 100);
-        }
-        else if (ch->abilities.str > 18) {
-            /*
-             * was a half-giant so
-             * just make 100
-             */
-            ch->abilities.str_add = 100;
-        }
-    }
 
     ch->points.max_hit /= HowManyClasses(ch);
     ch->tmpabilities = ch->abilities;

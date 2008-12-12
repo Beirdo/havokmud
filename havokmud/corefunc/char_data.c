@@ -44,24 +44,9 @@ static char ident[] _UNUSED_ =
 
 /**
  * @todo replace this with a macro
- * @todo see what that NPC block is all about, seems pointless
  */
 int HasClass(struct char_data *ch, int clss)
 {
-#if 0
-    if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF) && 
-        (!IS_SET(clss, CLASS_MONK) || !IS_SET(clss, CLASS_DRUID) ||
-         !IS_SET(clss, CLASS_BARBARIAN) || !IS_SET(clss, CLASS_SORCERER) ||
-         !IS_SET(clss, CLASS_PALADIN) || !IS_SET(clss, CLASS_RANGER) || 
-         !IS_SET(clss, CLASS_PSI) || !IS_SET(clss, CLASS_NECROMANCER))) {
-        /*
-         * I have yet to figure out why we do this 
-         * but is seems to be needed 
-         */
-        return (TRUE);
-    }
-#endif
-
     return(IS_SET(ch->player.class, clss));
 }
 

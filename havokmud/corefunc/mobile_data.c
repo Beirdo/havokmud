@@ -247,7 +247,6 @@ void mobileWriteToFile(struct char_data *mob, void * mob_fi)
     fprintf(mob_fi, " %d ", mob->specials.alignment);
     fprintf(mob_fi, " %.1f \n", mob->mult_att);
 
-    fprintf(mob_fi, " %d ", GET_LEVEL(mob, WARRIOR_LEVEL_IND));
     fprintf(mob_fi, " %d ", (mob->points.hitroll - 20) * -1);
     fprintf(mob_fi, " %d ", mob->points.armor / 10);
     fprintf(mob_fi, " %d ", mob->points.max_hit);
@@ -373,7 +372,6 @@ void mobileWrite(struct char_data *mob, void * mob_fi)
     fprintf(mob_fi, " %d ", mob->specials.alignment);
     fprintf(mob_fi, " %.1f \n", mob->mult_att);
 
-    fprintf(mob_fi, " %d ", GET_LEVEL(mob, WARRIOR_LEVEL_IND));
     fprintf(mob_fi, " %d ", (mob->points.hitroll - 20) * -1);
     fprintf(mob_fi, " %d ", mob->points.armor / 10);
     fprintf(mob_fi, " %d ", mob->points.max_hit);

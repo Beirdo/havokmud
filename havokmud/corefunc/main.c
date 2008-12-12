@@ -443,9 +443,6 @@ void boot_db(void)
     LogPrintNoArg( LOG_CRIT, "   Commands.");
     assign_command_pointers();
 
-    LogPrintNoArg( LOG_CRIT, "   Spells.");
-    assign_spell_pointers();
-
     LogPrintNoArg( LOG_CRIT, "Updating characters with saved items:");
     update_obj_file();
 #endif
