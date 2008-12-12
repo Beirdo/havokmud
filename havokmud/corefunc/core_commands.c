@@ -42,7 +42,7 @@
 
 #include "oldstructs.h"
 #include "utils.h"
-#include "externs.h"
+#include "oldexterns.h"
 #include "interthread.h"
 #include "balanced_btree.h"
 

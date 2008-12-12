@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "externs.h"
+#include "oldexterns.h"
 #include "utils.h"
 #include "version.h"
 #include "logging.h"

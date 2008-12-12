@@ -4,8 +4,8 @@
  * @brief OLD!  List of all external variables.
  */
 
-#ifndef _externs_h
-#define _externs_h
+#ifndef _oldexterns_h
+#define _oldexterns_h
 
 #include "oldstructs.h"
 

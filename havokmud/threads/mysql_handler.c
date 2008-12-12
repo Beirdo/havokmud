@@ -31,7 +31,7 @@
 
 #include "environment.h"
 #include <pthread.h>
-#include "externs.h"
+#include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
 #include <sys/time.h>

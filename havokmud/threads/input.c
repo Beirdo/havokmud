@@ -31,7 +31,7 @@
 
 #include "environment.h"
 #include <pthread.h>
-#include "externs.h"
+#include "oldexterns.h"
 #include "utils.h"
 #include <stdlib.h>
 #include <unistd.h>

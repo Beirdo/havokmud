@@ -40,7 +40,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "logging.h"
-#include "externs.h"
+#include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
 #include "memory.h"

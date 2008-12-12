@@ -34,7 +34,7 @@
 #include "memory.h"
 #include "oldstructs.h"
 #include "utils.h"
-#include "externs.h"
+#include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
 #include <stdio.h>

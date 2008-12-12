@@ -38,7 +38,7 @@
 
 #include "oldstructs.h"
 #include "utils.h"
-#include "externs.h"
+#include "oldexterns.h"
 #include "logging.h"
 #include "interthread.h"
 
