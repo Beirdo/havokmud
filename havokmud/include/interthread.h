@@ -44,7 +44,7 @@
 #include "protected_data.h"
 #include "logging.h"
 #include "balanced_btree.h"
-#include "structs.h"
+#include "oldstructs.h"
 #include "newstructs.h"
 
 /* CVS generated ID string (optional for h files) */

@@ -35,7 +35,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include "structs.h"
+#include "oldstructs.h"
 #include "newstructs.h"
 #include "utils.h"
 #include "logging.h"

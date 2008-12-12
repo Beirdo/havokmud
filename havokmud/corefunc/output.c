@@ -32,7 +32,7 @@
 #include "environment.h"
 #include <pthread.h>
 #include "memory.h"
-#include "structs.h"
+#include "oldstructs.h"
 #include "utils.h"
 #include "externs.h"
 #include "interthread.h"

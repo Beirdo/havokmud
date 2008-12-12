@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include "protected_data.h"
 
-#include "structs.h"
+#include "oldstructs.h"
 #include "utils.h"
 #include "externs.h"
 #include "interthread.h"

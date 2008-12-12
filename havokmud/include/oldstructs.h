@@ -1,5 +1,5 @@
-#ifndef _structs_h
-#define _structs_h
+#ifndef _oldstructs_h
+#define _oldstructs_h
 
 /*
  *      DaleMUD structs, originated from SillyMUD variant of DIKU

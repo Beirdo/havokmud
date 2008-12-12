@@ -27,8 +27,8 @@
 *
 *--------------------------------------------------------*/
 
-#ifndef newstructs_h_
-#define newstructs_h_
+#ifndef _newstructs_h_
+#define _newstructs_h_
 
 #include "environment.h"
 #include <pthread.h>
@@ -39,7 +39,7 @@
 #include "logging.h"
 #include "balanced_btree.h"
 #define MAX_OBJ_AFFECT 5
-#include "structs.h"
+#include "oldstructs.h"
 #include <mysql.h>
 
 /* CVS generated ID string (optional for h files) */

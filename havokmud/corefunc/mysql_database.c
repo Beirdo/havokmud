@@ -36,7 +36,7 @@
 #include <mysql.h>
 #include <stdlib.h>
 
-#include "structs.h"
+#include "oldstructs.h"
 #include "utils.h"
 #include "externs.h"
 #include "logging.h"

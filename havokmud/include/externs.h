@@ -7,7 +7,7 @@
 #ifndef _externs_h
 #define _externs_h
 
-#include "structs.h"
+#include "oldstructs.h"
 
 extern const struct race_type race_list[];
 

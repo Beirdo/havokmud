@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structs.h"
+#include "oldstructs.h"
 #include "newstructs.h"
 #include "utils.h"
 #include "logging.h"

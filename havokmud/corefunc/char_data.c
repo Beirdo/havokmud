@@ -30,7 +30,7 @@
 /* INCLUDE FILES */
 #include "environment.h"
 #include <stdlib.h>
-#include "structs.h"
+#include "oldstructs.h"
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
