@@ -33,7 +33,7 @@
 #include <pthread.h>
 #include "memory.h"
 #include "oldstructs.h"
-#include "utils.h"
+#include "oldutils.h"
 #include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"

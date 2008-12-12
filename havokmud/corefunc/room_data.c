@@ -34,7 +34,7 @@
 #include <string.h>
 #include "oldstructs.h"
 #include "structs.h"
-#include "utils.h"
+#include "oldutils.h"
 #include "logging.h"
 #include "interthread.h"
 #include "balanced_btree.h"

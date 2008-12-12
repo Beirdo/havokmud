@@ -41,7 +41,7 @@
 #include <time.h>
 
 #include "oldexterns.h"
-#include "utils.h"
+#include "oldutils.h"
 #include "version.h"
 #include "logging.h"
 #include "balanced_btree.h"
