@@ -43,6 +43,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include "linked_list.h"
+#include "protos.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

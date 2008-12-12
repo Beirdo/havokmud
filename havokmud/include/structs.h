@@ -43,7 +43,7 @@
 #include <mysql.h>
 
 /* CVS generated ID string (optional for h files) */
-static char newstructs_h_ident[] _UNUSED_ = 
+static char structs_h_ident[] _UNUSED_ = 
     "$Id$";
 
 /**

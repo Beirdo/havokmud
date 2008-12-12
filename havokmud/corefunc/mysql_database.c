@@ -41,6 +41,7 @@
 #include "oldexterns.h"
 #include "logging.h"
 #include "interthread.h"
+#include "protos.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

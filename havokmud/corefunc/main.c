@@ -46,6 +46,7 @@
 #include "logging.h"
 #include "balanced_btree.h"
 #include "interthread.h"
+#include "protos.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -334,7 +335,6 @@ int main(int argc, char **argv)
      */
     close(0);
 
-    db_setup();
     db_initial_load();
 
     descNameTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );

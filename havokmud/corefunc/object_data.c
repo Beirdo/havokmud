@@ -41,6 +41,7 @@
 #include "logging.h"
 #include "interthread.h"
 #include "balanced_btree.h"
+#include "protos.h"
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 

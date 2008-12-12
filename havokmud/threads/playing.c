@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include "logging.h"
 #include "memory.h"
+#include "protos.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";

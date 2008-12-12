@@ -1,0 +1,334 @@
+/*
+ *  This file is part of the havokmud package
+ *  Copyright (C) 2008 Gavin Hurlbut
+ *
+ *  havokmud is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*HEADER---------------------------------------------------
+* $Id$
+*
+* Copyright 2008 Gavin Hurlbut
+* All rights reserved
+*
+* Comments :
+*
+*--------------------------------------------------------*/
+
+/**
+ * @file
+ * @brief Prototypes and definitions for inter-thread communication
+ */
+
+
+#ifndef _protos_h_
+#define _protos_h_
+
+#include "environment.h"
+#include <pthread.h>
+#include "linked_list.h"
+#include "buffer.h"
+#include "queue.h"
+#include "protected_data.h"
+#include "logging.h"
+#include "balanced_btree.h"
+#include "oldstructs.h"
+#include "structs.h"
+
+/* CVS generated ID string (optional for h files) */
+static char protos_h_ident[] _UNUSED_ = 
+    "$Id$";
+
+/*
+ * Other prototypes to move later
+ */
+void LoginSendBanner( PlayerStruct_t *player );
+void LoginStateMachine(PlayerStruct_t *player, char *arg);
+void EditorStart( PlayerStruct_t *player, char **string, int maxlen );
+void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player );
+PlayerStruct_t *FindCharacterNamed( char *name, PlayerStruct_t *oldPlayer );
+int GetPlayerCount( void );
+
+/* command_processor.c */
+void JustLoggedIn( PlayerStruct_t *player );
+void CommandParser( PlayerStruct_t *player, char *line );
+void InitializeCommands( void );
+void SetupCommands( CommandDef_t *commands, int count );
+void AddCommand( CommandDef_t *cmd );
+CommandDef_t *FindCommand( char *string );
+
+/*
+ * TODO: move these!
+ */
+int_func procGetFuncByName( char *name, proc_type type );
+char *procGetNameByFunc( int_func func, proc_type type );
+int procIsRegistered( int_func func, proc_type type );
+
+/*
+ * output.c
+ */
+void SendOutput( PlayerStruct_t *player, char *fmt, ... );
+void SendOutputRaw( PlayerStruct_t *player, unsigned char *string, int len );
+void SendToAll(char *messg);
+void SendToAllAwake(char *messg);
+void send_to_outdoor(char *messg);
+void send_to_desert(char *messg);
+void send_to_out_other(char *messg);
+void send_to_arctic(char *messg);
+void send_to_except(char *messg, struct char_data *ch);
+void send_to_zone(char *messg, struct char_data *ch);
+void send_to_room(char *messg, int room);
+void send_to_room_except(char *messg, int room, struct char_data *ch);
+void send_to_room_except_two(char *messg, int room, struct char_data *ch1, 
+                             struct char_data *ch2);
+
+/* 
+ * ansi_output.c 
+ */
+int ParseAnsiColors(bool UsingAnsi, char *txt, char *buf);
+void ScreenOff( PlayerStruct_t *player );
+
+/*
+ * text_process.c
+ */
+char *skip_spaces(char *string);
+int search_block(char *arg, char **list, bool exact);
+void remove_cr(char *output, char *input);
+int get_number(char **name);
+char *get_argument(char *line_in, char **arg_out);
+
+/*
+ * char_data.c
+ */
+int HasClass(struct char_data *ch, int clss);
+int HowManyClasses( struct char_data *ch );
+int pc_num_class(int clss);
+char *AlignDesc(int value);
+int number(int from, int to);
+int dice(int number, int size);
+
+/*
+ * core_commands.c
+ */
+void            do_siteban(struct char_data *ch, char *argument, int cmd);
+void            do_shutdow(struct char_data *ch, char *argument, int cmd);
+void            do_shutdown(struct char_data *ch, char *argument, int cmd);
+void            do_idea(struct char_data *ch, char *argument, int cmd);
+void            do_typo(struct char_data *ch, char *argument, int cmd);
+void            do_bug(struct char_data *ch, char *argument, int cmd);
+void            do_viewfile(struct char_data *ch, char *argument, int cmd);
+
+/*
+ * mysql_handler.c
+ */
+void db_setup(void);
+void db_initial_load(void);
+void bind_numeric( MYSQL_BIND *data, long long int value, 
+                   enum enum_field_types type );
+void bind_string( MYSQL_BIND *data, char *value, enum enum_field_types type );
+void bind_null_blob( MYSQL_BIND *data, void *value );
+void db_queue_query( int queryId, QueryTable_t *queryTable,
+                     MYSQL_BIND *queryData, int queryDataCount,
+                     QueryResFunc_t queryCallback, void *queryCallbackArg,
+                     pthread_mutex_t *queryMutex );
+
+/* mysql_database.c */
+void db_report_entry(int reportId, struct char_data *ch, char *report);
+struct user_report *db_get_report(int reportId);
+void db_clean_report(int reportId);
+
+void db_load_textfiles(void);
+int db_save_textfile(struct char_data *ch);
+struct board_def *db_lookup_board(int vnum);
+struct bulletin_board_message *db_get_board_message(int boardId, int msgNum);
+void db_free_board_message(struct bulletin_board_message *msg);
+int db_get_board_replies(struct board_def *board, int msgId, 
+                         struct bulletin_board_message **msg);
+void db_free_board_replies(struct bulletin_board_message *msg, int count);
+void db_delete_board_message(struct board_def *board, short message_id);
+void db_post_message(struct board_def *board, 
+                     struct bulletin_board_message *msg);
+void db_store_mail(char *to, char *from, char *message_pointer);
+int             db_has_mail(char *recipient);
+int   db_get_mail_ids(char *recipient, int *messageNum, int count);
+char *db_get_mail_message(int messageId);
+void db_delete_mail_message(int messageId);
+
+char *db_lookup_help( int type, char *keywords );
+char *db_lookup_help_similar( int type, char *keywords );
+void db_save_object(struct obj_data *obj, int owner, int room, int ownerItem, 
+                    int parentItem);
+struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
+                                int room, int ownerItem );
+int db_find_object_named(char *string, int owner, int ownerItem);
+void db_load_object_tree( BalancedBTree_t *tree );
+void db_update_char_rent( int ownerId, int gold, int rentCost, int minStay );
+void db_clear_objects( int ownerId, int room, int itemNum );
+void db_write_char_extra( struct char_data *ch );
+void db_load_char_extra( struct char_data *ch );
+void db_get_char_rent( int ownerId, int *gold, int *rentCost, int *minStay,
+                       int *lastUpdate );
+void db_load_char_objects( struct char_data *ch );
+void db_load_room_objects( int room );
+void db_load_rooms( BalancedBTree_t *tree );
+
+/*
+ * object_data.c
+ */
+void initializeObjects( void );
+struct index_data *objectIndex( int vnum );
+void objectInsert(struct obj_data *obj, long vnum);
+void objectClear(struct obj_data *obj);
+struct obj_data *objectClone(struct obj_data *obj);
+void objectCloneContainer(struct obj_data *to, struct obj_data *obj);
+struct obj_data *objectRead(int nr);
+void objectFree(struct obj_data *obj);
+void objectExtract(struct obj_data *obj);
+void objectExtractLocked(struct obj_data *obj, Locked_t locked );
+void objectPutInObject(struct obj_data *obj, struct obj_data *obj_to);
+void objectTakeFromObject(struct obj_data *obj, Locked_t locked);
+void objectGiveToChar(struct obj_data *object, struct char_data *ch);
+void objectTakeFromChar(struct obj_data *object);
+void objectPutInRoom(struct obj_data *object, long room, Locked_t locked);
+void objectTakeFromRoom(struct obj_data *object, Locked_t locked);
+void objectSaveForChar(struct char_data *ch, int delete);
+void load_char_objs(struct char_data *ch);
+struct obj_data *objectGetInRoom( struct char_data *ch, char *name,
+                                  struct room_data *rm );
+struct obj_data *objectGetOnChar( struct char_data *ch, char *name,
+                                  struct char_data *onch );
+struct obj_data *objectGetInObject( struct char_data *ch, char *name,
+                                    struct obj_data *obj );
+struct obj_data *objectGetInEquip(struct char_data *ch, char *arg,
+                                  struct obj_data *equipment[], int *j,
+                                  bool visible );
+struct obj_data *objectGetGlobal(struct char_data *ch, char *name, int *count);
+struct obj_data *objectGetInCharOrRoom(struct char_data *ch, char *name);
+struct obj_data *objectGetNumLastCreated(int num);
+struct obj_data *objectGetOnCharNum(int num, struct char_data *ch);
+struct obj_data *objectGetInRoomNum(int num, struct room_data *rm);
+
+bool objectIsVisible(struct char_data *ch, struct obj_data *obj);
+
+void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj );
+void objectKeywordTreeRemove( BalancedBTree_t *tree, struct obj_data *obj );
+struct obj_data *objectKeywordFindFirst( BalancedBTree_t *tree, 
+                                         Keywords_t *key );
+struct obj_data *objectKeywordFindNext( BalancedBTree_t *tree, int offset,
+                                        Keywords_t *key, 
+                                        struct obj_data *lastobj );
+
+void objectTypeTreeAdd( struct obj_data *obj );
+void objectTypeTreeRemove( struct obj_data *obj );
+struct obj_data *objectTypeFindFirst( ItemType_t type );
+struct obj_data *objectTypeFindNext( ItemType_t type,
+                                     struct obj_data *lastobj );
+
+bool HasAntiBitsEquipment(struct char_data *ch, int bits);
+bool HasBitsEquipment(struct char_data *ch, int bits, int offset);
+bool HasBitsInventory(struct char_data *ch, int bits, int offset);
+bool HasBits(struct char_data *ch, int bits, int offset);
+bool HasExtraBits(struct char_data *ch, int bits);
+
+void PrintLimitedItems(void);
+
+/*
+ * mobile_data.c
+ */
+void initializeMobiles( void );
+struct index_data *mobileIndex( int vnum );
+void mobileInsert(struct char_data *obj, long vnum);
+struct char_data *mobileRead(int nr);
+void mobileWriteToFile(struct char_data *mob, void * mob_fi);
+void mobileWrite(struct char_data *mob, void * mob_fi);
+void mobileInitScripts(void);
+
+/*
+ * keywords.c
+ */
+char *KeywordsToString( Keywords_t *key, char *separator );
+Keywords_t *StringToKeywords( char *string, Keywords_t *key );
+void FreeKeywords( Keywords_t *key, bool freeRoot );
+bool KeywordsMatch(Keywords_t *tofind, Keywords_t *keywords);
+char *find_ex_description(char *word, Keywords_t *list, int count);
+
+/*
+ * weather.c
+ */
+void weather_and_time(int mode);
+void another_hour(int mode);
+void weather_change(void);
+void GetMonth(int month);
+void ChangeWeather(int change);
+void switch_light(byte why);
+int IsDarkOutside(struct room_data *rp);
+
+/*
+ * room_data.c
+ */
+void initializeRooms( void );
+struct room_data *roomFindNum(int virtual);
+void cleanout_room(struct room_data *rp);
+void completely_cleanout_room(struct room_data *rp);
+int roomCountObject(int nr, struct room_data *rp);
+
+/*
+ * From special_funcs.c
+ */
+void            assign_mobiles(void);
+void            assign_objects(void);
+void            assign_rooms(void);
+
+
+
+/*************************************************************************
+ * Support for different platforms
+ *************************************************************************/
+#include "config.h"
+
+#if defined( __CYGWIN__ )
+/* Since stupid cygwin doesn't define this in the standard place */
+char *crypt(const char *key, const char *salt);
+#endif
+
+#ifndef HAVE_STRNLEN 
+/* FreeBSD and Solaris seem to be missing strnlen */
+size_t strnlen(const char *s, size_t maxlen);
+#endif
+
+#ifndef HAVE_STRSEP
+/* Solaris seems to be missing strsep */
+char *strsep(char **stringp, const char *delim);
+#endif
+
+#ifndef HAVE_STRDUP
+char           *strdup(const char *str);
+#endif
+
+#ifndef HAVE_STRSTR
+char           *strstr(register const char *s, register const char *find);
+#endif
+
+#ifndef HAVE_STRNDUP
+/* OSX seems to be missing strndup */
+char           *strndup(const char *s, size_t n);
+#endif
+
+
+#endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
