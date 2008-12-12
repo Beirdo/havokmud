@@ -487,9 +487,9 @@ void mobileInitScripts(void)
      * @todo Convert to new LinkedList methodology
      */
     for (mob = character_list; mob; mob = mob->next) {
-        if (IS_MOB(mob) && IS_SET(mob->specials.act, ACT_SCRIPT)) {
+        if (IS_MOB(mob) && mob->specials.script) {
             mob->commandp = 0;
-            REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
+            mob->specials.script = FALSE;
         }
     }
     if (!(f1 = fopen("scripts.dat", "r"))) {

@@ -3881,9 +3881,6 @@ char *file_to_string(char *name);
 
 void show_class_skills(struct char_data *ch, char *buffer, int classnum,
                        int skills);
-void show_skills(struct char_data *ch, char *buffer, 
-                 const struct skillset *skills, int skillcount);
-
 void            do_mobTell2(struct char_data *ch,
                             struct char_data *mob, char *sentence);
 

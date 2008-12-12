@@ -108,9 +108,9 @@
 
 #define SANA(obj) (index("aeiouyAEIOUY", *(obj)->name) ? "an" : "a")
 
-#define IS_NPC(ch)  (IS_SET((ch)->specials.act, ACT_ISNPC))
+#define IS_NPC(ch)  ((ch)->specials.npc)
 
-#define IS_MOB(ch)  (IS_SET((ch)->specials.act, ACT_ISNPC) && ((ch)->nr >-1))
+#define IS_MOB(ch)  (IS_NPC(ch) && ((ch)->nr >-1))
 
 #define GET_POS(ch)     ((ch)->specials.position)
 
@@ -309,7 +309,7 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 
 #define ITEM_TYPE(obj)  ((int)(obj)->type_flag)
 
-#define IS_PC(ch) (!IS_NPC((ch)) || IS_SET((ch)->specials.act, ACT_POLYSELF))
+#define IS_PC(ch) (!IS_NPC((ch)) || (ch)->specials.polyself)
 
 #define GET_AVE_LEVEL(ch) (GetMaxLevel(ch)+(GetSecMaxLev(ch)/2)+\
           (GetThirdMaxLev(ch)/3))
@@ -318,34 +318,6 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 
 #define MOUNTED(ch) ((ch)->specials.mounted_on)
 #define RIDDEN(ch) ((ch)->specials.ridden_by)
-
-/*
- * Arena flags 
- */
-#define A_NOGROUP(ch)   ((ArenaNoGroup == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOASSIST(ch,vict)  ((ArenaNoAssist == 1) && \
-	       	(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)) && \
-	       	(vict->specials.fighting ? (vict->specials.fighting != ch) : 0))
-#define A_NODISPEL(ch)  ((ArenaNoDispel == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOMAGIC(ch)   ((ArenaNoMagic == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOWSPELLS(ch) ((ArenaNoWSpells == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOSLAY(ch)    ((ArenaNoSlay == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOFLEE(ch)    ((ArenaNoFlee == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOHASTE(ch)   ((ArenaNoHaste == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOPETS(ch)    ((ArenaNoPets == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOTRAVEL(ch)  ((ArenaNoTravel == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-#define A_NOBASH(ch)    ((ArenaNoBash == 1) && \
-		(IS_SET(roomFindNum(ch->in_room)->room_flags, ARENA_ROOM)))
-
 
 #endif
 

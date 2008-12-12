@@ -325,7 +325,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
      * so you can log mobs if ya need to
      */
 #ifdef LOG_MOB
-    if (!IS_PC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF)) {
+    if (!IS_PC(ch) && !(ch->specials.polyself)) {
         LogPrint( LOG_INFO, "[%ld] <%s>:%s", ch->in_room, ch->player.name, 
                             line);
     }
@@ -335,7 +335,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
      * to log all pc's
      */
     if (IS_SET(SystemFlags, SYS_LOGALL)) {
-        if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
+        if (IS_PC(ch)) {
             LogPrint( LOG_INFO, "[%ld] %s:%s", ch->in_room, ch->player.name, 
                                 line);
         }

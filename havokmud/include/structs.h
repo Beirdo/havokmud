@@ -654,51 +654,6 @@ typedef enum {
     POSITION_MOUNTED
 } Positions_t;
 
-/*
- * for mobile actions: specials.act
- */
-#define ACT_SPEC        BV(0)   /* special routine to be called if exist */
-#define ACT_SENTINEL    BV(1)   /* this mobile not to be moved */
-#define ACT_SCAVENGER   BV(2)   /* pick up stuff lying around */
-#define ACT_ISNPC       BV(3)   /* This bit is set for use with IS_NPC() */
-#define ACT_NICE_THIEF  BV(4)   /* Set if a thief should NOT be killed */
-#define ACT_AGGRESSIVE  BV(5)   /* Set if automatic attack on NPC's */
-#define ACT_STAY_ZONE   BV(6)   /* MOB Must stay inside its own zone */
-#define ACT_WIMPY       BV(7)   /* MOB Will flee when injured, and if
-                                 * aggressive only attack sleeping players */
-#define ACT_ANNOYING    BV(8)   /* MOB is so utterly irritating that other
-                                 * monsters will attack it...  */
-#define ACT_HATEFUL     BV(9)   /* MOB will attack a PC or NPC matching a
-                                 * specified name */
-#define ACT_AFRAID      BV(10)   /* MOB is afraid of a certain PC or NPC,
-                                 * and will always run away ....  */
-#define ACT_IMMORTAL    BV(11)   /* MOB is a natural event, can't be kiled */
-#define ACT_HUNTING     BV(12)   /* MOB is hunting someone */
-#define ACT_DEADLY      BV(13)   /* MOB has deadly poison */
-#define ACT_META_AGG    BV(14)   /* MOB is _very_ aggressive */
-#define ACT_GUARDIAN    BV(15)   /* MOB will guard master */
-#define ACT_HUGE        BV(16)   /* MOB is too large to go indoors */
-#define ACT_SCRIPT      BV(17)   /* MOB has a script assigned to it */
-#define ACT_GREET       BV(18)   /* MOB greets people */
-#define ACT_POLYSELF    BV(19)   /* MOB is a polymorphed person */
-
-
-/*
- * for mobile specials.act_class
- */
-#define ACT_MAGIC_USER  BV(0)
-#define ACT_CLERIC      BV(1)
-#define ACT_WARRIOR     BV(2)
-#define ACT_THIEF       BV(3)
-#define ACT_DRUID       BV(4)
-#define ACT_MONK        BV(5)
-#define ACT_BARBARIAN   BV(6)
-#define ACT_SORCERER    BV(7)
-#define ACT_PALADIN     BV(8)
-#define ACT_RANGER      BV(9)
-#define ACT_PSI         BV(10)
-#define ACT_NECROMANCER BV(11)
-
 
 /*
  * For players : specials.act
@@ -901,13 +856,9 @@ struct char_special_data {
     char           *poofout;
     char           *prompt;
     char           *bprompt;
-    char           *clan;
     char           *email;      /* email address in aux */
     char           *immtitle;
 
-#if 0
-    char           *clan;
-#endif
     char           *rumor;
     char           *group_name; /* current group name if any... */
     char           *hostip;     /* keep track of IP */
@@ -926,6 +877,10 @@ struct char_special_data {
     long            affected_by;        /* Bitvector for spells/skills
                                          * affected by */
     long            affected_by2;       /* Other special things */
+
+    bool            npc;
+    bool            polyself;
+    bool            script;
 
     long            act;        /* flags for NPC behavior */
     long            act_class;  /* flags for NPCs to act like a class */
@@ -1301,26 +1256,10 @@ struct descriptor_data {
 typedef void    (*funcp) ();
 
 
-struct skillset {
-    char           *name;
-    int             skillnum;
-    int             level;
-    int             maxlearn;
-};
-
 struct affect_list {
     char           *affectname;
     int             affectnumber;
     int             affecttype;
-};
-
-struct clan {
-    int             number;
-    char           *name;
-    char           *shortname;
-    char           *desc;
-    int             home;
-
 };
 
 struct edit_txt_msg {
@@ -1330,122 +1269,6 @@ struct edit_txt_msg {
     char           *body;
 };
 
-/*
- * Ok.. this list probaby isn't finished.. They have to match up for # for
- * #.. So when someone has time.. Just make sure that its numbered right
- * NOTE: I had to take a few out.. (which screws up the numbering.. b/c
- * they were already defined.. Once this is finished.. This should make
- * the code a prettier place
- *
- * Instead of every proc going if(cmd==322) It can now be
- * if(cmd==CMD_blah)
- */
-enum {
-    CMD_north = 1, CMD_east, CMD_south, CMD_west, CMD_up, CMD_down, CMD_enter,
-    CMD_exits, CMD_kiss, CMD_get, CMD_drink, CMD_eat, CMD_wear, CMD_wield,
-    CMD_score, CMD_say, CMD_shout, CMD_tell, CMD_inventory, CMD_qui,
-    CMD_bounce, CMD_smile, CMD_dance, CMD_kill, CMD_id, CMD_laugh,
-    CMD_giggle, CMD_shake, CMD_puke, CMD_growl, CMD_scream, CMD_insult,
-    CMD_comfort, CMD_nod, CMD_sigh, CMD_sulk, CMD_help, CMD_who,
-    CMD_emote, CMD_echo, CMD_stand, CMD_sit, CMD_rest, CMD_sleep,
-    CMD_wake, CMD_force, CMD_transfer, CMD_hug, CMD_snuggle,
-    CMD_cuddle, CMD_nuzzle, CMD_cry, CMD_news, CMD_equipment, CMD_buy,
-    CMD_sell, CMD_value, CMD_list, CMD_drop, CMD_goto, CMD_weather, CMD_pour,
-    CMD_grab, CMD_put, CMD_shutdow, CMD_save, CMD_hit, CMD_string, CMD_give,
-    CMD_quit, CMD_stat, CMD_guard, CMD_time, CMD_purge, CMD_shutdown, CMD_idea,
-    CMD_typo, CMD_bug, CMD_whisper, CMD_cast, CMD_at, CMD_ask, CMD_order,
-    CMD_sip, CMD_taste, CMD_snoop, CMD_follow, CMD_rent, CMD_offer, CMD_poke,
-    CMD_advance, CMD_accuse, CMD_grin, CMD_bow, CMD_open, CMD_close, CMD_lock,
-    CMD_unlock, CMD_leave, CMD_applaud, CMD_blush, CMD_burp, CMD_chuckle,
-    CMD_clap, CMD_cough, CMD_curtsey, CMD_fart, CMD_flip, CMD_fondle, CMD_frown,
-    CMD_gasp, CMD_glare, CMD_groan, CMD_grope, CMD_hiccup, CMD_lick,
-    CMD_love, CMD_moan, CMD_nibble, CMD_pout, CMD_purr, CMD_ruffle,
-    CMD_shiver, CMD_shrug, CMD_sing, CMD_slap, CMD_smirk, CMD_snap,
-    CMD_sneeze, CMD_snicker, CMD_sniff, CMD_snore, CMD_spit,
-    CMD_squeeze, CMD_stare, CMD_strut, CMD_thank, CMD_twiddle,
-    CMD_wave, CMD_whistle, CMD_wiggle, CMD_wink, CMD_yawn, CMD_snowball,
-    CMD_hold, CMD_flee, CMD_sneak, CMD_hide, CMD_backstab, CMD_pick, CMD_steal,
-    CMD_bash, CMD_rescue, CMD_kick, CMD_french, CMD_comb, CMD_massage,
-    CMD_tickle, CMD_practice=164, CMD_pat, CMD_examine, CMD_take,
-    CMD_info, CMD_TEMP, CMD_study=170, CMD_curse, CMD_use, CMD_where,
-    CMD_levels, CMD_reroll, CMD_pray, CMD_TEMP2, CMD_beg, CMD_cringe,
-    CMD_cackle, CMD_fume, CMD_grovel, CMD_hop, CMD_nudge, CMD_peer, CMD_point,
-    CMD_ponder, CMD_punch, CMD_snarl, CMD_spank, CMD_steam, CMD_tackle,
-    CMD_taunt, CMD_think, CMD_whine, CMD_worship, CMD_yodel, CMD_brief,
-    CMD_wizlist, CMD_consider, CMD_group, CMD_restore, CMD_return, CMD_switch,
-    CMD_quaff, CMD_recite, CMD_users, CMD_pose, CMD_noshout, CMD_wizhelp,
-    CMD_credits, CMD_compact, CMD_temp3, CMD_deafen, CMD_slay,
-    CMD_wimpy, CMD_junk, CMD_deposit, CMD_withdraw, CMD_balance,
-    CMD_nohassle, CMD_system, CMD_pull, CMD_stealth, CMD_edit,
-    CMD_temp5, CMD_rsave, CMD_rload, CMD_track, CMD_siteban,
-    CMD_highfive, CMD_title, CMD_whozone, CMD_assist, CMD_attribute,
-    CMD_world, CMD_allspells, CMD_breath, CMD_show, CMD_debug,
-    CMD_invisible, CMD_gain=243, CMD_rrload, CMD_daydream, CMD_disarm,
-    CMD_bonk, CMD_chpwd, CMD_fill, CMD_imptest, CMD_shoot, CMD_silence,
-    CMD_teams, CMD_player, CMD_create, CMD_bamfin, CMD_bamfout,
-    CMD_vis, CMD_doorbash, CMD_mosh, CMD_alias, CMD_1, CMD_2, CMD_3,
-    CMD_4, CMD_5, CMD_6, CMD_7, CMD_8, CMD_9, CMD_0, CMD_swim, CMD_spy,
-    CMD_springleap, CMD_quiveringpalm, CMD_feigndeath, CMD_mount,
-    CMD_dismount, CMD_ride, CMD_sign, CMD_set, CMD_firstaid, CMD_log,
-    CMD_recall, CMD_event, CMD_disguise, CMD_climb, CMD_beep, CMD_bite,
-    CMD_redit, CMD_display, CMD_resize, CMD_TEMP6, CMD_TEMP7, CMD_auth,
-    CMD_noyell, CMD_gossip, CMD_noauction, CMD_auction, CMD_discon,
-    CMD_freeze, CMD_drain, CMD_oedit, CMD_report, CMD_interven,
-    CMD_gtell, CMD_raise, CMD_tap, CMD_liege, CMD_sneer, CMD_howl,
-    CMD_kneel, CMD_finge, CMD_pace, CMD_tongue, CMD_flex, CMD_ack,
-    CMD_eh, CMD_caress, CMD_cheer, CMD_jump, CMD_split, CMD_berserk, CMD_tan,
-    CMD_memorize, CMD_find, CMD_bellow, CMD_camouflage, CMD_carve, CMD_nuke,
-    CMD_skills, CMD_doorway, CMD_portal, CMD_summon, CMD_canibalize, CMD_flame,
-    CMD_aura, CMD_great, CMD_psionicinvisibility, CMD_blast,
-    CMD_psionicblast, CMD_medit, CMD_hypnotize, CMD_scry,
-    CMD_adrenalize, CMD_brew, CMD_meditate, CMD_forcerent, CMD_warcry,
-    CMD_layonhands, CMD_blessin, CMD_heroic, CMD_scan, CMD_shield,
-    CMD_notell, CMD_commands, CMD_ghost, CMD_speak, CMD_setsev,
-    CMD_esp, CMD_mail, CMD_check, CMD_receive, CMD_telepathy, CMD_mind,
-    CMD_twist, CMD_turn, CMD_lift, CMD_push, CMD_zload, CMD_zsave,
-    CMD_zclean, CMD_wrebuild, CMD_gwho, CMD_mforce, CMD_clone,
-    CMD_fire, CMD_throw, CMD_run, CMD_notch, CMD_load, CMD_spot,
-    CMD_view, CMD_afk, CMD_adore, CMD_agree, CMD_bleed, CMD_blink,
-    CMD_blow, CMD_blame, CMD_bark, CMD_bhug, CMD_bcheck, CMD_boast,
-    CMD_chide, CMD_compliment, CMD_ceyes, CMD_cears, CMD_cross,
-    CMD_console, CMD_calm, CMD_cower, CMD_confess, CMD_drool, CMD_grit,
-    CMD_greet, CMD_gulp, CMD_gloat, CMD_gaze, CMD_hum, CMD_hkiss,
-    CMD_ignore, CMD_interrupt, CMD_knock, CMD_listen, CMD_muse,
-    CMD_pinch, CMD_praise, CMD_plot, CMD_pie, CMD_pleade, CMD_pant,
-    CMD_rub, CMD_roll, CMD_recoil, CMD_roar, CMD_relax, CMD_stroke,
-    CMD_stretch, CMD_swave, CMD_sob, CMD_scratch, CMD_squirm, CMD_strangle,
-    CMD_scowl, CMD_shudder, CMD_strip, CMD_scoff, CMD_salute, CMD_scold,
-    CMD_stagger, CMD_toss, CMD_twirl, CMD_toast, CMD_tug, CMD_touch,
-    CMD_tremble, CMD_twitch, CMD_whimper, CMD_whap, CMD_wedge, CMD_apologize,
-    CMD_dmanage, CMD_drestrict, CMD_dlink, CMD_dunlink, CMD_dlist, CMD_dwho,
-    CMD_dgossip, CMD_dtell, CMD_dthink, CMD_sending, CMD_messenger,
-    CMD_promote, CMD_ooedit, CMD_whois, CMD_osave, CMD_msave, CMD_home,
-    CMD_wizset, CMD_ooc, CMD_noooc, CMD_wiznoooc, CMD_homer, CMD_grumble,
-    CMD_typoking, CMD_evilgrin, CMD_faint, CMD_ckiss, CMD_brb, CMD_ready,
-    CMD_wolfwhistle, CMD_wizreport, CMD_lgos, CMD_groove, CMD_wdisplay,
-    CMD_jam, CMD_donate, CMD_set_spy, CMD_reward, CMD_punish, CMD_spend,
-    CMD_seepoints, CMD_bugmail, CMD_setobjmax, CMD_setobjspeed, CMD_wclean,
-    CMD_glance, CMD_arena, CMD_startarena, CMD_whoarena, CMD_frolic,
-    CMD_land, CMD_launch, CMD_disengage, CMD_prompt, CMD_talk,
-    CMD_disagree, CMD_beckon, CMD_pounce, CMD_amaze, CMD_tank,
-    CMD_hshake, CMD_backhand, CMD_surrender, CMD_collapse, CMD_wince,
-    CMD_tag, CMD_trip, CMD_grunt, CMD_imitate, CMD_hickey, CMD_torture,
-    CMD_addict, CMD_adjust, CMD_anti, CMD_bbl, CMD_beam, CMD_challenge,
-    CMD_mutter, CMD_beat, CMD_moon, CMD_dream, CMD_shove, CMD_behead,
-    CMD_pinfo , CMD_gosmsg, CMD_yell, CMD_legsweep, CMD_charge, CMD_orebuild,
-    CMD_draw, CMD_zconv, CMD_bprompt, CMD_bid, CMD_resist,
-    CMD_style, CMD_fight, CMD_iwizlist, CMD_flux, CMD_bs,
-    CMD_autoassist, CMD_autoloot, CMD_autogold, CMD_autosplit,
-    CMD_autosac, CMD_autoexits, CMD_train, CMD_mend, CMD_quest,
-    CMD_qtrans, CMD_nooutdoor, CMD_dismiss, CMD_setsound,
-    CMD_induct, CMD_expel, CMD_chat, CMD_qchat, CMD_clanlist,
-    CMD_callsteed, CMD_top10, CMD_tweak, CMD_mrebuild, CMD_flurry,
-    CMD_flowerfist, CMD_sharpen, CMD_eval, CMD_reimburse,
-    CMD_remort, CMD_affects, CMD_board, CMD_disembark, CMD_embark,
-    CMD_plank, CMD_weapons, CMD_allweapons, CMD_setwtype, CMD_init,
-    CMD_hedit, CMD_chtextfile, CMD_retreat, CMD_zones, CMD_areas,
-    CMD_recallhome, CMD_scribe
-} CommandList;
 
 struct command_def {
     char           *name;
@@ -1465,10 +1288,6 @@ struct class_level_t {
 struct class_def {
     char           *abbrev;
     char           *name;
-    struct skillset *skills;
-    int             skillCount;
-    struct skillset *mainskills;
-    int             mainskillCount;
     struct class_level_t *levels;
     int             levelCount;
 };

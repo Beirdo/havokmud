@@ -9,39 +9,12 @@
 
 #include "structs.h"
 
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
 extern const struct race_type race_list[];
 
 extern char    *AttackType[];
 
 extern struct class_def *classes;
 int             classCount;
-
-extern struct skillset loreskills[];
-extern int             loreskillCount;
-extern struct skillset warmonkskills[];
-extern int             warmonkskillCount;
-extern struct skillset archerskills[];
-extern int             archerskillCount;
-extern struct skillset allninjaskills[];
-extern int             allninjaskillCount;
-extern struct skillset warninjaskills[];
-extern int             warninjaskillCount;
-extern struct skillset thfninjaskills[];
-extern int             thfninjaskillCount;
-extern struct skillset styleskillset[];
-extern int             styleskillCount;
-
 
 extern int      top_of_zone_table;
 extern int      top_of_mobt;

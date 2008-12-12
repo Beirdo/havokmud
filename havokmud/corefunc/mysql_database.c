@@ -2306,28 +2306,6 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
         classes[i].name = strdup(row[1]);
         classes[i].abbrev = strdup(row[2]);
 
-        /* 4, classId, 0 */
-        data = CREATEN(MYSQL_BIND, 2);
-        memset( data, 0, 2 * sizeof(MYSQL_BIND) );
-
-        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
-        bind_numeric( &data[1], 0, MYSQL_TYPE_LONG );
-        db_queue_query( 4, QueryTable, data, 2, result_load_classes_1, 
-                        (void *)&classes[i], mutex );
-
-        pthread_mutex_unlock( mutex );
-
-        /* 4, classId, 1 */
-        data = CREATEN(MYSQL_BIND, 2);
-        memset( data, 0, 2 * sizeof(MYSQL_BIND) );
-
-        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
-        bind_numeric( &data[1], 1, MYSQL_TYPE_LONG );
-        db_queue_query( 4, QueryTable, data, 2, result_load_classes_2, 
-                        (void *)&classes[i], mutex );
-
-        pthread_mutex_unlock( mutex );
-
         /* 5 */
         data = CREATEN(MYSQL_BIND, 1);
         memset( data, 0, 1 * sizeof(MYSQL_BIND) );
@@ -3017,75 +2995,6 @@ void result_get_report( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
         report[i].character = strdup(row[1]);
         report[i].roomNum   = atoi(row[2]);
         report[i].report    = strdup(row[3]);
-    }
-}
-
-void result_load_classes_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                            long insertid )
-{
-    int                 count;
-    struct class_def   *cls;
-    int                 i;
-    MYSQL_ROW           row;
-
-    cls = (struct class_def *)arg;
-    
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        /* No result for this query */
-        cls->skillCount = 0;
-        cls->skills = NULL;
-        return;
-    } 
-
-    cls->skillCount = count;
-    cls->skills = CREATEN(struct skillset, count);
-    if( !cls->skills ) {
-        cls->skillCount = 0;
-        LogPrintNoArg( LOG_CRIT, "Dumping skills due to lack of memory" );
-        exit(1);
-    }
-    
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-        cls->skills[i].name     = strdup(row[0]);
-        cls->skills[i].skillnum = atoi(row[1]);
-        cls->skills[i].level    = atoi(row[2]);
-        cls->skills[i].maxlearn = atoi(row[3]);
-    }
-}
-
-void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                            long insertid )
-{
-    int                 count;
-    struct class_def   *cls;
-    int                 i;
-    MYSQL_ROW           row;
-
-    cls = (struct class_def *)arg;
-
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        /* No result for this query */
-        cls->mainskillCount = 0;
-        cls->mainskills = NULL;
-        return;
-    }
-    
-    cls->mainskillCount = count;
-    cls->mainskills = CREATEN(struct skillset, count);
-
-    if( !cls->mainskills ) {
-        cls->mainskillCount = 0;
-        LogPrintNoArg( LOG_CRIT, "Dumping mainskills due to lack of memory" );
-        exit( 1 );
-    } 
-    
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-        cls->mainskills[i].name     = strdup(row[0]);
-        cls->mainskills[i].skillnum = atoi(row[1]);
-        cls->mainskills[i].level    = atoi(row[2]);
-        cls->mainskills[i].maxlearn = atoi(row[3]);
     }
 }
 
