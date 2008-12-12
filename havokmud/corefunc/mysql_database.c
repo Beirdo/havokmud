@@ -56,9 +56,6 @@ static char ident[] _UNUSED_ =
 struct class_def *classes;
 int             classCount;
 
-struct skill_def *skills;
-int             skillCount;
-
 struct dir_data *direction;
 int             directionCount;
 
@@ -87,21 +84,13 @@ int                 languageCount;
 /* Internal protos */
 char *db_quote(char *string);
 void db_load_classes(void);
-void db_load_skills(void);
 void db_load_structures(void);
-void db_load_messages(void);
 void db_load_bannedUsers(void);
-void db_load_socials(void);
-void db_load_poses(void);
 void db_load_races(void);
 void db_load_languages(void);
 
 
 void chain_load_classes( MYSQL_RES *res, QueryItem_t *item );
-void chain_load_skills( MYSQL_RES *res, QueryItem_t *item );
-void chain_load_messages( MYSQL_RES *res, QueryItem_t *item );
-void chain_load_socials( MYSQL_RES *res, QueryItem_t *item );
-void chain_load_poses( MYSQL_RES *res, QueryItem_t *item );
 void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_races( MYSQL_RES *res, QueryItem_t *item );
 void chain_load_languages( MYSQL_RES *res, QueryItem_t *item );
@@ -118,8 +107,6 @@ void result_load_classes_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                             long insertid );
 void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                             long insertid );
-void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                           long insertid );
 void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                                long insertid );
 void result_load_structures_2( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
@@ -193,21 +180,25 @@ QueryTable_t    QueryTable[] = {
     /* 3 */
     { "SELECT classId, className, classAbbrev FROM classes ORDER BY classId "
       "ASC", chain_load_classes, NULL, FALSE },
+#if 0
     /* 4 */
     { "SELECT skills.skillName, skills.skillID, classSkills.minLevel, "
       "classSkills.maxTeach FROM skills, classSkills "
       "WHERE skills.skillId = classSkills.skillId AND classSkills.classId = ? "
       "AND classSkills.mainSkill = ? ORDER BY skills.skillName ASC", NULL, 
       NULL, FALSE },
+#endif
     /* 5 */
     { "SELECT level, thaco, maleTitle, femaleTitle, minExp FROM classLevels "
       "WHERE classId = ? ORDER BY level", NULL, NULL, FALSE },
+#if 0
     /* 6 */
     { "SELECT skillId, skillName, skillType FROM skills ORDER BY skillId ASC",
       chain_load_skills, NULL, FALSE },
     /* 7 */
     { "SELECT text FROM skillMessages WHERE `skillId` = ? AND `msgId` = ? AND "
       "`index` = ?", NULL, NULL, FALSE },
+#endif
     /* 8 */
     { "SELECT forward, reverse, trapBits, exit, listExit, direction, "
       "description FROM directions ORDER BY forward ASC", NULL, NULL, FALSE },
@@ -219,17 +210,21 @@ QueryTable_t    QueryTable[] = {
     /* 10 */
     { "SELECT sectorType, mapChar, moveLoss FROM sectorType ORDER BY "
       "sectorId ASC", NULL, NULL, FALSE },
+#if 0
     /* 11 */
     { "SELECT DISTINCT skillId FROM skillMessages WHERE msgId = ? ORDER BY "
       "skillId", chain_load_messages, NULL, FALSE },
+#endif
     /* 12 */
     { "SELECT name FROM bannedName", NULL, NULL, FALSE },
+#if 0
     /* 13 */
     { "SELECT socialId, hide, minPosition FROM socials ORDER BY socialId",
       chain_load_socials, NULL, FALSE },
     /* 14 */
     { "SELECT DISTINCT skillId FROM skillMessages WHERE msgId = 5 OR "
       "msgId = 6 ORDER BY skillId", chain_load_poses, NULL, FALSE },
+#endif
     /* 15 */
     { "SELECT `vnum`, `procedure` FROM procAssignments WHERE `procType` = ? "
       "ORDER BY `vnum`", chain_assign_specials, NULL, FALSE },
@@ -686,12 +681,8 @@ void db_clean_report(int reportId)
 void db_initial_load(void)
 {
     db_load_classes();
-    db_load_skills();
     db_load_structures();
-    db_load_messages();
     db_load_bannedUsers();
-    db_load_socials();
-    db_load_poses();
     db_load_races();
     db_load_languages();
 }
@@ -703,13 +694,6 @@ void db_load_classes(void)
     db_queue_query( 3, QueryTable, NULL, 0, NULL, NULL, NULL );
 }
 
-
-void db_load_skills(void)
-{
-    LogPrintNoArg(LOG_CRIT, "Loading skills[] from SQL");
-
-    db_queue_query( 6, QueryTable, NULL, 0, NULL, NULL, NULL );
-}
 
 void db_load_structures(void)
 {
@@ -2168,31 +2152,6 @@ void db_load_rooms( BalancedBTree_t *tree )
  * Query chaining functions
  */
 
-void chain_update_nick( MYSQL_RES *res, QueryItem_t *item )
-{
-    int             count;
-    MYSQL_BIND     *data;
-    MYSQL_BIND      temp[2];
-
-    data = item->queryData;
-
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        count = 0;
-    }
-
-    memcpy( temp, &data[2], 2 * sizeof(MYSQL_BIND) );
-    memcpy( &data[2], &data[0], 2 * sizeof(MYSQL_BIND) );
-    memcpy( &data[0], temp, 2 * sizeof(MYSQL_BIND) );
-
-    if( count ) {
-        /* update */
-        db_queue_query( 4, QueryTable, data, 4, NULL, NULL, NULL );
-    } else {
-        /* insert */
-        db_queue_query( 5, QueryTable, data, 4, NULL, NULL, NULL );
-    }
-}
-
 
 void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
 {
@@ -2242,252 +2201,8 @@ void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
     LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
 }
 
-void chain_load_skills( MYSQL_RES *res, QueryItem_t *item )
-{
-    int                 count;
-    int                 i,
-                        j;
-    int                 skillId;
-    MYSQL_ROW           row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
-
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        /* No skills!? */
-        LogPrintNoArg( LOG_CRIT, "No skills defined in the database!" );
-        exit(1);
-    }
-
-    mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
-
-    skills = CREATEN(struct skill_def, count + 1);
-    if( !skills ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating skills[]" );
-        exit(1);
-    }
-
-    /* Leave skill 0 emtpy */
-    memset( skills, 0, (count + 1) * sizeof(struct skill_def) );
-
-    for( i = 1; i <= count; i++ ) {
-        row = mysql_fetch_row(res);
-        skillId = atoi(row[0]);
-        skills[i].skillId   = skillId;
-        skills[i].name      = strdup(row[1]);
-        skills[i].skillType = atoi(row[2]);
-
-        for(j = 0; j < SKILL_MSG_COUNT; j++) {
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], skillId, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], 1, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
-            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
-                            (void *)skills[i].message[j], mutex );
-            pthread_mutex_unlock( mutex );
-        }
-    }
-    
-    pthread_mutex_destroy( mutex );
-    memfree( mutex );
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading skills[] from SQL");
-}
-
-void chain_load_messages( MYSQL_RES *res, QueryItem_t *item )
-{
-    int                 i,
-                        j,
-                        tmp;
-    int                 count;
-    int                 count2;
-    int                 type;
-
-    MYSQL_ROW           row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
-    struct message_list *msgs;
-
-    static char        *types[] = { "", "", "fight", "" };
-
-    type = *(int *)item->queryData[0].buffer;
-
-    if( !res || !(count = mysql_num_rows(res)) ) {
-        LogPrint( LOG_CRIT, "No %s messages defined in the database!",
-                  types[type] );
-        exit(1);
-    }
-
-    mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
-
-    msgs = CREATEN(struct message_list, count);
-    if( !msgs ) {
-        LogPrint( LOG_CRIT, "Out of memory allocating %sMessages[]", 
-                            types[type] );
-        exit(1);
-    }
-
-    if( type == 2 ) {
-        fightMessages = msgs;
-        fightMessageCount = count;
-        count2 = FIGHT_MSG_COUNT;
-    } else {
-        count2 = 0;
-    }
-
-    memset( msgs, 0, count * sizeof(struct message_list) );
-
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-        if( type == 2 ) {
-            msgs[i].a_type = tmp;
-        }
-
-        for( j = 0; j < count2; j++ ) {
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], type, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
-            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
-                            (void *)msgs[i].msg[j], mutex );
-            pthread_mutex_unlock( mutex );
-        }
-    }
-    
-    pthread_mutex_destroy( mutex );
-    memfree( mutex );
-
-    LogPrint(LOG_CRIT, "Finished loading %s messages from SQL", types[type] );
-}
-
-void chain_load_socials( MYSQL_RES *res, QueryItem_t *item )
-{
-    int             i,
-                    j;
-    int             tmp;
-
-    MYSQL_ROW       row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
-
-    if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg( LOG_CRIT, "No social messages defined in the "
-                                 "database!" );
-        exit(1);
-    }
-
-    socialMessages = CREATEN(struct social_messg, socialMessageCount);
-    if( !socialMessages ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating socialMessages[]" );
-        exit(1);
-    }
-
-    memset( socialMessages, 0, 
-            socialMessageCount * sizeof(struct social_messg) );
-
-    mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
 
 
-    for (i = 0; i < socialMessageCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-        socialMessages[i].act_nr = tmp;
-        socialMessages[i].hide = atoi(row[1]);
-        socialMessages[i].min_victim_position = atoi(row[2]);
-
-        for( j = 0; j < SOCIAL_MSG_COUNT; j++ ) {
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], 3, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
-            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
-                            (void *)socialMessages[i].msg[j], mutex );
-            pthread_mutex_unlock( mutex );
-        }
-    }
-    
-    pthread_mutex_destroy( mutex );
-    memfree( mutex );
-
-    LogPrintNoArg(LOG_CRIT, "Finishing loading social messages from SQL");
-}
-
-void chain_load_poses( MYSQL_RES *res, QueryItem_t *item )
-{
-    int             i,
-                    j;
-    int             tmp;
-
-    MYSQL_ROW       row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
-
-    if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
-        LogPrintNoArg(LOG_CRIT, "No pose messages defined in the database!" );
-        exit(1);
-    }
-
-    poseMessages = CREATEN(struct pose_type, poseMessageCount);
-    if( !poseMessages ) {
-        LogPrintNoArg(LOG_CRIT, "Out of memory allocating poseMessages[]" );
-        exit(1);
-    }
-
-    memset( poseMessages, 0, poseMessageCount * sizeof(struct pose_type) );
-
-    mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
-
-    for (i = 0; i < poseMessageCount; i++) {
-        row = mysql_fetch_row(res);
-        tmp = atoi(row[0]);
-        poseMessages[i].level = tmp;
-
-        poseMessages[i].poser_msg = CREATEN(char *, classCount);
-        poseMessages[i].room_msg  = CREATEN(char *, classCount);
-        if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
-            LogPrintNoArg(LOG_CRIT, "Out of memory allocating poses" );
-            exit(1);
-        }
-
-        for( j = 0; j < classCount; j++ ) {
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], 5, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
-            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
-                            (void *)poseMessages[i].poser_msg[j], mutex );
-            pthread_mutex_unlock( mutex );
-
-
-            data = CREATEN(MYSQL_BIND, 3);
-            memset( data, 0, 3 * sizeof(MYSQL_BIND) );
-
-            bind_numeric( &data[0], tmp, MYSQL_TYPE_LONG );
-            bind_numeric( &data[1], 6, MYSQL_TYPE_LONG );
-            bind_numeric( &data[2], j+1, MYSQL_TYPE_LONG );
-            db_queue_query( 7, QueryTable, data, 3, result_load_messages,
-                            (void *)poseMessages[i].room_msg[j], mutex );
-            pthread_mutex_unlock( mutex );
-        }
-    }
-
-    pthread_mutex_destroy( mutex );
-    memfree( mutex );
-
-    LogPrintNoArg(LOG_CRIT, "Finishing loading pose messages from SQL");
-}
 
 void chain_assign_specials( MYSQL_RES *res, QueryItem_t *item )
 {
@@ -2955,19 +2670,6 @@ void result_load_classes_3( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     }
 }
 
-void result_load_messages( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
-                           long insertid )
-{
-    char               *msg;
-    MYSQL_ROW           row;
-
-    msg = (char *)arg;
-
-    if( res && mysql_num_rows(res) ) {
-        row = mysql_fetch_row(res);
-        msg = strdup(row[0]);
-    }
-}
 
 void result_load_structures_1( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                                long insertid )

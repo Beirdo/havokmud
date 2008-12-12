@@ -38,7 +38,6 @@
 #include "structs.h"
 #include "newstructs.h"
 #include "utils.h"
-#include "trap.h"
 #include "logging.h"
 #include "interthread.h"
 #include "balanced_btree.h"
@@ -658,22 +657,24 @@ struct obj_data *objectGetInCharOrRoom(struct char_data *ch, char *name)
 
 bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
 {
+#if 0
     int             num = 0;
+#endif
 
     if (IS_IMMORTAL(ch)) {
         return (TRUE);
     }
 
+#if 0
     if (ITEM_TYPE(obj) == ITEM_TYPE_TRAP && GET_TRAP_CHARGES(obj) > 0) {
         num = number(1, 101);
-#if 0
         if (CanSeeTrap(num, ch)) {
             return (TRUE);
         } else {
             return (FALSE);
         }
-#endif
     }
+#endif
 
     if (ch->specials.blind) {
         return (FALSE);

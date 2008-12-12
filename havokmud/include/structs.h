@@ -690,37 +690,6 @@ struct char_special_data {
     int             remortclass;
 };
 
-/*
- * skill_data flags
- */
-#define SKILL_KNOWN                 BV(0)
-#define SKILL_KNOWN_CLERIC          BV(1)
-#define SKILL_KNOWN_MAGE            BV(2)
-#define SKILL_KNOWN_SORCERER        BV(3)
-#define SKILL_KNOWN_THIEF           BV(4)
-#define SKILL_KNOWN_MONK            BV(5)
-#define SKILL_KNOWN_DRUID           BV(6)
-#define SKILL_KNOWN_WARRIOR         BV(7)
-#define SKILL_KNOWN_BARBARIAN       BV(8)
-#define SKILL_KNOWN_PALADIN         BV(9)
-#define SKILL_KNOWN_RANGER          BV(10)
-#define SKILL_KNOWN_PSI             BV(11)
-#define SKILL_KNOWN_NECROMANCER     BV(12)
-
-/*
- * skill_data special
- */
-#define SKILL_SPECIALIZED       BV(0)
-#define SKILL_UNDEFINED         BV(1)
-#define SKILL_UNDEFINED2        BV(2)
-
-struct char_skill_data {
-    int             learned;    /* % chance for success 0 = not learned */
-    long            flags;      /* SKILL KNOWN? bit settings */
-    long            special;    /* spell/skill specializations */
-    int             nummem;     /* number of times this spell is memorized */
-};
-
 struct follow_type {
     struct char_data *follower;
     struct follow_type *next;
@@ -773,7 +742,6 @@ struct char_data {
     /*
      * monitor these three
      */
-    struct char_skill_data *skills;     /* Skills */
     struct obj_data *equipment[MAX_WEAR];       /* Equipment array */
     struct obj_data *carrying;  /* Head of list */
     /*
@@ -833,44 +801,6 @@ struct weather_data {
     int             change;     /* How fast and what way does it change. */
     WeatherSky_t    sky;        /* How is the sky. */
     WeatherLight_t  sunlight;   /* And how much sun. */
-};
-
-
-/*
- ***********************************************************************
- *  file element for object file. BEWARE: Changing it will ruin the file  *
- *********************************************************************** */
-
-
-#define MAX_OBJ_SAVE 200        /* Used in OBJ_FILE_U *DO*NOT*CHANGE* */
-#ifndef MAX_OBJ_AFFECT
-#include "newstructs.h"
-#endif
-
-struct obj_file_elem {
-    int             item_number;
-
-    int             value[4];
-    int             extra_flags;
-    int             weight;
-    int             timer;
-    long            bitvector;
-    char            name[128];  /* big, but not horrendously so */
-    char            sd[128];
-    char            desc[256];
-    byte            wearpos;
-    byte            depth;
-};
-
-struct obj_file_u {
-    char            owner[20];  /* Name of player */
-    int             gold_left;  /* Number of goldcoins left at owner */
-    int             total_cost; /* The cost for all items, per day */
-    long            last_update;        /* Time in seconds, when last
-                                         * updated */
-    long            minimum_stay;       /* For stasis */
-    int             number;     /* number of objects */
-    struct obj_file_elem objects[MAX_OBJ_SAVE];
 };
 
 
@@ -996,39 +926,6 @@ struct class_def {
     int             levelCount;
 };
 
-#define MSG_SKILL_WEAR_OFF              0
-#define MSG_SKILL_WEAR_OFF_ROOM         1
-#define MSG_SKILL_WEAR_OFF_SOON         2
-#define MSG_SKILL_WEAR_OFF_SOON_ROOM    3
-#define MSG_SKILL_DESCRIPTIVE           4
-#define SKILL_MSG_COUNT                 5
-
-#define MSG_FIGHT_DIE_ATTACKER          0
-#define MSG_FIGHT_DIE_VICTIM            1
-#define MSG_FIGHT_DIE_ROOM              2
-#define MSG_FIGHT_MISS_ATTACKER         3
-#define MSG_FIGHT_MISS_VICTIM           4
-#define MSG_FIGHT_MISS_ROOM             5
-#define MSG_FIGHT_HIT_ATTACKER          6
-#define MSG_FIGHT_HIT_VICTIM            7
-#define MSG_FIGHT_HIT_ROOM              8
-#define MSG_FIGHT_GOD_ATTACKER          9
-#define MSG_FIGHT_GOD_VICTIM            10
-#define MSG_FIGHT_GOD_ROOM              11
-#define FIGHT_MSG_COUNT                 12
-
-struct skill_def {
-    int            skillId;
-    int            skillType;
-    char          *name;
-    char          *message[SKILL_MSG_COUNT];
-};
-
-
-struct message_list {
-    int             a_type;     /* Attack type */
-    char           *msg[FIGHT_MSG_COUNT];
-};
 
 
 struct pc_race_choice {

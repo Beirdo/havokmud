@@ -283,7 +283,9 @@
 
 #define EXIT_NUM(room_num, door)  (roomFindNum(room_num)->dir_option[door])
 
+#if 0
 int             exit_ok(struct room_direction_data *, struct room_data **);
+#endif
 
 #define CAN_GO(ch, door) (EXIT(ch,door) && roomFindNum(EXIT(ch,door)->to_room) \
                           && !IS_SET(EXIT(ch, door)->exit_info, EX_CLOSED))
