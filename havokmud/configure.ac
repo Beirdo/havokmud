@@ -15,7 +15,7 @@ AC_PATH_PROG(CUT, cut)
 dnl check package version - formatted like: "1.11.23 July 12, 2004"
 AC_MSG_CHECKING(version of the package)
 
-VERSION=`cat version.h | grep "define VERSION" | $CUT -d '"' -f 2`
+VERSION=`cat include/version.h | grep "define VERSION" | $CUT -d '"' -f 2`
 VERSIONMAJOR=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $1)}'`
 VERSIONMINOR=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $2)}'`
 VERSIONPATCH=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $3)}'`

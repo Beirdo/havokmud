@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "config.h"
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
