@@ -289,7 +289,9 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+#if 0
     db_report_entry( REPORT_IDEA, ch, argument );
+#endif
 
     SendOutput( player, "Ok. Thanks.\n\r" );
 }
@@ -313,7 +315,9 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+#if 0
     db_report_entry( REPORT_TYPO, ch, argument );
+#endif
 
     SendOutput( player, "Ok. thanks.\n\r" );
 }
@@ -337,7 +341,9 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+#if 0
     db_report_entry( REPORT_BUG, ch, argument );
+#endif
 
     SysLogPrint( LOG_CRIT, "BUG Report by %s [%ld]: %s", GET_NAME(ch), 
                            ch->in_room, argument);
@@ -361,7 +367,9 @@ char *view_newhelp(int reportId)
     lengthAvail = 0;
     report = NULL;
 
+#if 0
     report = db_get_report( REPORT_HELP );
+#endif
     count = report->resCount;
     if( !count ) {
         count++;
@@ -412,7 +420,9 @@ char *view_report(int reportId)
         return( wmotd ? strdup( wmotd ) : NULL );
     }
 
+#if 0
     report = db_get_report( reportId );
+#endif
     count = report->resCount;
     if( !count ) {
         count++;

@@ -87,7 +87,9 @@ void initializeObjects( void )
     objectMasterTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
     objectKeywordTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
     objectTypeTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
+#if 0
     db_load_object_tree( objectMasterTree );
+#endif
 }
 
 struct index_data *objectIndex( int vnum )
@@ -211,10 +213,12 @@ struct obj_data *objectRead(int nr)
 
     objectClear(obj);
 
+#if 0
     if( !db_read_object(obj, nr, -1, -1, -1) ) {
         free(obj);
         return(NULL);
     }
+#endif
 
     obj->in_room = NOWHERE;
     obj->next_content = NULL;
@@ -1068,6 +1072,7 @@ void objectSaveForChar(struct char_data *ch, int delete)
         ch->carrying = NULL;
     }
 
+#if 0
     /* Clear out any objects above the last item */
     db_clear_objects( ch->playerId, -1, itemNum );
 
@@ -1075,6 +1080,7 @@ void objectSaveForChar(struct char_data *ch, int delete)
      * write the aliases and bamfs 
      */
     db_write_char_extra(ch);
+#endif
 }
 
 /**
@@ -1139,7 +1145,9 @@ int objectStore(struct obj_data *obj, PlayerStruct_t *player, int playerId,
         weight = contained_weight(obj);
 
         GET_OBJ_WEIGHT(obj) -= weight;
+#if 0
         db_save_object(obj, playerId, roomId, itemNum, parentItem);
+#endif
         GET_OBJ_WEIGHT(obj) += weight;
         newParent = itemNum;
         itemNum++;
@@ -1240,7 +1248,9 @@ void load_char_objs(struct char_data *ch)
     /*
      * load in aliases and poofs first 
      */
+#if 0
     db_load_char_extra(ch);
+#endif
 
 
     /*
@@ -1250,7 +1260,9 @@ void load_char_objs(struct char_data *ch)
     rentCost = 0;
     minStay = 0;
     lastUpdate = 0;
+#if 0
     db_get_char_rent( ch->playerId, &gold, &rentCost, &minStay, &lastUpdate );
+#endif
 
     /*
      * if the character has been out for 12 real hours, they are fully
@@ -1322,23 +1334,29 @@ void load_char_objs(struct char_data *ch)
             }
         }
 
+#if 0
         if (db_has_mail((char *) GET_NAME(ch))) {
             SendOutput( player, "$c0013[$c0015The scribe$c0013] bespeaks you: "
                                 "'You have mail waiting!'");
             ch->player.has_mail = TRUE;
         }
+#endif
     }
 
     if (found) {
         /*
          * Get the objects from the database
          */
+#if 0
         db_load_char_objects(ch);
+#endif
     } else {
         /*
          * Kiss goodbye to your objects, punk, you deadbeated.
          */
+#if 0
         db_clear_objects( ch->playerId, -1, 0 );
+#endif
     }
 
     /*
@@ -1365,7 +1383,9 @@ void save_room(int room)
                               FALSE);
 
     /* Clear out any objects above the last item */
+#if 0
     db_clear_objects( -1, room, itemNum );
+#endif
 #endif
 }
 

@@ -84,6 +84,10 @@ char           *Sex[] = { "Neutral", "Male", "Female" };
 bool parseName(char *arg, char *name);
 int checkAssName(char *name);
 
+struct banned_user *bannedUsers = NULL; 
+int             bannedUserCount; 
+
+
 /**
  * @brief Trims the leading spaces and copies the name
  * @param arg input string
@@ -203,7 +207,6 @@ int checkAssName(char *name)
 void show_menu(PlayerStruct_t *player)
 {
     struct char_data   *ch;
-    char                cls[50];
 
     ch = player->charData;
 
@@ -225,6 +228,7 @@ void show_menu(PlayerStruct_t *player)
                            races[GET_RACE(ch)].racename);
 #endif
 
+#if 0
     cls[0] = '\0';
     if (!(strcmp(cls, ""))) {
         sprintf(cls, "None Selected");
@@ -250,6 +254,7 @@ void show_menu(PlayerStruct_t *player)
         SendOutput(player, "$c00156) $c0012Character Stats.[$c0015Done$c0012]"
                            "\n\r");
     }
+#endif
 
     SendOutput(player, "$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r",
                        (GET_ALIGNMENT(ch) ?
@@ -753,7 +758,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                             strdup((char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
 
+#if 0
                 db_write_char_extra(ch);
+#endif
                 EnterState(player, STATE_PLAYING);
                 if( IS_IMMORTAL(ch) ) {
                     player->handlingQ = InputImmortQ;
@@ -765,7 +772,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 #endif
 
+#if 0
         db_load_char_extra(ch);
+#endif
         if (ch->specials.hostip == NULL) {
             if (!IS_IMMORTAL(ch) ||
                 ch->invis_level <= 58) {
@@ -792,7 +801,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         ProtectedDataUnlock(player->connection->hostName);
         ch->last_tell = NULL;
 
+#if 0
         db_write_char_extra(ch);
+#endif
         EnterState(player, STATE_SHOW_MOTD);
         break;
 

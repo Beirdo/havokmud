@@ -335,7 +335,9 @@ int main(int argc, char **argv)
      */
     close(0);
 
+#if 0
     db_initial_load();
+#endif
 
     descNameTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
     descNumTree  = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
@@ -368,9 +370,6 @@ void boot_db(void)
 
     LogPrintNoArg( LOG_CRIT, "Resetting the game time:");
     reset_time();
-
-    LogPrintNoArg( LOG_CRIT, "Reading newsfile, credits, info and motd.");
-    db_load_textfiles();
 
     LogPrintNoArg( LOG_CRIT, "Initializing Script Files.");
 
@@ -424,18 +423,24 @@ void boot_db(void)
     LogPrintNoArg( LOG_CRIT, "Assigning function pointers:");
     if (!no_specials) {
         LogPrintNoArg( LOG_CRIT, "   Mobiles.");
+#if 0
         assign_mobiles();
+#endif
 
 #if 0
         boot_the_shops();
         assign_the_shopkeepers();
 #endif
 
+#if 0
         LogPrintNoArg( LOG_CRIT, "   Objects.");
         assign_objects();
+#endif
 
+#if 0
         LogPrintNoArg( LOG_CRIT, "   Room.");
         assign_rooms();
+#endif
     }
 
 #if 0

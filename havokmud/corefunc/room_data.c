@@ -56,7 +56,9 @@ void            setup_dir(FILE * fl, long room, int dir);
 void initializeRooms( void )
 {
     roomTree = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
+#if 0
     db_load_rooms(roomTree);
+#endif
 }
 
 
