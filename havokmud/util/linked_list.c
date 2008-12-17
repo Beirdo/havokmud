@@ -33,6 +33,7 @@
 #include "memory.h"
 #include "linked_list.h"
 #include "logging.h"
+#include "interthread.h"
 #include <stdlib.h>
 
 
@@ -99,7 +100,7 @@ LinkedList_t *LinkedListCreate( LinkedList_t *list )
 
     list->head = NULL;
     list->tail = NULL;
-    pthread_mutex_init( &list->mutex, NULL );
+    thread_mutex_init( &list->mutex );
     list->locked = FALSE;
     list->items = 0;
 

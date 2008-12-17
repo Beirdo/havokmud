@@ -57,6 +57,11 @@ void StartThreads( void );
 void boot_db(void);
 void reset_time(void);
 
+#if 0
+extern char    *optarg;
+extern int      optind;
+#endif
+
 /* 
  * max number of descriptors (connections) 
  * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
@@ -154,8 +159,6 @@ void display_usage(char *progname)
 void handleCmdLineArgs(int argc, char **argv)
 {
     int             opt;
-    extern char    *optarg;
-    extern int      optind;
 
     mud_port = -1;
 

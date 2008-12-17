@@ -34,6 +34,7 @@
 #include "protected_data.h"
 #include "logging.h"
 #include <stdlib.h>
+#include "interthread.h"
 
 
 /**
@@ -86,7 +87,7 @@ ProtectedData_t *ProtectedDataCreate( void )
         return( NULL );
     }
 
-    pthread_mutex_init( &blob->mutex, NULL );
+    thread_mutex_init( &blob->mutex );
     blob->data = NULL;
 
     return( blob );

@@ -118,13 +118,11 @@ void *ConnectionThread( void *arg )
     }
 
     on = 1;
-#ifndef __CYGWIN__
     /** Todo: Apparently, Cygwin's REUSEADDR may be borked, must test */
     if( setsockopt( listenFd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on) ) ) {
         perror("Setting socket to reuse");
         exit(1);
     }
-#endif
 
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;

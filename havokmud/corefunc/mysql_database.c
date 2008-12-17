@@ -104,7 +104,7 @@ char *db_get_setting(char *name)
     }
 
     mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
+    thread_mutex_init( mutex );
 
     data = CREATEN(MYSQL_BIND, 1);
     memset(data, 0, 1 * sizeof(MYSQL_BIND));
@@ -154,7 +154,7 @@ PlayerAccount_t *db_load_account( char *email )
     }
 
     mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
+    thread_mutex_init( mutex );
 
     data = CREATEN(MYSQL_BIND, 1);
     memset(data, 0, 1 * sizeof(MYSQL_BIND));
@@ -270,7 +270,7 @@ void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     }
     row = mysql_fetch_row(res);
 
-    value = memstrdup(row[0]);
+    value = memstrlink(row[0]);
     *resp = value;
 }
 

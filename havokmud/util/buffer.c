@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include "logging.h"
+#include "interthread.h"
 
 /**
  * @file
@@ -77,7 +78,7 @@ BufferObject_t * BufferCreate( uint32 size )
 
     /* Initialize the mutex */
     buffer->mutex = CREATE(pthread_mutex_t);
-    status = pthread_mutex_init( buffer->mutex, NULL );
+    status = thread_mutex_init( buffer->mutex );
 
     /* Initialize the condition variables */
     buffer->full = FALSE;

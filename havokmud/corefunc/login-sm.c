@@ -791,14 +791,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if (!IS_IMMORTAL(ch) ||
                 ch->invis_level <= 58) {
                 ProtectedDataLock(player->connection->hostName);
-                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", GET_NAME(ch),
+                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", 
+                         player->account->email,
                          (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
             }
         } else if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
             ProtectedDataLock(player->connection->hostName);
             LogPrint(LOG_INFO, "%s[%s] has connected - Last connected from[%s]",
-                     GET_NAME(ch), 
+                     player->account->email, 
                      (char *)player->connection->hostName->data,
                      ch->specials.hostip);
             ProtectedDataUnlock(player->connection->hostName);

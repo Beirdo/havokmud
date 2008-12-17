@@ -159,6 +159,7 @@ void db_check_schema_main( void );
 /*
  * From thread_api.c
  */
+int thread_mutex_init( pthread_mutex_t *mutex );
 void thread_create( pthread_t *pthreadId, void * (*routine)(void *),  
                     void *arg, char *name, ThreadCallback_t *callbacks ); 
 void thread_register( pthread_t *pthreadId, char *name,  

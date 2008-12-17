@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "logging.h"
+#include "interthread.h"
 
 /**
  * @file
@@ -126,7 +127,7 @@ BalancedBTree_t *BalancedBTreeCreate( BalancedBTree_t *btree,
         break;
     }
 
-    pthread_mutex_init( &btree->mutex, NULL );
+    thread_mutex_init( &btree->mutex );
 
     return( btree );
 }

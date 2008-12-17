@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include "logging.h"
+#include "interthread.h"
 #include <string.h>
 
 
@@ -108,7 +109,7 @@ QueueObject_t * QueueCreate( uint32 numElements )
 
     /* Initialize the mutex */
     queue->mutex = CREATE(pthread_mutex_t);
-    status = pthread_mutex_init( queue->mutex, NULL );
+    status = thread_mutex_init( queue->mutex );
 
     /* Initialize the condition variables */
     queue->full = FALSE;

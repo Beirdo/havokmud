@@ -67,6 +67,21 @@ char foregroundColors[][8] = { FG_BLACK, FG_LT_GRAY, FG_RED, FG_GREEN, FG_BROWN,
 
 void ThreadRecurseKill( BalancedBTreeItem_t *node, int signum );
 
+int thread_mutex_init( pthread_mutex_t *mutex )
+{
+    pthread_mutexattr_t attr;
+    int                 status;
+
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
+
+    status = pthread_mutex_init( mutex, &attr);
+
+    pthread_mutexattr_destroy(&attr);
+
+    return( status );
+}
+
 void thread_create( pthread_t *pthreadId, void * (*routine)(void *), 
                     void *arg, char *name, ThreadCallback_t *callbacks )
 {
