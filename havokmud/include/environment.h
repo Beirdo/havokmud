@@ -38,6 +38,8 @@
 #ifndef environment_h_
 #define environment_h_
 
+#include "config.h"
+
 #ifdef __GNUC__
 /* We are compiling with GCC */
 

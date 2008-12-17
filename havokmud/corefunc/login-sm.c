@@ -51,6 +51,7 @@ static char ident[] _UNUSED_ =
 
 
 #define MAX_NAME_LENGTH 20
+#define MAX_EMAIL_LENGTH 300
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void show_menu(PlayerStruct_t *player);
@@ -81,12 +82,58 @@ unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
+bool parseEmail(char *arg, char *name);
 bool parseName(char *arg, char *name);
 int checkAssName(char *name);
 
 struct banned_user *bannedUsers = NULL; 
 int             bannedUserCount; 
 
+
+/**
+ * @brief Trims the leading spaces and copies the name
+ * @param arg input string
+ * @param name output name
+ * @return FALSE if the email is invalid, TRUE if valid
+ *
+ * An invalid email is indicated if the email is too long, or has non-alpha 
+ * characters in it (other than @, _, - and .), or is empty
+ */
+bool parseEmail(char *arg, char *name)
+{
+    int             i;
+    char           *begin;
+
+    /*
+     * skip whitespaces
+     */
+    arg = skip_spaces(arg);
+    if( !arg ) {
+        return( FALSE );
+    }
+    begin = arg;
+
+    for (i = 0; (*name = *arg); arg++, i++, name++) {
+        if ((*arg < 0) || !(isalpha((int)*arg) || *arg == '@' || *arg == '.' ||
+                            *arg == '_' || *arg == '-') ||
+            i > MAX_EMAIL_LENGTH) {
+            return( FALSE );
+        }
+    }
+
+    if (!i) {
+        return ( FALSE );
+    }
+
+    if( !(arg = strchr(begin, '@')) ) {
+        return( FALSE );
+    }
+
+    if( !strchr(arg, '.') ) {
+        return( FALSE );
+    }
+    return( TRUE );
+}
 
 /**
  * @brief Trims the leading spaces and copies the name
@@ -424,17 +471,12 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
  */
 void LoginStateMachine(PlayerStruct_t *player, char *arg)
 {
-#if 0
-    int             player_i;
-#endif
     int             class,
                     race,
                     found = 0,
                     index = 0;
     char            tmp_name[20];
-#if 0
-    struct char_data *tmp_ch;
-#endif
+    char           *tmp;
     struct char_data *ch;
     int             pick = 0;
     PlayerStruct_t *oldPlayer;
@@ -550,9 +592,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (!ch) {
             player->charData = CREATE(struct char_data);
             ch = player->charData;
-#if 0
-            clear_char(ch);
-#endif
+            memset( ch, 0, sizeof(struct char_data) );
             ch->playerDesc = player;
         }
 
@@ -562,14 +602,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
         
-        if (!parseName(arg, tmp_name)) {
-            SendOutput(player, "Illegal name, please try another.\r\n");
-            SendOutput(player, "Name: ");
-            return;
-        }
-
-        if( checkAssName(tmp_name) ) {
-            SendOutput(player, "\n\rIllegal name, please try another.\r\n");
+        if (!parseEmail(arg, tmp_name)) {
+            SendOutput(player, "Illegal email address, please try again.\r\n");
             SendOutput(player, "Name: ");
             return;
         }
@@ -583,7 +617,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         ProtectedDataUnlock(player->connection->hostName);
 
-	if( player->account ) {
+        if( player->account ) {
             if( player->account->email ) {
                 memfree( player->account->email );
             }
@@ -613,7 +647,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * move forward creating new character
              */
             player->account = CREATE(PlayerAccount_t);
-	    memset( player->account, 0, sizeof(PlayerAccount_t) );
+            memset( player->account, 0, sizeof(PlayerAccount_t) );
 
             player->account->email = memstrlink(tmp_name);
             EnterState(player, STATE_CONFIRM_EMAIL);
@@ -824,7 +858,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             memfree( player->account->pwd );
         }
 
-        player->account->pwd = memstrlink((char *)crypt(arg, ch->player.name));
+        tmp = (char *)crypt(arg, player->account->email);
+        tmp[10] = '\0';
+        player->account->pwd = memstrlink(tmp);
 
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_PASSWORD);
