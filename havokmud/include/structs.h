@@ -67,25 +67,29 @@ typedef enum {
     STATE_GET_NEW_USER_PASSWORD,
     STATE_CONFIRM_PASSWORD,
     STATE_GET_PASSWORD,
-/* sorted to here */
-    STATE_CHOOSE_SEX,
     STATE_CHOOSE_ANSI,
+    STATE_SHOW_MOTD,
+    STATE_SHOW_WMOTD,
+    STATE_SHOW_CREDITS,
+    STATE_WIZLOCKED,
+    STATE_PRESS_ENTER,
+    STATE_SHOW_ACCOUNT_MENU,
+    STATE_GET_NEW_PASSWORD,
+    STATE_CONFIRM_NEW_PASSWORD,
+/* sorted to here */
+    STATE_NEW_CHAR,
+    STATE_CONFIRM_NEW_CHAR,
+    STATE_CHOOSE_SEX,
     STATE_CHOOSE_RACE,
     STATE_CHOOSE_CLASS,
     STATE_CHOOSE_MAIN_CLASS,
     STATE_CHOOSE_STATS,
     STATE_CHOOSE_ALIGNMENT,
-    STATE_SHOW_MOTD,
     STATE_SHOW_CREATION_MENU,
     STATE_SHOW_LOGIN_MENU,
-    STATE_GET_NEW_PASSWORD,
-    STATE_CONFIRM_NEW_PASSWORD,
     STATE_REROLL,
     STATE_WAIT_FOR_AUTH,
-    STATE_WIZLOCKED,
-    STATE_SHOW_WMOTD,
     STATE_EDIT_EXTRA_DESCR,
-    STATE_PRESS_ENTER,
     STATE_DELETE_USER,
     STATE_PLAYING
 } PlayerState_t;
@@ -113,6 +117,7 @@ typedef struct {
     int                 id;
     char               *email;
     char               *pwd;
+    char               *newpwd;
     bool                ansi;
 } PlayerAccount_t;
 

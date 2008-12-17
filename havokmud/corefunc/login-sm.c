@@ -55,7 +55,9 @@ static char ident[] _UNUSED_ =
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void show_menu(PlayerStruct_t *player);
+void show_account_menu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
+void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
 
@@ -311,6 +313,22 @@ void show_menu(PlayerStruct_t *player)
     SendOutput(player, "$c0011Please pick an option: \n\r");
 }
 
+void show_account_menu(PlayerStruct_t *player)
+{
+    SendOutput(player, "$c0009-=$c0015Havok Account Menu [%s]"
+                       "$c0009=-\n\r\n\r", player->account->email);
+    SendOutput(player, "$c00151) $c0012ANSI Colors.\n\r");
+    SendOutput(player, "$c00152) $c0012Change your password.\n\r");
+    SendOutput(player, "$c00153) $c0012View the MOTD.\n\r");
+    SendOutput(player, "$c00154) $c0012View the credits.\n\r");
+    SendOutput(player, "$c00155) $c0012Create a new character.\n\r");
+    SendOutput(player, "$c00156) $c0012Play an existing character.\n\r");
+
+    SendOutput(player, "$c0015Q) $c0012Quit!\n\r\n\r");
+    SendOutput(player, "$c0011Please pick an option: \n\r");
+}
+
+
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 {
     struct char_data   *ch;
@@ -324,16 +342,59 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     LogPrint( LOG_INFO, "Entering state %d from %d", newstate, player->state );
 
     switch( newstate ) {
-    case STATE_CHOOSE_SEX:
-        SendOutput(player, "What is your sex (M/F) ? ");
+    case STATE_INITIAL:
+	break;
+    case STATE_GET_EMAIL:
+        SendOutput(player, "What is your account name (email address)? ");
+        break;
+    case STATE_CONFIRM_EMAIL:
+        SendOutput(player, "Did I get that right, %s (Y/N)? ", 
+                           player->account->email );
+        break;
+    case STATE_GET_NEW_USER_PASSWORD:
+        SendOutput(player, "Give me a password for %s: ", 
+                           player->account->email);
+        SendOutputRaw(player, echo_off, 4);
+        break;
+    case STATE_GET_PASSWORD:
+        SendOutput(player, "Password: ");
+        SendOutputRaw(player, echo_off, 4);
+        break;
+    case STATE_CONFIRM_PASSWORD:
+    case STATE_CONFIRM_NEW_PASSWORD:
+        SendOutput(player, "Please retype password: ");
+        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_CHOOSE_ANSI:
         SendOutput(player, "Would you like ansi colors? (Yes or No)");
         break;
+    case STATE_SHOW_MOTD:
+        SendOutput(player, motd);
+        SendOutput(player, "\n\r\n[PRESS RETURN]");
+        break;
+    case STATE_SHOW_WMOTD:
+        SendOutput(player, wmotd);
+        SendOutput(player, "\n\r\n[PRESS RETURN]");
+        break;
+    case STATE_SHOW_CREDITS:
+        SendOutput(player, credits);
+        SendOutput(player, "\n\r\n[PRESS RETURN]");
+        break;
+    case STATE_WIZLOCKED:
+        SendOutput(player, "Goodbye.\n\r");
+        break;
+    case STATE_SHOW_ACCOUNT_MENU:
+        show_account_menu(player);
+        break;
+    case STATE_GET_NEW_PASSWORD:
+        SendOutput(player, "Enter a new password: ");
+        SendOutputRaw(player, echo_off, 4);
+        break;
+
+    case STATE_CHOOSE_SEX:
+        SendOutput(player, "What is your sex (M/F) ? ");
+        break;
     case STATE_CHOOSE_RACE:
-#if 0
-        show_race_choice(player);
-#endif
         SendOutput(player, "For help type '?'- will list level limits. \n\r"
                            " RACE:  ");
         ch->player.class = 0;
@@ -343,9 +404,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         GET_ALIGNMENT(ch) = 0;
         GET_CON(ch) = 0;
         SendOutput(player, "\n\rSelect your class now.\n\r");
-#if 0
-        show_class_selection(player, GET_RACE(ch));
-#endif
         SendOutput(player, "Enter ? for help.\n\r\n\rClass :");
         break;
     case STATE_CHOOSE_MAIN_CLASS:
@@ -383,37 +441,11 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "$c000REvil$c000w)");
         break;
 
-    case STATE_SHOW_MOTD:
-        SendOutput(player, motd);
-        SendOutput(player, "\n\r\n*** PRESS RETURN: ");
-        break;
-
     case STATE_SHOW_CREATION_MENU:
         show_menu(player);
         break;
 
-    case STATE_GET_PASSWORD:
-        SendOutput(player, "Password: ");
-        SendOutputRaw(player, echo_off, 4);
-        break;
-    case STATE_CONFIRM_EMAIL:
-        SendOutput(player, "Did I get that right, %s (Y/N)? ", 
-                           player->account->email );
-        break;
-    case STATE_GET_NEW_USER_PASSWORD:
-        SendOutput(player, "Give me a password for %s: ", 
-                           player->account->email);
-        SendOutputRaw(player, echo_off, 4);
-        break;
-    case STATE_GET_EMAIL:
-        SendOutput(player, "What is your account name (email address)? ");
-        break;
     case STATE_PLAYING:
-        break;
-    case STATE_CONFIRM_PASSWORD:
-    case STATE_CONFIRM_NEW_PASSWORD:
-        SendOutput(player, "Please retype password: ");
-        SendOutputRaw(player, echo_off, 4);
         break;
     case STATE_REROLL:
         SendOutput(player, "Your current stats are:\n\r");
@@ -428,13 +460,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
         SendOutput(player, "Please Wait for authorization.\n\r");
         break;
-    case STATE_WIZLOCKED:
-        SendOutput(player, "Goodbye.\n\r");
-        break;
-    case STATE_SHOW_WMOTD:
-        SendOutput(player, wmotd);
-        SendOutput(player, "\n\r\n[PRESS RETURN]");
-        break;
     case STATE_SHOW_LOGIN_MENU:
 #if 0
         SendOutput(player, MENU);
@@ -447,15 +472,10 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     case STATE_PRESS_ENTER:
         SendOutput(player, "\n\r<Press enter to continue>");
         break;
-    case STATE_GET_NEW_PASSWORD:
-        SendOutput(player, "Enter a new password: ");
-        SendOutputRaw(player, echo_off, 4);
-        break;
     case STATE_DELETE_USER:
         SendOutput(player, "Are you sure you want to delete yourself? "
                            "(yes/no) ");
         break;
-    case STATE_INITIAL:
     default:
         break;
     }
@@ -489,116 +509,16 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
     switch (player->state) {
     case STATE_INITIAL:
-        EnterState(player, STATE_GET_EMAIL);
-        break;
-
-    case STATE_SHOW_CREATION_MENU:
-        arg = skip_spaces(arg);
-        if( !arg ) {
-            show_menu(player);
-            SendOutput(player, "Invalid Choice.. Try again..\n\r");
-            return;
-        }
-
-        DoCreationMenu(player, *arg);
-        break;
-
-    case STATE_CHOOSE_ALIGNMENT:
-        arg = skip_spaces(arg);
-        if( !arg ) {
-            SendOutput(player, "Please select a alignment.\n\r");
-            return;
-        }
-
-        switch (tolower(*arg)) {
-        case 'n':
-            GET_ALIGNMENT(ch) = 1;
-            SendOutput(player, "You have chosen to be Neutral in "
-                               "alignment.\n\r\n\r");
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            break;
-        case 'g':
-            GET_ALIGNMENT(ch) = 1000;
-            SendOutput(player, "You have chosen to be a follower of "
-                               "light.\n\r\n\r");
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            break;
-        case 'e':
-            GET_ALIGNMENT(ch) = -1000;
-            SendOutput(player, "You have chosen the dark side.\n\r\n\r");
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            break;
-
-        default:
-            SendOutput(player, "Please select a alignment.\n\r");
-            break;
-        }
-        break;
-
-    case STATE_CHOOSE_ANSI:
-        arg = skip_spaces(arg);
-        if( !arg ) {
-            SendOutput(player, "Please type Yes or No.\n\r"
-                               "Would you like ANSI colors? :");
-            return;
-        }
-
-        switch (tolower(*arg)) {
-        case 'y':
-            player->account->ansi = TRUE;
-
-            SendOutput(player, "$c0012A$c0010N$c0011S$c0014I$c0007 colors "
-                               "enabled.\n\r\n\r");
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            break;
-
-        case 'n':
-            player->account->ansi = FALSE;
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            break;
-
-        default:
-            SendOutput(player, "Please type Yes or No.\n\r"
-                               "Would you like ANSI colors? :");
-            return;
-            break;
-        }
-        db_save_account(player->account);
-        break;
-
-    case STATE_CHOOSE_RACE:
-        ch->reroll = 20;
-        arg = skip_spaces(arg);
-        if (!arg) {
-            EnterState(player, STATE_CHOOSE_RACE);
-            return;
-        } 
-        
-#if 0
-        tmpi = atoi(arg);
-        if (tmpi >= 1 && tmpi <= race_choice_count) {
-            GET_RACE(ch) = race_choice[tmpi - 1].raceNum;
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-        } else {
-#endif
-            SendOutput(player, "\n\rThat's not a race.\n\rRACE?:");
-            EnterState(player, STATE_CHOOSE_RACE);
-#if 0
-        }
-#endif
-        break;
-
-    case STATE_GET_EMAIL:
-    /*
-     * wait for input of email address
-     */
         if (!ch) {
             player->charData = CREATE(struct char_data);
             ch = player->charData;
             memset( ch, 0, sizeof(struct char_data) );
             ch->playerDesc = player;
         }
+        EnterState(player, STATE_GET_EMAIL);
+        break;
 
+    case STATE_GET_EMAIL:
         arg = skip_spaces(arg);
         if (!arg) {
             connClose( player->connection );
@@ -656,10 +576,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_CONFIRM_EMAIL:
-        /*
-         * wait for conf. of new name
-         * skip whitespaces
-         */
         arg = skip_spaces(arg);
         if( !arg ) {
             /*
@@ -685,11 +601,43 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         break;
 
+    case STATE_GET_NEW_USER_PASSWORD:
+        arg = skip_spaces(arg);
+        if (!arg || strlen(arg) > 10) {
+            SendOutputRaw(player, echo_on, 6);
+            SendOutput(player, "Illegal password.\n\r");
+            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
+            return;
+        }
+
+        if( player->account->pwd ) {
+            memfree( player->account->pwd );
+        }
+
+        tmp = (char *)crypt(arg, player->account->email);
+        tmp[10] = '\0';
+        player->account->pwd = memstrlink(tmp);
+
+        SendOutputRaw(player, echo_on, 6);
+        EnterState(player, STATE_CONFIRM_PASSWORD);
+        break;
+
+    case STATE_CONFIRM_PASSWORD:
+        arg = skip_spaces(arg);
+        if (!arg || strncmp((char *)crypt(arg, player->account->pwd), 
+                            player->account->pwd, 10)) {
+            SendOutputRaw(player, echo_on, 6);
+
+            SendOutput(player, "Passwords don't match.\n\r");
+            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
+            return;
+        } 
+
+        SendOutputRaw(player, echo_on, 6);
+        EnterState(player, STATE_CHOOSE_ANSI);
+        break;
+
     case STATE_GET_PASSWORD:
-        /*
-         * get pwd for known player
-         * skip whitespaces
-         */
         arg = skip_spaces(arg);
         if (!arg) {
             connClose( player->connection );
@@ -704,94 +652,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
-#if 0
-        /*
-         * Check if already playing
-         */
-        oldPlayer = FindCharacterNamed( GET_NAME(ch), player );
-        if( oldPlayer ) {
-            connClose( oldPlayer->connection );
-            break;
-        }
-
-        /*
-         * Check if disconnected ...
-         */
-        /**
-         * @todo Convert to new LinkedList methodology
-         */
-#if 0
-        for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
-            if ((!strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch)) 
-                 && !tmp_ch->playerDesc && !IS_NPC(tmp_ch)) ||
-                (IS_NPC(tmp_ch) && tmp_ch->orig &&
-                 !strcasecmp(GET_NAME(ch), GET_NAME(tmp_ch->orig)))) {
-
-                SendOutputRaw(player, echo_on, 6);
-                SendOutput(player, "Reconnecting.\n\r");
-
-#if 0
-                free_char(ch);
-#endif
-                tmp_ch->playerDesc = player;
-                player->charData = tmp_ch;
-                tmp_ch->specials.timer = 0;
-
-                if (!IS_IMMORTAL(tmp_ch)) {
-                    tmp_ch->invis_level = 0;
-                }
-
-#ifdef TODO
-                if (tmp_ch->orig) {
-                    tmp_ch->desc->original = tmp_ch->orig;
-                    tmp_ch->orig = 0;
-                }
-#endif
-
-                ch->persist = 0;
-
-                if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
-#if 0
-                    act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-#endif
-                    ProtectedDataLock(player->connection->hostName);
-                    LogPrint(LOG_INFO, "%s[%s] has reconnected.", GET_NAME(ch),
-                             (char *)player->connection->hostName->data);
-                    ProtectedDataUnlock(player->connection->hostName);
-                }
-                
-                if (ch->specials.hostip) {
-                    memfree(ch->specials.hostip);
-                }
-
-                ProtectedDataLock(player->connection->hostName);
-                ch->specials.hostip = 
-                            strdup((char *)player->connection->hostName->data);
-                ProtectedDataUnlock(player->connection->hostName);
-
-#if 0
-                db_write_char_extra(ch);
-#endif
-                EnterState(player, STATE_PLAYING);
-                if( IS_IMMORTAL(ch) ) {
-                    player->handlingQ = InputImmortQ;
-                } else {
-                    player->handlingQ = InputPlayerQ;
-                }
-                return;
-            }
-        }
-#endif
-#endif
-
-#if 0
-        db_load_char_extra(ch);
-#endif
         if (ch->specials.hostip == NULL) {
             if (!IS_IMMORTAL(ch) ||
                 ch->invis_level <= 58) {
                 ProtectedDataLock(player->connection->hostName);
-                LogPrint(LOG_INFO, "%s[%s] has connected.\n\r", 
+                LogPrint(LOG_INFO, "%s[%s] has connected.", 
                          player->account->email,
                          (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
@@ -814,54 +679,220 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         ProtectedDataUnlock(player->connection->hostName);
         ch->last_tell = NULL;
 
-#if 0
-        db_write_char_extra(ch);
-#endif
-        EnterState(player, STATE_SHOW_MOTD);
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
 
-    case STATE_GET_NEW_USER_PASSWORD:
+    case STATE_CHOOSE_ANSI:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            SendOutput(player, "Please type Yes or No.\n\r"
+                               "Would you like ANSI colors? :");
+            return;
+        }
+
+        switch (tolower(*arg)) {
+        case 'y':
+            player->account->ansi = TRUE;
+
+            SendOutput(player, "$c0012A$c0010N$c0011S$c0014I$c0007 colors "
+                               "enabled.\n\r\n\r");
+            break;
+
+        case 'n':
+            player->account->ansi = FALSE;
+            break;
+
+        default:
+            SendOutput(player, "Please type Yes or No.\n\r"
+                               "Would you like ANSI colors? :");
+            return;
+            break;
+        }
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        db_save_account(player->account);
+        break;
+
+    case STATE_SHOW_MOTD:
         /*
-         * get pwd for new player
-         * skip whitespaces
+         * read CR after printing motd
          */
+        if (IS_IMMORTAL(ch)) {
+            EnterState(player, STATE_SHOW_WMOTD);
+            break;
+        }
+
+        if (ch->term != 0) {
+            ScreenOff(player);
+        }
+
+
+        ProtectedDataLock(player->connection->hostName);
+        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
+             SiteLock((char *)player->connection->hostName->data)) &&
+            !IS_IMMORTAL(ch)) {
+            ProtectedDataUnlock(player->connection->hostName);
+            SendOutput(player, "Sorry, the game is locked up for repair or "
+                               "your site is banned.\n\r");
+            EnterState(player, STATE_WIZLOCKED);
+        } else {
+            ProtectedDataUnlock(player->connection->hostName);
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        }
+        break;
+
+    case STATE_SHOW_WMOTD:
+        /*
+         * read CR after printing motd
+         */
+        ProtectedDataLock(player->connection->hostName);
+        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
+             SiteLock((char *)player->connection->hostName->data)) &&
+            !IS_IMMORTAL(ch)) {
+            ProtectedDataUnlock(player->connection->hostName);
+            SendOutput(player, "Sorry, the game is locked up for repair or "
+                               "your site is banned.\n\r");
+            EnterState(player, STATE_WIZLOCKED);
+        } else {
+            ProtectedDataUnlock(player->connection->hostName);
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        }
+        break;
+
+    case STATE_SHOW_CREDITS:
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        break;
+
+    case STATE_WIZLOCKED:
+        connClose( player->connection );
+        break;
+
+    case STATE_PRESS_ENTER:
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
+        break;
+
+    case STATE_SHOW_ACCOUNT_MENU:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            show_account_menu(player);
+            SendOutput(player, "Invalid Choice.. Try again..\n\r");
+            return;
+        }
+
+        DoAccountMenu(player, *arg);
+        break;
+
+    case STATE_GET_NEW_PASSWORD:
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
             SendOutputRaw(player, echo_on, 6);
+
             SendOutput(player, "Illegal password.\n\r");
-            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
+            EnterState(player, STATE_GET_NEW_PASSWORD);
             return;
         }
+
+        if( player->account->newpwd ) {
+            memfree( player->account->newpwd );
+        }
+
+        tmp = (char *)crypt(arg, player->account->email);
+        tmp[10] = '\0';
+        player->account->newpwd = memstrlink(tmp);
+
+        SendOutputRaw(player, echo_on, 6);
+        EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
+        break;
+
+    case STATE_CONFIRM_NEW_PASSWORD:
+        arg = skip_spaces(arg);
+        if (!arg || strncmp((char *)crypt(arg, player->account->newpwd), 
+                            player->account->newpwd, 10)) {
+            SendOutputRaw(player, echo_on, 6);
+
+            SendOutput(player, "Passwords don't match.\n\r");
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+            return;
+        } 
+
+        SendOutputRaw(player, echo_on, 6);
 
         if( player->account->pwd ) {
             memfree( player->account->pwd );
         }
 
-        tmp = (char *)crypt(arg, player->account->email);
-        tmp[10] = '\0';
-        player->account->pwd = memstrlink(tmp);
+	player->account->pwd = player->account->newpwd;
+        player->account->newpwd = NULL;
 
-        SendOutputRaw(player, echo_on, 6);
-        EnterState(player, STATE_CONFIRM_PASSWORD);
+	SendOutput(player, "Password changed...\n\r");
+
+        db_save_account(player->account);
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
 
-    case STATE_CONFIRM_PASSWORD:
-        /*
-         * get confirmation of new pwd
-         * skip whitespaces
-         */
-        arg = skip_spaces(arg);
-        if (!arg || strncmp((char *)crypt(arg, player->account->pwd), 
-                            player->account->pwd, 10)) {
-            SendOutputRaw(player, echo_on, 6);
 
-            SendOutput(player, "Passwords don't match.\n\r");
-            EnterState(player, STATE_GET_NEW_USER_PASSWORD);
+    case STATE_SHOW_CREATION_MENU:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            show_menu(player);
+            SendOutput(player, "Invalid Choice.. Try again..\n\r");
+            return;
+        }
+
+        DoCreationMenu(player, *arg);
+        break;
+
+    case STATE_CHOOSE_ALIGNMENT:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            SendOutput(player, "Please select a alignment.\n\r");
+            return;
+        }
+
+        switch (tolower(*arg)) {
+        case 'n':
+            GET_ALIGNMENT(ch) = 1;
+            SendOutput(player, "You have chosen to be Neutral in "
+                               "alignment.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
+            break;
+        case 'g':
+            GET_ALIGNMENT(ch) = 1000;
+            SendOutput(player, "You have chosen to be a follower of "
+                               "light.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
+            break;
+        case 'e':
+            GET_ALIGNMENT(ch) = -1000;
+            SendOutput(player, "You have chosen the dark side.\n\r\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
+            break;
+
+        default:
+            SendOutput(player, "Please select a alignment.\n\r");
+            break;
+        }
+        break;
+
+    case STATE_CHOOSE_RACE:
+        ch->reroll = 20;
+        arg = skip_spaces(arg);
+        if (!arg) {
+            EnterState(player, STATE_CHOOSE_RACE);
             return;
         } 
-
-        SendOutputRaw(player, echo_on, 6);
-        EnterState(player, STATE_CHOOSE_ANSI);
+        
+#if 0
+        tmpi = atoi(arg);
+        if (tmpi >= 1 && tmpi <= race_choice_count) {
+            GET_RACE(ch) = race_choice[tmpi - 1].raceNum;
+            EnterState(player, STATE_SHOW_CREATION_MENU);
+        } else {
+#endif
+            SendOutput(player, "\n\rThat's not a race.\n\rRACE?:");
+            EnterState(player, STATE_CHOOSE_RACE);
+#if 0
+        }
+#endif
         break;
 
     case STATE_CHOOSE_SEX:
@@ -1138,56 +1169,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         break;
 
-    case STATE_SHOW_MOTD:
-        /*
-         * read CR after printing motd
-         */
-        if (IS_IMMORTAL(ch)) {
-            EnterState(player, STATE_SHOW_WMOTD);
-            break;
-        }
-
-        if (ch->term != 0) {
-            ScreenOff(player);
-        }
-
-
-        ProtectedDataLock(player->connection->hostName);
-        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
-             SiteLock((char *)player->connection->hostName->data)) &&
-            !IS_IMMORTAL(ch)) {
-            ProtectedDataUnlock(player->connection->hostName);
-            SendOutput(player, "Sorry, the game is locked up for repair or "
-                               "your site is banned.\n\r");
-            EnterState(player, STATE_WIZLOCKED);
-        } else {
-            ProtectedDataUnlock(player->connection->hostName);
-            EnterState(player, STATE_SHOW_LOGIN_MENU);
-        }
-        break;
-
-    case STATE_SHOW_WMOTD:
-        /*
-         * read CR after printing motd
-         */
-        ProtectedDataLock(player->connection->hostName);
-        if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
-             SiteLock((char *)player->connection->hostName->data)) &&
-            !IS_IMMORTAL(ch)) {
-            ProtectedDataUnlock(player->connection->hostName);
-            SendOutput(player, "Sorry, the game is locked up for repair or "
-                               "your site is banned.\n\r");
-            EnterState(player, STATE_WIZLOCKED);
-        } else {
-            ProtectedDataUnlock(player->connection->hostName);
-            EnterState(player, STATE_SHOW_LOGIN_MENU);
-        }
-        break;
-
-    case STATE_WIZLOCKED:
-        connClose( player->connection );
-        break;
-
     case STATE_DELETE_USER:
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
@@ -1228,10 +1209,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             connClose( player->connection );
         }
 
-        EnterState(player, STATE_SHOW_LOGIN_MENU);
-        break;
-
-    case STATE_PRESS_ENTER:
         EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
@@ -1318,47 +1295,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         break;
 
-    case STATE_GET_NEW_PASSWORD:
-        /*
-         * skip whitespaces
-         */
-        arg = skip_spaces(arg);
-        if (!arg || strlen(arg) > 10) {
-            SendOutputRaw(player, echo_on, 6);
-
-            SendOutput(player, "Illegal password.\n\r");
-            EnterState(player, STATE_GET_NEW_PASSWORD);
-            return;
-        }
-
-        strncpy(ch->pwd, (char *)crypt(arg, ch->player.name), 10);
-        ch->pwd[10] = '\0';
-        SendOutputRaw(player, echo_on, 6);
-
-        EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
-        break;
-
     case STATE_EDIT_EXTRA_DESCR:
-        EnterState(player, STATE_SHOW_LOGIN_MENU);
-        break;
-
-    case STATE_CONFIRM_NEW_PASSWORD:
-        /*
-         * skip whitespaces
-         */
-        arg = skip_spaces(arg);
-        if (!arg || strncmp((char *)crypt(arg, ch->pwd), ch->pwd, 10)) {
-            SendOutputRaw(player, echo_on, 6);
-            SendOutput(player, "Passwords don't match.\n\r");
-            EnterState(player, STATE_GET_NEW_PASSWORD);
-            return;
-        }
-
-        SendOutputRaw(player, echo_on, 6);
-
-        SendOutput(player, "\n\rDone. You must enter the game to make the "
-                           "change final\n\r");
-
         EnterState(player, STATE_SHOW_LOGIN_MENU);
         break;
 
@@ -1465,6 +1402,40 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         break;
     default:
         show_menu(player);
+        SendOutput(player, "Invalid Choice.. Try again..\n\r");
+        break;
+    }
+}
+
+void DoAccountMenu( PlayerStruct_t *player, char arg )
+{
+    switch (arg) 
+    {
+    case '1':
+        EnterState(player, STATE_CHOOSE_ANSI);
+        break;
+    case '2':
+        EnterState(player, STATE_GET_NEW_PASSWORD);
+        break;
+    case '3':
+        EnterState(player, STATE_SHOW_MOTD);
+        break;
+    case '4':
+        EnterState(player, STATE_SHOW_CREDITS);
+        break;
+    case '5':
+        EnterState(player, STATE_NEW_CHAR);
+        break;
+    case '6':
+        EnterState(player, STATE_PLAYING);
+        break;
+    case 'q':
+    case 'Q':
+        SendOutput(player, "Thanks for dropping by, seeya later!\n\r");
+        EnterState(player, STATE_WIZLOCKED);
+        return;
+    default:
+        show_account_menu(player);
         SendOutput(player, "Invalid Choice.. Try again..\n\r");
         break;
     }
