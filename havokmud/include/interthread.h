@@ -152,6 +152,11 @@ void connClose( ConnectionItem_t *connItem );
 
 
 /*
+ * From mysql_upgrade.c
+ */
+void db_check_schema_main( void );
+
+/*
  * From thread_api.c
  */
 void thread_create( pthread_t *pthreadId, void * (*routine)(void *),  

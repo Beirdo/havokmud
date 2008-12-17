@@ -31,6 +31,7 @@
 
 #include "environment.h"
 #include <pthread.h>
+#include <unistd.h>
 #include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
@@ -107,6 +108,10 @@ void StartThreads( void )
                    "ImmortPlayingThread", NULL );
 
     thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
+    
+    sleep(2);
+    db_check_schema_main();
+
 
     pthread_join( mysqlThreadId, NULL );
     pthread_join( immortPlayingThreadId, NULL );

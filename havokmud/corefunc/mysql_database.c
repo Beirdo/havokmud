@@ -35,6 +35,7 @@
 #include <string.h>
 #include <mysql.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "oldstructs.h"
 #include "oldutils.h"
@@ -53,26 +54,30 @@ static char ident[] _UNUSED_ =
  * @brief Contains the API for the system to use to access the MySQL database.
  */
 
+void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
 
 void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid );
 
 QueryTable_t QueryTable[] = {
     /* 0 */
-    { "SELECT `value` FROM `settings` WHERE `name` = ?", NULL, NULL,
+    { "SELECT `value` FROM `settings` WHERE `name` = ? LIMIT 1", NULL, NULL,
       FALSE },
     /* 1 */
-    { "INSERT INTO `settings` (`name`, `value`) VALUES (?, ?)", NULL, NULL,
-      FALSE },
+    { "SELECT `value` FROM `settings` WHERE `name` = ? LIMIT 1",
+      chain_set_setting, NULL, FALSE },
     /* 2 */
     { "UPDATE `settings` SET `value` = ? WHERE `name` = ?", NULL, NULL, FALSE },
     /* 3 */
+    { "INSERT INTO `settings` (`name`, `value`) VALUES (?, ?)", NULL, NULL,
+      FALSE },
+    /* 4 */
     { "SELECT `id`, `email`, `password` FROM `accounts` WHERE `email` = ?",
       NULL, NULL, FALSE },
-    /* 4 */
+    /* 5 */
     { "INSERT INTO `accounts (`id`, `email`, `password`) VALUES (?, ?, ?)",
       NULL, NULL, FALSE },
-    /* 5 */
+    /* 6 */
     { "UPDATE `accounts` SET `password` = ? WHERE `id` = ?", NULL, NULL, 
        FALSE },
     /* END */
@@ -106,60 +111,56 @@ char *db_get_setting(char *name)
     return( result );
 }
 
+void db_set_setting( char *name, char *format, ... )
+{
+    MYSQL_BIND     *data;
+    char            value[256];
+    va_list         arguments;
+    
+    if( !name || !format ) {
+        return;
+    }
+    
+    data = (MYSQL_BIND *)malloc( 2 * sizeof(MYSQL_BIND));
+    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+
+    va_start( arguments, format );
+    vsnprintf( value, 256, format, arguments );
+    va_end( arguments );
+    
+    bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[1], value, MYSQL_TYPE_VAR_STRING );
+    
+    db_queue_query( 1, QueryTable, data, 2, NULL, NULL, NULL);
+}
+    
 
 /*
  * Query chaining functions
  */
 
-
-void chain_load_classes( MYSQL_RES *res, QueryItem_t *item )
+void chain_set_setting( MYSQL_RES *res, QueryItem_t *item )
 {
-#if 0
-    int                 count;
-    int                 classId;
-    int                 i;
-    MYSQL_ROW           row;
-    MYSQL_BIND         *data;
-    pthread_mutex_t    *mutex;
-
-    if( !res || !(count = mysql_num_rows(res))) {
-        /* No classes!? */
-        LogPrintNoArg( LOG_CRIT, "No classes defined in the database!" );
-        exit(1);
-    }
-
-    classCount = count;
-    classes = CREATEN(struct class_def, classCount);
-    if( !classes ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory allocating classes[]" );
-        exit(1);
-    }
-
-    mutex = CREATE(pthread_mutex_t);
-    pthread_mutex_init( mutex, NULL );
-
-    for( i = 0; i < count; i++ ) {
-        row = mysql_fetch_row(res);
-        classId = atoi(row[0]);
-        classes[i].name = strdup(row[1]);
-        classes[i].abbrev = strdup(row[2]);
-
-        /* 5 */
-        data = CREATEN(MYSQL_BIND, 1);
-        memset( data, 0, 1 * sizeof(MYSQL_BIND) );
-
-        bind_numeric( &data[0], classId, MYSQL_TYPE_LONG );
-        db_queue_query( 4, QueryTable, data, 1, result_load_classes_3, 
-                        (void *)&i, mutex );
-
-        pthread_mutex_unlock( mutex );
+    int             count;
+    MYSQL_BIND     *data;
+    MYSQL_BIND      temp[1];
+    
+    data = item->queryData;
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        count = 0;
     }
     
-    pthread_mutex_destroy( mutex );
-    memfree( mutex );
-
-    LogPrintNoArg(LOG_CRIT, "Finished loading classes[] from SQL");
-#endif
+    if( count ) {
+        /* update */
+        /* Swap the order of the two parameters */
+        memcpy( temp, data, sizeof( MYSQL_BIND ) );
+        memcpy( data, &data[1], sizeof( MYSQL_BIND ) );
+        memcpy( &data[1], temp, sizeof( MYSQL_BIND ) );
+        db_queue_query( 2, QueryTable, data, 2, NULL, NULL, NULL );
+    } else {
+        /* insert */
+        db_queue_query( 3, QueryTable, data, 2, NULL, NULL, NULL );
+    }
 }
 
 
@@ -179,6 +180,10 @@ void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     resp = (char **)arg;
 
     count = mysql_num_rows(res);
+    if( count == 0 ) {
+        *resp = NULL;
+        return;
+    }
     row = mysql_fetch_row(res);
 
     value = memstrdup(row[0]);
