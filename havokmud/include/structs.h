@@ -66,6 +66,7 @@ typedef enum {
     STATE_CONFIRM_EMAIL,
     STATE_GET_NEW_USER_PASSWORD,
     STATE_CONFIRM_PASSWORD,
+    STATE_GET_PASSWORD,
 /* sorted to here */
     STATE_CHOOSE_SEX,
     STATE_CHOOSE_ANSI,
@@ -77,7 +78,6 @@ typedef enum {
     STATE_SHOW_MOTD,
     STATE_SHOW_CREATION_MENU,
     STATE_SHOW_LOGIN_MENU,
-    STATE_GET_PASSWORD,
     STATE_GET_NEW_PASSWORD,
     STATE_CONFIRM_NEW_PASSWORD,
     STATE_REROLL,
@@ -110,8 +110,10 @@ typedef struct
 } ConnectionItem_t;
 
 typedef struct {
+    int                 id;
     char               *email;
     char               *pwd;
+    bool                ansi;
 } PlayerAccount_t;
 
 typedef struct _PlayerStruct_t

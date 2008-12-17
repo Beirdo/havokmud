@@ -87,19 +87,20 @@ static void connAddFd( int fd, fd_set *fds );
  */
 void *ConnectionThread( void *arg )
 {
-    connectThreadArgs_t *argStruct;
-    int portNum;
-    struct sockaddr_in sa;
-    int count;
-    int fdCount;
-    int newFd;
-    socklen_t salen;
-    struct timeval timeout;
-    ConnectionItem_t *item;
-    PlayerStruct_t *player;
-    ConnInputItem_t *connItem;
-    ConnDnsItem_t *dnsItem;
-    uint32 i;
+    connectThreadArgs_t    *argStruct;
+    int                     portNum;
+    struct sockaddr_in      sa;
+    int                     count;
+    int                     fdCount;
+    int                     newFd;
+    socklen_t               salen;
+    struct timeval          timeout;
+    ConnectionItem_t       *item;
+    PlayerStruct_t         *player;
+    ConnInputItem_t        *connItem;
+    ConnDnsItem_t          *dnsItem;
+    uint32                  i;
+    int                     on;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
@@ -115,6 +116,15 @@ void *ConnectionThread( void *arg )
         perror("Opening listener socket");
         exit(1);
     }
+
+    on = 1;
+#ifndef __CYGWIN__
+    /** Todo: Apparently, Cygwin's REUSEADDR may be borked, must test */
+    if( setsockopt( listenFd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on) ) ) {
+        perror("Setting socket to reuse");
+        exit(1);
+    }
+#endif
 
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;

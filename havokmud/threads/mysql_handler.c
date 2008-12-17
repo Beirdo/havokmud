@@ -394,7 +394,7 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
         } else {
             switch( args->buffer_type ) {
             case MYSQL_TYPE_TINY:
-                snprintf( buf, 128, "%c", *(char *)(args->buffer) );
+                snprintf( buf, 128, "%d", *(char *)(args->buffer) );
                 string = db_quote( buf );
                 len = strlen(string) + 2;
                 break;

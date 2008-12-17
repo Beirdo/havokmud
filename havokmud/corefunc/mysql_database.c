@@ -55,9 +55,14 @@ static char ident[] _UNUSED_ =
  */
 
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
+void chain_save_account( MYSQL_RES *res, QueryItem_t *item );
 
 void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid );
+void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid );
+void result_insert_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid );
 
 QueryTable_t QueryTable[] = {
     /* 0 */
@@ -72,14 +77,18 @@ QueryTable_t QueryTable[] = {
     { "INSERT INTO `settings` (`name`, `value`) VALUES (?, ?)", NULL, NULL,
       FALSE },
     /* 4 */
-    { "SELECT `id`, `email`, `password` FROM `accounts` WHERE `email` = ?",
-      NULL, NULL, FALSE },
+    { "SELECT `id`, `email`, `passwd`, `ansi`  FROM `accounts` "
+      "WHERE `email` = ?", NULL, NULL, FALSE },
     /* 5 */
-    { "INSERT INTO `accounts (`id`, `email`, `password`) VALUES (?, ?, ?)",
-      NULL, NULL, FALSE },
+    { "SELECT `id`, `email`, `passwd`, `ansi`  FROM `accounts` "
+      "WHERE `id` = ?", chain_save_account, NULL, FALSE },
     /* 6 */
-    { "UPDATE `accounts` SET `password` = ? WHERE `id` = ?", NULL, NULL, 
-       FALSE },
+    { "UPDATE `accounts` SET `email` = ?, `passwd` = ?, `ansi` = ? "
+      "WHERE `id` = ?", NULL, NULL, FALSE },
+    /* 7 */
+    { "INSERT INTO `accounts` (`id`, `email`, `passwd`, `ansi`) "
+      "VALUES (?, ?, ?, ?)",
+      NULL, NULL, FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
 };
@@ -98,7 +107,7 @@ char *db_get_setting(char *name)
     pthread_mutex_init( mutex, NULL );
 
     data = CREATEN(MYSQL_BIND, 1);
-    memset(data, 0, 4 * sizeof(MYSQL_BIND));
+    memset(data, 0, 1 * sizeof(MYSQL_BIND));
 
     bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
 
@@ -110,7 +119,7 @@ char *db_get_setting(char *name)
 
     return( result );
 }
-
+        
 void db_set_setting( char *name, char *format, ... )
 {
     MYSQL_BIND     *data;
@@ -134,6 +143,53 @@ void db_set_setting( char *name, char *format, ... )
     db_queue_query( 1, QueryTable, data, 2, NULL, NULL, NULL);
 }
     
+PlayerAccount_t *db_load_account( char *email )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    PlayerAccount_t    *result;
+
+    if( !email ) {
+        return( NULL );
+    }
+
+    mutex = CREATE(pthread_mutex_t);
+    pthread_mutex_init( mutex, NULL );
+
+    data = CREATEN(MYSQL_BIND, 1);
+    memset(data, 0, 1 * sizeof(MYSQL_BIND));
+
+    bind_string( &data[0], email, MYSQL_TYPE_VAR_STRING );
+
+    db_queue_query( 4, QueryTable, data, 1, result_load_account, 
+                    (void *)&result, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+
+    return( result );
+}
+
+void db_save_account( PlayerAccount_t *account )
+{
+    MYSQL_BIND         *data;
+
+    if( !account ) {
+        return;
+    }
+
+    data = CREATEN(MYSQL_BIND, 5);
+    memset(data, 0, 5 * sizeof(MYSQL_BIND));
+
+    bind_numeric( &data[0], account->id, MYSQL_TYPE_LONG );
+    bind_string( &data[1], account->email, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[2], account->pwd, MYSQL_TYPE_VAR_STRING );
+    bind_numeric( &data[3], (account->ansi ? 1 : 0), MYSQL_TYPE_TINY );
+    bind_null_blob( &data[4], account );
+
+    db_queue_query( 5, QueryTable, data, 5, NULL, NULL, NULL );
+}
+
 
 /*
  * Query chaining functions
@@ -160,6 +216,34 @@ void chain_set_setting( MYSQL_RES *res, QueryItem_t *item )
     } else {
         /* insert */
         db_queue_query( 3, QueryTable, data, 2, NULL, NULL, NULL );
+    }
+}
+
+void chain_save_account( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             count;
+    MYSQL_BIND     *data;
+    MYSQL_BIND      temp[1];
+    PlayerAccount_t *account;
+    
+    data = item->queryData;
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        count = 0;
+    }
+
+    account = (PlayerAccount_t *)data[4].buffer;
+    
+    if( count ) {
+        /* update */
+        /* Swap the order of the two parameters */
+        memcpy( temp, data, sizeof( MYSQL_BIND ) );
+        memmove( data, &data[1], sizeof( MYSQL_BIND ) * 3 );
+        memcpy( &data[3], temp, sizeof( MYSQL_BIND ) );
+        db_queue_query( 6, QueryTable, data, 4, NULL, NULL, NULL );
+    } else {
+        /* insert */
+        db_queue_query( 7, QueryTable, data, 4, result_insert_account, account,
+                        NULL );
     }
 }
 
@@ -190,6 +274,44 @@ void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     *resp = value;
 }
 
+void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                          long insertid )
+{
+    PlayerAccount_t   **resp;
+    PlayerAccount_t    *account;
+    int                 count;
+    MYSQL_ROW           row;
+
+    resp = (PlayerAccount_t **)arg;
+
+    count = mysql_num_rows(res);
+    if( count == 0 ) {
+        *resp = NULL;
+        return;
+    }
+    row = mysql_fetch_row(res);
+
+    account = CREATE(PlayerAccount_t);
+    account->id    = atoi(row[0]);
+    account->email = memstrdup(row[1]);
+    account->pwd   = memstrdup(row[2]);
+    account->ansi  = (atoi(row[3]) ? TRUE : FALSE);
+    *resp = account;
+}
+
+
+void result_insert_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                            long insertid )
+{
+    PlayerAccount_t    *account;
+
+    if( !arg ) {
+        return;
+    }
+
+    account = (PlayerAccount_t *)arg;
+    account->id = insertid;
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

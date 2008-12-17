@@ -77,7 +77,7 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
     OutputBuffer_t *outbuf;
     char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
     int             len;
-    struct char_data *ch;
+    PlayerAccount_t  *account;
     va_list         args;
 
     if( !fmt ) {
@@ -93,7 +93,7 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
     len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
     va_end(args);
 
-    ch = player->charData;
+    account = player->account;
 
     outbuf->buf = CREATEN(char, MAX_STRING_LENGTH);
     if( !outbuf->buf ) {
@@ -101,9 +101,8 @@ void SendOutput( PlayerStruct_t *player, char *fmt, ... )
         return;
     }
 
-    if( ch ) {
-        outbuf->len = ParseAnsiColors( IS_SET(ch->player.user_flags, USE_ANSI),
-                                       buf, outbuf->buf );
+    if( account ) {
+        outbuf->len = ParseAnsiColors( account->ansi, buf, outbuf->buf );
     } else {
         outbuf->len = ParseAnsiColors( FALSE, buf, outbuf->buf );
     }

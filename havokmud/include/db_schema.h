@@ -41,7 +41,15 @@ static QueryTable_t defCoreSchema[] = {
     "  `name` varchar(40) NOT NULL,\n"
     "  `value` varchar(40) NOT NULL default '',\n"
     "  PRIMARY KEY  (`name`)\n"
-    ") TYPE=MyISAM\n", NULL, NULL, FALSE }
+    ")\n", NULL, NULL, FALSE },
+  { " CREATE TABLE `accounts` (\n"
+    "  `id` INT NOT NULL AUTO_INCREMENT ,\n"
+    "  `email` VARCHAR( 255 ) NOT NULL ,\n"
+    "  `passwd` VARCHAR( 10 ) NOT NULL ,\n"
+    "  `ansi` TINYINT NOT NULL DEFAULT 0,\n"
+    "  PRIMARY KEY ( `id` ) ,\n"
+    "  INDEX ( `email` )\n"
+    "  )\n", NULL, NULL, FALSE }
 };
 static int defCoreSchemaCount = NELEMENTS(defCoreSchema);
 

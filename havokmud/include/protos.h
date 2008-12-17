@@ -143,8 +143,11 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
                      MYSQL_BIND *queryData, int queryDataCount,
                      QueryResFunc_t queryCallback, void *queryCallbackArg,
                      pthread_mutex_t *queryMutex );
+
 char *db_get_setting(char *name);
 void db_set_setting( char *name, char *format, ... );
+PlayerAccount_t *db_load_account( char *email );
+void db_save_account( PlayerAccount_t *account );
 
 
 /*

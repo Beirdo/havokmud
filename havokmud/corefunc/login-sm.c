@@ -479,7 +479,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     char           *tmp;
     struct char_data *ch;
     int             pick = 0;
+#if 0
     PlayerStruct_t *oldPlayer;
+#endif
     InputStateItem_t   *stateItem;
 
     ch = player->charData;
@@ -543,7 +545,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case 'y':
-            SET_BIT(ch->player.user_flags, USE_ANSI);
+            player->account->ansi = TRUE;
 
             SendOutput(player, "$c0012A$c0010N$c0011S$c0014I$c0007 colors "
                                "enabled.\n\r\n\r");
@@ -551,7 +553,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
 
         case 'n':
-            REMOVE_BIT(ch->player.user_flags, USE_ANSI);
+            player->account->ansi = FALSE;
             EnterState(player, STATE_SHOW_CREATION_MENU);
             break;
 
@@ -561,6 +563,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
             break;
         }
+        db_save_account(player->account);
         break;
 
     case STATE_CHOOSE_RACE:
@@ -625,7 +628,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             player->account = NULL;
         }
 
-#if 0
         player->account = db_load_account(tmp_name);
         if( player->account ) {
             /*
@@ -633,7 +635,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              */
             EnterState(player, STATE_GET_PASSWORD);
         } else {
-#endif
             /*
              * player unknown gotta make a new
              */
@@ -651,9 +652,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
             player->account->email = memstrlink(tmp_name);
             EnterState(player, STATE_CONFIRM_EMAIL);
-#if 0
         }
-#endif
         break;
 
     case STATE_CONFIRM_EMAIL:
@@ -697,37 +696,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
-        if (strncmp((char *) crypt(arg, ch->pwd), ch->pwd, 10)) {
+        if (strncmp((char *)crypt(arg, player->account->pwd), 
+                            player->account->pwd, 10)) {
             SendOutput(player, "Wrong password.\n\r");
-            LogPrint(LOG_INFO, "%s entered a wrong password", GET_NAME(ch));
+            LogPrint(LOG_INFO, "%s entered a wrong password", player->account);
             connClose( player->connection );
             return;
         }
 
-#ifdef IMPL_SECURITY
-        if (top_of_p_table > 0) {
-            if (GetMaxLevel(ch) >= 58) {
-                ProtectedDataLock(player->connection->hostName);
-                switch (SecCheck(GET_NAME(ch), 
-                                 (char *)player->connection->hostName->data)) {
-                case -1:
-                case 0:
-                    SendOutput(player, "Security check reveals invalid site\n\r"
-                               "Speak to an implementor to fix problem\n\r"
-                               "If you are an implementor, add yourself to"
-                               " the\n\r"
-                               "Security directory (lib/security)\n\r");
-                    ProtectedDataUnlock(player->connection->hostname);
-                    connClose( player->connection );
-                    break;
-                default:
-                    ProtectedDataUnlock(player->connection->hostname);
-                    break;
-                }
-            }
-        }
-#endif
-
+#if 0
         /*
          * Check if already playing
          */
@@ -804,6 +781,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 return;
             }
         }
+#endif
 #endif
 
 #if 0
