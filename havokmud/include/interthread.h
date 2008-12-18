@@ -148,7 +148,7 @@ void *MysqlThread( void *arg );
  * Prototypes of connections thread callbacks
  */
 void connKickOutput( ConnectionItem_t *connItem );
-void connClose( ConnectionItem_t *connItem );
+void connClose( ConnectionItem_t *connItem, Locked_t locked );
 
 
 /*

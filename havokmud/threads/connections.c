@@ -454,21 +454,25 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
 
 /**
  * @brief closes a connection
- * @param connItem oconnection item to close
+ * @param connItem connection item to close
  * @return no value
  *
  * Allows another thread to close a connection.  This is useful when the game
  * wishes to disconnect someone.
  */
-void connClose( ConnectionItem_t *connItem )
+void connClose( ConnectionItem_t *connItem, Locked_t locked )
 {
     LogPrint( LOG_INFO, "Disconnect from %s", 
               (connItem->player && connItem->player->account &&
                connItem->player->account->email ? 
                connItem->player->account->email : "unknown") );
-    LinkedListLock( ConnectionList );
+    if( locked == UNLOCKED ) {
+        LinkedListLock( ConnectionList );
+    }
     connRemove( connItem );
-    LinkedListUnlock( ConnectionList );
+    if( locked == UNLOCKED ) {
+        LinkedListUnlock( ConnectionList );
+    }
 }
 
 /**
@@ -512,7 +516,7 @@ void connKickOutput( ConnectionItem_t *connItem )
         }
         connItem->outBufDesc = NULL;
         if( connItem->player->state == STATE_WIZLOCKED ) {
-            connClose( player->connection );
+            connClose( player->connection, LOCKED );
         }
     } else {
         connAddFd( connItem->fd, &saveWriteFds );

@@ -521,7 +521,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_GET_EMAIL:
         arg = skip_spaces(arg);
         if (!arg) {
-            connClose( player->connection );
+            connClose( player->connection, UNLOCKED );
             return;
         } 
         
@@ -640,7 +640,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_GET_PASSWORD:
         arg = skip_spaces(arg);
         if (!arg) {
-            connClose( player->connection );
+            connClose( player->connection, UNLOCKED );
             return;
         } 
 
@@ -648,7 +648,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                             player->account->pwd, 10)) {
             SendOutput(player, "Wrong password.\n\r");
             LogPrint(LOG_INFO, "%s entered a wrong password", player->account);
-            connClose( player->connection );
+            connClose( player->connection, UNLOCKED );
             return;
         }
 
@@ -763,7 +763,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     case STATE_WIZLOCKED:
-        connClose( player->connection );
+        connClose( player->connection, UNLOCKED );
         break;
 
     case STATE_PRESS_ENTER:
@@ -1206,7 +1206,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             sprintf(buf, "rent/%s.aux", GET_NAME(ch));
             remove(buf);
 #endif
-            connClose( player->connection );
+            connClose( player->connection, UNLOCKED );
         }
 
         EnterState(player, STATE_SHOW_LOGIN_MENU);
@@ -1226,7 +1226,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case '0':
-            connClose( player->connection );
+            connClose( player->connection, UNLOCKED );
             break;
 
         case '1':
@@ -1242,7 +1242,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 /*
                  * out of memory, doh!
                  */
-                connClose(player->connection);
+                connClose(player->connection, UNLOCKED);
                 return;
             }
 
@@ -1304,7 +1304,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                  player->state);
         SendOutput(player, "The mud has lost its brain on your connection, "
                            "please reconnect.\n\r");
-        connClose( player->connection );
+        connClose( player->connection, UNLOCKED );
         break;
     }
 }
