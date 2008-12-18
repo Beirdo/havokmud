@@ -233,6 +233,7 @@ void *InputThread( void *arg )
             /*
              * This player is disappearing
              */
+            LogPrint( LOG_DEBUG, "Deleting player %p", player );
             LinkedListRemove( PlayerList, (LinkedListItem_t *)player, 
                               UNLOCKED );
 
@@ -255,7 +256,6 @@ void *InputThread( void *arg )
             }
             QueueDestroy( outputQ );
 
-            BufferDestroy( player->in_buffer );
             if( player->in_remain ) {
                 memfree( player->in_remain );
             }
@@ -270,6 +270,9 @@ void *InputThread( void *arg )
                 }
                 if( player->account->pwd ) {
                     memfree( player->account->pwd );
+                }
+                if( player->account->newpwd ) {
+                    memfree( player->account->newpwd );
                 }
                 memfree( player->account );
             }

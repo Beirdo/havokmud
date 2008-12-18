@@ -167,6 +167,7 @@ void *ConnectionThread( void *arg )
          * Open a connection for listener
          */
         if( FD_ISSET(listenFd, &readFds) ) {
+            salen = sizeof(struct sockaddr);
             newFd = accept(listenFd, (struct sockaddr *)&sa, &salen);
 
             connAddFd(newFd, &saveReadFds);
@@ -280,6 +281,7 @@ void *ConnectionThread( void *arg )
                     count = read( item->fd, BufferGetWrite( item->buffer ),
                                   count );
                     if( !count ) {
+                        LogPrint( LOG_DEBUG, "EOF on %d", item->fd );
                         /*
                          * We hit EOF, close and remove
                          */
@@ -460,6 +462,10 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
  */
 void connClose( ConnectionItem_t *connItem )
 {
+    LogPrint( LOG_INFO, "Disconnect from %s", 
+              (connItem->player && connItem->player->account &&
+               connItem->player->account->email ? 
+               connItem->player->account->email : "unknown") );
     LinkedListLock( ConnectionList );
     connRemove( connItem );
     LinkedListUnlock( ConnectionList );
@@ -505,6 +511,9 @@ void connKickOutput( ConnectionItem_t *connItem )
             connDelFd( connItem->fd, &saveWriteFds );
         }
         connItem->outBufDesc = NULL;
+        if( connItem->player->state == STATE_WIZLOCKED ) {
+            connClose( player->connection );
+        }
     } else {
         connAddFd( connItem->fd, &saveWriteFds );
         connItem->outBufDesc = bufDesc;
