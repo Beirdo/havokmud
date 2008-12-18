@@ -109,7 +109,7 @@ void StartThreads( void )
 
     thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
     
-    sleep(2);
+    sleep(1);
     db_check_schema_main();
 
 

@@ -106,8 +106,6 @@ void meminit( void )
     BalancedBTreeCreate( &fragmentDeferPool.addrTree, BTREE_KEY_POINTER );
 
     BalancedBTreeCreate( &memoryStringTree, BTREE_KEY_STRING );
-
-    LogPrint( LOG_INFO, "Memory Page Size: %d", memoryPageSize );
 }
 
 void *memalloc( int size )
@@ -129,12 +127,14 @@ void *memalloc( int size )
     /* Search the free pool */
     fragment = memoryFragmentFindBySize(&fragmentFreePool, size);
     if( fragment ) {
+        memset( fragment->start, 0, size );
         return( fragment->start );
     }
 
     /* Next check the deferred pool */
     fragment = memoryFragmentFindBySize(&fragmentDeferPool, size);
     if( fragment ) {
+        memset( fragment->start, 0, size );
         return( fragment->start );
     }
 
@@ -160,6 +160,7 @@ void *memalloc( int size )
                    AT_TAIL );
 
     fragment = memoryFragmentSplit(fragment, size);
+    memset( fragment->start, 0, size );
     return( fragment->start );
 }
 

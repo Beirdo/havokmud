@@ -87,6 +87,7 @@ void thread_create( pthread_t *pthreadId, void * (*routine)(void *),
 {
     pthread_create( pthreadId, NULL, routine, arg );
     thread_register( pthreadId, name, callbacks );
+    usleep(100);
 }
 
 void thread_register( pthread_t *pthreadId, char *name, 
