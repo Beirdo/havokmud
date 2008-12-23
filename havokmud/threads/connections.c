@@ -181,7 +181,6 @@ void *ConnectionThread( void *arg )
                 LogPrintNoArg( LOG_EMERG, "Out of memory!" );
                 close(newFd);
             } else {
-                memset(item, 0, sizeof(ConnectionItem_t));
                 item->fd = newFd;
                 item->buffer = BufferCreate(MAX_BUFSIZE);
 
@@ -213,7 +212,6 @@ void *ConnectionThread( void *arg )
                     close(newFd);
                     memfree(item);
                 } else {
-                    memset(player, 0, sizeof(PlayerStruct_t));
                     item->player = player;
                     player->connection = item;
                     player->in_buffer = item->buffer;

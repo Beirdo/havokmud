@@ -481,7 +481,6 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
     QueryItem_t        *item;
 
     item = CREATE(QueryItem_t);
-    memset( item, 0, sizeof(QueryItem_t) );
 
     item->queryId = queryId;
     item->queryTable = queryTable;

@@ -101,7 +101,6 @@ Keywords_t *StringToKeywords( char *string, Keywords_t *key )
     if( !key ) {
         key = CREATEN( Keywords_t, 1 );
     }
-    memset(key, 0, sizeof(Keywords_t));
 
     for( ; string && *string; string = tmp ) {
         tmp = strpbrk( string, "- \t\n\r," );

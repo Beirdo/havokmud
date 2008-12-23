@@ -512,7 +512,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (!ch) {
             player->charData = CREATE(struct char_data);
             ch = player->charData;
-            memset( ch, 0, sizeof(struct char_data) );
             ch->playerDesc = player;
         }
         EnterState(player, STATE_GET_EMAIL);
@@ -568,7 +567,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
              * move forward creating new character
              */
             player->account = CREATE(PlayerAccount_t);
-            memset( player->account, 0, sizeof(PlayerAccount_t) );
 
             player->account->email = memstrlink(tmp_name);
             EnterState(player, STATE_CONFIRM_EMAIL);

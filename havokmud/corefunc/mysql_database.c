@@ -107,7 +107,6 @@ char *db_get_setting(char *name)
     thread_mutex_init( mutex );
 
     data = CREATEN(MYSQL_BIND, 1);
-    memset(data, 0, 1 * sizeof(MYSQL_BIND));
 
     bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
 
@@ -130,8 +129,7 @@ void db_set_setting( char *name, char *format, ... )
         return;
     }
     
-    data = (MYSQL_BIND *)malloc( 2 * sizeof(MYSQL_BIND));
-    memset( data, 0, 2 * sizeof(MYSQL_BIND) );
+    data = CREATEN(MYSQL_BIND, 2);
 
     va_start( arguments, format );
     vsnprintf( value, 256, format, arguments );
@@ -157,7 +155,6 @@ PlayerAccount_t *db_load_account( char *email )
     thread_mutex_init( mutex );
 
     data = CREATEN(MYSQL_BIND, 1);
-    memset(data, 0, 1 * sizeof(MYSQL_BIND));
 
     bind_string( &data[0], email, MYSQL_TYPE_VAR_STRING );
 
@@ -179,7 +176,6 @@ void db_save_account( PlayerAccount_t *account )
     }
 
     data = CREATEN(MYSQL_BIND, 5);
-    memset(data, 0, 5 * sizeof(MYSQL_BIND));
 
     bind_numeric( &data[0], account->id, MYSQL_TYPE_LONG );
     bind_string( &data[1], account->email, MYSQL_TYPE_VAR_STRING );
