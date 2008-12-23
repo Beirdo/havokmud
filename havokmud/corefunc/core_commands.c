@@ -135,7 +135,7 @@ void do_siteban(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        item->item = (void *)strdup(arg2);
+        item->item = (void *)memstrlink(arg2);
         item->key  = &(item->item);
 
         BalancedBTreeAdd( banHostTree, item, LOCKED, TRUE );
@@ -415,9 +415,9 @@ char *view_report(int reportId)
     report = NULL;
 
     if( reportId == REPORT_MOTD ) {
-        return( motd ? strdup( motd ) : NULL );
+        return( motd ? memstrlink( motd ) : NULL );
     } else if( reportId == REPORT_WMOTD ) {
-        return( wmotd ? strdup( wmotd ) : NULL );
+        return( wmotd ? memstrlink( wmotd ) : NULL );
     }
 
 #if 0

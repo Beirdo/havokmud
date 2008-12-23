@@ -119,7 +119,7 @@ void objectInsert(struct obj_data *obj, long vnum)
     index->keywords.count = obj->keywords.count;
     index->keywords.words = CREATEN(char *, obj->keywords.count);
     for( i = 0; i < obj->keywords.count; i++ ) {
-        index->keywords.words[i] = strdup( obj->keywords.words[i] );
+        index->keywords.words[i] = memstrlink( obj->keywords.words[i] );
     }
     index->number = 0;
     index->func = NULL;
@@ -153,11 +153,11 @@ struct obj_data *objectClone(struct obj_data *obj)
     free( keywords );
 
     if (obj->short_description) {
-        ocopy->short_description = strdup(obj->short_description);
+        ocopy->short_description = memstrlink(obj->short_description);
     }
 
     if (obj->description) {
-        ocopy->description = strdup(obj->description);
+        ocopy->description = memstrlink(obj->description);
     }
     return( ocopy );
 }
@@ -1412,7 +1412,7 @@ void objectKeywordTreeAdd( BalancedBTree_t *tree, struct obj_data *obj )
             if( !item ) {
                 subtree = BalancedBTreeCreate( NULL, BTREE_KEY_POINTER );
                 item = CREATEN(BalancedBTreeItem_t, 1);
-                keyword = strdup( key->words[i] );
+                keyword = memstrlink( key->words[i] );
                 item->item = subtree;
                 item->key  = &keyword;
                 BalancedBTreeAdd( tree, item, LOCKED, TRUE );

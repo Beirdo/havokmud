@@ -68,6 +68,7 @@ void InitializeCommands( void );
 void SetupCommands( CommandDef_t *commands, int count );
 void AddCommand( CommandDef_t *cmd );
 CommandDef_t *FindCommand( char *string );
+void initializeFillWords( void );
 
 /*
  * TODO: move these!

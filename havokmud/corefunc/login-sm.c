@@ -673,7 +673,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
         ProtectedDataLock(player->connection->hostName);
         ch->specials.hostip = 
-                        strdup((char *)player->connection->hostName->data);
+                        memstrlink((char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
         ch->last_tell = NULL;
 
@@ -1172,38 +1172,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(ch))) {
             LogPrint(LOG_INFO, "%s just killed theirself!", GET_NAME(ch));
-#ifdef TODO
-            for (i = 0; i <= top_of_p_table; i++) {
-                if (!strcasecmp(player_table[i].name, GET_NAME(ch))) {
-                    if (player_table[i].name) {
-                        memfree(player_table[i].name);
-                    }
-                    player_table[i].name = strdup("111111");
-                    break;
-                }
-            }
-
-            /*
-             * get the structure from player_table[i].nr
-             */
-            if (!(char_file = fopen(PLAYER_FILE, "r+"))) {
-                perror("Opening player file for updating. (login-sm.c,"
-                       " LoginStateMachine)");
-                assert(0);
-            }
-            rewind(char_file);
-
-            /*
-             * read in the char, change the name, write back
-             */
-            sprintf(ch_st.name, "111111");
-            rewind(char_file);
-            fclose(char_file);
-            sprintf(buf, "rent/%s", lower(GET_NAME(ch)));
-            remove(buf);
-            sprintf(buf, "rent/%s.aux", GET_NAME(ch));
-            remove(buf);
-#endif
             connClose( player->connection, UNLOCKED );
         }
 

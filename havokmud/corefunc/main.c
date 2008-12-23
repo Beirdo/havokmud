@@ -175,7 +175,7 @@ void handleCmdLineArgs(int argc, char **argv)
             if( mySQL_db ) {
                 memfree( mySQL_db );
             }
-            mySQL_db = strdup(optarg);
+            mySQL_db = memstrlink(optarg);
             break;
 
         case 'U':
@@ -183,7 +183,7 @@ void handleCmdLineArgs(int argc, char **argv)
             if( mySQL_user ) {
                 memfree( mySQL_user );
             }
-            mySQL_user = strdup(optarg);
+            mySQL_user = memstrlink(optarg);
             break;
 
         case 'P':
@@ -191,7 +191,7 @@ void handleCmdLineArgs(int argc, char **argv)
             if( mySQL_passwd ) {
                 memfree( mySQL_passwd );
             }
-            mySQL_passwd = strdup(optarg);
+            mySQL_passwd = memstrlink(optarg);
             break;
 
         case 'H':
@@ -199,7 +199,7 @@ void handleCmdLineArgs(int argc, char **argv)
             if( mySQL_host ) {
                 memfree( mySQL_host );
             }
-            mySQL_host = strdup(optarg);
+            mySQL_host = memstrlink(optarg);
             break;
 
         case 'p':

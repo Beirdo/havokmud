@@ -140,7 +140,7 @@ int get_number(char **name)
 
     if ((ppos = strchr(*name, '.')) && ppos[1]) {
         *ppos++ = '\0';
-        number = strdup( *name );
+        number = memstrdup( *name );
         *name = ppos;
 
         retval = (int)strtol( number, &ppos, 10 );

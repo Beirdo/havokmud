@@ -53,15 +53,16 @@ int             plr_tick_count = 0;
 
 BalancedBTree_t    *commandName;
 BalancedBTree_t    *commandNum;
+BalancedBTree_t    *fillWords;
 
 char *get_argument(char *line_in, char **arg_out);
 char *get_argument_nofill(char *line_in, char **arg_out);
 char *get_argument_delim(char *line_in, char **arg_out, char delim);
 char *get_argument_common(char *line_in, char **arg_out, int do_fill,
                           char delim);
-int is_number(char *str);
+bool is_number(char *str);
 int special(struct char_data *ch, int cmd, char *arg);
-int fill_word(char *argument);
+bool fill_word(char *argument);
 
 /**
  * @brief Runs when somebody has just logged in (not from linkdead)
@@ -194,7 +195,7 @@ void CommandParser( PlayerStruct_t *player, char *line )
 
         sprintf(arg, "%c %s", *line, &(line[1]));
     } else {
-        arg = strdup( line );
+        arg = memstrlink( line );
         if( !arg ) {
             LogPrintNoArg( LOG_CRIT, "Nasty error in command_interpreter!!!" );
             return;
@@ -409,7 +410,7 @@ char *get_argument_common(char *line_in, char **arg_out, int do_fill,
 
 
 
-int is_number(char *str)
+bool is_number(char *str)
 {
     if (*str == '\0') {
         return (FALSE);
@@ -423,7 +424,7 @@ int is_number(char *str)
 }
 
 
-char           *fill[] = { 
+static char     *fill[] = { 
     "in",
     "from",
     "with",
@@ -433,20 +434,38 @@ char           *fill[] = {
     "to",
     "\n"
 };
+static int       fillCount = NELEMENTS(fill);
 
-/**
- * @todo Rework this monstrosity to use btrees?
- */
-int fill_word(char *argument)
+void initializeFillWords( void )
 {
-    return (search_block(argument, fill, TRUE) >= 0);
+    int i;
+    BalancedBTreeItem_t *item;
+
+    fillWords = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+
+    BalancedBTreeLock( fillWords );
+
+    for( i = 0; i < fillCount; i++ ) {
+        item = CREATE(BalancedBTreeItem_t);
+        item->key  = &fill[i];
+        item->item = fill[i];
+        BalancedBTreeAdd( fillWords, item, LOCKED, FALSE );
+    }
+    BalancedBTreeAdd( fillWords, NULL, LOCKED, TRUE );
+
+    BalancedBTreeUnlock( fillWords );
 }
 
+bool fill_word(char *argument)
+{
+    BalancedBTreeItem_t *item;
 
-/**
- * @todo Rework this monstrosity
- * @todo redo the AntiSunItem part
- */
+    BalancedBTreeLock( fillWords );
+    item = BalancedBTreeFind( fillWords, &argument, LOCKED, FALSE );
+    BalancedBTreeUnlock( fillWords );
+    return( (item ? TRUE : FALSE) );
+}
+
 int special(struct char_data *ch, int cmd, char *arg)
 {
     register struct obj_data   *i;
