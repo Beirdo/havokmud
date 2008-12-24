@@ -127,7 +127,7 @@ Keywords_t *StringToKeywords( char *string, Keywords_t *key )
                 key->exact = FALSE;
             }
         }
-        key->words[key->count-1] = strndup( string, len );
+        key->words[key->count-1] = memstrnlink( string, len );
         key->length[key->count-1] = len;
     }
 

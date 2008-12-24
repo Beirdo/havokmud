@@ -485,6 +485,26 @@ char *memstrdup( char *orig )
 }
 
 
+char *memstrnlink( char *orig, int len )
+{
+    char                   *shortorig;
+    char                   *retstring;
+
+    /* used when linking to a common string is acceptable (consumer is NOT
+     * changing either copy)
+     */
+    shortorig = CREATEN( char, len + 1 );
+    strncpy( shortorig, orig, len );
+    shortorig[len] = '\0';
+
+    retstring = memstrlink( shortorig );
+
+    memfree( shortorig );
+
+    return( retstring );
+}
+
+
 char *memstrlink( char *orig )
 {
     int                     len;
