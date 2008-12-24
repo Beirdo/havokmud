@@ -36,7 +36,6 @@
 #include "interthread.h"
 #include "queue.h"
 #include "logging.h"
-#include <libesmtp.h>
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -75,9 +74,6 @@ static PlayingThreadArgs_t immortPlayingArgs = { "ImmortalPlayingThread", NULL};
 
 void StartThreads( void )
 {
-    char buffer[256];
-    int  buflen = 256;
-
     LoggingQ      = QueueCreate( 1024 );
     ConnectInputQ = QueueCreate( 256 );
     ConnectDnsQ   = QueueCreate( 64 );
@@ -115,10 +111,6 @@ void StartThreads( void )
     
     sleep(1);
     db_check_schema_main();
-
-    smtp_version(buffer, buflen, 0);
-    LogPrint( LOG_INFO, "SMTP Version %s", buffer );
-
 
     pthread_join( mysqlThreadId, NULL );
     pthread_join( immortPlayingThreadId, NULL );
