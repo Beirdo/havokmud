@@ -315,7 +315,7 @@ void show_menu(PlayerStruct_t *player)
 
 void show_account_menu(PlayerStruct_t *player)
 {
-    SendOutput(player, "$c0009-=$c0015Havok Account Menu [%s]"
+    SendOutput(player, "\n\r\n\r$c0009-=$c0015Havok Account Menu [%s]"
                        "$c0009=-\n\r\n\r", player->account->email);
     SendOutput(player, "$c00151) $c0012ANSI Colors.\n\r");
     SendOutput(player, "$c00152) $c0012Change your password.\n\r");
@@ -324,6 +324,8 @@ void show_account_menu(PlayerStruct_t *player)
     SendOutput(player, "$c00155) $c0012Create a new character.\n\r");
     SendOutput(player, "$c00156) $c0012Play an existing character.\n\r");
 
+    SendOutput(player, "$c0015E) $c0012Enter email confirmation code.\n\r");
+    SendOutput(player, "$c0015R) $c0012Resend the confirmation email.\n\r");
     SendOutput(player, "$c0015Q) $c0012Quit!\n\r\n\r");
     SendOutput(player, "$c0011Please pick an option: \n\r");
 }
@@ -369,14 +371,32 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Would you like ansi colors? (Yes or No)");
         break;
     case STATE_SHOW_MOTD:
+#if 1
+        if( !motd ) {
+            motd = memstrlink("MOTD will be eventually read from the "
+                              "database.\n\r\n\r");
+        }
+#endif
         SendOutput(player, motd);
         SendOutput(player, "\n\r\n[PRESS RETURN]");
         break;
     case STATE_SHOW_WMOTD:
+#if 1
+        if( !wmotd ) {
+            wmotd = memstrlink("WMOTD will be eventually read from the "
+                               "database.\n\r\n\r");
+        }
+#endif
         SendOutput(player, wmotd);
         SendOutput(player, "\n\r\n[PRESS RETURN]");
         break;
     case STATE_SHOW_CREDITS:
+#if 1
+        if( !credits ) {
+            credits = memstrlink("Credits will be eventually read from the "
+                                 "database.\n\r\n\r");
+        }
+#endif
         SendOutput(player, credits);
         SendOutput(player, "\n\r\n[PRESS RETURN]");
         break;
@@ -389,6 +409,14 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     case STATE_GET_NEW_PASSWORD:
         SendOutput(player, "Enter a new password: ");
         SendOutputRaw(player, echo_off, 4);
+        break;
+    case STATE_ENTER_CONFIRM_CODE:
+        SendOutput(player, "Please enter the confirmation code you were "
+                           "emailed:  ");
+        break;
+    case STATE_RESEND_CONFIRM_EMAIL:
+        SendOutput(player, "Resending your confirmation email...\n\r");
+        /** todo actually build and send the email. */
         break;
 
     case STATE_CHOOSE_SEX:
@@ -1266,11 +1294,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         break;
 
     default:
-        LogPrint(LOG_NOTICE, "Nanny: illegal state of con'ness (%d)", 
-                 player->state);
+        LogPrint(LOG_NOTICE, "Illegal state (%d)", player->state);
         SendOutput(player, "The mud has lost its brain on your connection, "
                            "please reconnect.\n\r");
-        connClose( player->connection, UNLOCKED );
+        EnterState(player, STATE_WIZLOCKED);
         break;
     }
 }
@@ -1395,6 +1422,16 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
     case '6':
         EnterState(player, STATE_PLAYING);
         break;
+    case 'e':
+    case 'E':
+        EnterState(player, STATE_ENTER_CONFIRM_CODE);
+        break;
+    case 'r':
+    case 'R':
+        EnterState(player, STATE_RESEND_CONFIRM_EMAIL);
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        break;
+
     case 'q':
     case 'Q':
         SendOutput(player, "Thanks for dropping by, seeya later!\n\r");
