@@ -112,12 +112,13 @@ void StartThreads( void )
 
     thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
 
-    sleep(1);
+    usleep(10000);
+
     db_check_schema_main();
 
     thread_create( &smtpThreadId, SmtpThread, NULL, "SMTPThread", NULL );
 
-    sleep(1);
+    usleep(1000);
 
     pthread_join( smtpThreadId, NULL );
     pthread_join( mysqlThreadId, NULL );

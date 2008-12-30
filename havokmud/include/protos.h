@@ -265,6 +265,19 @@ void db_check_schema( char *setting, char *desc, int codeSupports,
                       QueryTable_t *defSchema, int defSchemaCount, 
                       SchemaUpgrade_t *schemaUpgrade );
 
+/*
+ * From md5c.c
+ */
+void *opiemd5init(void);
+void opiemd5update(void *ctx, unsigned char *input, unsigned int inputLen);
+void opiemd5final(unsigned char *digest, void *ctx);
+
+/*
+ * From btoe.c
+ */
+char *opiebtoe (char *engout, char *c);
+int opieetob ( char *out, char *e );
+
 
 /*************************************************************************
  * Support for different platforms
