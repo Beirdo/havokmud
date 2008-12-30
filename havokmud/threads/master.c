@@ -47,6 +47,7 @@ QueueObject_t *InputEditorQ;    /**< between Input and Editor threads */
 QueueObject_t *InputPlayerQ;    /**< between Input and Player threads */
 QueueObject_t *InputImmortQ;    /**< between Input and Immortal threads */
 QueueObject_t *LoggingQ;        /**< feeds the Logging thread */
+QueueObject_t *MailQ;           /**< outbound emails */
 
 pthread_t mainThreadId;
 static pthread_t connectionThreadId;
@@ -58,6 +59,7 @@ static pthread_t loggingThreadId;
 static pthread_t mortalPlayingThreadId;
 static pthread_t immortPlayingThreadId;
 static pthread_t mysqlThreadId;
+static pthread_t smtpThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
@@ -81,6 +83,7 @@ void StartThreads( void )
     InputEditorQ  = QueueCreate( 256 );
     InputPlayerQ  = QueueCreate( 256 );
     InputImmortQ  = QueueCreate( 256 );
+    MailQ         = QueueCreate( 128 );
 
     mainThreadId = pthread_self();
     thread_register( &mainThreadId, "MainThread", NULL );
@@ -108,10 +111,15 @@ void StartThreads( void )
                    "ImmortPlayingThread", NULL );
 
     thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
-    
+
     sleep(1);
     db_check_schema_main();
 
+    thread_create( &smtpThreadId, SmtpThread, NULL, "SMTPThread", NULL );
+
+    sleep(1);
+
+    pthread_join( smtpThreadId, NULL );
     pthread_join( mysqlThreadId, NULL );
     pthread_join( immortPlayingThreadId, NULL );
     pthread_join( mortalPlayingThreadId, NULL );

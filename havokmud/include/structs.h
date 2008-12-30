@@ -76,6 +76,8 @@ typedef enum {
     STATE_SHOW_ACCOUNT_MENU,     /**< Show the account menu */
     STATE_GET_NEW_PASSWORD,      /**< Get a new password */
     STATE_CONFIRM_NEW_PASSWORD,  /**< Confirm the new password */
+    STATE_ENTER_CONFIRM_CODE,    /**< Prompt for emailed confirmation code */
+    STATE_RESEND_CONFIRM_EMAIL,  /**< Resend the emailed confirmation code */
 /* sorted to here */
     STATE_NEW_CHAR,
     STATE_CONFIRM_NEW_CHAR,
@@ -797,6 +799,13 @@ typedef struct {
     SigFunc_t               sighupFunc; 
     void                   *sighupArg; 
 } ThreadCallback_t; 
+
+typedef struct {
+    PlayerStruct_t         *player;
+    char                   *subject;
+    char                   *body;
+    int                     bodyind;
+} MailItem_t;
 
 
 #endif

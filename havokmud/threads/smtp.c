@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
- * $Id: playing.c 1737 2008-12-12 20:11:52Z gjhurlbu $
+ * $Id$
  *
  * Copyright 2008 Gavin Hurlbut
  * All rights reserved
@@ -39,10 +39,17 @@
 #include "memory.h"
 #include "protos.h"
 #include <libesmtp.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <string.h>
 
 static char ident[] _UNUSED_ =
-    "$Id: playing.c 1737 2008-12-12 20:11:52Z gjhurlbu $";
+    "$Id$";
 
+void event_cb( smtp_session_t session, int event_no, void *arg, ... );
+const char *message_cb( void **buf, int *len, void *arg );
+void print_recipient_status( smtp_recipient_t recipient, const char *mailbox,
+                             void *arg );
 
 /**
  * @brief Thread to handle SMTP for sending mail to users
@@ -59,9 +66,11 @@ void *SmtpThread( void *arg )
     smtp_session_t      session;
     smtp_message_t      message;
     smtp_recipient_t    recipient;
+    smtp_status_t      *status;
     char               *hostname;
     char               *server;
     char               *fromAddr;
+    struct sigaction    sa;
 
     smtp_version(buffer, 256, 0);
     LogPrint( LOG_INFO, "SMTP Version %s", buffer );
@@ -70,41 +79,133 @@ void *SmtpThread( void *arg )
 
     hostname = db_get_setting( "smtpHostname" );
     if( !hostname ) {
-        LogPrint( LOG_CRIT, "No SMTP Hostname defined! );
+        LogPrintNoArg( LOG_CRIT, "No SMTP Hostname defined!" );
         return( NULL );
     }
     smtp_set_hostname( session, hostname );
 
     server = db_get_setting( "smtpServer" );
     if( !server ) {
-        LogPrint( LOG_CRIT, "No SMTP Server defined! );
+        LogPrintNoArg( LOG_CRIT, "No SMTP Server defined!" );
         return( NULL );
     }
     smtp_set_server( session, server );
 
     fromAddr = db_get_setting( "smtpFrom" );
     if( !fromAddr ) {
-        LogPrint( LOG_CRIT, "No SMTP From Address defined! );
+        LogPrintNoArg( LOG_CRIT, "No SMTP From Address defined!" );
         return( NULL );
     }
-    smtp_set_reverse_path( session, fromAddr );
 
+    /** Todo: move this earlier?
+     * Ignore SIGPIPE as the remote server could disconnect at any time
+     */
+    sa.sa_handler = SIG_IGN;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction( SIGPIPE, &sa, NULL);
+
+    smtp_set_eventcb( session, event_cb, NULL );
 
     while( 1 ) {
-        item = (MailItem_t *)QueueDequeueItem( mailQ, -1 );
+        item = (MailItem_t *)QueueDequeueItem( MailQ, -1 );
         player = item->player;
 
         message = smtp_add_message( session );
+        smtp_set_reverse_path( message, fromAddr );
         recipient = smtp_add_recipient( message, 
                                         (const char *)player->account->email );
+        smtp_set_header( message, "To", NULL, NULL );
+        smtp_set_header( message, "Subject", item->subject );
+        smtp_set_header_option( message, "Subject", Hdr_OVERRIDE, 1 );
+
+        smtp_set_messagecb( message, message_cb, item );
+        smtp_dsn_set_notify( recipient, 
+                             Notify_SUCCESS | Notify_FAILURE | Notify_DELAY );
+
+        if( !smtp_start_session(session) ) {
+            char buf[128];
+            LogPrint( LOG_INFO, "SMTP Server problem: %s",
+                      smtp_strerror(smtp_errno(), buf, 128) );
+        } else {
+            status = (smtp_status_t *)smtp_message_transfer_status(message);
+            LogPrint( LOG_INFO, "SMTP: %d %s", status->code,
+                      (status->text ? status->text : "") );
+            smtp_enumerate_recipients(message, print_recipient_status, NULL);
+        }
 
 /** TODO: add the rest of the code */
+        memfree( item->body );
+        memfree( item->subject );
         memfree( item );
     }
 
     smtp_destroy_session(session);
 
     return( NULL );
+}
+
+void event_cb( smtp_session_t session, int event_no, void *arg, ... )
+{
+    va_list     alist;
+
+    va_start(alist, arg);
+    switch( event_no ) {
+    case SMTP_EV_CONNECT:
+    case SMTP_EV_MAILSTATUS:
+    case SMTP_EV_MESSAGEDATA:
+    case SMTP_EV_MESSAGESENT:
+    case SMTP_EV_DISCONNECT:
+        break;
+
+    case SMTP_EV_WEAK_CIPHER:
+    case SMTP_EV_STARTTLS_OK:
+    case SMTP_EV_INVALID_PEER_CERTIFICATE:
+    case SMTP_EV_NO_PEER_CERTIFICATE:
+    case SMTP_EV_WRONG_PEER_CERTIFICATE:
+    case SMTP_EV_NO_CLIENT_CERTIFICATE:
+        break;
+
+    default:
+        break;
+    }
+
+    LogPrint( LOG_INFO, "SMTP event %d", event_no );
+
+    va_end(alist);
+}
+
+const char *message_cb( void **buf, int *len, void *arg )
+{
+    MailItem_t *item;
+    int         bodylen;
+
+    *buf = NULL;
+    item = (MailItem_t *)arg;
+
+    if( !len ) {
+        /* This is a buffer rewind */
+        item->bodyind = 0;
+        return( NULL );
+    }
+
+    bodylen = strlen( item->body );
+    if( item->bodyind >= bodylen ) {
+        return( NULL );
+    }
+
+    item->bodyind = bodylen;
+    *len = bodylen;
+    return( (const char *)item->body );
+}
+
+void print_recipient_status( smtp_recipient_t recipient, const char *mailbox,
+                             void *arg )
+{
+    const smtp_status_t *status;
+    status = smtp_recipient_status(recipient);
+    LogPrint( LOG_INFO, "SMTP: %s: %d %s", mailbox, status->code, 
+              status->text );
 }
 
 /*

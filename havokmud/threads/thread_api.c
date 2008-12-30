@@ -86,9 +86,12 @@ void thread_create( pthread_t *pthreadId, void * (*routine)(void *),
                     void *arg, char *name, ThreadCallback_t *callbacks )
 {
     pthread_create( pthreadId, NULL, routine, arg );
+#ifdef __CYGWIN__
+    usleep(1000);
+#endif
     thread_register( pthreadId, name, callbacks );
 #ifdef __CYGWIN__
-    usleep(10000);
+    usleep(1000);
 #endif
 }
 
