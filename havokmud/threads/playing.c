@@ -67,6 +67,9 @@ void *PlayingThread( void *arg )
 
     me = (PlayingThreadArgs_t *)arg;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     while( 1 ) {
         item = (InputStateItem_t *)QueueDequeueItem( me->inputQ, -1 );
         player = item->player;

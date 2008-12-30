@@ -128,6 +128,9 @@ void *LoggingThread( void *arg )
     LoggingItem_t      *item;
     char               *bg, *fg, *dbg, *dfg;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     thread_colors( mainThreadId, &dbg, &dfg );
 
     while( 1 ) {

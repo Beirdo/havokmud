@@ -136,6 +136,8 @@ extern BalancedBTree_t *objectTypeTree;
 /*
  * Prototypes of the thread entry points
  */
+extern pthread_mutex_t *startupMutex;
+
 void *ConnectionThread( void *arg );
 void *InputThread( void *arg );
 void *LoginThread( void *arg );

@@ -72,8 +72,11 @@ void *SmtpThread( void *arg )
     char               *fromAddr;
     struct sigaction    sa;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     smtp_version(buffer, 256, 0);
-    LogPrint( LOG_INFO, "SMTP Version %s", buffer );
+    LogPrint( LOG_INFO, "libESMTP Version %s", buffer );
 
     session = smtp_create_session();
 

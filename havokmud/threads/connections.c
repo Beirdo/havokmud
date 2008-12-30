@@ -105,6 +105,9 @@ void *ConnectionThread( void *arg )
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     LogPrint( LOG_NOTICE, "Listening on port %d", portNum );
 
     /*

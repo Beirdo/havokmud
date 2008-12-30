@@ -78,6 +78,9 @@ void *InputThread( void *arg )
 
     PlayerList = LinkedListCreate(NULL);
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     while( 1 ) {
         connItem = (ConnInputItem_t *)QueueDequeueItem( ConnectInputQ, -1 );
         player = connItem->player;

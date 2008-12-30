@@ -45,6 +45,8 @@ extern pthread_t    mainThreadId;
 extern pthread_t    cursesOutThreadId;
 static int threadCount = 0;
 
+pthread_mutex_t    *startupMutex = NULL;
+
 #if 1
 /** todo: add the curses interface **/
 pthread_t    cursesOutThreadId;
@@ -85,14 +87,15 @@ int thread_mutex_init( pthread_mutex_t *mutex )
 void thread_create( pthread_t *pthreadId, void * (*routine)(void *), 
                     void *arg, char *name, ThreadCallback_t *callbacks )
 {
+    if( !startupMutex ) {
+        startupMutex = CREATE(pthread_mutex_t);
+        thread_mutex_init( startupMutex );
+    }
+
+    pthread_mutex_lock( startupMutex );
     pthread_create( pthreadId, NULL, routine, arg );
-#ifdef __CYGWIN__
-    usleep(1000);
-#endif
     thread_register( pthreadId, name, callbacks );
-#ifdef __CYGWIN__
-    usleep(1000);
-#endif
+    pthread_mutex_unlock( startupMutex );
 }
 
 void thread_register( pthread_t *pthreadId, char *name, 

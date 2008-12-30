@@ -59,6 +59,9 @@ void *LoginThread( void *arg )
     char               *line;
     InputStateType_t    type;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     while( 1 ) {
         item = (InputStateItem_t *)QueueDequeueItem( InputLoginQ, -1 );
         player = item->player;

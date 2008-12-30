@@ -98,6 +98,9 @@ void *MysqlThread( void *arg )
     bool                connected;
     long                insertid;
 
+    pthread_mutex_lock( startupMutex );
+    pthread_mutex_unlock( startupMutex );
+
     db_setup();
 
     mysql_thread_init();
