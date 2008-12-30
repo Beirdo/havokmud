@@ -175,6 +175,11 @@ void ThreadAllKill( int signum );
 SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg ); 
 
 
+/*
+ * From smtp.c
+ */
+void send_email( PlayerStruct_t *player, char *subject, char *body );
+
 #endif
 
 /*

@@ -33,7 +33,7 @@
 static char db_schema_h_ident[] _UNUSED_ = 
     "$Id$";
 
-#define CURRENT_SCHEMA  1
+#define CURRENT_SCHEMA  2
 
 
 static QueryTable_t defCoreSchema[] = {
@@ -47,8 +47,11 @@ static QueryTable_t defCoreSchema[] = {
     "  `email` VARCHAR( 255 ) NOT NULL ,\n"
     "  `passwd` VARCHAR( 10 ) NOT NULL ,\n"
     "  `ansi` TINYINT NOT NULL DEFAULT 0,\n"
+    "  `confirmed` TINYINT NOT NULL DEFAULT 0,\n"
+    "  `confcode` VARCHAR( 255 ) NOT NULL , \n"
     "  PRIMARY KEY ( `id` ) ,\n"
-    "  INDEX ( `email` )\n"
+    "  INDEX ( `email` ) ,\n"
+    "  INDEX ( `confcode` ) \n"
     "  )\n", NULL, NULL, FALSE }
 };
 static int defCoreSchemaCount = NELEMENTS(defCoreSchema);

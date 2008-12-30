@@ -121,6 +121,8 @@ typedef struct {
     char               *pwd;
     char               *newpwd;
     bool                ansi;
+    bool                confirmed;
+    char               *confcode;
 } PlayerAccount_t;
 
 typedef struct _PlayerStruct_t

@@ -43,8 +43,13 @@ static char ident[] _UNUSED_ =
 
 static SchemaUpgrade_t coreSchemaUpgrade[CURRENT_SCHEMA] = {
     /* 0 -> 1 */
-    { { NULL, NULL, NULL, FALSE } }
+    { { NULL, NULL, NULL, FALSE } },
     /* 1 -> 2 */
+    { { "ALTER TABLE `accounts` ADD `confirmed` TINYINT DEFAULT 0 NOT NULL ,\n"
+        "ADD `confcode` VARCHAR( 255 ) NOT NULL ,\n"
+        "ADD KEY ( `confcode` )\n", NULL, NULL, FALSE },
+      { NULL, NULL, NULL, FALSE } }
+    /* 2 -> 3 */
 };
 
 /* Internal protos */

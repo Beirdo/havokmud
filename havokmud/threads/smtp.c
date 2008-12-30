@@ -211,6 +211,23 @@ void print_recipient_status( smtp_recipient_t recipient, const char *mailbox,
               status->text );
 }
 
+void send_email( PlayerStruct_t *player, char *subject, char *body )
+{
+    MailItem_t    *item;
+
+    if( !player || !subject || !body ) {
+        return;
+    }
+
+    item = CREATE(MailItem_t);
+    item->player  = player;
+    item->subject = memstrlink( subject );
+    item->body    = memstrlink( body );
+
+    QueueEnqueueItem( MailQ, (QueueItem_t *)item );
+}
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

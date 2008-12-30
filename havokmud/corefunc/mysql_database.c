@@ -77,17 +77,17 @@ QueryTable_t QueryTable[] = {
     { "INSERT INTO `settings` (`name`, `value`) VALUES (?, ?)", NULL, NULL,
       FALSE },
     /* 4 */
-    { "SELECT `id`, `email`, `passwd`, `ansi`  FROM `accounts` "
-      "WHERE `email` = ?", NULL, NULL, FALSE },
+    { "SELECT `id`, `email`, `passwd`, `ansi`, `confirmed`, `confcode` "
+      "FROM `accounts` WHERE `email` = ?", NULL, NULL, FALSE },
     /* 5 */
-    { "SELECT `id`, `email`, `passwd`, `ansi`  FROM `accounts` "
-      "WHERE `id` = ?", chain_save_account, NULL, FALSE },
+    { "SELECT `id`, `email`, `passwd`, `ansi`, `confirmed`, `confcode` "
+      "FROM `accounts` WHERE `id` = ?", chain_save_account, NULL, FALSE },
     /* 6 */
-    { "UPDATE `accounts` SET `email` = ?, `passwd` = ?, `ansi` = ? "
-      "WHERE `id` = ?", NULL, NULL, FALSE },
+    { "UPDATE `accounts` SET `email` = ?, `passwd` = ?, `ansi` = ?, "
+      "`confirmed` = ?, `confcode` = ? WHERE `id` = ?", NULL, NULL, FALSE },
     /* 7 */
-    { "INSERT INTO `accounts` (`id`, `email`, `passwd`, `ansi`) "
-      "VALUES (?, ?, ?, ?)",
+    { "INSERT INTO `accounts` (`id`, `email`, `passwd`, `ansi`, `confirmed`, "
+      "`confcode`) VALUES (?, ?, ?, ?, ?, ?)",
       NULL, NULL, FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
@@ -175,15 +175,18 @@ void db_save_account( PlayerAccount_t *account )
         return;
     }
 
-    data = CREATEN(MYSQL_BIND, 5);
+    data = CREATEN(MYSQL_BIND, 7);
 
     bind_numeric( &data[0], account->id, MYSQL_TYPE_LONG );
     bind_string( &data[1], account->email, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[2], account->pwd, MYSQL_TYPE_VAR_STRING );
     bind_numeric( &data[3], (account->ansi ? 1 : 0), MYSQL_TYPE_TINY );
-    bind_null_blob( &data[4], account );
+    bind_numeric( &data[4], (account->confirmed ? 1 : 0), MYSQL_TYPE_TINY );
+    bind_string( &data[5], (account->confcode ? account->confcode : ""), 
+                 MYSQL_TYPE_VAR_STRING );
+    bind_null_blob( &data[6], account );
 
-    db_queue_query( 5, QueryTable, data, 5, NULL, NULL, NULL );
+    db_queue_query( 5, QueryTable, data, 7, NULL, NULL, NULL );
 }
 
 
@@ -204,10 +207,10 @@ void chain_set_setting( MYSQL_RES *res, QueryItem_t *item )
     
     if( count ) {
         /* update */
-        /* Swap the order of the two parameters */
-        memcpy( temp, data, sizeof( MYSQL_BIND ) );
-        memcpy( data, &data[1], sizeof( MYSQL_BIND ) );
-        memcpy( &data[1], temp, sizeof( MYSQL_BIND ) );
+        /* Swap the arguments around */
+        memcpy( temp,     &data[0], sizeof(MYSQL_BIND) );
+        memcpy( &data[0], &data[1], sizeof(MYSQL_BIND) );
+        memcpy( &data[1], temp,     sizeof(MYSQL_BIND) );
         db_queue_query( 2, QueryTable, data, 2, NULL, NULL, NULL );
     } else {
         /* insert */
@@ -227,18 +230,18 @@ void chain_save_account( MYSQL_RES *res, QueryItem_t *item )
         count = 0;
     }
 
-    account = (PlayerAccount_t *)data[4].buffer;
+    account = (PlayerAccount_t *)data[6].buffer;
     
     if( count ) {
         /* update */
-        /* Swap the order of the two parameters */
-        memcpy( temp, data, sizeof( MYSQL_BIND ) );
-        memmove( data, &data[1], sizeof( MYSQL_BIND ) * 3 );
-        memcpy( &data[3], temp, sizeof( MYSQL_BIND ) );
-        db_queue_query( 6, QueryTable, data, 4, NULL, NULL, NULL );
+        /* swap argument order */
+        memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
+        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 5 );
+        memcpy(  &data[5], temp,     sizeof(MYSQL_BIND) );
+        db_queue_query( 6, QueryTable, data, 6, NULL, NULL, NULL );
     } else {
         /* insert */
-        db_queue_query( 7, QueryTable, data, 4, result_insert_account, account,
+        db_queue_query( 7, QueryTable, data, 6, result_insert_account, account,
                         NULL );
     }
 }
@@ -288,10 +291,12 @@ void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     row = mysql_fetch_row(res);
 
     account = CREATE(PlayerAccount_t);
-    account->id    = atoi(row[0]);
-    account->email = memstrdup(row[1]);
-    account->pwd   = memstrdup(row[2]);
-    account->ansi  = (atoi(row[3]) ? TRUE : FALSE);
+    account->id        = atoi(row[0]);
+    account->email     = memstrdup(row[1]);
+    account->pwd       = memstrdup(row[2]);
+    account->ansi      = (atoi(row[3]) ? TRUE : FALSE);
+    account->confirmed = (atoi(row[4]) ? TRUE : FALSE);
+    account->confcode  = memstrdup(row[5]);
     *resp = account;
 }
 

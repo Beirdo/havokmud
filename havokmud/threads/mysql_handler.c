@@ -448,6 +448,10 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
         args++;
     } while( insert );
 
+#ifdef LOG_QUERIES
+    LogPrint( LOG_INFO, "MySQL Query: %s", sqlbuf );
+#endif
+
     if( mysql_query(item->sql, sqlbuf) != 0 ) {
         retval = mysql_errno(item->sql);
         LogPrint( LOG_CRIT, "MySQL error %d: %s", retval, 

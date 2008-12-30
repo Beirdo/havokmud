@@ -39,6 +39,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "protected_data.h"
+#include <time.h>
+#include <sys/time.h>
 
 #include "oldstructs.h"
 #include "oldutils.h"
@@ -60,6 +62,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg );
 void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
+void CreateSendConfirmEmail( PlayerStruct_t *player );
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
@@ -321,11 +324,15 @@ void show_account_menu(PlayerStruct_t *player)
     SendOutput(player, "$c00152) $c0012Change your password.\n\r");
     SendOutput(player, "$c00153) $c0012View the MOTD.\n\r");
     SendOutput(player, "$c00154) $c0012View the credits.\n\r");
-    SendOutput(player, "$c00155) $c0012Create a new character.\n\r");
-    SendOutput(player, "$c00156) $c0012Play an existing character.\n\r");
+    if( player->account->confirmed ) {
+        SendOutput(player, "$c00155) $c0012Create a new character.\n\r");
+        SendOutput(player, "$c00156) $c0012Play an existing character.\n\r");
+    }
 
-    SendOutput(player, "$c0015E) $c0012Enter email confirmation code.\n\r");
-    SendOutput(player, "$c0015R) $c0012Resend the confirmation email.\n\r");
+    if( !player->account->confirmed ) {
+        SendOutput(player, "$c0015E) $c0012Enter email confirmation code.\n\r");
+        SendOutput(player, "$c0015R) $c0012Resend the confirmation email.\n\r");
+    }
     SendOutput(player, "$c0015Q) $c0012Quit!\n\r\n\r");
     SendOutput(player, "$c0011Please pick an option: \n\r");
 }
@@ -415,8 +422,12 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
                            "emailed:  ");
         break;
     case STATE_RESEND_CONFIRM_EMAIL:
-        SendOutput(player, "Resending your confirmation email...\n\r");
-        /** todo actually build and send the email. */
+        if( !player->account->confcode || !*player->account->confcode ) {
+            SendOutput(player, "Sending your confirmation email...\n\r");
+        } else {
+            SendOutput(player, "Resending your confirmation email...\n\r");
+        }
+	CreateSendConfirmEmail(player);
         break;
 
     case STATE_CHOOSE_SEX:
@@ -734,8 +745,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
             break;
         }
-        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         db_save_account(player->account);
+        if( !player->account->confcode || !*player->account->confcode ) {
+            EnterState(player, STATE_RESEND_CONFIRM_EMAIL);
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        } else {
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        }
         break;
 
     case STATE_SHOW_MOTD:
@@ -855,6 +871,31 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
 
+    case STATE_ENTER_CONFIRM_CODE:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            SendOutput(player, "Entry aborted\n\r");
+            EnterState( player, STATE_SHOW_ACCOUNT_MENU);
+            return;
+        }
+
+        if( player->account->confcode && *player->account->confcode &&
+            !strcasecmp(arg, player->account->confcode) ) {
+            SendOutput(player, "\n\rYour email is now confirmed, you can now "
+                               "play.  Thank you!\n\r");
+            player->account->confirmed = TRUE;
+            memfree( player->account->confcode );
+            player->account->confcode = NULL;
+            db_save_account( player->account );
+        } else {
+            SendOutput(player, "\n\rConfirmation code does not match our "
+                               "records.  Please try again,\n\r"
+                               "or resend the confirmation email.\n\r" );
+            player->account->confirmed = FALSE;
+            db_save_account( player->account );
+        }
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        break;
 
     case STATE_SHOW_CREATION_MENU:
         arg = skip_spaces(arg);
@@ -1417,19 +1458,27 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
         EnterState(player, STATE_SHOW_CREDITS);
         break;
     case '5':
-        EnterState(player, STATE_NEW_CHAR);
+        if( player->account->confirmed ) {
+            EnterState(player, STATE_NEW_CHAR);
+        }
         break;
     case '6':
-        EnterState(player, STATE_PLAYING);
+        if( player->account->confirmed ) {
+            EnterState(player, STATE_PLAYING);
+        }
         break;
     case 'e':
     case 'E':
-        EnterState(player, STATE_ENTER_CONFIRM_CODE);
+        if( !player->account->confirmed ) {
+	    EnterState(player, STATE_ENTER_CONFIRM_CODE);
+        }
         break;
     case 'r':
     case 'R':
-        EnterState(player, STATE_RESEND_CONFIRM_EMAIL);
-        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        if( !player->account->confirmed ) {
+            EnterState(player, STATE_RESEND_CONFIRM_EMAIL);
+            EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        }
         break;
 
     case 'q':
@@ -1727,6 +1776,47 @@ int SiteLock(char *site)
 }
 
 
+#define MAX_EMAIL_LEN 4196
+
+void CreateSendConfirmEmail( PlayerStruct_t *player )
+{
+    char            buffer[MAX_EMAIL_LEN];
+    struct timeval  now;
+    void           *ctx;
+    char            digest[8];
+
+    if( !player->account->confcode || !*player->account->confcode ) {
+        /* New email, create new confcode */
+        gettimeofday( &now, NULL );
+        snprintf( buffer, MAX_EMAIL_LEN, "==!%s!==!%ld!==", 
+                  player->account->email, now.tv_sec );
+        /* MD5 it */
+        ctx = opiemd5init();
+        opiemd5update(ctx, (unsigned char *)buffer, strlen(buffer));
+        opiemd5final((unsigned char *)digest, ctx);
+        /* Convert the MD5 digest into English words */
+        opiebtoe( buffer, digest );
+        if( player->account->confcode ) {
+            memfree( player->account->confcode );
+        }
+        player->account->confcode = memstrlink( buffer );
+        player->account->confirmed = FALSE;
+        db_save_account(player->account);
+    }
+
+    snprintf( buffer, MAX_EMAIL_LEN, 
+              "\r\n\r\nThank you for joining Havokmud.\r\n\r\n"
+              "To confirm that this email is active, please login to your "
+              "account, and enter\r\n"
+              "the following confirmation code in the account menu:\r\n\r\n"
+              "        %s\r\n\r\n"
+              "Please note that the order of the words is important, but not "
+              "the upper/lower\r\n"
+              "case of the letters.\r\n\r\n"
+              "Thanks.\r\n\r\n", player->account->confcode );
+
+    send_email( player, "Havokmud confirmation email", buffer );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
