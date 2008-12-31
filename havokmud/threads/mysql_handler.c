@@ -99,7 +99,6 @@ void *MysqlThread( void *arg )
     long                insertid;
 
     pthread_mutex_lock( startupMutex );
-    pthread_mutex_unlock( startupMutex );
 
     db_setup();
 
@@ -107,6 +106,7 @@ void *MysqlThread( void *arg )
 
     gettimeofday( &now, NULL );
     lastAccess = now.tv_sec;
+    pthread_mutex_unlock( startupMutex );
 
     while( !GlobalAbort ) {
         item = (QueryItem_t *)QueueDequeueItem( QueryQ, 1000 );

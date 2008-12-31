@@ -27,6 +27,7 @@ License Agreement applies to this software.
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define UINT4 uint32_t
 
