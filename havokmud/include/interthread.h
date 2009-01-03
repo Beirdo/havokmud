@@ -64,6 +64,7 @@ extern QueueObject_t *InputPlayerQ;
 extern QueueObject_t *InputImmortQ;
 extern QueueObject_t *LoggingQ;
 extern QueueObject_t *MailQ;
+extern QueueObject_t *QueryQ;
 
 extern BalancedBTree_t    *commandName;
 extern BalancedBTree_t    *commandNum;

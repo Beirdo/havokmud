@@ -68,8 +68,6 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
                      bool *connected, long *insertid );
 
 
-QueueObject_t   *QueryQ;
-
 char *mySQL_db     = NULL;
 char *mySQL_user   = NULL;
 char *mySQL_passwd = NULL;
@@ -248,9 +246,6 @@ void db_setup(void)
         exit(1);
 #endif
     }
-
-    QueryQ = QueueCreate( 1024 );
-
 }
 
 bool db_server_connect( MYSQL *mysql )
