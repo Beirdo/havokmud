@@ -67,8 +67,10 @@ void weather_and_time(int mode)
 
 void another_hour(int mode)
 {
-    char            moon[20],
-                    buf[100];
+    char            moon[20];
+#if 0
+    char            buf[100];
+#endif
     int             tmp;
 
     time_info.hours++;
@@ -94,10 +96,12 @@ void another_hour(int mode)
             } else {
                 strcpy(moon, "new");
             }
+#if 0
             switch_light(MOON_RISE);
             sprintf(buf, "The %s moon begins to rise from the western "
                          "horizon.\n\r", moon);
             send_to_outdoor(buf);
+#endif
             if (moontype > 16 && moontype < 22) {
                 /* 
                  * brighter during these moons 
@@ -108,31 +112,40 @@ void another_hour(int mode)
 
         if (tmp == gSunRise && !IS_SET(SystemFlags, SYS_ECLIPS)) {
             weather_info.sunlight = SUN_RISE;
+#if 0
             send_to_outdoor("The sun begins to rise from the western "
                             "horizon.\n\r");
+#endif
         }
 
         if (tmp == gSunRise + 1 && !IS_SET(SystemFlags, SYS_ECLIPS)) {
             weather_info.sunlight = SUN_LIGHT;
+#if 0
             switch_light(SUN_LIGHT);
             send_to_outdoor("The day has begun spreading light throughout the"
                             " land.\n\r");
+#endif
         }
 
         if (tmp == gSunSet && !IS_SET(SystemFlags, SYS_ECLIPS)) {
             weather_info.sunlight = SUN_SET;
+#if 0
             send_to_outdoor("The sun slowly disappears into the eastern "
                             "horizon.\n\r");
+#endif
         }
 
         if (tmp == gSunSet + 1) {
             weather_info.sunlight = SUN_DARK;
+#if 0
             switch_light(SUN_DARK);
             send_to_outdoor("The night has begun, dropping a blanket of "
                             "darkness.\n\r");
+#endif
         }
 
         if (tmp == gMoonSet) {
+#if 0
             switch_light(MOON_SET);
             if (moontype > 15 && moontype < 25) {
                 send_to_outdoor("Darkness once again fills the realm as the "
@@ -140,10 +153,13 @@ void another_hour(int mode)
             } else {
                 send_to_outdoor("The moon slowly sets.\n\r");
             }
+#endif
         }
 
         if (tmp == 12) {
+#if 0
             send_to_outdoor("The sun is directly above, it must be noon.\n\r");
+#endif
         }
 
         if (time_info.hours > 23) {
@@ -300,93 +316,18 @@ void weather_change()
         break;
     }
 
+#if 0
     ChangeWeather(change);
+#endif
 }
 
-void ChangeWeather(int change)
-{
-    if (change < 0) {
-        change = 0;
-    }
-    if (change > 7) {
-        change = 6;
-    }
-    switch (change) {
-    case 0:
-        break;
-    case 1:
-        send_to_outdoor("The sky is getting cloudy.\n\r");
-        weather_info.sky = SKY_CLOUDY;
-        break;
-    case 2:
-        if (time_info.month > 3 && time_info.month < 14) {
-            send_to_desert("A strong wind begins to sweep across the land\n\r");
-            send_to_arctic("It starts to snow\n\r");
-            send_to_out_other("It starts to rain.\n\r");
-        } else {
-            send_to_desert("A strong, cold wind begins to sweep across the "
-                           "land\n\r");
-            send_to_arctic("It starts to snow heavily.\n\r");
-            send_to_out_other("It starts to snow.\n\r");
-        }
-        weather_info.sky = SKY_RAINING;
-        break;
-    case 3:
-        send_to_outdoor("The clouds disappear.\n\r");
-        weather_info.sky = SKY_CLOUDLESS;
-        break;
-    case 4:
-        if (time_info.month > 3 && time_info.month < 14) {
-            send_to_desert("You are caught in a blinding sandstorm\n\r");
-            send_to_arctic("You are caught in a blinding blizzard\n\r");
-            send_to_out_other("You are caught in lightning storm.\n\r");
-        } else {
-            send_to_desert("You are caught in a blinding sandstorm\n\r");
-            send_to_arctic("You are caught in a blizzard\n\r");
-            send_to_out_other("You are caught in a blizzard. \n\r");
-        }
-        weather_info.sky = SKY_LIGHTNING;
-        break;
-    case 5:
-        if (time_info.month > 3 && time_info.month < 14) {
-            send_to_desert("The sandstorm slowly quiets\n\r");
-            send_to_arctic("The snowstorm slowly dies down\n\r");
-            send_to_out_other("The rainstorm slowly dies down\n\r");
-        } else {
-            send_to_desert("The sandstorm slowly quiets\n\r");
-            send_to_arctic("It has stopped snowing\n\r");
-            send_to_out_other("The snow has stopped. \n\r");
-        }
-        weather_info.sky = SKY_CLOUDY;
-        break;
-    case 6:
-        if (time_info.month > 3 && time_info.month < 14) {
-            send_to_desert("The sandstorm dies down, but the wind "
-                           "continues\n\r");
-            send_to_arctic("The blizzard has died down, but the snow "
-                           "continues\n\r");
-            send_to_out_other("The lightning has gone, but it is still "
-                              "raining.\n\r");
-        } else {
-            send_to_desert("The sandstorm dies down, but the wind "
-                           "continues\n\r");
-            send_to_arctic("The blizzard is over, but it is still "
-                           "snowing.\n\r");
-            send_to_out_other("The blizzard is over, but it is still "
-                              "snowing.\n\r");
-        }
-        weather_info.sky = SKY_RAINING;
-        break;
-    default:
-        break;
-    }
-}
 
 void GetMonth(int month)
 {
     if (month < 0) {
         return;
     }
+#if 0
     if (month <= 1) {
         send_to_outdoor(" It is bitterly cold outside\n\r");
     } else if (month <= 2) {
@@ -420,51 +361,8 @@ void GetMonth(int month)
         PulseMobiles(EVENT_WINTER);
 #endif
     }
+#endif
 }
-
-void switch_light(byte why)
-{
-    extern int      gLightLevel;
-
-    switch (why) {
-    case MOON_SET:
-        SysLogPrintNoArg( LOG_INFO, "setting all rooms to dark");
-        gLightLevel = 0;
-        break;
-    case SUN_LIGHT:
-        SysLogPrintNoArg( LOG_INFO, "setting all rooms to light");
-        gLightLevel = 4;
-        break;
-    case SUN_DARK:
-        SysLogPrintNoArg( LOG_INFO, "setting all rooms to dark");
-        gLightLevel = 0;
-        break;
-    case MOON_RISE:
-        SysLogPrintNoArg( LOG_INFO, "setting all non-forest to light");
-        gLightLevel = 1;
-        break;
-    default:
-        SysLogPrintNoArg( LOG_INFO, "Unknown switch on switch_light");
-        break;
-    }
-}
-
-int IsDarkOutside(struct room_data *rp)
-{
-    if (gLightLevel >= 4) {
-        return (FALSE);
-    }
-    if (IS_SET(rp->room_flags, INDOORS) || IS_SET(rp->room_flags, DEATH)) {
-        return (FALSE);
-    }
-    if (rp->sector_type == SECT_FOREST && gLightLevel <= 1) {
-        return (TRUE);
-    } else if (gLightLevel == 0) {
-        return (TRUE);
-    }
-    return (FALSE);
-}
-
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -518,14 +518,18 @@ void reset_time(void)
     case 4:
         {
             weather_info.sunlight = SUN_DARK;
+#if 0
             switch_light(MOON_SET);
+#endif
             break;
         }
     case 5:
     case 6:
         {
             weather_info.sunlight = SUN_RISE;
+#if 0
             switch_light(SUN_RISE);
+#endif
             break;
         }
     case 7:
@@ -555,8 +559,10 @@ void reset_time(void)
     case 23:
     default:
         {
-            switch_light(SUN_DARK);
             weather_info.sunlight = SUN_DARK;
+#if 0
+            switch_light(SUN_DARK);
+#endif
             break;
         }
     }

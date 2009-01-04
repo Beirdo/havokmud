@@ -687,9 +687,11 @@ bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
     if (ch->specials.true_sight) {
         return (TRUE);
     }
+#if 0
     if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, extra_flags, ITEM_GLOW)) {
         return (FALSE);
     }
+#endif
     if (ch->specials.detect_invis) {
         return (TRUE);
     }
@@ -699,10 +701,6 @@ bool objectIsVisible(struct char_data *ch, struct obj_data *obj)
     return (TRUE);
 }
 
-bool HasAntiBitsEquipment(struct char_data *ch, int bits)
-{
-    return( HasBitsEquipment(ch, bits, OFFSETOF(anti_class, struct obj_data)) );
-}
 
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset)
 {

@@ -416,50 +416,6 @@ typedef enum {
 #define ITEM_ANTI_MEN           BV(4)
 #define ITEM_ANTI_WOMEN         BV(5)
 
-/*
- * Bitvector for 'anti_class'
- */
-#define ITEM_ONLY_CLASS         BV(0)
-#define ITEM_ANTI_MAGE          BV(1)
-#define ITEM_ANTI_CLERIC        BV(2)
-#define ITEM_ANTI_FIGHTER       BV(3)
-#define ITEM_ANTI_THIEF         BV(4)
-#define ITEM_ANTI_DRUID         BV(5)
-#define ITEM_ANTI_MONK          BV(6)
-#define ITEM_ANTI_BARBARIAN     BV(7)
-#define ITEM_ANTI_SORCERER      BV(8)
-#define ITEM_ANTI_PALADIN       BV(9)
-#define ITEM_ANTI_RANGER        BV(10)
-#define ITEM_ANTI_PSI           BV(11)
-#define ITEM_ANTI_NECROMANCER   BV(12)
-
-/*
- * Some different kind of liquids
- */
-typedef enum {
-    LIQ_WATER = 0,
-    LIQ_BEER,
-    LIQ_WINE,
-    LIQ_ALE,
-    LIQ_DARKALE,
-    LIQ_WHISKY,
-    LIQ_LEMONADE,
-    LIQ_FIREBRT,
-    LIQ_LOCALSPC,
-    LIQ_SLIME,
-    LIQ_MILK,
-    LIQ_TEA,
-    LIQ_COFFEE,
-    LIQ_BLOOD,
-    LIQ_SALTWATER,
-    LIQ_COKE
-} LiquidTypes_t;
-
-/*
- * special addition for drinks
- */
-#define DRINK_POISON  BV(0)
-#define DRINK_PERM    BV(1)
 
 /*
  * for containers - value[1]
@@ -558,7 +514,6 @@ struct obj_data {
     long            wear_flags;     /**< Where you can wear it */
     long            extra_flags;    /**< If it hums, glows etc */
     long            anti_flags;     /**< Which things the item is anti */
-    long            anti_class;     /**< Which class(es) the item is anti */
 
     int             weight;         /**< Weight of the item */
     int             cost;           /**< Value when sold (gp.) */
@@ -681,37 +636,6 @@ typedef enum {
 #define EX_PICKPROOF    BV(5)
 #define EX_CLIMB        BV(6)
 
-/*
- * For 'Sector types'
- */
-
-typedef enum {
-    SECT_INSIDE = 0,
-    SECT_CITY,
-    SECT_FIELD,
-    SECT_FOREST,
-    SECT_HILLS,
-    SECT_MOUNTAIN,
-    SECT_WATER_SWIM,
-    SECT_WATER_NOSWIM,
-    SECT_AIR,
-    SECT_UNDERWATER,
-    SECT_DESERT,
-    SECT_TREE,
-    SECT_SEA,
-    SECT_BLANK,
-    SECT_ROCK_MOUNTAIN,
-    SECT_SNOW_MOUNTAIN,
-    SECT_RUINS,
-    SECT_JUNGLE,
-    SECT_SWAMP,
-    SECT_LAVA,
-    SECT_ENTRANCE,
-    SECT_FARM,
-    SECT_EMPTY
-} SectorTypes_t;
-
-#define SECT_MAX        SECT_EMPTY
 
 #define TELE_LOOK       BV(0)
 #define TELE_COUNT      BV(1)
@@ -738,7 +662,6 @@ struct room_data {
     int             number;     /* Rooms number */
     int             zone;       /* Room zone (for resetting) */
     int             continent;  /* Which continent/mega-zone */
-    SectorTypes_t   sector_type;        /* sector type (move/hide) */
 
     int             river_dir;  /* dir of flow on river */
     int             river_speed;        /* speed of flow on river */

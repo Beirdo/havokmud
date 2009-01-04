@@ -203,7 +203,6 @@ struct obj_data *objectTypeFindFirst( ItemType_t type );
 struct obj_data *objectTypeFindNext( ItemType_t type,
                                      struct obj_data *lastobj );
 
-bool HasAntiBitsEquipment(struct char_data *ch, int bits);
 bool HasBitsEquipment(struct char_data *ch, int bits, int offset);
 bool HasBitsInventory(struct char_data *ch, int bits, int offset);
 bool HasBits(struct char_data *ch, int bits, int offset);
