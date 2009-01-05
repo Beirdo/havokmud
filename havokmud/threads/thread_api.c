@@ -128,8 +128,7 @@ void thread_register( pthread_t *pthreadId, char *name,
     item->key  = (void *)thread->threadId;
 
     BalancedBTreeAdd( ThreadTree, item, UNLOCKED, TRUE );
-    LogPrint( LOG_INFO, "Added Thread %ld as \"%s%s%s%s%s\" (%d/%d)", 
-              *pthreadId, 
+    LogPrint( LOG_INFO, "Added thread as \"%s%s%s%s%s\" (%d/%d)", 
               backgroundColors[thread->background], 
               foregroundColors[thread->foreground], name,
               backgroundColors[0], foregroundColors[1],

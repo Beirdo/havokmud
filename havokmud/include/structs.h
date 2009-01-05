@@ -732,6 +732,22 @@ typedef struct {
     int                     bodyind;
 } MailItem_t;
 
+typedef enum {
+    LT_CONSOLE,
+    LT_FILE,
+    LT_SYSLOG,
+    LT_NCURSES
+} LogFileType_t;
+
+typedef struct {
+    LinkedListItem_t    linkage;
+    int                 fd;
+    LogFileType_t       type;
+    bool                aborted;
+    union {
+        char           *filename;
+    } identifier;
+} LogFileChain_t;
 
 #endif
 

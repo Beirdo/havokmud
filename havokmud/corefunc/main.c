@@ -62,6 +62,9 @@ extern char    *optarg;
 extern int      optind;
 #endif
 
+bool            Debug = FALSE;
+bool            Daemon = FALSE;
+
 /* 
  * max number of descriptors (connections) 
  * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 

@@ -150,7 +150,6 @@ void *ConnectionThread( void *arg )
     connAddFd(listenFd, &saveReadFds);
 
     ConnectionList = LinkedListCreate(NULL);
-    LogPrint( LOG_DEBUG, "ConnectionList = %p", ConnectionList );
 
     while( 1 ) {
         /*
