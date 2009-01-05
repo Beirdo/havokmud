@@ -94,12 +94,6 @@ void StartThreads( void )
                    NULL );
     thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
 
-    connectThreadArgs.port = 4000;
-    connectThreadArgs.timeout_sec = 0;
-    connectThreadArgs.timeout_usec = 100000;
-    thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
-                   "ConnectionThread", NULL );
-
     thread_create( &inputThreadId, InputThread, NULL, "InputThread", NULL );
     thread_create( &loginThreadId, LoginThread, NULL, "LoginThread", NULL );
     thread_create( &editorThreadId, EditorThread, NULL, "EditorThread", NULL );
@@ -119,6 +113,12 @@ void StartThreads( void )
     db_check_schema_main();
 
     thread_create( &smtpThreadId, SmtpThread, NULL, "SMTPThread", NULL );
+
+    connectThreadArgs.port = 4000;
+    connectThreadArgs.timeout_sec = 0;
+    connectThreadArgs.timeout_usec = 100000;
+    thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
+                   "ConnectionThread", NULL );
 
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
