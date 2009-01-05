@@ -114,7 +114,7 @@ void StartThreads( void )
 
     thread_create( &smtpThreadId, SmtpThread, NULL, "SMTPThread", NULL );
 
-    connectThreadArgs.port = 4000;
+    connectThreadArgs.port = 0;
     connectThreadArgs.timeout_sec = 0;
     connectThreadArgs.timeout_usec = 100000;
     thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,

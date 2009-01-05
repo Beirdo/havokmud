@@ -48,6 +48,7 @@
 #include "queue.h"
 #include "logging.h"
 #include "memory.h"
+#include "protos.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -89,6 +90,7 @@ void *ConnectionThread( void *arg )
 {
     connectThreadArgs_t    *argStruct;
     int                     portNum;
+    char                   *port;
     struct sockaddr_in      sa;
     int                     count;
     int                     fdCount;
@@ -106,14 +108,20 @@ void *ConnectionThread( void *arg )
     portNum = argStruct->port;
 
     pthread_mutex_lock( startupMutex );
-    pthread_mutex_unlock( startupMutex );
 
-    LogPrint( LOG_NOTICE, "Listening on port %d", portNum );
+    if( !portNum ) {
+        port = db_get_setting( "listenPort" );
+        if( !port ) {
+            portNum = 4000;
+        } else {
+            portNum = atoi(port);
+            memfree(port);
+        }
+    }
 
     /*
      * Start listening
      */
-
     listenFd = socket( PF_INET, SOCK_STREAM, 0 );
     if( listenFd < 0 ) {
         perror("Opening listener socket");
@@ -121,7 +129,6 @@ void *ConnectionThread( void *arg )
     }
 
     on = 1;
-    /** Todo: Apparently, Cygwin's REUSEADDR may be borked, must test */
     if( setsockopt( listenFd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on) ) ) {
         perror("Setting socket to reuse");
         exit(1);
@@ -150,6 +157,10 @@ void *ConnectionThread( void *arg )
     connAddFd(listenFd, &saveReadFds);
 
     ConnectionList = LinkedListCreate(NULL);
+
+    LogPrint( LOG_NOTICE, "Listening on port %d", portNum );
+    pthread_mutex_unlock( startupMutex );
+
 
     while( 1 ) {
         /*

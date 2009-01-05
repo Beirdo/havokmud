@@ -73,10 +73,6 @@ void *SmtpThread( void *arg )
     struct sigaction    sa;
 
     pthread_mutex_lock( startupMutex );
-    pthread_mutex_unlock( startupMutex );
-
-    smtp_version(buffer, 256, 0);
-    LogPrint( LOG_INFO, "libESMTP Version %s", buffer );
 
     session = smtp_create_session();
 
@@ -109,6 +105,10 @@ void *SmtpThread( void *arg )
     sigaction( SIGPIPE, &sa, NULL);
 
     smtp_set_eventcb( session, event_cb, NULL );
+
+    smtp_version(buffer, 256, 0);
+    LogPrint( LOG_INFO, "libESMTP Version %s", buffer );
+    pthread_mutex_unlock( startupMutex );
 
     while( 1 ) {
         item = (MailItem_t *)QueueDequeueItem( MailQ, -1 );
