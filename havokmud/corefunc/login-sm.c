@@ -348,7 +348,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
 
     ch = player->charData;
 
+#ifdef DEBUG_STATE
     LogPrint( LOG_INFO, "Entering state %d from %d", newstate, player->state );
+#endif
 
     switch( newstate ) {
     case STATE_INITIAL:

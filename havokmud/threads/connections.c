@@ -223,7 +223,9 @@ void *ConnectionThread( void *arg )
                     /*
                      * Pass the info on to the other threads...
                      */
+#ifdef DEBUG_CONNECT
                     LogPrint( LOG_INFO, "New connection: %p", player );
+#endif
                     connItem = CREATE(ConnInputItem_t);
                     if( connItem ) {
                         connItem->type = CONN_NEW_CONNECT;

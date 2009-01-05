@@ -81,7 +81,9 @@ void *LoginThread( void *arg )
             /*
              * User input, feed it to the state machine
              */
+#ifdef DEBUG_INPUT
             LogPrint( LOG_INFO, "Got: \"%s\"", line );
+#endif
             LoginStateMachine(player, line);
             break;
         default:

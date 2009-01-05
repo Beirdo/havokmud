@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2008 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
  * $Id$
  *
- * Copyright 2005 Gavin Hurlbut
+ * Copyright 2008 Gavin Hurlbut
  * All rights reserved
  */
 
@@ -103,8 +103,10 @@ void *InputThread( void *arg )
                 continue;
             }
 
+#ifdef DEBUG_CONNECT
             LogPrint( LOG_INFO, "Initializing state for connection: %p", 
                       player );
+#endif
             stateItem->player = player;
             stateItem->type   = INPUT_INITIAL;
             stateItem->line   = NULL;
@@ -236,7 +238,9 @@ void *InputThread( void *arg )
             /*
              * This player is disappearing
              */
+#ifdef DEBUG_CONNECT
             LogPrint( LOG_DEBUG, "Deleting player %p", player );
+#endif
             LinkedListRemove( PlayerList, (LinkedListItem_t *)player, 
                               UNLOCKED );
 
