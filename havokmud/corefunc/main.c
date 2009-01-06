@@ -753,6 +753,7 @@ void MainDelayExit( void )
     QueueKillAll();
 
     /* Delay to allow all the other tasks to finish (esp. logging!) */
+    LogPrintNoArg(LOG_INFO, "Waiting 15s for all threads to finish");
     for( i = 15; i && !MudDone; i-- ) {
         sleep(1);
     }

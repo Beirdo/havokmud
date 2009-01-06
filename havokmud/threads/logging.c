@@ -178,6 +178,7 @@ void *LoggingThread( void *arg )
         LogItemOutput( (void *)item );
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending LoggingThread");
     return( NULL );
 }
 

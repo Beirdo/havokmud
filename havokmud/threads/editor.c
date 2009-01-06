@@ -69,8 +69,12 @@ void *EditorThread( void *arg )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         item = (InputStateItem_t *)QueueDequeueItem( InputEditorQ, -1 );
+        if( !item ) {
+            continue;
+        }
+
         player = item->player;
         line = item->line;
         type = item->type;
@@ -89,6 +93,7 @@ void *EditorThread( void *arg )
         }
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending EditorThread");
     return( NULL );
 }
 

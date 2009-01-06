@@ -162,7 +162,7 @@ void *ConnectionThread( void *arg )
     pthread_mutex_unlock( startupMutex );
 
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         /*
          * Select on connected and listener
          */
@@ -173,6 +173,11 @@ void *ConnectionThread( void *arg )
         timeout.tv_usec = argStruct->timeout_usec;
         
         fdCount = select(maxFd+1, &readFds, &writeFds, &exceptFds, &timeout);
+
+
+        if( GlobalAbort ) {
+            continue;
+        }
 
         recalcMaxFd = FALSE;
 
@@ -364,6 +369,7 @@ void *ConnectionThread( void *arg )
         }
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending ConnectionThread");
     return( NULL );
 }
 

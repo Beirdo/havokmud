@@ -110,8 +110,12 @@ void *SmtpThread( void *arg )
     LogPrint( LOG_INFO, "libESMTP Version %s", buffer );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         item = (MailItem_t *)QueueDequeueItem( MailQ, -1 );
+        if( !item ) {
+            continue;
+        }
+
         player = item->player;
 
         message = smtp_add_message( session );
@@ -137,7 +141,6 @@ void *SmtpThread( void *arg )
             smtp_enumerate_recipients(message, print_recipient_status, NULL);
         }
 
-/** TODO: add the rest of the code */
         memfree( item->body );
         memfree( item->subject );
         memfree( item );
@@ -145,6 +148,7 @@ void *SmtpThread( void *arg )
 
     smtp_destroy_session(session);
 
+    LogPrintNoArg(LOG_INFO, "Ending SMTPThread");
     return( NULL );
 }
 

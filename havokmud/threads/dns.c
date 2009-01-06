@@ -67,7 +67,7 @@ void *DnsThread( void *arg )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         item = QueueDequeueItem( ConnectDnsQ, -1 );
         if( !item ) {
             continue;
@@ -92,6 +92,7 @@ void *DnsThread( void *arg )
         memfree( item );
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending DNSThread");
     return( NULL );
 }
 

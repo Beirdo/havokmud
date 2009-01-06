@@ -70,8 +70,12 @@ void *PlayingThread( void *arg )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         item = (InputStateItem_t *)QueueDequeueItem( me->inputQ, -1 );
+        if( !item ) {
+            continue;
+        }
+
         player = item->player;
         line = item->line;
         type = item->type;
@@ -96,6 +100,7 @@ void *PlayingThread( void *arg )
         }
     }
 
+    LogPrint(LOG_INFO, "Ending %s", me->name);
     return( NULL );
 }
 

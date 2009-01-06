@@ -47,7 +47,6 @@ static char ident[] _UNUSED_ =
     "$Id$";
 
 void do_symbol( void *ptr );
-void do_backtrace( int signum, void *ip );
 
 extern pthread_t mainThreadId;
 

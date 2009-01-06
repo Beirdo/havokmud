@@ -253,9 +253,7 @@ SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg )
 
     switch( signum ) {
     case SIGUSR2:
-#if 0
         return( do_backtrace );
-#endif
         break;
     case SIGHUP:
         if( parg ) {

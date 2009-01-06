@@ -81,8 +81,11 @@ void *InputThread( void *arg )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         connItem = (ConnInputItem_t *)QueueDequeueItem( ConnectInputQ, -1 );
+        if( !connItem ) {
+            continue;
+        }
         player = connItem->player;
         type = connItem->type;
         memfree(connItem);
@@ -292,6 +295,7 @@ void *InputThread( void *arg )
 
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending InputThread");
     return( NULL );
 }
 

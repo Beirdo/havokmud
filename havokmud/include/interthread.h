@@ -199,6 +199,12 @@ void LogBanner( void );
  */
 void LogFlushOutput( void );
 
+/*
+ * From signals.c
+ */
+void do_backtrace( int signum, void *ip );
+
+
 #endif
 
 /*

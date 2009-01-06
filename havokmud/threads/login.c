@@ -62,8 +62,12 @@ void *LoginThread( void *arg )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         item = (InputStateItem_t *)QueueDequeueItem( InputLoginQ, -1 );
+        if( !item ) {
+            continue;
+        }
+
         player = item->player;
         line = item->line;
         type = item->type;
@@ -91,6 +95,7 @@ void *LoginThread( void *arg )
         }
     }
 
+    LogPrintNoArg(LOG_INFO, "Ending LoginThread");
     return( NULL );
 }
 
