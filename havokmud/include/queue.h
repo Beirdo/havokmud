@@ -38,6 +38,7 @@
 
 #include "environment.h"
 #include <pthread.h>
+#include "linked_list.h"
 
 /* CVS generated ID string (optional for h files) */
 static char queue_h_ident[] _UNUSED_ = 
@@ -47,6 +48,7 @@ static char queue_h_ident[] _UNUSED_ =
 typedef void * QueueItem_t;
 typedef struct 
 { 
+    LinkedListItem_t linkage;
     uint32 numElements;
     uint32 numMask;
     uint32 head;
@@ -75,6 +77,7 @@ void QueueDestroy( QueueObject_t *queue );
 void QueueLock( QueueObject_t *queue );
 void QueueUnlock( QueueObject_t *queue );
 uint32 QueueRemoveItem( QueueObject_t *queue, uint32 index, int locked );
+void QueueKillAll( void );
 
 #ifdef __cplusplus
 }

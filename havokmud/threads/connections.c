@@ -109,7 +109,7 @@ void *ConnectionThread( void *arg )
 
     pthread_mutex_lock( startupMutex );
 
-    if( !portNum ) {
+    if( portNum == -1 ) {
         port = db_get_setting( "listenPort" );
         if( !port ) {
             portNum = 4000;

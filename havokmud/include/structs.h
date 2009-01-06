@@ -32,6 +32,7 @@
 
 #include "environment.h"
 #include <pthread.h>
+#include <signal.h>
 #include "linked_list.h"
 #include "buffer.h"
 #include "queue.h"
@@ -748,6 +749,14 @@ typedef struct {
         char           *filename;
     } identifier;
 } LogFileChain_t;
+
+typedef struct {
+    char       *what;
+    char       *version;
+    int         count;
+} Version_t;
+
+
 
 #endif
 

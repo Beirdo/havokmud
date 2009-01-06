@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2009 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
  * $Id$
  *
- * Copyright 2005 Gavin Hurlbut
+ * Copyright 2009 Gavin Hurlbut
  * All rights reserved
  */
 
@@ -32,13 +32,23 @@
 #include "environment.h"
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
 #include "logging.h"
+#include "memory.h"
+#include "protos.h"
+#include "version.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
+
+
+typedef void (*sigAction_t)(int, siginfo_t *, void *);
 
 QueueObject_t *ConnectInputQ;   /**< between Connection and Input threads */
 QueueObject_t *ConnectDnsQ;     /**< between Connection and DNS threads */
@@ -66,6 +76,8 @@ static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
 static PlayingThreadArgs_t immortPlayingArgs = { "ImmortalPlayingThread", NULL};
 
+char               *pthreadsVersion = NULL;
+
 
 /**
  * @brief Starts all the MUD threads
@@ -77,6 +89,51 @@ static PlayingThreadArgs_t immortPlayingArgs = { "ImmortalPlayingThread", NULL};
 
 void StartThreads( void )
 {
+    pthread_mutex_t     spinLockMutex;
+    pid_t               childPid;
+    struct sigaction    sa;
+    sigset_t            sigmsk;
+    size_t              len;
+    ThreadCallback_t    callbacks;
+
+    GlobalAbort = FALSE;
+
+    len = confstr( _CS_GNU_LIBPTHREAD_VERSION, NULL, 0 );
+    if( len ) {
+        pthreadsVersion = CREATEN(char, len);
+        confstr( _CS_GNU_LIBPTHREAD_VERSION, pthreadsVersion, len );
+    }
+
+    if( !pthreadsVersion || strstr( pthreadsVersion, "linuxthreads" ) ) {
+        fprintf( stderr, "havokmud requires NPTL to operate correctly.\n\n"
+                         "The signal handling in linuxthreads is just too "
+                         "broken to use.\n\n" );
+        exit( 1 );
+    }
+
+    /* Do we need to detach? */
+    if( Daemon ) {
+        childPid = fork();
+        if( childPid < 0 ) {
+            perror( "Couldn't detach in daemon mode" );
+            _exit( 1 );
+        }
+
+        if( childPid != 0 ) {
+            /* This is still the parent, report the child's pid and exit */
+            printf( "[Detached as PID %d]\n", childPid );
+            /* And exit the parent */
+            _exit( 0 );
+        }
+
+        /* After this is in the detached child */
+
+        /* Close stdin, stdout, stderr to release the tty */
+        close(0);
+        close(1);
+        close(2);
+    }
+
     LoggingQ      = QueueCreate( 1024 );
     ConnectInputQ = QueueCreate( 256 );
     ConnectDnsQ   = QueueCreate( 64 );
@@ -88,12 +145,73 @@ void StartThreads( void )
     QueryQ        = QueueCreate( 1024 );
 
     mainThreadId = pthread_self();
+    /* 
+     * Setup the sigmasks for this thread (which is the parent to all others).
+     * This will propogate to all children.
+     */
+    sigfillset( &sigmsk );
+    sigdelset( &sigmsk, SIGUSR1 );
+    sigdelset( &sigmsk, SIGUSR2 );
+    sigdelset( &sigmsk, SIGHUP );
+    sigdelset( &sigmsk, SIGWINCH );
+    sigdelset( &sigmsk, SIGINT );
+    sigdelset( &sigmsk, SIGSEGV );
+    sigdelset( &sigmsk, SIGILL );
+    sigdelset( &sigmsk, SIGFPE );
+    pthread_sigmask( SIG_SETMASK, &sigmsk, NULL );
+
+    memset( &callbacks, 0, sizeof(ThreadCallback_t) );
+    callbacks.sighupFunc = mainSighup;
     thread_register( &mainThreadId, "MainThread", NULL );
+
+    /* Setup signal handler for SIGUSR1 (toggles Debug) */
+    sa.sa_sigaction = (sigAction_t)logging_toggle_debug;
+    sigemptyset( &sa.sa_mask );
+    sa.sa_flags = SA_RESTART;
+    sigaction( SIGUSR1, &sa, NULL );
+
+    /* Setup the exit handler */
+    atexit( MainDelayExit );
+
+    /* Setup signal handler for SIGINT (shut down cleanly) */
+    sa.sa_sigaction = (sigAction_t)signal_interrupt;
+    sigemptyset( &sa.sa_mask );
+    sa.sa_flags = SA_RESTART;
+    sigaction( SIGINT, &sa, NULL );
+    
+    /* Setup signal handlers that are to be propogated to all threads */
+    sa.sa_sigaction = (sigAction_t)signal_everyone;
+    sigemptyset( &sa.sa_mask );
+    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sigaction( SIGUSR2, &sa, NULL );
+    sigaction( SIGHUP, &sa, NULL );
+    sigaction( SIGWINCH, &sa, NULL );
+
+    /* Setup signal handlers for SEGV, ILL, FPE */
+    sa.sa_sigaction = (sigAction_t)signal_death;
+    sigemptyset( &sa.sa_mask );
+    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sigaction( SIGSEGV, &sa, NULL );
+    sigaction( SIGILL, &sa, NULL );
+    sigaction( SIGFPE, &sa, NULL );
+
+    versionAdd( "pthreads", pthreadsVersion );
+    versionAdd( "TERM", getenv("TERM") );
 
     thread_create( &loggingThreadId, LoggingThread, NULL, "LoggingThread", 
                    NULL );
-    thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
 
+#if 0
+    curses_start();
+    cursesMenuItemAdd( 2, MENU_SYSTEM, "About", mainAbout, NULL );
+    cursesMenuItemAdd( 2, MENU_SYSTEM, "Licensing", mainLicensing, NULL );
+    cursesMenuItemAdd( 2, MENU_SYSTEM, "Versions", mainVersions, NULL );
+    cursesMenuItemAdd( 2, MENU_SYSTEM, "Reload All", mainReloadAll, NULL );
+#endif
+
+    LogBanner();
+
+    thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
     thread_create( &inputThreadId, InputThread, NULL, "InputThread", NULL );
     thread_create( &loginThreadId, LoginThread, NULL, "LoginThread", NULL );
     thread_create( &editorThreadId, EditorThread, NULL, "EditorThread", NULL );
@@ -114,7 +232,7 @@ void StartThreads( void )
 
     thread_create( &smtpThreadId, SmtpThread, NULL, "SMTPThread", NULL );
 
-    connectThreadArgs.port = 0;
+    connectThreadArgs.port = mud_port;
     connectThreadArgs.timeout_sec = 0;
     connectThreadArgs.timeout_usec = 100000;
     thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
@@ -123,17 +241,41 @@ void StartThreads( void )
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
 
-    pthread_join( smtpThreadId, NULL );
-    pthread_join( mysqlThreadId, NULL );
-    pthread_join( immortPlayingThreadId, NULL );
-    pthread_join( mortalPlayingThreadId, NULL );
-    pthread_join( editorThreadId, NULL );
-    pthread_join( loginThreadId, NULL );
-    pthread_join( inputThreadId, NULL );
-    pthread_join( connectionThreadId, NULL );
-    pthread_join( dnsThreadId, NULL );
-    pthread_join( loggingThreadId, NULL );
+    /* Sit on this and rotate - this causes an intentional deadlock, this
+     * thread should stop dead in its tracks
+     */
+    thread_mutex_init( &spinLockMutex );
+    pthread_mutex_lock( &spinLockMutex );
+    pthread_mutex_lock( &spinLockMutex );
 }
+
+/**
+ * TODO: replace with the release.h from beirdobot
+ */
+char *svn_version( void ) {
+    return( VERSION );
+}
+
+void LogBanner( void )
+{
+    LogPrintNoArg( LOG_CRIT, "havokmud  (c) 2009 Gavin Hurlbut" );
+    LogPrint( LOG_CRIT, "%s", svn_version() );
+
+#if 0
+    cursesTextAdd( WINDOW_HEADER, ALIGN_LEFT, 1, 0, "havokmud" );
+    cursesTextAdd( WINDOW_HEADER, ALIGN_LEFT, 10, 0, (char *)svn_version() );
+    cursesTextAdd( WINDOW_HEADER, ALIGN_FROM_CENTER, 1, 0, 
+                   "(c) 2009 Gavin Hurlbut" );
+    cursesTextAdd( WINDOW_TAILER, ALIGN_RIGHT, 1, 0, "Ctrl-C to exit" );
+    cursesTextAdd( WINDOW_TAILER, ALIGN_LEFT, 1, 0, 
+                   "Use arrow keys for menus" );
+    cursesTextAdd( WINDOW_TAILER, ALIGN_CENTER, 0, 0, 
+                   "PgUp/PgDn to scroll logs" );
+#endif
+
+    versionAdd( "havokmud", (char *)svn_version() );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

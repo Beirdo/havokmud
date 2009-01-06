@@ -40,6 +40,7 @@
 #include <sys/time.h>
 #include "logging.h"
 #include "interthread.h"
+#include "linked_list.h"
 #include <string.h>
 
 
@@ -61,6 +62,8 @@ static void QueueConditionUpdate( QueueObject_t *queue );
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
     "$Id$";
+
+LinkedList_t   *QueueList = NULL;
 
 QueueObject_t * QueueCreate( uint32 numElements )
 {
@@ -119,6 +122,17 @@ QueueObject_t * QueueCreate( uint32 numElements )
     queue->empty = TRUE;
     queue->cNotEmpty = CREATE(pthread_cond_t);
     status = pthread_cond_init( queue->cNotEmpty, NULL );
+
+    if( !QueueList ) {
+        QueueList = LinkedListCreate( NULL );
+        if( !QueueList ) {
+            LogPrintNoArg( LOG_CRIT, "Couldn't create the list of queues!" );
+            exit(1);
+        }
+    }
+
+    /* Allows us to flush all queues at shutdown */
+    LinkedListAdd( QueueList, (LinkedListItem_t *)queue, UNLOCKED, AT_TAIL );
 
     return( queue );
 }
@@ -387,6 +401,8 @@ void QueueDestroy( QueueObject_t *queue )
      */
     memfree( queue->itemTable );
 
+    LinkedListRemove( QueueList, (LinkedListItem_t *)queue, UNLOCKED );
+
     /*
      * get rid of the queue object
      */
@@ -459,7 +475,29 @@ uint32 QueueRemoveItem( QueueObject_t *queue, uint32 index, int locked )
     return( (index - 1) & queue->numMask );
 }
 
+void QueueKillAll( void )
+{
+    LinkedListItem_t *listItem;
+    QueueObject_t  *queue;
 
+    LinkedListLock(QueueList);
+    for (listItem = QueueList->head; listItem; listItem = listItem->next) {
+        queue = (QueueObject_t *) listItem;
+
+        /* We don't want to flush the log messages */
+        if( queue == LoggingQ ) {
+            continue;
+        }
+
+        /*
+         * To allow all listeners to wake up and hear the GlobalAbort,
+         * signal both the cNotEmpty and the cNotFull to all 
+         */
+        pthread_cond_broadcast(queue->cNotEmpty);
+        pthread_cond_broadcast(queue->cNotFull);
+    }
+    LinkedListUnlock(QueueList);
+}
 
 
 /*

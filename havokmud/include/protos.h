@@ -38,6 +38,7 @@
 
 #include "environment.h"
 #include <pthread.h>
+#include <signal.h>
 #include "linked_list.h"
 #include "buffer.h"
 #include "queue.h"
@@ -276,6 +277,30 @@ void opiemd5final(unsigned char *digest, void *ctx);
  */
 char *opiebtoe (char *engout, char *c);
 int opieetob ( char *out, char *e );
+
+/*
+ * From signals.c
+ */
+void signal_interrupt( int signum, void *info, void *secret );
+void signal_everyone( int signum, void *info, void *secret );
+void signal_death( int signum, void *info, void *secret );
+void do_symbol( void *ptr );
+void do_backtrace( int signum, void *ip );
+void mainSighup( int signum, void *arg );
+
+/*
+ * From logging.c
+ */
+void logging_toggle_debug( int signum, void *info, void *secret );
+
+
+/*
+ * From main.c
+ */
+void MainDelayExit( void );
+void versionAdd( char *what, char *version );
+void versionRemove( char *what );
+
 
 
 /*************************************************************************

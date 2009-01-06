@@ -72,13 +72,18 @@ extern BalancedBTree_t    *commandNum;
 extern CommandDef_t coreCommands[];
 extern int coreCommandCount;
 
+extern bool MudDone;
 extern bool GlobalAbort;
 extern long SystemFlags;
 extern long total_connections;
 extern long total_max_players;
-extern int  no_specials;
-extern int  mudshutdown;
-extern int  reboot_now;
+extern bool no_specials;
+extern bool mudshutdown;
+extern bool reboot_now;
+extern bool Daemon;
+extern bool Debug;
+extern bool verbose;
+extern int  mud_port;
 
 
 extern char *login;
@@ -120,6 +125,9 @@ extern int                 raceCount;
 #define DEF_MYSQL_USER   "havokmud"
 #define DEF_MYSQL_PASSWD "havokmud"
 #define DEF_MYSQL_HOST   "localhost"
+#define DEF_MYSQL_PORT   3306
+
+#define DEF_MUD_PORT     4000          /**< default MUD TCP port */
 
 extern char *mySQL_db;
 extern char *mySQL_user;
@@ -180,6 +188,16 @@ SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg );
  * From smtp.c
  */
 void send_email( PlayerStruct_t *player, char *subject, char *body );
+
+/*
+ * From master.c
+ */
+void LogBanner( void );
+
+/*
+ * From logging.c
+ */
+void LogFlushOutput( void );
 
 #endif
 

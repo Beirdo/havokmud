@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <getopt.h>
 
 #include "oldexterns.h"
 #include "oldutils.h"
@@ -51,19 +52,32 @@
 static char ident[] _UNUSED_ =
     "$Id$";
 
-void display_usage(char *progname);
-void handleCmdLineArgs(int argc, char **argv);
 void StartThreads( void );
 void boot_db(void);
 void reset_time(void);
+
+void MainParseArgs( int argc, char **argv );
+void MainDisplayUsage( char *program, char *errorMsg );
+void mainAbout( void *arg );
+void mainLicensing( void *arg );
+void mainVersions( void *arg );
+void mainReloadAll( void *arg );
+int versionShowRecurse( BalancedBTreeItem_t *node, int line );
+
 
 #if 0
 extern char    *optarg;
 extern int      optind;
 #endif
 
-bool            Debug = FALSE;
-bool            Daemon = FALSE;
+bool                verbose;
+bool                Daemon;
+bool                Debug;
+bool                MudDone = FALSE;
+bool                GlobalAbort = FALSE;
+BalancedBTree_t    *versionTree;
+int        mud_port;            /**< The TCP port the MUD will listen on */
+bool       no_specials = FALSE; /**< Disable special functions completely */
 
 /* 
  * max number of descriptors (connections) 
@@ -71,7 +85,6 @@ bool            Daemon = FALSE;
  */
 #define MAX_CONNECTS    256        
 
-#define DFLT_PORT       4000          /* default port */
 #define MAX_HOSTNAME    256
 
 #if 0
@@ -82,8 +95,6 @@ bool            Daemon = FALSE;
 #define OPT_USEC 250000         
 #endif
 
-int             mud_port = 6969;    /**< The TCP port the MUD will listen on */
-int             no_specials = 0;    /**< Disable special functions completely */
 
 
 #ifdef SITELOCK
@@ -96,7 +107,6 @@ BalancedBTree_t    *descNameTree;   /**< Balanced BTree of descriptors, sorted
 BalancedBTree_t    *descNumTree;    /**< Balanced BTree of descriptors, sorted
                                          by socket descriptor number */
 
-bool            GlobalAbort = FALSE;
 long            SystemFlags;
 long            total_connections;
 long            total_max_players;
@@ -118,39 +128,6 @@ int __main()
     return (1);
 }
 
-/**
- * @brief Show command line arguments
- * @param progname the name of the program being run
- *
- * Shows the command line arguments used by the program onto stderr
- */
-void display_usage(char *progname)
-{
-    fprintf(stderr, "Usage:\n"
-                    "%s [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
-                    "[-P sqlPass]\n"
-                    "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
-                    "[port]\n\n",
-                    progname );
-    fprintf(stderr, "\t-s\tDisable special procedures\n"
-                    "\t-D\tDefine the MySQL database (default %s)\n",
-                    DEF_MYSQL_DB );
-    fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
-                    "\t-P\tDefine the MySQL password (default %s)\n"
-                    "\t-H\tDefine the MySQL host (default %s)\n"
-                    "\t-p\tDefine the MUD port (dsfault %d)\n",
-                    DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
-                    DFLT_PORT );
-    fprintf(stderr, "\t-A\tDisable ALL color\n"
-                    "\t-N\tDisable DNS lookups\n"
-                    "\t-R\tEnable newbie authorizing\n"
-                    "\t-L\tLog all users\n"
-                    "\t-h\tShow this help page\n"
-                    "\t-V\tShow version and exit\n\n" );
-    fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
-                    "PORT at the\n"
-                    "\tend of the command line\n\n" );
-}
 
 /**
  * @brief Parses the command line arguments
@@ -159,115 +136,219 @@ void display_usage(char *progname)
  *
  * Parses the command line arguments and sets up the defaults for the system
  */
-void handleCmdLineArgs(int argc, char **argv)
+void MainParseArgs( int argc, char **argv )
 {
-    int             opt;
+    extern char *optarg;
+    extern int optind, opterr, optopt;
+    int opt;
+    int optIndex = 0;
+    static struct option longOpts[] = {
+        {"help", 0, 0, 'h'},
+        {"version", 0, 0, 'V'},
+        {"host", 1, 0, 'H'},
+        {"user", 1, 0, 'u'},
+        {"password", 1, 0, 'p'},
+        {"port", 1, 0, 'P'},
+        {"mudport", 1, 0, 'm'},
+        {"database", 1, 0, 'd'},
+        {"daemon", 0, 0, 'D'},
+        {"verbose", 0, 0, 'v'},
+        {"debug", 0, 0, 'g'},
+        {"nospecial", 0, 0, 's'},
+        {"nocolor", 0, 0, 'A'},
+        {"nodns", 0, 0, 'N'},
+        {"auth", 0, 0, 'R'},
+        {"logall", 0, 0, 'L'},
+        {0, 0, 0, 0}
+    };
 
     mud_port = -1;
+    mySQL_host = NULL;
+    mySQL_port = 0;
+    mySQL_user = NULL;
+    mySQL_passwd = NULL;
+    mySQL_db = NULL;
+    verbose = FALSE;
+    Debug = FALSE;
+    Daemon = FALSE;
 
-    while( (opt = getopt(argc, argv, "lsD:U:P:H:p:ANRLhV")) != -1 ) {
-        switch (opt) {
-        case 's':
-            no_specials = 1;
-            LogPrintNoArg(LOG_CRIT, "Suppressing assignment of special "
-                                    "routines.");
-            break;
+    while( (opt = getopt_long( argc, argv, "hVH:P:u:p:m:d:Dgvs", longOpts, 
+                               &optIndex )) != -1 )
+    {
+        switch( opt )
+        {
+            case 'h':
+                MainDisplayUsage( argv[0], NULL );
+                exit( 0 );
+                break;
+            case 'D':
+                Daemon = TRUE;
+                break;
+            case 'g':
+                Debug = TRUE;
+                break;
+            case 'v':
+                verbose = TRUE;
+                break;
+            case 'H':
+                if( mySQL_host != NULL )
+                {
+                    memfree( mySQL_host );
+                }
+                mySQL_host = memstrlink(optarg);
+                break;
+            case 'P':
+                mySQL_port = atoi(optarg);
+                break;
+            case 'u':
+                if( mySQL_user != NULL )
+                {
+                    memfree( mySQL_user );
+                }
+                mySQL_user = memstrlink(optarg);
+                break;
+            case 'p':
+                if( mySQL_passwd != NULL )
+                {
+                    memfree( mySQL_passwd );
+                }
+                mySQL_passwd = memstrlink(optarg);
+                break;
+            case 'd':
+                if( mySQL_db != NULL )
+                {
+                    memfree( mySQL_db );
+                }
+                mySQL_db = memstrlink(optarg);
+                break;
+            case 'V':
+                LogBanner();
+                exit( 0 );
+                break;
+            case 's':
+                no_specials = TRUE;
+                LogPrintNoArg(LOG_CRIT, "Suppressing assignment of special "
+                                        "routines.");
+                break;
+            case 'm':
+                /* MUD Port */
+                mud_port = atoi(optarg);
+                break;
 
-        case 'D':
-            /* Database */
-            if( mySQL_db ) {
-                memfree( mySQL_db );
-            }
-            mySQL_db = memstrlink(optarg);
-            break;
+            case 'A':
+                SET_BIT(SystemFlags, SYS_NOANSI);
+                LogPrintNoArg(LOG_CRIT, "Disabling ALL color");
+                break;
 
-        case 'U':
-            /* Database user */
-            if( mySQL_user ) {
-                memfree( mySQL_user );
-            }
-            mySQL_user = memstrlink(optarg);
-            break;
+            case 'N':
+                SET_BIT(SystemFlags, SYS_SKIPDNS);
+                LogPrintNoArg(LOG_CRIT, "Disabling DNS");
+                break;
 
-        case 'P':
-            /* Database password */
-            if( mySQL_passwd ) {
-                memfree( mySQL_passwd );
-            }
-            mySQL_passwd = memstrlink(optarg);
-            break;
+            case 'R':
+                SET_BIT(SystemFlags, SYS_REQAPPROVE);
+                LogPrintNoArg(LOG_CRIT, "Newbie authorizes enabled");
+                break;
 
-        case 'H':
-            /* Database host */
-            if( mySQL_host ) {
-                memfree( mySQL_host );
-            }
-            mySQL_host = memstrlink(optarg);
-            break;
+            case 'L':
+                SET_BIT(SystemFlags, SYS_LOGALL);
+                LogPrintNoArg(LOG_CRIT, "Logging all users");
+                break;
 
-        case 'p':
-            /* MUD Port */
-            mud_port = atoi(optarg);
-            break;
-
-        case 'A':
-            SET_BIT(SystemFlags, SYS_NOANSI);
-            LogPrintNoArg(LOG_CRIT, "Disabling ALL color");
-            break;
-
-        case 'N':
-            SET_BIT(SystemFlags, SYS_SKIPDNS);
-            LogPrintNoArg(LOG_CRIT, "Disabling DNS");
-            break;
-
-        case 'R':
-            SET_BIT(SystemFlags, SYS_REQAPPROVE);
-            LogPrintNoArg(LOG_CRIT, "Newbie authorizes enabled");
-            break;
-
-        case 'L':
-            SET_BIT(SystemFlags, SYS_LOGALL);
-            LogPrintNoArg(LOG_CRIT, "Logging all users");
-            break;
-
-        case 'V':
-            LogPrint(LOG_CRIT, "HavokMUD code version: %s", VERSION);
-            exit(0);
-            break;
-
-        case ':':
-        case '?':
-        case 'h':
-        default:
-            display_usage(argv[0]);
-            exit(1);
-            break;
+            case '?':
+            case ':':
+            default:
+                MainDisplayUsage( argv[0], "Unknown option" );
+                exit( 1 );
+                break;
         }
     }
 
-    if( argv[optind] ) {
-        if (!isdigit((int)*argv[optind])) {
-            display_usage(argv[0]);
-            exit(1);
-        } 
-
-        mud_port = atoi(argv[optind]);
+    if( mySQL_host == NULL )
+    {
+        mySQL_host = memstrlink(DEF_MYSQL_HOST);
     }
 
-    if( mud_port == -1 ) {
-        mud_port = DFLT_PORT;
+    if( mySQL_port == 0 )
+    {
+        mySQL_port = 3306;
     }
 
-    if (mud_port <= 1024) {
+    if( mySQL_user == NULL )
+    {
+        mySQL_user = memstrlink(DEF_MYSQL_USER);
+    }
+
+    if( mySQL_passwd == NULL )
+    {
+        mySQL_passwd = memstrlink(DEF_MYSQL_PASSWD);
+    }
+
+    if( mySQL_db == NULL )
+    {
+        mySQL_db = memstrlink(DEF_MYSQL_DB);
+    }
+
+    if( Daemon ) {
+        verbose = FALSE;
+    }
+
+    if (mud_port >= 0  && mud_port <= 1024) {
         printf("Illegal port #\n");
         exit(1);
     }
 }
 
+/**
+ * @brief Show command line arguments
+ * @param progname the name of the program being run
+ *
+ * Shows the command line arguments used by the program onto stderr
+ */
+void MainDisplayUsage( char *program, char *errorMsg )
+{
+    char *nullString = "<program name>";
+
+    LogBanner();
+
+    if( errorMsg != NULL )
+    {
+        fprintf( stderr, "\n%s\n\n", errorMsg );
+    }
+
+    if( program == NULL )
+    {
+        program = nullString;
+    }
+
+    fprintf( stderr, "\nUsage:\n\t%s [-H host] [-P port] [-u user] "
+                     "[-p password] [-d database] [-D] [-v]\n\n", program );
+    fprintf( stderr, 
+               "Options:\n"
+               "\t-H or --host\tMySQL host to connect to (default %s)\n"
+               "\t-P or --port\tMySQL port to connect to (default %d)\n"
+               "\t-u or --user\tMySQL user to connect as (default %s)\n"
+               "\t-p or --password\tMySQL password to use (default %s)\n"
+               "\t-d or --database\tMySQL database to use (default %s)\n"
+               "\t-D or --daemon\tRun solely in daemon mode, detached\n"
+               "\t-v or --verbose\tShow verbose information while running\n"
+               "\t-g or --debug\tWrite a debugging logfile\n"
+               "\t-s or --nospecial\tDisable Special functions\n"
+               "\t-m or --mudport\tMUD port to use (default %d or database)\n"
+               "\t-V or --version\tshow the version number and quit\n"
+               "\t-h or --help\tshow this help text\n", DEF_MYSQL_HOST, 
+               DEF_MYSQL_PORT, DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_DB,
+               DEF_MUD_PORT );
+    fprintf(stderr, 
+               "\t-A or --nocolor\tDisable ALL color\n"
+               "\t-N or --nodns\tDisable DNS lookups\n"
+               "\t-R or --auth\tEnable newbie authorizing\n"
+               "\t-L or --logall\tLog all users\n\n" );
+}
+
 #if 1
 int      spy_flag;
 #endif 
-
 
 /**
  * @brief MUD mainline
@@ -281,7 +362,6 @@ int main(int argc, char **argv)
 {
     extern int      spy_flag;
     extern long     SystemFlags;
-    void            signal_setup(void);
     int             load(void);
 
 #if defined(__sun__) || defined(__NetBSD__)
@@ -319,16 +399,22 @@ int main(int argc, char **argv)
 
 #endif
 
-    handleCmdLineArgs(argc, argv);
+    MainParseArgs(argc, argv);
 
     Uptime = time(0);
+#if 0
     LogPrint(LOG_CRIT, "HavokMUD code version: %s", VERSION);
     LogPrint(LOG_CRIT, "Running game on port %d.", mud_port);
+#endif
 
     srandom(time(0));
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
+    versionTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+
+#if 0
     LogPrintNoArg(LOG_CRIT, "Starting threads.");
+#endif
     StartThreads();
 
 
@@ -347,9 +433,6 @@ int main(int argc, char **argv)
 
     descNameTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
     descNumTree  = BalancedBTreeCreate( NULL, BTREE_KEY_INT );
-
-    LogPrintNoArg(LOG_CRIT, "Signal trapping.");
-    signal_setup();
 
     boot_db();
 
@@ -599,6 +682,90 @@ void reset_time(void)
     } else {
         weather_info.sky = SKY_CLOUDLESS;
     }
+}
+
+/*
+ * New stuff
+ */
+
+void versionAdd( char *what, char *version )
+{
+    BalancedBTreeItem_t    *item;
+    Version_t              *vItem;
+
+    item = BalancedBTreeFind( versionTree, &what, UNLOCKED, FALSE );
+    if( item ) {
+        vItem = (Version_t *)item->item;
+        vItem->count++;
+        return;
+    }
+
+    vItem = CREATE(Version_t);
+    item = CREATE(BalancedBTreeItem_t);
+
+    vItem->what    = memstrlink( what );
+    vItem->version = memstrlink( version );
+    vItem->count   = 1;
+
+    item->item     = (void *)vItem;
+    item->key      = (void *)&vItem->what;
+
+    BalancedBTreeAdd( versionTree, item, UNLOCKED, TRUE );
+}
+
+void versionRemove( char *what )
+{
+    BalancedBTreeItem_t    *item;
+    Version_t              *vItem;
+    
+    item = BalancedBTreeFind( versionTree, &what, UNLOCKED, FALSE );
+    if( !item ) {
+        return;
+    }
+
+    vItem = (Version_t *)item->item;
+    vItem->count--;
+
+    if( !vItem->count ) {
+        BalancedBTreeRemove( versionTree, item, UNLOCKED, TRUE );
+
+        memfree( vItem->what );
+        memfree( vItem->version );
+        memfree( vItem );
+        memfree( item );
+    }
+}
+
+void MainDelayExit( void )
+{
+    int         i;
+
+    LogPrintNoArg( LOG_CRIT, "Shutting down" );
+
+    /* Signal to all that we are aborting */
+    MudDone = FALSE;
+
+    GlobalAbort = TRUE;
+
+    /* Send out signals from all queues waking up anything waiting on them so
+     * the listeners can unblock and die
+     */
+    QueueKillAll();
+
+    /* Delay to allow all the other tasks to finish (esp. logging!) */
+    for( i = 15; i && !MudDone; i-- ) {
+        sleep(1);
+    }
+
+    LogPrintNoArg(LOG_DEBUG, "Shutdown complete!" );
+    LogFlushOutput();
+
+#if 0
+    cursesAtExit();
+#endif
+
+    /* And finally... die */
+    _exit( 0 );
 }
 
 
