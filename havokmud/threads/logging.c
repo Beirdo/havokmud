@@ -398,6 +398,7 @@ void LogItemOutput( void *vitem )
     static char        *unknown = "thread_unknown";
     char               *threadName;
     char               *bg, *fg;
+    time_t              sec;
 
     if( !vitem ) {
         return;
@@ -411,7 +412,8 @@ void LogItemOutput( void *vitem )
 
     thread_colors( item->threadId, &bg, &fg );
 
-    localtime_r( (const time_t *)&(item->time_sec), &ts );
+    sec = (time_t)item->time_sec;
+    localtime_r( (const time_t *)&sec, &ts );
     strftime( timestamp, TIMESTAMP_MAX-8, "%Y-%b-%d %H:%M:%S",
               (const struct tm *)&ts );
     snprintf( usPart, 9, ".%06d ", (int)(item->time_usec) );

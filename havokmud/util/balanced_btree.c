@@ -25,7 +25,6 @@
 */
 
 /* INCLUDE FILES */
-#define ___ARGH
 #include "environment.h"
 #include <pthread.h>
 #include <stdio.h>
