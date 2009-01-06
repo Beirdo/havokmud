@@ -40,6 +40,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #define _LogLevelNames_
 #include "logging.h"
 #include <syslog.h>
@@ -157,7 +158,7 @@ void *LoggingThread( void *arg )
     LogNcursesAdd();
 #endif
 
-#if 0
+#ifndef __CYGWIN__
     LogSyslogAdd( LOG_LOCAL7 );
 #endif
 
@@ -326,7 +327,7 @@ bool LogFileAdd( char * filename )
     if( fd == -1 )
     {
         /* Couldn't open the log file.  Gak! */
-        perror( "debug: " );
+        LogPrint( LOG_CRIT, "Couldn't open %s: %s", filename, strerror(errno) );
         return( FALSE );
     }
 
