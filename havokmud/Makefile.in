@@ -34,7 +34,7 @@ all : ${EXE}
 
 ${EXE} : ${NEWLIBFILES} force
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	${LD} -g -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+	${LD} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 
 util/libhavokutils.a:
