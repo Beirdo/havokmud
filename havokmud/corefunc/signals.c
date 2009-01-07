@@ -35,8 +35,10 @@
 #include <signal.h>
 #include <stdio.h>
 #include <sys/time.h>
+#ifndef __CYGWIN__
 #include <execinfo.h>
 #include <ucontext.h>
+#endif
 #include <stdlib.h>
 
 #include "oldexterns.h"
@@ -52,7 +54,9 @@ extern pthread_t mainThreadId;
 
 void signal_interrupt( int signum, void *sinfo, void *secret )
 {
+#ifndef __CYGWIN__
     extern const char *const    sys_siglist[];
+#endif
     struct sigaction            sa;
     siginfo_t                  *info;
 
@@ -64,7 +68,11 @@ void signal_interrupt( int signum, void *sinfo, void *secret )
         sa.sa_flags = SA_RESTART;
         sigaction( SIGINT, &sa, NULL );
 
+#ifdef __CYGWIN__
+        LogPrint( LOG_CRIT, "Received signal: %d", signum );
+#else
         LogPrint( LOG_CRIT, "Received signal: %s", sys_siglist[signum] );
+#endif
         exit( 0 );
     }
 }
@@ -79,31 +87,45 @@ void signal_interrupt( int signum, void *sinfo, void *secret )
 
 void signal_everyone( int signum, void *sinfo, void *secret )
 {
+#ifndef __CYGWIN__
     extern const char *const    sys_siglist[];
+#endif
     SigFunc_t                   sigFunc;
     pthread_t                   myThreadId;
+#ifndef __CYGWIN__
     ucontext_t                 *uc;
+#endif
     void                       *arg;
     siginfo_t                  *info;
 
     info = (siginfo_t *)sinfo;
 
+#ifndef __CYGWIN__
     uc = (ucontext_t *)secret;
+#endif
     myThreadId = pthread_self();
 
 #if 0
     if( pthread_equal( myThreadId, mainThreadId ) ) {
+#ifdef __CYGWIN__
+        LogPrint( LOG_CRIT, "Received signal: %d", signum );
+#else
         LogPrint( LOG_CRIT, "Received signal: %s", sys_siglist[signum] );
+#endif
     }
 #endif
 
     sigFunc = ThreadGetHandler( myThreadId, signum, &arg );
     if( sigFunc ) {
         if( signum == SIGUSR2 ) {
+#ifdef __CYGWIN__
+            arg = NULL;
+#else
 #ifdef OLD_IP
             arg = (void *)uc->uc_mcontext.gregs[OLD_IP];
 #else
             arg = NULL;
+#endif
 #endif
         }
         sigFunc( signum, arg );
@@ -116,14 +138,18 @@ void signal_everyone( int signum, void *sinfo, void *secret )
 
 void signal_death( int signum, void *sinfo, void *secret )
 {
+#ifndef __CYGWIN__
     extern const char *const    sys_siglist[];
     ucontext_t                 *uc;
+#endif
     struct sigaction            sa;
     siginfo_t                  *info;
 
     info = (siginfo_t *)sinfo;
 
+#ifndef __CYGWIN__
     uc = (ucontext_t *)secret;
+#endif
 
     /* Make it so another bad signal will just KILL it */
     sa.sa_handler = SIG_DFL;
@@ -133,7 +159,16 @@ void signal_death( int signum, void *sinfo, void *secret )
     sigaction( SIGILL, &sa, NULL );
     sigaction( SIGFPE, &sa, NULL );
 
+#ifdef __CYGWIN__
+    LogPrint( LOG_CRIT, "Received signal: %d", signum );
+#else
     LogPrint( LOG_CRIT, "Received signal: %s", sys_siglist[signum] );
+#endif
+
+#ifdef __CYGWIN__
+    LogPrint( LOG_CRIT, "Faulty Address %p, no discernable context",
+                        info->si_addr );
+#else
 #ifdef OLD_IP
     LogPrint( LOG_CRIT, "Faulty Address: %p, from %p", info->si_addr,
                         uc->uc_mcontext.gregs[OLD_IP] );
@@ -141,11 +176,16 @@ void signal_death( int signum, void *sinfo, void *secret )
     LogPrint( LOG_CRIT, "Faulty Address %p, no discernable context",
                         info->si_addr );
 #endif
+#endif
 
+#ifdef __CYGWIN__
+    do_backtrace( signum, NULL );
+#else
 #ifdef OLD_IP
     do_backtrace( signum, (void *)uc->uc_mcontext.gregs[OLD_IP] );
 #else
     do_backtrace( signum, NULL );
+#endif
 #endif
 
     /* Spew all remaining messages */
@@ -161,6 +201,7 @@ void signal_death( int signum, void *sinfo, void *secret )
 
 void do_symbol( void *ptr )
 {
+#ifndef __CYGWIN__
     void               *array[1];
     char              **strings;
 
@@ -170,10 +211,12 @@ void do_symbol( void *ptr )
     LogPrint( LOG_DEBUG, "%s", strings[0] );
 
     free( strings );
+#endif
 }
 
 void do_backtrace( int signum, void *ip )
 {
+#ifndef __CYGWIN__
     void               *array[100];
     size_t              size;
     char              **strings;
@@ -212,6 +255,7 @@ void do_backtrace( int signum, void *ip )
     }
 
     free( strings );
+#endif
 }
 
 

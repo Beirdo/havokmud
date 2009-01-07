@@ -98,11 +98,16 @@ void StartThreads( void )
 
     GlobalAbort = FALSE;
 
+#ifndef __CYGWIN__
     len = confstr( _CS_GNU_LIBPTHREAD_VERSION, NULL, 0 );
     if( len ) {
         pthreadsVersion = CREATEN(char, len);
         confstr( _CS_GNU_LIBPTHREAD_VERSION, pthreadsVersion, len );
     }
+#else
+    (void)len;
+    pthreadsVersion = memstrlink( "Cygwin" );
+#endif
 
     if( !pthreadsVersion || strstr( pthreadsVersion, "linuxthreads" ) ) {
         fprintf( stderr, "havokmud requires NPTL to operate correctly.\n\n"

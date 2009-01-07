@@ -138,8 +138,10 @@ int __main()
  */
 void MainParseArgs( int argc, char **argv )
 {
+#if 0
     extern char *optarg;
     extern int optind, opterr, optopt;
+#endif
     int opt;
     int optIndex = 0;
     static struct option longOpts[] = {
