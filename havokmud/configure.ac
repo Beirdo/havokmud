@@ -82,8 +82,9 @@ AC_CHECK_LIB([z], [compress])
 AC_CHECK_LIB([mysqlclient], [mysql_query],,
              [AC_MSG_ERROR(libmysqlclient not installed)])
 
-AC_CHECK_LIB([esmtp], [smtp_version],,
-             [AC_MSG_ERROR(libesmtp not installed)])
+# Causes a chicken & egg problem, this library is part of our build
+#AC_CHECK_LIB([esmtp], [smtp_version],,
+#             [AC_MSG_ERROR(libesmtp not installed)])
 
 
 # Checks for header files.
