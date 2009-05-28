@@ -7,6 +7,7 @@ AC_CONFIG_HEADER([include/config.h])
 AC_CONFIG_AUX_DIR([scripts])
 AC_REVISION($Revision: 1.1.2.6 $)
 
+
 AC_ARG_VAR(AWK, [location of the awk command])
 AC_PROG_AWK
 AC_ARG_VAR(CUT, [location of the cut command])
@@ -30,12 +31,24 @@ AC_SUBST(VERSIONDATE)
 
 AC_CANONICAL_SYSTEM
 
-AC_GNU_SOURCE
+AM_INIT_AUTOMAKE(havokmud, "2.0.0")
 
+AC_GNU_SOURCE
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
+
+# Check for -fgnu89-inline in gcc
+AC_MSG_CHECKING([whether gcc supports -fgnu89-inline])
+_gcc_cflags_save="$CFLAGS"
+CFLAGS="${CFLAGS} -fgnu89-inline"
+AC_COMPILE_IFELSE(AC_LANG_PROGRAM([]), _gcc_gnu89_inline=yes, 
+                  _gcc_gnu89_inline=no)
+AC_MSG_RESULT($_gcc_gnu89_inline)
+AM_CONDITIONAL([HAVE_GCC_GNU89_INLINE_OPTION],
+               [test "x$_gcc_gnu89_inline" = "xyes"])
+CFLAGS=$_gcc_cflags_save
 
 # Checks for libraries.
 AC_CHECK_LIB([crypt], [crypt])
