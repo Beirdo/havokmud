@@ -1,9 +1,19 @@
 .PHONY:	all clean
 
+PLATFORM := $(shell sh config.guess)
+PLATFORM := $(findstring cygwin, $(PLATFORM))
+ifeq ("$(PLATFORM)", "cygwin")
+CYGWIN  = yes
+CONFARG = --enable-emulate-getaddrinfo
+else
+CYGWIN  =
+CONFARG =
+endif 
+
 all:	../../lib/libesmtp.a
 
 ../../lib/libesmtp.a:
-	./configure --prefix=`cd ../.. ; pwd` --disable-shared
+	./configure --prefix=`cd ../.. ; pwd` --disable-shared ${CONFARG}
 	${MAKE}
 	${MAKE} install
 
