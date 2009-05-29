@@ -3201,7 +3201,7 @@ else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-_gcc_gnu89_inline=no
+_gcc_gnu89_inline=no ; CFLAGS=$_gcc_cflags_save
 fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 echo "$as_me:$LINENO: result: $_gcc_gnu89_inline" >&5
@@ -3216,7 +3216,7 @@ else
   HAVE_GCC_GNU89_INLINE_OPTION_FALSE=
 fi
 
-CFLAGS=$_gcc_cflags_save
+#CFLAGS=$_gcc_cflags_save
 
 # Check for pthreads
 

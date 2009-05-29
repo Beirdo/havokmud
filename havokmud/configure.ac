@@ -45,11 +45,11 @@ AC_MSG_CHECKING([whether gcc supports -fgnu89-inline])
 _gcc_cflags_save="$CFLAGS"
 CFLAGS="${CFLAGS} -fgnu89-inline"
 AC_COMPILE_IFELSE(AC_LANG_PROGRAM([]), _gcc_gnu89_inline=yes, 
-                  _gcc_gnu89_inline=no)
+                  [_gcc_gnu89_inline=no ; CFLAGS=$_gcc_cflags_save])
 AC_MSG_RESULT($_gcc_gnu89_inline)
 AM_CONDITIONAL([HAVE_GCC_GNU89_INLINE_OPTION],
                [test "x$_gcc_gnu89_inline" = "xyes"])
-CFLAGS=$_gcc_cflags_save
+#CFLAGS=$_gcc_cflags_save
 
 # Check for pthreads
 ACX_PTHREAD
