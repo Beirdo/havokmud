@@ -1,0 +1,46 @@
+#
+# Makefile.local
+# 
+
+
+NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
+	      corefunc/libhavokcore.a 
+NEWLIBS = util/*.o threads/*.o corefunc/*.o
+
+EXE = havoknew@EXEEXT@
+all : ${EXE} all-recursive
+
+${EXE} : ${NEWLIBFILES} force
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
+	${CC} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+
+
+util/libhavokutils.a:
+	make -C util
+
+threads/libhavokthread.a:
+	make -C threads
+
+corefunc/libhavokcore.a:
+	make -C corefunc
+
+
+
+doxygen:
+	doxygen doxygen/Doxyfile
+
+doxygen-rsync:
+	rsync -e ssh -avz --delete doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
+
+undefs:	make.out
+	scripts/make-undefs $+ $@
+
+review:	code-review.ps
+
+code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
+	(for i in ${SUBDIRS} include ; do find $$i -name \*.\[ch\]; done) | \
+		sort | xargs enscript -p$@ -Ec --color -MLetter -U4 -C 
+
+
+.PHONY:	force
+force:

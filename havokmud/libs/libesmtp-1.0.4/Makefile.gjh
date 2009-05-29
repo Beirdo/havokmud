@@ -1,0 +1,13 @@
+.PHONY:	all clean
+
+all:	../../lib/libesmtp.a
+
+../../lib/libesmtp.a:
+	./configure --prefix=`cd ../.. ; pwd` --disable-shared
+	${MAKE}
+	${MAKE} install
+
+clean:
+	${MAKE} uninstall
+	${MAKE} distclean
+

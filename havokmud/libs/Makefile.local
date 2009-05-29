@@ -1,0 +1,9 @@
+#
+# Makefile.local
+#
+
+all-recursive:
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ; done
+
+clean-recursive:
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh clean ; done

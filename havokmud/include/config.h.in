@@ -297,9 +297,6 @@
 /* Enable tracking (more CPU) */
 #undef USE_TRACK
 
-/* Version number of package */
-#undef VERSION
-
 /* Forces gossip/tell to only work within the local zone */
 #undef ZONE_COMM_ONLY
 

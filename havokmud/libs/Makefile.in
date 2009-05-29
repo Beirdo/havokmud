@@ -16,14 +16,14 @@
 
 #
 # Makefile.local
-# 
+#
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = .
+top_builddir = ..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -40,24 +40,16 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-DIST_COMMON = $(srcdir)/Makefile.local scripts/config.guess \
-	scripts/config.sub INSTALL NEWS README AUTHORS ChangeLog \
-	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/configure $(am__configure_deps) \
-	$(top_srcdir)/include/config.h.in \
-	$(top_srcdir)/threads/Makefile.in \
-	$(top_srcdir)/util/Makefile.in \
-	$(top_srcdir)/corefunc/Makefile.in
-subdir = .
+DIST_COMMON = $(srcdir)/Makefile.local $(srcdir)/Makefile.in \
+	$(srcdir)/Makefile.am
+subdir = libs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
- configure.lineno configure.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = threads/Makefile util/Makefile corefunc/Makefile
+CONFIG_CLEAN_FILES =
 SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -163,71 +155,42 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = no-dist
-SUBDIRS = libs util corefunc threads plugins
-NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
-	      corefunc/libhavokcore.a 
-
-NEWLIBS = util/*.o threads/*.o corefunc/*.o
-EXE = havoknew@EXEEXT@
+EMPTY_AUTOMAKE_TARGETS = install-info installdirs check installcheck \
+	dvi pdf ps info html tags ctags distdir all clean
+RECURSE_AUTOMAKE_TARGETS = install install-exec install-data
+SUBDIRS = libesmtp-1.0.4
 all: all-recursive
 
 .SUFFIXES:
-am--refresh:
-	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.local $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu '; \
-	      cd $(srcdir) && $(AUTOMAKE) --gnu  \
+	      cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libs/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  Makefile
+	  $(AUTOMAKE) --gnu  libs/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
-	    echo ' $(SHELL) ./config.status'; \
-	    $(SHELL) ./config.status;; \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
 	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
-	$(SHELL) ./config.status --recheck
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 $(top_srcdir)/configure:  $(am__configure_deps)
-	cd $(srcdir) && $(AUTOCONF)
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
-
-include/config.h: include/stamp-h1
-	@if test ! -f $@; then \
-	  rm -f include/stamp-h1; \
-	  $(MAKE) include/stamp-h1; \
-	else :; fi
-
-include/stamp-h1: $(top_srcdir)/include/config.h.in $(top_builddir)/config.status
-	@rm -f include/stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status include/config.h
-$(top_srcdir)/include/config.h.in:  $(am__configure_deps) 
-	cd $(top_srcdir) && $(AUTOHEADER)
-	rm -f include/stamp-h1
-	touch $@
-
-distclean-hdr:
-	-rm -f include/config.h include/stamp-h1
-threads/Makefile: $(top_builddir)/config.status $(top_srcdir)/threads/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-util/Makefile: $(top_builddir)/config.status $(top_srcdir)/util/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-corefunc/Makefile: $(top_builddir)/config.status $(top_srcdir)/corefunc/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 uninstall-info-am:
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -395,9 +358,8 @@ clean: clean-recursive
 clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-recursive
-	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-hdr distclean-tags
+distclean-am: clean-am distclean-generic distclean-tags
 
 dvi: dvi-recursive
 
@@ -420,8 +382,6 @@ install-man:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -441,51 +401,24 @@ uninstall-am: uninstall-info-am
 
 uninstall-info: uninstall-info-recursive
 
-.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
-	check-am clean clean-generic clean-recursive ctags \
-	ctags-recursive distclean distclean-generic distclean-hdr \
-	distclean-recursive distclean-tags dvi dvi-am html html-am \
-	info info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive \
-	mostlyclean mostlyclean-generic mostlyclean-recursive pdf \
-	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-info-am
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
+	clean clean-generic clean-recursive ctags ctags-recursive \
+	distclean distclean-generic distclean-recursive distclean-tags \
+	dvi dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-generic \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am
 
-all : ${EXE} all-recursive
 
-${EXE} : ${NEWLIBFILES} force
-	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	${CC} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+all-recursive:
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ; done
 
-util/libhavokutils.a:
-	make -C util
-
-threads/libhavokthread.a:
-	make -C threads
-
-corefunc/libhavokcore.a:
-	make -C corefunc
-
-doxygen:
-	doxygen doxygen/Doxyfile
-
-doxygen-rsync:
-	rsync -e ssh -avz --delete doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
-
-undefs:	make.out
-	scripts/make-undefs $+ $@
-
-review:	code-review.ps
-
-code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
-	(for i in ${SUBDIRS} include ; do find $$i -name \*.\[ch\]; done) | \
-		sort | xargs enscript -p$@ -Ec --color -MLetter -U4 -C 
-
-.PHONY:	force
-force:
+clean-recursive:
+	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh clean ; done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

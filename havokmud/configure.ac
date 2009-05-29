@@ -5,6 +5,7 @@ AC_INIT(havokmud, [2.0.0], [gjhurlbu@users.sourceforge.net])
 AC_CONFIG_SRCDIR([include/version.h])
 AC_CONFIG_HEADER([include/config.h])
 AC_CONFIG_AUX_DIR([scripts])
+AC_CONFIG_MACRO_DIR([scripts])
 AC_REVISION($Revision: 1.1.2.6 $)
 
 
@@ -49,6 +50,9 @@ AC_MSG_RESULT($_gcc_gnu89_inline)
 AM_CONDITIONAL([HAVE_GCC_GNU89_INLINE_OPTION],
                [test "x$_gcc_gnu89_inline" = "xyes"])
 CFLAGS=$_gcc_cflags_save
+
+# Check for pthreads
+ACX_PTHREAD
 
 # Checks for libraries.
 AC_CHECK_LIB([crypt], [crypt])
@@ -293,5 +297,5 @@ HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
 
 CFLAGS=$CFLAGS_SAVE
 
-AC_CONFIG_FILES([Makefile threads/Makefile util/Makefile corefunc/Makefile])
+AC_CONFIG_FILES([Makefile libs/Makefile threads/Makefile util/Makefile corefunc/Makefile])
 AC_OUTPUT
