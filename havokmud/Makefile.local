@@ -6,13 +6,14 @@
 NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
 	      corefunc/libhavokcore.a 
 NEWLIBS = util/*.o threads/*.o corefunc/*.o
+LIBS += -L lib -lesmtp # -ldl -lssl -lz
 
 EXE = havoknew@EXEEXT@
 all : ${EXE} all-recursive
 
 ${EXE} : ${NEWLIBFILES} force
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	${CC} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 
 util/libhavokutils.a:

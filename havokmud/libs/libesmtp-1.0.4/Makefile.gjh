@@ -13,7 +13,7 @@ endif
 all:	../../lib/libesmtp.a
 
 ../../lib/libesmtp.a:
-	./configure --prefix=`cd ../.. ; pwd` --disable-shared ${CONFARG}
+	./configure --prefix=`cd ../.. ; pwd` ${CONFARG}
 	${MAKE}
 	${MAKE} install
 

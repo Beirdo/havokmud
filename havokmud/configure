@@ -3649,6 +3649,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+CFLAGS="$PTHREAD_CFLAGS $CFLAGS"
+LDFLAGS="$PTHREAD_LDFLAGS $LDFLAGS"
+LIBS="$PTHREAD_LIBS $LIBS"
+CC="$PTHREAD_CC"
+
 # Checks for libraries.
 
 echo "$as_me:$LINENO: checking for crypt in -lcrypt" >&5
