@@ -186,9 +186,13 @@ ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
 havoknew_SOURCES = dummy.c
-havoknew_LDADD = -L lib threads/*.o corefunc/*.o -lhavokutils 
-havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
+@HAVE_LIBESMTP_FALSE@havoknew_LDADD = -L lib -lesmtp -L lib \
+@HAVE_LIBESMTP_FALSE@	threads/*.o corefunc/*.o -lhavokutils
+@HAVE_LIBESMTP_TRUE@havoknew_LDADD = -lesmtp -L lib threads/*.o \
+@HAVE_LIBESMTP_TRUE@	corefunc/*.o -lhavokutils
 havoknew_DEPENDENCIES = lib/libhavokutils.a
+havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
+havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
 AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic  ${INCDIRS}
 NEWLIBFILES = lib/libhavokutils.a threads/libhavokthread.a \
@@ -278,7 +282,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 havoknew$(EXEEXT): $(havoknew_OBJECTS) $(havoknew_DEPENDENCIES) 
 	@rm -f havoknew$(EXEEXT)
-	$(LINK) $(havoknew_LDFLAGS) $(havoknew_OBJECTS) $(havoknew_LDADD) $(LIBS)
+	$(havoknew_LINK) $(havoknew_LDFLAGS) $(havoknew_OBJECTS) $(havoknew_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -538,9 +542,9 @@ uninstall-info: uninstall-info-recursive
 #EXE = havoknew@EXEEXT@
 #all : ${EXE} all-recursive
 
-${EXE} : ${NEWLIBFILES} force
-	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+#${EXE} : ${NEWLIBFILES} force
+#	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
+#	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 lib/libhavokutils.a:
 	make -C util

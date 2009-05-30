@@ -17,9 +17,9 @@ LIBS += -L lib -lesmtp # -ldl -lssl -lz
 #EXE = havoknew@EXEEXT@
 #all : ${EXE} all-recursive
 
-${EXE} : ${NEWLIBFILES} force
-	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
+#${EXE} : ${NEWLIBFILES} force
+#	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
+#	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 
 lib/libhavokutils.a:

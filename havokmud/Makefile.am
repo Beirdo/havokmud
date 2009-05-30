@@ -4,8 +4,16 @@ SUBDIRS = libs util corefunc threads plugins
 
 bin_PROGRAMS = havoknew
 havoknew_SOURCES = dummy.c
-havoknew_LDADD = -L lib threads/*.o corefunc/*.o -lhavokutils 
-havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
+
+if !HAVE_LIBESMTP
+havoknew_LDADD = -L lib -lesmtp
+else
+havoknew_LDADD = -lesmtp
+endif
+
+havoknew_LDADD += -L lib threads/*.o corefunc/*.o -lhavokutils 
 havoknew_DEPENDENCIES = lib/libhavokutils.a
+havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
+havoknew_LINK = ${CCLD} -o $@
 
 include Makefile.local
