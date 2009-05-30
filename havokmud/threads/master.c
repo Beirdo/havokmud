@@ -258,7 +258,7 @@ void StartThreads( void )
  * TODO: replace with the release.h from beirdobot
  */
 char *svn_version( void ) {
-    return( VERSION );
+    return( SRC_VERSION );
 }
 
 void LogBanner( void )

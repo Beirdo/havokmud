@@ -1,7 +1,7 @@
 #ifndef _version_h
 #define _version_h
 
-#define VERSION "2.0.0 December 9, 2008"
+#define SRC_VERSION "2.0.0 December 9, 2008"
 
 #endif
 

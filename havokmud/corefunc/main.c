@@ -405,7 +405,7 @@ int main(int argc, char **argv)
 
     Uptime = time(0);
 #if 0
-    LogPrint(LOG_CRIT, "HavokMUD code version: %s", VERSION);
+    LogPrint(LOG_CRIT, "HavokMUD code version: %s", SRC_VERSION);
     LogPrint(LOG_CRIT, "Running game on port %d.", mud_port);
 #endif
 

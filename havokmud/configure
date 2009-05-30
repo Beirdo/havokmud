@@ -1497,7 +1497,7 @@ fi
 echo "$as_me:$LINENO: checking version of the package" >&5
 echo $ECHO_N "checking version of the package... $ECHO_C" >&6
 
-VERSION=`cat include/version.h | grep "define VERSION" | $CUT -d '"' -f 2`
+VERSION=`cat include/version.h | grep "define SRC_VERSION" | $CUT -d '"' -f 2`
 VERSIONMAJOR=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $1)}'`
 VERSIONMINOR=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $2)}'`
 VERSIONPATCH=`echo $VERSION | $AWK 'BEGIN {FS="."} {printf("%d", $3)}'`
