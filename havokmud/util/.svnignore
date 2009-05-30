@@ -1,2 +1,4 @@
 *.o
-.deps/
+*.a
+.deps
+Makefile
