@@ -865,43 +865,8 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
-  --disable-newexp        Disable the lower experience loss at lower levels
-  --disable-level-loss    Disable level loss for really low experience
-  --enable-hash           Enable hash tables for room storage (more CPU, less
-                          storage)
-  --disable-track         Disable tracking (lower CPU)
-  --disable-limited-items Disable limited items
-  --enable-player-auth    Enable forcing new players to be authorized
   --enable-debug          Enable some debugging stuff
   --disable-sitelock      Disable locking out specific hosts
-  --enable-duplicates     Enable duplicate items
-  --enable-impl-security  Enable implementor security measures
-  --disable-newgain       Disable the new mana/hit/move regen system
-  --enable-saveworld      Enable saving the entire world
-  --enable-quest-gain     Enable Quest-to-Gain system
-  --disable-low-gold      Disable lower gold rations
-  --disable-use-egos      Disable the use of object egos
-  --enable-log-mob        Enable logging all mob commands
-  --enable-log-debug      Enable extra debugging logging
-  --enable-clean-at-boot  Enable removing inactive players, demoting inactive
-                          gods at boot time
-  --enable-strange-wack   Enable removal of corrupted user files
-  --disable-zone-comm-only
-                          Disable zone-only communications
-  --disable-lag-mobiles   Disable mobiles lagging like players
-  --disable-prevent-pkill Disable player killing prevention
-  --enable-check-rent-inactive
-                          Enable killing inactive users' rent files
-  --enable-new-rent       Enable the new rent system
-  --disable-prep-spells   Disable prep spells (?)
-  --disable-log-all       Disable logging all actions
-  --enable-monk-item-limit
-                          Enable limiting monks to 20 items
-  --enable-byte-count     Enable counting the size of object/mob/room as
-                          saving
-  --disable-old-zone-stuff
-                          Disable old zone stuff
-  --enable-n-save-world   Enable new save world (?)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -7197,163 +7162,42 @@ done
 
 
 
-# Check whether --enable-newexp or --disable-newexp was given.
-if test "${enable_newexp+set}" = set; then
-  enableval="$enable_newexp"
-
-fi;
-if test "$enable_newexp" = "no"; then
-	ac_cv_option_newexp=no
-else
-	ac_cv_option_newexp=yes
-fi
-
-echo "$as_me:$LINENO: checking for lower experience loss at lower levels" >&5
-echo $ECHO_N "checking for lower experience loss at lower levels... $ECHO_C" >&6
-if test "${ac_cv_option_newexp+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_newexp" >&5
-echo "${ECHO_T}$ac_cv_option_newexp" >&6
-if test "$ac_cv_option_newexp" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define NEWEXP 1
-_ACEOF
-
-fi
-
-# Check whether --enable-level-loss or --disable-level-loss was given.
-if test "${enable_level_loss+set}" = set; then
-  enableval="$enable_level_loss"
-
-fi;
-if test "$enable_level_loss" = "no"; then
-	ac_cv_option_level_loss=no
-else
-	ac_cv_option_level_loss=yes
-fi
-
-echo "$as_me:$LINENO: checking for level loss for really low experience" >&5
-echo $ECHO_N "checking for level loss for really low experience... $ECHO_C" >&6
-if test "${ac_cv_option_level_loss+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_level_loss" >&5
-echo "${ECHO_T}$ac_cv_option_level_loss" >&6
-if test "$ac_cv_option_level_loss" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LEVEL_LOSS 1
-_ACEOF
-
-fi
-
-# Check whether --enable-hash or --disable-hash was given.
-if test "${enable_hash+set}" = set; then
-  enableval="$enable_hash"
-
-fi;
-if test "$enable_hash" = "yes"; then
-	ac_cv_option_hash=yes
-else
-	ac_cv_option_hash=no
-fi
-
-echo "$as_me:$LINENO: checking for use of hash tables for room storage" >&5
-echo $ECHO_N "checking for use of hash tables for room storage... $ECHO_C" >&6
-if test "${ac_cv_option_hash+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_hash" >&5
-echo "${ECHO_T}$ac_cv_option_hash" >&6
-if test "$ac_cv_option_hash" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define HASH 1
-_ACEOF
-
-fi
-
-
-# Check whether --enable-track or --disable-track was given.
-if test "${enable_track+set}" = set; then
-  enableval="$enable_track"
-
-fi;
-if test "$enable_track" = "no"; then
-	ac_cv_option_track=no
-else
-	ac_cv_option_track=yes
-fi
-
-echo "$as_me:$LINENO: checking for the use of tracking" >&5
-echo $ECHO_N "checking for the use of tracking... $ECHO_C" >&6
-if test "${ac_cv_option_track+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_track" >&5
-echo "${ECHO_T}$ac_cv_option_track" >&6
-if test "$ac_cv_option_track" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define USE_TRACK 1
-_ACEOF
-
-fi
-
-# Check whether --enable-limited-items or --disable-limited-items was given.
-if test "${enable_limited_items+set}" = set; then
-  enableval="$enable_limited_items"
-
-fi;
-if test "$enable_limited_items" = "no"; then
-	ac_cv_option_limited_items=no
-else
-	ac_cv_option_limited_items=yes
-fi
-
-echo "$as_me:$LINENO: checking for the use of limited items" >&5
-echo $ECHO_N "checking for the use of limited items... $ECHO_C" >&6
-if test "${ac_cv_option_limited_items+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_limited_items" >&5
-echo "${ECHO_T}$ac_cv_option_limited_items" >&6
-if test "$ac_cv_option_limited_items" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LIMITED_ITEMS 1
-_ACEOF
-
-fi
-
-# Check whether --enable-player-auth or --disable-player-auth was given.
-if test "${enable_player_auth+set}" = set; then
-  enableval="$enable_player_auth"
-
-fi;
-if test "$enable_player_auth" = "yes"; then
-	ac_cv_option_player_auth=yes
-else
-	ac_cv_option_player_auth=no
-fi
-
-echo "$as_me:$LINENO: checking for player authorization" >&5
-echo $ECHO_N "checking for player authorization... $ECHO_C" >&6
-if test "${ac_cv_option_player_auth+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_player_auth" >&5
-echo "${ECHO_T}$ac_cv_option_player_auth" >&6
-if test "$ac_cv_option_player_auth" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define PLAYER_AUTH 1
-_ACEOF
-
-fi
-
+#dnl NEWEXP enable option
+#HAVOK_SWITCH([newexp], [newexp], [NEWEXP], [--disable-newexp],
+#             [Disable the lower experience loss at lower levels],
+#             [for lower experience loss at lower levels],
+#             [For lower experience loss at lower levels], [yes], [no])
+#
+#dnl LEVEL_LOSS enable option
+#HAVOK_SWITCH([level-loss], [level_loss], [LEVEL_LOSS], [--disable-level-loss],
+#             [Disable level loss for really low experience],
+#             [for level loss for really low experience],
+#             [For level loss for really low experience], [yes], [no])
+#
+#dnl HASH enable option
+#HAVOK_SWITCH([hash], [hash], [HASH], [--enable-hash],
+#	     [Enable hash tables for room storage (more CPU, less storage)],
+#             [for use of hash tables for room storage],
+#             [Use Hash Tables for rooms (more CPU, less storage)], [no], [yes])
+#
+#
+#dnl USE_TRACK enable option
+#HAVOK_SWITCH([track], [track], [USE_TRACK], [--disable-track],
+#	     [Disable tracking (lower CPU)],
+#             [for the use of tracking],
+#             [Enable tracking (more CPU)], [yes], [no])
+#
+#HAVOK_SWITCH([limited-items], [limited_items], [LIMITED_ITEMS],
+#             [--disable-limited-items], [Disable limited items],
+#             [for the use of limited items],
+#             [To limit items above a specific rent cost], [yes], [no])
+#
+#HAVOK_SWITCH([player-auth], [player_auth], [PLAYER_AUTH],
+#             [--enable-player-auth],
+#             [Enable forcing new players to be authorized],
+#             [for player authorization],
+#             [To force new players to be authorized], [no], [yes])
+#
 # Check whether --enable-debug or --disable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
@@ -7406,578 +7250,109 @@ _ACEOF
 
 fi
 
-# Check whether --enable-duplicates or --disable-duplicates was given.
-if test "${enable_duplicates+set}" = set; then
-  enableval="$enable_duplicates"
-
-fi;
-if test "$enable_duplicates" = "yes"; then
-	ac_cv_option_duplicates=yes
-else
-	ac_cv_option_duplicates=no
-fi
-
-echo "$as_me:$LINENO: checking for duplicate item support" >&5
-echo $ECHO_N "checking for duplicate item support... $ECHO_C" >&6
-if test "${ac_cv_option_duplicates+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_duplicates" >&5
-echo "${ECHO_T}$ac_cv_option_duplicates" >&6
-if test "$ac_cv_option_duplicates" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define DUPLICATES 1
-_ACEOF
-
-fi
-
-# Check whether --enable-impl-security or --disable-impl-security was given.
-if test "${enable_impl_security+set}" = set; then
-  enableval="$enable_impl_security"
-
-fi;
-if test "$enable_impl_security" = "yes"; then
-	ac_cv_option_impl_security=yes
-else
-	ac_cv_option_impl_security=no
-fi
-
-echo "$as_me:$LINENO: checking for implementor security measures" >&5
-echo $ECHO_N "checking for implementor security measures... $ECHO_C" >&6
-if test "${ac_cv_option_impl_security+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_impl_security" >&5
-echo "${ECHO_T}$ac_cv_option_impl_security" >&6
-if test "$ac_cv_option_impl_security" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define IMPL_SECURITY 1
-_ACEOF
-
-fi
-
-# Check whether --enable-newgain or --disable-newgain was given.
-if test "${enable_newgain+set}" = set; then
-  enableval="$enable_newgain"
-
-fi;
-if test "$enable_newgain" = "no"; then
-	ac_cv_option_newgain=no
-else
-	ac_cv_option_newgain=yes
-fi
-
-echo "$as_me:$LINENO: checking for new mana/hit/move handling" >&5
-echo $ECHO_N "checking for new mana/hit/move handling... $ECHO_C" >&6
-if test "${ac_cv_option_newgain+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_newgain" >&5
-echo "${ECHO_T}$ac_cv_option_newgain" >&6
-if test "$ac_cv_option_newgain" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define NEWGAIN 1
-_ACEOF
-
-fi
-
-# Check whether --enable-saveworld or --disable-saveworld was given.
-if test "${enable_saveworld+set}" = set; then
-  enableval="$enable_saveworld"
-
-fi;
-if test "$enable_saveworld" = "yes"; then
-	ac_cv_option_saveworld=yes
-else
-	ac_cv_option_saveworld=no
-fi
-
-echo "$as_me:$LINENO: checking for saving the entire world" >&5
-echo $ECHO_N "checking for saving the entire world... $ECHO_C" >&6
-if test "${ac_cv_option_saveworld+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_saveworld" >&5
-echo "${ECHO_T}$ac_cv_option_saveworld" >&6
-if test "$ac_cv_option_saveworld" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define SAVEWORLD 1
-_ACEOF
-
-fi
-
-# Check whether --enable-quest-gain or --disable-quest-gain was given.
-if test "${enable_quest_gain+set}" = set; then
-  enableval="$enable_quest_gain"
-
-fi;
-if test "$enable_quest_gain" = "yes"; then
-	ac_cv_option_quest_gain=yes
-else
-	ac_cv_option_quest_gain=no
-fi
-
-echo "$as_me:$LINENO: checking for Quest-to-Gain system" >&5
-echo $ECHO_N "checking for Quest-to-Gain system... $ECHO_C" >&6
-if test "${ac_cv_option_quest_gain+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_quest_gain" >&5
-echo "${ECHO_T}$ac_cv_option_quest_gain" >&6
-if test "$ac_cv_option_quest_gain" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define QUEST_GAIN 1
-_ACEOF
-
-fi
-
-# Check whether --enable-low-gold or --disable-low-gold was given.
-if test "${enable_low_gold+set}" = set; then
-  enableval="$enable_low_gold"
-
-fi;
-if test "$enable_low_gold" = "no"; then
-	ac_cv_option_low_gold=no
-else
-	ac_cv_option_low_gold=yes
-fi
-
-echo "$as_me:$LINENO: checking for lower gold rations" >&5
-echo $ECHO_N "checking for lower gold rations... $ECHO_C" >&6
-if test "${ac_cv_option_low_gold+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_low_gold" >&5
-echo "${ECHO_T}$ac_cv_option_low_gold" >&6
-if test "$ac_cv_option_low_gold" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LOW_GOLD 1
-_ACEOF
-
-fi
-
-# Check whether --enable-use-egos or --disable-use-egos was given.
-if test "${enable_use_egos+set}" = set; then
-  enableval="$enable_use_egos"
-
-fi;
-if test "$enable_use_egos" = "no"; then
-	ac_cv_option_use_egos=no
-else
-	ac_cv_option_use_egos=yes
-fi
-
-echo "$as_me:$LINENO: checking for object egos" >&5
-echo $ECHO_N "checking for object egos... $ECHO_C" >&6
-if test "${ac_cv_option_use_egos+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_use_egos" >&5
-echo "${ECHO_T}$ac_cv_option_use_egos" >&6
-if test "$ac_cv_option_use_egos" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define USE_EGOS 1
-_ACEOF
-
-fi
-
-# Check whether --enable-log-mob or --disable-log-mob was given.
-if test "${enable_log_mob+set}" = set; then
-  enableval="$enable_log_mob"
-
-fi;
-if test "$enable_log_mob" = "yes"; then
-	ac_cv_option_log_mob=yes
-else
-	ac_cv_option_log_mob=no
-fi
-
-echo "$as_me:$LINENO: checking for mobile logging" >&5
-echo $ECHO_N "checking for mobile logging... $ECHO_C" >&6
-if test "${ac_cv_option_log_mob+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_log_mob" >&5
-echo "${ECHO_T}$ac_cv_option_log_mob" >&6
-if test "$ac_cv_option_log_mob" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LOG_MOB 1
-_ACEOF
-
-fi
-
-# Check whether --enable-log-debug or --disable-log-debug was given.
-if test "${enable_log_debug+set}" = set; then
-  enableval="$enable_log_debug"
-
-fi;
-if test "$enable_log_debug" = "yes"; then
-	ac_cv_option_log_debug=yes
-else
-	ac_cv_option_log_debug=no
-fi
-
-echo "$as_me:$LINENO: checking for debugging logging" >&5
-echo $ECHO_N "checking for debugging logging... $ECHO_C" >&6
-if test "${ac_cv_option_log_debug+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_log_debug" >&5
-echo "${ECHO_T}$ac_cv_option_log_debug" >&6
-if test "$ac_cv_option_log_debug" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LOG_DEBUG 1
-_ACEOF
-
-fi
-
-# Check whether --enable-clean-at-boot or --disable-clean-at-boot was given.
-if test "${enable_clean_at_boot+set}" = set; then
-  enableval="$enable_clean_at_boot"
-
-fi;
-if test "$enable_clean_at_boot" = "yes"; then
-	ac_cv_option_clean_at_boot=yes
-else
-	ac_cv_option_clean_at_boot=no
-fi
-
-echo "$as_me:$LINENO: checking for cleaning of inactive at boot" >&5
-echo $ECHO_N "checking for cleaning of inactive at boot... $ECHO_C" >&6
-if test "${ac_cv_option_clean_at_boot+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_clean_at_boot" >&5
-echo "${ECHO_T}$ac_cv_option_clean_at_boot" >&6
-if test "$ac_cv_option_clean_at_boot" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define CLEAN_AT_BOOT 1
-_ACEOF
-
-fi
-
-# Check whether --enable-strange-wack or --disable-strange-wack was given.
-if test "${enable_strange_wack+set}" = set; then
-  enableval="$enable_strange_wack"
-
-fi;
-if test "$enable_strange_wack" = "yes"; then
-	ac_cv_option_strange_wack=yes
-else
-	ac_cv_option_strange_wack=no
-fi
-
-echo "$as_me:$LINENO: checking for whacking of corrupted user files" >&5
-echo $ECHO_N "checking for whacking of corrupted user files... $ECHO_C" >&6
-if test "${ac_cv_option_strange_wack+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_strange_wack" >&5
-echo "${ECHO_T}$ac_cv_option_strange_wack" >&6
-if test "$ac_cv_option_strange_wack" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define STRANGE_WACK 1
-_ACEOF
-
-fi
-
-# Check whether --enable-zone-comm-only or --disable-zone-comm-only was given.
-if test "${enable_zone_comm_only+set}" = set; then
-  enableval="$enable_zone_comm_only"
-
-fi;
-if test "$enable_zone_comm_only" = "no"; then
-	ac_cv_option_zone_comm_only=no
-else
-	ac_cv_option_zone_comm_only=yes
-fi
-
-echo "$as_me:$LINENO: checking for zone only communications" >&5
-echo $ECHO_N "checking for zone only communications... $ECHO_C" >&6
-if test "${ac_cv_option_zone_comm_only+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_zone_comm_only" >&5
-echo "${ECHO_T}$ac_cv_option_zone_comm_only" >&6
-if test "$ac_cv_option_zone_comm_only" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ZONE_COMM_ONLY 1
-_ACEOF
-
-fi
-
-# Check whether --enable-lag-mobiles or --disable-lag-mobiles was given.
-if test "${enable_lag_mobiles+set}" = set; then
-  enableval="$enable_lag_mobiles"
-
-fi;
-if test "$enable_lag_mobiles" = "no"; then
-	ac_cv_option_lag_mobiles=no
-else
-	ac_cv_option_lag_mobiles=yes
-fi
-
-echo "$as_me:$LINENO: checking for mobile lagging" >&5
-echo $ECHO_N "checking for mobile lagging... $ECHO_C" >&6
-if test "${ac_cv_option_lag_mobiles+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_lag_mobiles" >&5
-echo "${ECHO_T}$ac_cv_option_lag_mobiles" >&6
-if test "$ac_cv_option_lag_mobiles" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LAG_MOBILES 1
-_ACEOF
-
-fi
-
-# Check whether --enable-prevent-pkill or --disable-prevent-pkill was given.
-if test "${enable_prevent_pkill+set}" = set; then
-  enableval="$enable_prevent_pkill"
-
-fi;
-if test "$enable_prevent_pkill" = "no"; then
-	ac_cv_option_prevent_pkill=no
-else
-	ac_cv_option_prevent_pkill=yes
-fi
-
-echo "$as_me:$LINENO: checking for player killing prevention" >&5
-echo $ECHO_N "checking for player killing prevention... $ECHO_C" >&6
-if test "${ac_cv_option_prevent_pkill+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_prevent_pkill" >&5
-echo "${ECHO_T}$ac_cv_option_prevent_pkill" >&6
-if test "$ac_cv_option_prevent_pkill" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define PREVENT_PKILL 1
-_ACEOF
-
-fi
-
-# Check whether --enable-check-rent-inactive or --disable-check-rent-inactive was given.
-if test "${enable_check_rent_inactive+set}" = set; then
-  enableval="$enable_check_rent_inactive"
-
-fi;
-if test "$enable_check_rent_inactive" = "yes"; then
-	ac_cv_option_check_rent_inactive=yes
-else
-	ac_cv_option_check_rent_inactive=no
-fi
-
-echo "$as_me:$LINENO: checking for inactive player rent whacking" >&5
-echo $ECHO_N "checking for inactive player rent whacking... $ECHO_C" >&6
-if test "${ac_cv_option_check_rent_inactive+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_check_rent_inactive" >&5
-echo "${ECHO_T}$ac_cv_option_check_rent_inactive" >&6
-if test "$ac_cv_option_check_rent_inactive" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define CHECK_RENT_INACTIVE 1
-_ACEOF
-
-fi
-
-# Check whether --enable-new-rent or --disable-new-rent was given.
-if test "${enable_new_rent+set}" = set; then
-  enableval="$enable_new_rent"
-
-fi;
-if test "$enable_new_rent" = "yes"; then
-	ac_cv_option_new_rent=yes
-else
-	ac_cv_option_new_rent=no
-fi
-
-echo "$as_me:$LINENO: checking for new rent system" >&5
-echo $ECHO_N "checking for new rent system... $ECHO_C" >&6
-if test "${ac_cv_option_new_rent+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_new_rent" >&5
-echo "${ECHO_T}$ac_cv_option_new_rent" >&6
-if test "$ac_cv_option_new_rent" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define NEW_RENT 1
-_ACEOF
-
-fi
-
-# Check whether --enable-prep-spells or --disable-prep-spells was given.
-if test "${enable_prep_spells+set}" = set; then
-  enableval="$enable_prep_spells"
-
-fi;
-if test "$enable_prep_spells" = "no"; then
-	ac_cv_option_prep_spells=no
-else
-	ac_cv_option_prep_spells=yes
-fi
-
-echo "$as_me:$LINENO: checking for prep spells" >&5
-echo $ECHO_N "checking for prep spells... $ECHO_C" >&6
-if test "${ac_cv_option_prep_spells+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_prep_spells" >&5
-echo "${ECHO_T}$ac_cv_option_prep_spells" >&6
-if test "$ac_cv_option_prep_spells" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define PREP_SPELLS 1
-_ACEOF
-
-fi
-
-# Check whether --enable-log-all or --disable-log-all was given.
-if test "${enable_log_all+set}" = set; then
-  enableval="$enable_log_all"
-
-fi;
-if test "$enable_log_all" = "no"; then
-	ac_cv_option_log_all=no
-else
-	ac_cv_option_log_all=yes
-fi
-
-echo "$as_me:$LINENO: checking for logging all actions" >&5
-echo $ECHO_N "checking for logging all actions... $ECHO_C" >&6
-if test "${ac_cv_option_log_all+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_log_all" >&5
-echo "${ECHO_T}$ac_cv_option_log_all" >&6
-if test "$ac_cv_option_log_all" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define LOG_ALL 1
-_ACEOF
-
-fi
-
-# Check whether --enable-monk-item-limit or --disable-monk-item-limit was given.
-if test "${enable_monk_item_limit+set}" = set; then
-  enableval="$enable_monk_item_limit"
-
-fi;
-if test "$enable_monk_item_limit" = "yes"; then
-	ac_cv_option_monk_item_limit=yes
-else
-	ac_cv_option_monk_item_limit=no
-fi
-
-echo "$as_me:$LINENO: checking for monk item limiting" >&5
-echo $ECHO_N "checking for monk item limiting... $ECHO_C" >&6
-if test "${ac_cv_option_monk_item_limit+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_monk_item_limit" >&5
-echo "${ECHO_T}$ac_cv_option_monk_item_limit" >&6
-if test "$ac_cv_option_monk_item_limit" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define MONK_ITEM_LIMIT 1
-_ACEOF
-
-fi
-
-# Check whether --enable-byte-count or --disable-byte-count was given.
-if test "${enable_byte_count+set}" = set; then
-  enableval="$enable_byte_count"
-
-fi;
-if test "$enable_byte_count" = "yes"; then
-	ac_cv_option_byte_count=yes
-else
-	ac_cv_option_byte_count=no
-fi
-
-echo "$as_me:$LINENO: checking for byte counting of object/mob/room" >&5
-echo $ECHO_N "checking for byte counting of object/mob/room... $ECHO_C" >&6
-if test "${ac_cv_option_byte_count+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_byte_count" >&5
-echo "${ECHO_T}$ac_cv_option_byte_count" >&6
-if test "$ac_cv_option_byte_count" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define BYTE_COUNT 1
-_ACEOF
-
-fi
-
-# Check whether --enable-old-zone-stuff or --disable-old-zone-stuff was given.
-if test "${enable_old_zone_stuff+set}" = set; then
-  enableval="$enable_old_zone_stuff"
-
-fi;
-if test "$enable_old_zone_stuff" = "no"; then
-	ac_cv_option_old_zone_stuff=no
-else
-	ac_cv_option_old_zone_stuff=yes
-fi
-
-echo "$as_me:$LINENO: checking for old zone stuff" >&5
-echo $ECHO_N "checking for old zone stuff... $ECHO_C" >&6
-if test "${ac_cv_option_old_zone_stuff+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_old_zone_stuff" >&5
-echo "${ECHO_T}$ac_cv_option_old_zone_stuff" >&6
-if test "$ac_cv_option_old_zone_stuff" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define OLD_ZONE_STUFF 1
-_ACEOF
-
-fi
-
-# Check whether --enable-n-save-world or --disable-n-save-world was given.
-if test "${enable_n_save_world+set}" = set; then
-  enableval="$enable_n_save_world"
-
-fi;
-if test "$enable_n_save_world" = "yes"; then
-	ac_cv_option_n_save_world=yes
-else
-	ac_cv_option_n_save_world=no
-fi
-
-echo "$as_me:$LINENO: checking for new save world" >&5
-echo $ECHO_N "checking for new save world... $ECHO_C" >&6
-if test "${ac_cv_option_n_save_world+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_option_n_save_world" >&5
-echo "${ECHO_T}$ac_cv_option_n_save_world" >&6
-if test "$ac_cv_option_n_save_world" = "yes" ; then
-
-cat >>confdefs.h <<\_ACEOF
-#define N_SAVE_WORLD 1
-_ACEOF
-
-fi
-
+#HAVOK_SWITCH([duplicates], [duplicates], [DUPLICATES], [--enable-duplicates],
+#             [Enable duplicate items],
+#             [for duplicate item support],
+#             [To allow item duplication], [no], [yes])
+#
+#HAVOK_SWITCH([impl-security], [impl_security], [IMPL_SECURITY],
+#             [--enable-impl-security], [Enable implementor security measures],
+#             [for implementor security measures],
+#             [To have each 58+ god restricted to a set of sites], [no], [yes])
+#
+#HAVOK_SWITCH([newgain], [newgain], [NEWGAIN], [--disable-newgain],
+#             [Disable the new mana/hit/move regen system],
+#             [for new mana/hit/move handling],
+#             [To use the new mana/hit/move handling], [yes], [no])
+#
+#HAVOK_SWITCH([saveworld], [saveworld], [SAVEWORLD], [--enable-saveworld],
+#             [Enable saving the entire world], [for saving the entire world],
+#             [If you want to be able to save the entire world], [no], [yes])
+#
+#HAVOK_SWITCH([quest-gain], [quest_gain], [QUEST_GAIN], [--enable-quest-gain],
+#             [Enable Quest-to-Gain system], [for Quest-to-Gain system],
+#             [If you want to use the Quest-to-Gain system], [no], [yes])
+#
+#HAVOK_SWITCH([low-gold], [low_gold], [LOW_GOLD], [--disable-low-gold],
+#             [Disable lower gold rations], [for lower gold rations],
+#             [If you want to use a lower gold ration], [yes], [no])
+#
+#HAVOK_SWITCH([use-egos], [use_egos], [USE_EGOS], [--disable-use-egos],
+#             [Disable the use of object egos], [for object egos],
+#             [Check ego on give and gets], [yes], [no])
+#
+#HAVOK_SWITCH([log-mob], [log_mob], [LOG_MOB], [--enable-log-mob],
+#             [Enable logging all mob commands], [for mobile logging],
+#             [Log all mob commands sent to command_interpreter], [no], [yes])
+#
+#HAVOK_SWITCH([log-debug], [log_debug], [LOG_DEBUG], [--enable-log-debug],
+#             [Enable extra debugging logging], [for debugging logging],
+#             [Add even more info to the logs], [no], [yes])
+#
+#HAVOK_SWITCH([clean-at-boot], [clean_at_boot], [CLEAN_AT_BOOT],
+#             [--enable-clean-at-boot],
+#             [Enable removing inactive players, demoting inactive gods at boot time],
+#             [for cleaning of inactive at boot],
+#             [Force the mud to remove inactive mortals, demote inactive immortals at boot time],
+#             [no], [yes])
+#
+#HAVOK_SWITCH([strange-wack], [strange_wack], [STRANGE_WACK],
+#             [--enable-strange-wack], [Enable removal of corrupted user files],
+#             [for whacking of corrupted user files],
+#             [Clears out corrupted user files.  Use periodically if at all],
+#             [no], [yes])
+#
+#HAVOK_SWITCH([zone-comm-only], [zone_comm_only], [ZONE_COMM_ONLY],
+#             [--disable-zone-comm-only], [Disable zone-only communications],
+#             [for zone only communications],
+#             [Forces gossip/tell to only work within the local zone], [yes],
+#             [no])
+#
+#HAVOK_SWITCH([lag-mobiles], [lag_mobiles], [LAG_MOBILES],
+#             [--disable-lag-mobiles], [Disable mobiles lagging like players],
+#             [for mobile lagging], [Makes mobs lag like players], [yes], [no])
+#
+#HAVOK_SWITCH([prevent-pkill], [prevent_pkill], [PREVENT_PKILL],
+#             [--disable-prevent-pkill], [Disable player killing prevention],
+#             [for player killing prevention],
+#             [Prevents player killing], [yes], [no])
+#
+#HAVOK_SWITCH([check-rent-inactive], [check_rent_inactive],
+#             [CHECK_RENT_INACTIVE], [--enable-check-rent-inactive],
+#             [Enable killing inactive users' rent files],
+#             [for inactive player rent whacking],
+#             [If users are inactive, remove the rent file], [no], [yes])
+#
+#HAVOK_SWITCH([new-rent], [new_rent], [NEW_RENT], [--enable-new-rent],
+#             [Enable the new rent system], [for new rent system],
+#             [Charge 100 coins per day of rent, regardless of item types],
+#             [no], [yes])
+#
+#HAVOK_SWITCH([prep-spells], [prep_spells], [PREP_SPELLS],
+#             [--disable-prep-spells], [Disable prep spells (?)],
+#             [for prep spells], [Needs a description], [yes], [no])
+#
+#HAVOK_SWITCH([log-all], [log_all], [LOG_ALL], [--disable-log-all],
+#             [Disable logging all actions], [for logging all actions],
+#             [Log all actions], [yes], [no])
+#
+#HAVOK_SWITCH([monk-item-limit], [monk_item_limit], [MONK_ITEM_LIMIT],
+#             [--enable-monk-item-limit], [Enable limiting monks to 20 items],
+#             [for monk item limiting], [Limit monks to 20 items], [no], [yes])
+#
+#HAVOK_SWITCH([byte-count], [byte_count], [BYTE_COUNT], [--enable-byte-count],
+#             [Enable counting the size of object/mob/room as saving],
+#             [for byte counting of object/mob/room],
+#             [Count the size of object/mob/room on saving], [no], [yes])
+#
+#HAVOK_SWITCH([old-zone-stuff], [old_zone_stuff], [OLD_ZONE_STUFF],
+#             [--disable-old-zone-stuff], [Disable old zone stuff],
+#             [for old zone stuff], [for temp testing of reset_zon], [yes], [no])
+#
+#HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
+#             [--enable-n-save-world], [Enable new save world (?)],
+#             [for new save world], [Enable new save world (?)], [no], [yes])
+#
 
                                                   ac_config_files="$ac_config_files Makefile libs/Makefile threads/Makefile util/Makefile corefunc/Makefile"
 

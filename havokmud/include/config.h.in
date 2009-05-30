@@ -1,26 +1,10 @@
 /* include/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Count the size of object/mob/room on saving */
-#undef BYTE_COUNT
-
-/* If users are inactive, remove the rent file */
-#undef CHECK_RENT_INACTIVE
-
-/* Force the mud to remove inactive mortals, demote inactive immortals at boot
-   time */
-#undef CLEAN_AT_BOOT
-
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
 #undef CLOSEDIR_VOID
 
 /* To add some extra debugging stuff */
 #undef DEBUG
-
-/* To allow item duplication */
-#undef DUPLICATES
-
-/* Use Hash Tables for rooms (more CPU, less storage) */
-#undef HASH
 
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
@@ -192,48 +176,6 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
-/* To have each 58+ god restricted to a set of sites */
-#undef IMPL_SECURITY
-
-/* Makes mobs lag like players */
-#undef LAG_MOBILES
-
-/* For level loss for really low experience */
-#undef LEVEL_LOSS
-
-/* To limit items above a specific rent cost */
-#undef LIMITED_ITEMS
-
-/* Log all actions */
-#undef LOG_ALL
-
-/* Add even more info to the logs */
-#undef LOG_DEBUG
-
-/* Log all mob commands sent to command_interpreter */
-#undef LOG_MOB
-
-/* If you want to use a lower gold ration */
-#undef LOW_GOLD
-
-/* Limit monks to 20 items */
-#undef MONK_ITEM_LIMIT
-
-/* For lower experience loss at lower levels */
-#undef NEWEXP
-
-/* To use the new mana/hit/move handling */
-#undef NEWGAIN
-
-/* Charge 100 coins per day of rent, regardless of item types */
-#undef NEW_RENT
-
-/* Enable new save world (?) */
-#undef N_SAVE_WORLD
-
-/* for temp testing of reset_zon */
-#undef OLD_ZONE_STUFF
-
 /* Name of package */
 #undef PACKAGE
 
@@ -252,27 +194,12 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* To force new players to be authorized */
-#undef PLAYER_AUTH
-
-/* Needs a description */
-#undef PREP_SPELLS
-
-/* Prevents player killing */
-#undef PREVENT_PKILL
-
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
 #undef PTHREAD_CREATE_JOINABLE
 
-/* If you want to use the Quest-to-Gain system */
-#undef QUEST_GAIN
-
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
-
-/* If you want to be able to save the entire world */
-#undef SAVEWORLD
 
 /* Define to the type of arg 1 for `select'. */
 #undef SELECT_TYPE_ARG1
@@ -289,26 +216,14 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Clears out corrupted user files. Use periodically if at all */
-#undef STRANGE_WACK
-
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
-/* Check ego on give and gets */
-#undef USE_EGOS
-
-/* Enable tracking (more CPU) */
-#undef USE_TRACK
-
 /* Version number of package */
 #undef VERSION
-
-/* Forces gossip/tell to only work within the local zone */
-#undef ZONE_COMM_ONLY
 
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
