@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
 
 bin_PROGRAMS = havoknew
-havoknew_SOURCES = dummy.c
+havoknew_SOURCES =
 
 if !HAVE_LIBESMTP
 havoknew_LDADD = -L lib -lesmtp
@@ -11,9 +11,7 @@ else
 havoknew_LDADD = -lesmtp
 endif
 
-havoknew_LDADD += -L lib -lhavokcore -lhavokthread -lhavokutils 
-havoknew_DEPENDENCIES  = lib/libhavokutils.a lib/libhavokcore.a
-havoknew_DEPENDENCIES += lib/libhavokthread.a
+havoknew_LDADD += util/*.o corefunc/*.o threads/*.o
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
 havoknew_LINK = ${CCLD} -o $@
 

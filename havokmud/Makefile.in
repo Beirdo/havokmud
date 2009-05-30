@@ -46,7 +46,7 @@ DIST_COMMON = $(srcdir)/Makefile.local scripts/config.guess \
 	scripts/config.sub INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(top_srcdir)/include/config.h.in scripts/depcomp
+	$(top_srcdir)/include/config.h.in
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/scripts/acx_pthread.m4 \
@@ -61,11 +61,13 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_havoknew_OBJECTS = dummy.$(OBJEXT)
+am_havoknew_OBJECTS =
 havoknew_OBJECTS = $(am_havoknew_OBJECTS)
+@HAVE_LIBESMTP_FALSE@havoknew_DEPENDENCIES = lib util/*.o corefunc/*.o \
+@HAVE_LIBESMTP_FALSE@	threads/*.o
+@HAVE_LIBESMTP_TRUE@havoknew_DEPENDENCIES = util/*.o corefunc/*.o \
+@HAVE_LIBESMTP_TRUE@	threads/*.o
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
-depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
-am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -183,13 +185,11 @@ target_vendor = @target_vendor@
 ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
-havoknew_SOURCES = dummy.c
-@HAVE_LIBESMTP_FALSE@havoknew_LDADD = -L lib -lesmtp -L lib \
-@HAVE_LIBESMTP_FALSE@	-lhavokcore -lhavokthread -lhavokutils
-@HAVE_LIBESMTP_TRUE@havoknew_LDADD = -lesmtp -L lib -lhavokcore \
-@HAVE_LIBESMTP_TRUE@	-lhavokthread -lhavokutils
-havoknew_DEPENDENCIES = lib/libhavokutils.a lib/libhavokcore.a \
-	lib/libhavokthread.a
+havoknew_SOURCES = 
+@HAVE_LIBESMTP_FALSE@havoknew_LDADD = -L lib -lesmtp util/*.o \
+@HAVE_LIBESMTP_FALSE@	corefunc/*.o threads/*.o
+@HAVE_LIBESMTP_TRUE@havoknew_LDADD = -lesmtp util/*.o corefunc/*.o \
+@HAVE_LIBESMTP_TRUE@	threads/*.o
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
 havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
@@ -199,7 +199,6 @@ AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
 am--refresh:
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.local $(am__configure_deps)
@@ -282,22 +281,6 @@ mostlyclean-compile:
 
 distclean-compile:
 	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
-
-.c.o:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c $<
-
-.c.obj:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 uninstall-info-am:
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -469,7 +452,6 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -497,7 +479,6 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
