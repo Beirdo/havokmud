@@ -115,7 +115,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ -L lib -lesmtp # -ldl -lssl -lz
+LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 OBJEXT = @OBJEXT@
@@ -194,11 +194,9 @@ havoknew_DEPENDENCIES = lib/libhavokutils.a
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
 havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
-AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic  ${INCDIRS}
-NEWLIBFILES = lib/libhavokutils.a threads/libhavokthread.a \
-	      corefunc/libhavokcore.a 
+AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
+	    -pedantic  ${INCDIRS}
 
-NEWLIBS = util/*.o threads/*.o corefunc/*.o
 all: all-recursive
 
 .SUFFIXES:
@@ -538,13 +536,6 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-binPROGRAMS uninstall-info-am
 
-
-#EXE = havoknew@EXEEXT@
-#all : ${EXE} all-recursive
-
-#${EXE} : ${NEWLIBFILES} force
-#	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
-#	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 lib/libhavokutils.a:
 	make -C util
