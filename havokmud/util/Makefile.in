@@ -48,15 +48,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(pkglibdir)"
-pkglibLIBRARIES_INSTALL = $(INSTALL_DATA)
-LIBRARIES = $(pkglib_LIBRARIES)
+LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
 ARFLAGS = cru
 libhavokutils_a_AR = $(AR) $(ARFLAGS)
@@ -177,7 +169,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = no-dist
-pkglib_LIBRARIES = libhavokutils.a
+noinst_LIBRARIES = libhavokutils.a
 libhavokutils_a_SOURCES = linked_list.c queue.c buffer.c \
 	protected_data.c balanced_btree.c text_process.c memory.c \
 	btoe.c md5c.c
@@ -214,35 +206,9 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-pkglibLIBRARIES: $(pkglib_LIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkglibdir)" || $(mkdir_p) "$(DESTDIR)$(pkglibdir)"
-	@list='$(pkglib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(pkglibLIBRARIES_INSTALL) '$$p' '$(DESTDIR)$(pkglibdir)/$$f'"; \
-	    $(pkglibLIBRARIES_INSTALL) "$$p" "$(DESTDIR)$(pkglibdir)/$$f"; \
-	  else :; fi; \
-	done
-	@$(POST_INSTALL)
-	@list='$(pkglib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    p=$(am__strip_dir) \
-	    echo " $(RANLIB) '$(DESTDIR)$(pkglibdir)/$$p'"; \
-	    $(RANLIB) "$(DESTDIR)$(pkglibdir)/$$p"; \
-	  else :; fi; \
-	done
 
-uninstall-pkglibLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkglib_LIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkglibdir)/$$p'"; \
-	  rm -f "$(DESTDIR)$(pkglibdir)/$$p"; \
-	done
-
-clean-pkglibLIBRARIES:
-	-test -z "$(pkglib_LIBRARIES)" || rm -f $(pkglib_LIBRARIES)
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 libhavokutils.a: $(libhavokutils_a_OBJECTS) $(libhavokutils_a_DEPENDENCIES) 
 	-rm -f libhavokutils.a
 	$(libhavokutils_a_AR) libhavokutils.a $(libhavokutils_a_OBJECTS) $(libhavokutils_a_LIBADD)
@@ -328,11 +294,8 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LIBRARIES) all-local
 installdirs:
-	for dir in "$(DESTDIR)$(pkglibdir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -359,7 +322,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-pkglibLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-local clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -379,7 +343,7 @@ info-am:
 
 install-data-am:
 
-install-exec-am: install-pkglibLIBRARIES
+install-exec-am: install-exec-local
 
 install-info: install-info-am
 
@@ -404,19 +368,30 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-pkglibLIBRARIES
+uninstall-am: uninstall-info-am uninstall-local
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-pkglibLIBRARIES ctags distclean distclean-compile \
-	distclean-generic distclean-tags dvi dvi-am html html-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-pkglibLIBRARIES install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am uninstall-pkglibLIBRARIES
+.PHONY: CTAGS GTAGS all all-am all-local check check-am clean \
+	clean-generic clean-local clean-noinstLIBRARIES ctags \
+	distclean distclean-compile distclean-generic distclean-tags \
+	dvi dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-exec install-exec-am \
+	install-exec-local install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am uninstall-local
 
+install-exec-local:	../lib/libhavokutils.a
+
+../lib/libhavokutils.a:	libhavokutils.a
+	${INSTALL} -m 644 libhavokutils.a ../lib
+
+uninstall-local:
+	${RM} ../lib/libhavokutils.a
+
+all-local:	install-exec-local
+
+clean-local:	uninstall-local
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

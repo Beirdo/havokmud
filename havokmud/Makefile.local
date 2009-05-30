@@ -3,28 +3,26 @@
 # 
 
 ## Include dirs
-INCDIRS = -I${top_srcdir} -I${top_srcdir}/include -I${top_srcdir}/util \
-	  @INCLUDES@
+INCDIRS = -I${top_srcdir}/include @INCLUDES@
 
 ##  these are architecture dependent flags
-CFLAGS += -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
-	  ${INCDIRS}
+AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic  ${INCDIRS}
 
 
-NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
+NEWLIBFILES = lib/libhavokutils.a threads/libhavokthread.a \
 	      corefunc/libhavokcore.a 
 NEWLIBS = util/*.o threads/*.o corefunc/*.o
 LIBS += -L lib -lesmtp # -ldl -lssl -lz
 
-EXE = havoknew@EXEEXT@
-all : ${EXE} all-recursive
+#EXE = havoknew@EXEEXT@
+#all : ${EXE} all-recursive
 
 ${EXE} : ${NEWLIBFILES} force
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i all ; done
 	${CC} ${PTHREAD_CFLAGS} -g -rdynamic -o ${EXE} ${LDFLAGS} ${NEWLIBS} ${LIBS}
 
 
-util/libhavokutils.a:
+lib/libhavokutils.a:
 	make -C util
 
 threads/libhavokthread.a:

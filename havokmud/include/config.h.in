@@ -99,6 +99,9 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
+/* Define if you have POSIX threads libraries and header files. */
+#undef HAVE_PTHREAD
+
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
@@ -258,6 +261,10 @@
 /* Prevents player killing */
 #undef PREVENT_PKILL
 
+/* Define to necessary symbol if this constant uses a non-standard name on
+   your system. */
+#undef PTHREAD_CREATE_JOINABLE
+
 /* If you want to use the Quest-to-Gain system */
 #undef QUEST_GAIN
 
@@ -296,6 +303,9 @@
 
 /* Enable tracking (more CPU) */
 #undef USE_TRACK
+
+/* Version number of package */
+#undef VERSION
 
 /* Forces gossip/tell to only work within the local zone */
 #undef ZONE_COMM_ONLY
