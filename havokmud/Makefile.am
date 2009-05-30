@@ -11,8 +11,9 @@ else
 havoknew_LDADD = -lesmtp
 endif
 
-havoknew_LDADD += -L lib threads/*.o -lhavokcore -lhavokutils 
-havoknew_DEPENDENCIES = lib/libhavokutils.a lib/libhavokcore.a
+havoknew_LDADD += -L lib -lhavokcore -lhavokthread -lhavokutils 
+havoknew_DEPENDENCIES  = lib/libhavokutils.a lib/libhavokcore.a
+havoknew_DEPENDENCIES += lib/libhavokthread.a
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
 havoknew_LINK = ${CCLD} -o $@
 
