@@ -2,6 +2,14 @@
 # Makefile.local
 # 
 
+## Include dirs
+INCDIRS = -I${top_srcdir} -I${top_srcdir}/include -I${top_srcdir}/util \
+	  @INCLUDES@
+
+##  these are architecture dependent flags
+CFLAGS += -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 -pedantic \
+	  ${INCDIRS}
+
 
 NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
 	      corefunc/libhavokcore.a 
@@ -45,3 +53,8 @@ code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
 
 .PHONY:	force
 force:
+
+#
+# End of Makefile.local
+# 
+

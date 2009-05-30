@@ -40,6 +40,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@HAVE_LIBESMTP_FALSE@am__append_1 = libesmtp-1.0.4
 DIST_COMMON = $(srcdir)/Makefile.local $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am
 subdir = libs
@@ -60,7 +61,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = libesmtp-1.0.4
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
@@ -85,6 +86,8 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 HAVE_GCC_GNU89_INLINE_OPTION_FALSE = @HAVE_GCC_GNU89_INLINE_OPTION_FALSE@
 HAVE_GCC_GNU89_INLINE_OPTION_TRUE = @HAVE_GCC_GNU89_INLINE_OPTION_TRUE@
+HAVE_LIBESMTP_FALSE = @HAVE_LIBESMTP_FALSE@
+HAVE_LIBESMTP_TRUE = @HAVE_LIBESMTP_TRUE@
 INCLUDES = @INCLUDES@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -163,7 +166,7 @@ AUTOMAKE_OPTIONS = no-dist
 EMPTY_AUTOMAKE_TARGETS = install-info installdirs check installcheck \
 	dvi pdf ps info html tags ctags distdir all clean
 RECURSE_AUTOMAKE_TARGETS = install install-exec install-data
-SUBDIRS = libesmtp-1.0.4
+SUBDIRS = $(am__append_1)
 all: all-recursive
 
 .SUFFIXES:
@@ -420,9 +423,11 @@ uninstall-info: uninstall-info-recursive
 
 
 all-recursive:
+	[ "${SUBDIRS}" != "" ] && \
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ; done
 
 clean-recursive:
+	[ "${SUBDIRS}" != "" ] && \
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh clean ; done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

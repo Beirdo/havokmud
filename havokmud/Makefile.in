@@ -79,7 +79,8 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long \
+	-std=c99 -pedantic ${INCDIRS}
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CUT = @CUT@
@@ -93,6 +94,8 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 HAVE_GCC_GNU89_INLINE_OPTION_FALSE = @HAVE_GCC_GNU89_INLINE_OPTION_FALSE@
 HAVE_GCC_GNU89_INLINE_OPTION_TRUE = @HAVE_GCC_GNU89_INLINE_OPTION_TRUE@
+HAVE_LIBESMTP_FALSE = @HAVE_LIBESMTP_FALSE@
+HAVE_LIBESMTP_TRUE = @HAVE_LIBESMTP_TRUE@
 INCLUDES = @INCLUDES@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -170,6 +173,9 @@ target_vendor = @target_vendor@
 ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
+INCDIRS = -I${top_srcdir} -I${top_srcdir}/include -I${top_srcdir}/util \
+	  @INCLUDES@
+
 NEWLIBFILES = util/libhavokutils.a threads/libhavokthread.a \
 	      corefunc/libhavokcore.a 
 
@@ -492,6 +498,10 @@ code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
 
 .PHONY:	force
 force:
+
+#
+# End of Makefile.local
+# 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

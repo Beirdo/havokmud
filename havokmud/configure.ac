@@ -36,9 +36,9 @@ AM_INIT_AUTOMAKE(havokmud, "2.0.0")
 
 AC_GNU_SOURCE
 
-# Checks for programs.
+# Checks for complier (we want gcc!)
 AC_PROG_CC
-AC_PROG_RANLIB
+dnl AC_PROG_CC_C99
 
 # Check for -fgnu89-inline in gcc
 AC_MSG_CHECKING([whether gcc supports -fgnu89-inline])
@@ -50,6 +50,11 @@ AC_MSG_RESULT($_gcc_gnu89_inline)
 AM_CONDITIONAL([HAVE_GCC_GNU89_INLINE_OPTION],
                [test "x$_gcc_gnu89_inline" = "xyes"])
 #CFLAGS=$_gcc_cflags_save
+
+#
+# ranlib
+#
+AC_PROG_RANLIB
 
 # Check for pthreads
 ACX_PTHREAD
@@ -104,10 +109,12 @@ AC_CHECK_LIB([z], [compress])
 AC_CHECK_LIB([mysqlclient], [mysql_query],,
              [AC_MSG_ERROR(libmysqlclient not installed)])
 
-# Causes a chicken & egg problem, this library is part of our build
-#AC_CHECK_LIB([esmtp], [smtp_version],,
-#             [AC_MSG_ERROR(libesmtp not installed)])
+# the mysql include dir comes in via the INCLUDES
+CFLAGS=$CFLAGS_SAVE
 
+# Check if the library is installed in the system.  If not, use ours.
+AC_CHECK_LIB([esmtp], [smtp_version],HAVE_LIBESMTP=yes,HAVE_LIBESMTP=no)
+AM_CONDITIONAL([HAVE_LIBESMTP], [test x${HAVE_LIBESMTP} = xyes])
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -299,8 +306,6 @@ HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
              [--enable-n-save-world], [Enable new save world (?)],
              [for new save world], [Enable new save world (?)], [no], [yes])
 
-
-CFLAGS=$CFLAGS_SAVE
 
 AC_CONFIG_FILES([Makefile libs/Makefile threads/Makefile util/Makefile corefunc/Makefile])
 AC_OUTPUT

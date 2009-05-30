@@ -312,7 +312,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS AWK CUT VERSION VERSIONMAJOR VERSIONMINOR VERSIONPATCH VERSIONDATE build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE RANLIB ac_ct_RANLIB HAVE_GCC_GNU89_INLINE_OPTION_TRUE HAVE_GCC_GNU89_INLINE_OPTION_FALSE acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS INCLUDES CPP EGREP LIBOBJS POW_LIB LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS AWK CUT VERSION VERSIONMAJOR VERSIONMINOR VERSIONPATCH VERSIONDATE build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE HAVE_GCC_GNU89_INLINE_OPTION_TRUE HAVE_GCC_GNU89_INLINE_OPTION_FALSE RANLIB ac_ct_RANLIB acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS INCLUDES HAVE_LIBESMTP_TRUE HAVE_LIBESMTP_FALSE CPP EGREP LIBOBJS POW_LIB LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1974,7 +1974,7 @@ _ACEOF
 
 
 
-# Checks for programs.
+# Checks for complier (we want gcc!)
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3073,6 +3073,74 @@ else
 fi
 
 
+
+# Check for -fgnu89-inline in gcc
+echo "$as_me:$LINENO: checking whether gcc supports -fgnu89-inline" >&5
+echo $ECHO_N "checking whether gcc supports -fgnu89-inline... $ECHO_C" >&6
+_gcc_cflags_save="$CFLAGS"
+CFLAGS="${CFLAGS} -fgnu89-inline"
+
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  _gcc_gnu89_inline=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+_gcc_gnu89_inline=no ; CFLAGS=$_gcc_cflags_save
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $_gcc_gnu89_inline" >&5
+echo "${ECHO_T}$_gcc_gnu89_inline" >&6
+
+
+if test "x$_gcc_gnu89_inline" = "xyes"; then
+  HAVE_GCC_GNU89_INLINE_OPTION_TRUE=
+  HAVE_GCC_GNU89_INLINE_OPTION_FALSE='#'
+else
+  HAVE_GCC_GNU89_INLINE_OPTION_TRUE='#'
+  HAVE_GCC_GNU89_INLINE_OPTION_FALSE=
+fi
+
+#CFLAGS=$_gcc_cflags_save
+
+#
+# ranlib
+#
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -3153,70 +3221,6 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
-
-# Check for -fgnu89-inline in gcc
-echo "$as_me:$LINENO: checking whether gcc supports -fgnu89-inline" >&5
-echo $ECHO_N "checking whether gcc supports -fgnu89-inline... $ECHO_C" >&6
-_gcc_cflags_save="$CFLAGS"
-CFLAGS="${CFLAGS} -fgnu89-inline"
-
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  _gcc_gnu89_inline=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-_gcc_gnu89_inline=no ; CFLAGS=$_gcc_cflags_save
-fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-echo "$as_me:$LINENO: result: $_gcc_gnu89_inline" >&5
-echo "${ECHO_T}$_gcc_gnu89_inline" >&6
-
-
-if test "x$_gcc_gnu89_inline" = "xyes"; then
-  HAVE_GCC_GNU89_INLINE_OPTION_TRUE=
-  HAVE_GCC_GNU89_INLINE_OPTION_FALSE='#'
-else
-  HAVE_GCC_GNU89_INLINE_OPTION_TRUE='#'
-  HAVE_GCC_GNU89_INLINE_OPTION_FALSE=
-fi
-
-#CFLAGS=$_gcc_cflags_save
 
 # Check for pthreads
 
@@ -4082,9 +4086,88 @@ echo "$as_me: error: libmysqlclient not installed" >&2;}
 fi
 
 
-# Causes a chicken & egg problem, this library is part of our build
-#AC_CHECK_LIB([esmtp], [smtp_version],,
-#             [AC_MSG_ERROR(libesmtp not installed)])
+# the mysql include dir comes in via the INCLUDES
+CFLAGS=$CFLAGS_SAVE
+
+# Check if the library is installed in the system.  If not, use ours.
+echo "$as_me:$LINENO: checking for smtp_version in -lesmtp" >&5
+echo $ECHO_N "checking for smtp_version in -lesmtp... $ECHO_C" >&6
+if test "${ac_cv_lib_esmtp_smtp_version+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lesmtp  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char smtp_version ();
+int
+main ()
+{
+smtp_version ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_esmtp_smtp_version=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_esmtp_smtp_version=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_esmtp_smtp_version" >&5
+echo "${ECHO_T}$ac_cv_lib_esmtp_smtp_version" >&6
+if test $ac_cv_lib_esmtp_smtp_version = yes; then
+  HAVE_LIBESMTP=yes
+else
+  HAVE_LIBESMTP=no
+fi
+
+
+
+if test x${HAVE_LIBESMTP} = xyes; then
+  HAVE_LIBESMTP_TRUE=
+  HAVE_LIBESMTP_FALSE='#'
+else
+  HAVE_LIBESMTP_TRUE='#'
+  HAVE_LIBESMTP_FALSE=
+fi
 
 
 # Checks for header files.
@@ -7896,8 +7979,6 @@ _ACEOF
 fi
 
 
-CFLAGS=$CFLAGS_SAVE
-
                                                   ac_config_files="$ac_config_files Makefile libs/Makefile threads/Makefile util/Makefile corefunc/Makefile"
 
 cat >confcache <<\_ACEOF
@@ -8009,6 +8090,13 @@ if test -z "${HAVE_GCC_GNU89_INLINE_OPTION_TRUE}" && test -z "${HAVE_GCC_GNU89_I
   { { echo "$as_me:$LINENO: error: conditional \"HAVE_GCC_GNU89_INLINE_OPTION\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"HAVE_GCC_GNU89_INLINE_OPTION\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_LIBESMTP_TRUE}" && test -z "${HAVE_LIBESMTP_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_LIBESMTP\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_LIBESMTP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -8603,15 +8691,17 @@ s,@AMDEPBACKSLASH@,$AMDEPBACKSLASH,;t t
 s,@CCDEPMODE@,$CCDEPMODE,;t t
 s,@am__fastdepCC_TRUE@,$am__fastdepCC_TRUE,;t t
 s,@am__fastdepCC_FALSE@,$am__fastdepCC_FALSE,;t t
-s,@RANLIB@,$RANLIB,;t t
-s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@HAVE_GCC_GNU89_INLINE_OPTION_TRUE@,$HAVE_GCC_GNU89_INLINE_OPTION_TRUE,;t t
 s,@HAVE_GCC_GNU89_INLINE_OPTION_FALSE@,$HAVE_GCC_GNU89_INLINE_OPTION_FALSE,;t t
+s,@RANLIB@,$RANLIB,;t t
+s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@acx_pthread_config@,$acx_pthread_config,;t t
 s,@PTHREAD_CC@,$PTHREAD_CC,;t t
 s,@PTHREAD_LIBS@,$PTHREAD_LIBS,;t t
 s,@PTHREAD_CFLAGS@,$PTHREAD_CFLAGS,;t t
 s,@INCLUDES@,$INCLUDES,;t t
+s,@HAVE_LIBESMTP_TRUE@,$HAVE_LIBESMTP_TRUE,;t t
+s,@HAVE_LIBESMTP_FALSE@,$HAVE_LIBESMTP_FALSE,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
