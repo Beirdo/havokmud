@@ -13,7 +13,7 @@ AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
 lib/libhavokutils.a:
 	make -C util
 
-threads/libhavokthread.a:
+lib/libhavokthread.a:
 	make -C threads
 
 corefunc/libhavokcore.a:

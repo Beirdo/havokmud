@@ -47,8 +47,7 @@ DIST_COMMON = $(srcdir)/Makefile.local scripts/config.guess \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(top_srcdir)/include/config.h.in \
-	$(top_srcdir)/threads/Makefile.in \
-	$(top_srcdir)/corefunc/Makefile.in scripts/depcomp
+	$(top_srcdir)/threads/Makefile.in scripts/depcomp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/scripts/acx_pthread.m4 \
@@ -59,7 +58,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = threads/Makefile corefunc/Makefile
+CONFIG_CLEAN_FILES = threads/Makefile
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
@@ -187,10 +186,10 @@ AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
 havoknew_SOURCES = dummy.c
 @HAVE_LIBESMTP_FALSE@havoknew_LDADD = -L lib -lesmtp -L lib \
-@HAVE_LIBESMTP_FALSE@	threads/*.o corefunc/*.o -lhavokutils
+@HAVE_LIBESMTP_FALSE@	threads/*.o -lhavokcore -lhavokutils
 @HAVE_LIBESMTP_TRUE@havoknew_LDADD = -lesmtp -L lib threads/*.o \
-@HAVE_LIBESMTP_TRUE@	corefunc/*.o -lhavokutils
-havoknew_DEPENDENCIES = lib/libhavokutils.a
+@HAVE_LIBESMTP_TRUE@	-lhavokcore -lhavokutils
+havoknew_DEPENDENCIES = lib/libhavokutils.a lib/libhavokcore.a
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g -rdynamic ${LDFLAGS}
 havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
@@ -252,8 +251,6 @@ $(top_srcdir)/include/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f include/config.h include/stamp-h1
 threads/Makefile: $(top_builddir)/config.status $(top_srcdir)/threads/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-corefunc/Makefile: $(top_builddir)/config.status $(top_srcdir)/corefunc/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -540,7 +537,7 @@ uninstall-info: uninstall-info-recursive
 lib/libhavokutils.a:
 	make -C util
 
-threads/libhavokthread.a:
+lib/libhavokthread.a:
 	make -C threads
 
 corefunc/libhavokcore.a:
