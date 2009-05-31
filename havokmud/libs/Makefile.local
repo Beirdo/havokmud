@@ -2,10 +2,10 @@
 # Makefile.local
 #
 
-all-local:
+all-recursive:
 	[ "${SUBDIRS}" != "" ] && \
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ; done
 
-clean-local:
+clean-recursive:
 	[ "${SUBDIRS}" != "" ] && \
 	for i in ${SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh clean ; done

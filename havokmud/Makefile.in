@@ -454,7 +454,7 @@ distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-hdr distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -501,16 +501,17 @@ uninstall-info: uninstall-info-recursive
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
 	check-am clean clean-binPROGRAMS clean-generic clean-recursive \
 	ctags ctags-recursive distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-recursive \
-	distclean-tags dvi dvi-am html html-am info info-am install \
-	install-am install-binPROGRAMS install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-binPROGRAMS uninstall-info-am
+	distclean-generic distclean-hdr distclean-local \
+	distclean-recursive distclean-tags dvi dvi-am html html-am \
+	info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-recursive pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am
 
 
 lib/libhavokutils.a:
@@ -519,17 +520,17 @@ lib/libhavokutils.a:
 lib/libhavokthread.a:
 	make -C threads
 
-corefunc/libhavokcore.a:
+lib/libhavokcore.a:
 	make -C corefunc
+
+distclean-local:
+	-${RM} code-review.ps
 
 doxygen:
 	doxygen doxygen/Doxyfile
 
 doxygen-rsync:
 	rsync -e ssh -avz --delete doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
-
-undefs:	make.out
-	scripts/make-undefs $+ $@
 
 review:	code-review.ps
 

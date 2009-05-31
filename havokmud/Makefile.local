@@ -16,9 +16,12 @@ lib/libhavokutils.a:
 lib/libhavokthread.a:
 	make -C threads
 
-corefunc/libhavokcore.a:
+lib/libhavokcore.a:
 	make -C corefunc
 
+
+distclean-local:
+	-${RM} code-review.ps
 
 
 doxygen:
@@ -26,9 +29,6 @@ doxygen:
 
 doxygen-rsync:
 	rsync -e ssh -avz --delete doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
-
-undefs:	make.out
-	scripts/make-undefs $+ $@
 
 review:	code-review.ps
 
