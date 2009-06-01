@@ -34,6 +34,14 @@ AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE(havokmud, "2.0.0")
 
+# Check for Cygwin
+AC_MSG_CHECKING([for cygwin])
+_using_cygwin=no
+test "x$target_os" = "xcygwin" && _using_cygwin=yes
+AC_MSG_RESULT($_using_cygwin)
+test "x$_using_cygwin" = "xyes" && CYGWIN=1
+AC_SUBST([CYGWIN])
+
 AC_GNU_SOURCE
 
 # Checks for complier (we want gcc!)
@@ -50,6 +58,17 @@ AC_MSG_RESULT($_gcc_gnu89_inline)
 AM_CONDITIONAL([HAVE_GCC_GNU89_INLINE_OPTION],
                [test "x$_gcc_gnu89_inline" = "xyes"])
 #CFLAGS=$_gcc_cflags_save
+
+# Check for -rdynamic in gcc's ld use
+AC_MSG_CHECKING([whether gcc supports -rdynamic])
+_gcc_ldflags_save="$LDFLAGS"
+LDFLAGS="${LDFLAGS} -Werror -rdynamic"
+AC_LINK_IFELSE(AC_LANG_PROGRAM([]), _gcc_rdynamic=yes,
+		[_gcc_rdynamic=no ; LDFLAGS=$_gcc_ldflags_save])
+AC_MSG_RESULT($_gcc_rdynamic)
+AM_CONDITIONAL([HAVE_GCC_RDYNAMIC],
+		[test "x$_gcc_rdynamic" = "xyes"])
+
 
 #
 # ranlib
