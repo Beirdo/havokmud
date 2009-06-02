@@ -45,6 +45,7 @@ LIBOBJDIR =
 bin_PROGRAMS = havoknew$(EXEEXT)
 @HAVE_LIBESMTP_FALSE@am__append_1 = -L lib -lesmtp
 @HAVE_LIBESMTP_TRUE@am__append_2 = -lesmtp
+@USING_CYGWIN_FALSE@am__append_3 = -rdynamic
 DIST_COMMON = $(srcdir)/Makefile.local scripts/config.guess \
 	scripts/config.sub INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -111,8 +112,6 @@ EXEEXT = @EXEEXT@
 GREP = @GREP@
 HAVE_GCC_GNU89_INLINE_OPTION_FALSE = @HAVE_GCC_GNU89_INLINE_OPTION_FALSE@
 HAVE_GCC_GNU89_INLINE_OPTION_TRUE = @HAVE_GCC_GNU89_INLINE_OPTION_TRUE@
-HAVE_GCC_RDYNAMIC_FALSE = @HAVE_GCC_RDYNAMIC_FALSE@
-HAVE_GCC_RDYNAMIC_TRUE = @HAVE_GCC_RDYNAMIC_TRUE@
 HAVE_LIBESMTP_FALSE = @HAVE_LIBESMTP_FALSE@
 HAVE_LIBESMTP_TRUE = @HAVE_LIBESMTP_TRUE@
 INCLUDES = @INCLUDES@
@@ -141,6 +140,8 @@ RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+USING_CYGWIN_FALSE = @USING_CYGWIN_FALSE@
+USING_CYGWIN_TRUE = @USING_CYGWIN_TRUE@
 VERSION = @VERSION@
 VERSIONDATE = @VERSIONDATE@
 VERSIONMAJOR = @VERSIONMAJOR@
@@ -200,7 +201,7 @@ SUBDIRS = libs util corefunc threads plugins
 havoknew_SOURCES = 
 havoknew_LDADD = util/*.o corefunc/*.o threads/*.o $(am__append_1) \
 	$(am__append_2)
-havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS}
+havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} $(am__append_3)
 havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
 AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \

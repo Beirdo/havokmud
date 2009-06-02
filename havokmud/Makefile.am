@@ -14,6 +14,11 @@ havoknew_LDADD += -lesmtp
 endif
 
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS}
+
+if !USING_CYGWIN
+havoknew_LDFLAGS += -rdynamic
+endif
+
 havoknew_LINK = ${CCLD} -o $@
 
 include Makefile.local

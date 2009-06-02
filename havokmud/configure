@@ -649,8 +649,6 @@ PTHREAD_LIBS
 PTHREAD_CC
 acx_pthread_config
 RANLIB
-HAVE_GCC_RDYNAMIC_FALSE
-HAVE_GCC_RDYNAMIC_TRUE
 HAVE_GCC_GNU89_INLINE_OPTION_FALSE
 HAVE_GCC_GNU89_INLINE_OPTION_TRUE
 EGREP
@@ -673,6 +671,8 @@ LDFLAGS
 CFLAGS
 CC
 CYGWIN
+USING_CYGWIN_FALSE
+USING_CYGWIN_TRUE
 am__untar
 am__tar
 AMTAR
@@ -2544,6 +2544,16 @@ test "x$target_os" = "xcygwin" && _using_cygwin=yes
 { $as_echo "$as_me:$LINENO: result: $_using_cygwin" >&5
 $as_echo "$_using_cygwin" >&6; }
 test "x$_using_cygwin" = "xyes" && CYGWIN=1
+
+
+if test "x$_using_cygwin" = "xyes"; then
+  USING_CYGWIN_TRUE=
+  USING_CYGWIN_FALSE='#'
+else
+  USING_CYGWIN_TRUE='#'
+  USING_CYGWIN_FALSE=
+fi
+
 
 
 DEPDIR="${am__leading_dot}deps"
@@ -5365,71 +5375,6 @@ else
 fi
 
 #CFLAGS=$_gcc_cflags_save
-
-# Check for -rdynamic in gcc's ld use
-{ $as_echo "$as_me:$LINENO: checking whether gcc supports -rdynamic" >&5
-$as_echo_n "checking whether gcc supports -rdynamic... " >&6; }
-_gcc_ldflags_save="$LDFLAGS"
-LDFLAGS="${LDFLAGS} -Werror -rdynamic"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  _gcc_rdynamic=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	_gcc_rdynamic=no ; LDFLAGS=$_gcc_ldflags_save
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-{ $as_echo "$as_me:$LINENO: result: $_gcc_rdynamic" >&5
-$as_echo "$_gcc_rdynamic" >&6; }
-
-
-if test "x$_gcc_rdynamic" = "xyes"; then
-  HAVE_GCC_RDYNAMIC_TRUE=
-  HAVE_GCC_RDYNAMIC_FALSE='#'
-else
-  HAVE_GCC_RDYNAMIC_TRUE='#'
-  HAVE_GCC_RDYNAMIC_FALSE=
-fi
-
 
 
 #
@@ -9643,6 +9588,13 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+if test -z "${USING_CYGWIN_TRUE}" && test -z "${USING_CYGWIN_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"USING_CYGWIN\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"USING_CYGWIN\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -9668,13 +9620,6 @@ if test -z "${HAVE_GCC_GNU89_INLINE_OPTION_TRUE}" && test -z "${HAVE_GCC_GNU89_I
   { { $as_echo "$as_me:$LINENO: error: conditional \"HAVE_GCC_GNU89_INLINE_OPTION\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"HAVE_GCC_GNU89_INLINE_OPTION\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${HAVE_GCC_RDYNAMIC_TRUE}" && test -z "${HAVE_GCC_RDYNAMIC_FALSE}"; then
-  { { $as_echo "$as_me:$LINENO: error: conditional \"HAVE_GCC_RDYNAMIC\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-$as_echo "$as_me: error: conditional \"HAVE_GCC_RDYNAMIC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
