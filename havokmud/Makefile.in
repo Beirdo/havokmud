@@ -41,7 +41,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-LIBOBJDIR =
 bin_PROGRAMS = havoknew$(EXEEXT)
 @HAVE_LIBESMTP_FALSE@am__append_1 = -L lib -lesmtp
 @HAVE_LIBESMTP_TRUE@am__append_2 = -lesmtp
