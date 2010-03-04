@@ -1,0 +1,5 @@
+auth-client.h
+auth-plugin.h
+config.h
+libesmtp.h
+stamp-h1
