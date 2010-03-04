@@ -29,8 +29,8 @@ Packager:	Brian Stafford <brian@stafford.uklinux.net>
 Provides:	%{pkg}
 Docdir:		%{_docdir}
 
-	
-	
+Requires:	openssl >= %{openssl}
+BuildRequires:	openssl-devel >= %{openssl}
 
 %description
 LibESMTP is a library to manage posting (or submission of) electronic
@@ -43,7 +43,7 @@ functionality is not the program's primary purpose.
 Group:		Development/Libraries
 Summary:	Headers and development libraries for libESMTP.
 Requires:	%{pkg} = %{ver}
-	
+Requires:	openssl-devel >= %{openssl}
 
 %description devel
 The libesmtp-devel package contains headers and development libraries
