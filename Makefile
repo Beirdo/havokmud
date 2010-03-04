@@ -1,5 +1,5 @@
 all:
-	make -C havomud all
+	make -C havokmud all
 
 check:
 	make -C havokmud check
