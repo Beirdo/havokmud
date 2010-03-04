@@ -18,8 +18,6 @@
  */
 
 /*HEADER---------------------------------------------------
- * $Id$
- *
  * Copyright 2005 Gavin Hurlbut
  * All rights reserved
  */
