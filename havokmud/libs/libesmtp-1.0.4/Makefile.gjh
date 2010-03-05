@@ -1,14 +1,10 @@
 .PHONY:	all clean
 
-PLATFORM := $(shell sh config.guess)
-PLATFORM := $(findstring cygwin, $(PLATFORM))
-ifeq ("$(PLATFORM)", "cygwin")
-CYGWIN  = yes
-CONFARG = --enable-emulate-getaddrinfo
-else
-CYGWIN  =
-CONFARG =
-endif 
+#ifeq ("${USING_CYGWIN}", "1")
+#CONFARG = --enable-emulate-getaddrinfo
+#else
+#CONFARG =
+#endif 
 
 all:	../../lib/libesmtp.a
 

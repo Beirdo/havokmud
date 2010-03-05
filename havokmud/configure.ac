@@ -39,9 +39,7 @@ AC_MSG_CHECKING([for cygwin])
 _using_cygwin=no
 test "x$target_os" = "xcygwin" && _using_cygwin=yes
 AC_MSG_RESULT($_using_cygwin)
-test "x$_using_cygwin" = "xyes" && CYGWIN=1
 AM_CONDITIONAL([USING_CYGWIN], [test "x$_using_cygwin" = "xyes"])
-AC_SUBST([CYGWIN])
 
 AC_GNU_SOURCE
 

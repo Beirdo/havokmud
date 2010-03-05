@@ -670,7 +670,6 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
-CYGWIN
 USING_CYGWIN_FALSE
 USING_CYGWIN_TRUE
 am__untar
@@ -2543,7 +2542,6 @@ _using_cygwin=no
 test "x$target_os" = "xcygwin" && _using_cygwin=yes
 { $as_echo "$as_me:$LINENO: result: $_using_cygwin" >&5
 $as_echo "$_using_cygwin" >&6; }
-test "x$_using_cygwin" = "xyes" && CYGWIN=1
 
 
 if test "x$_using_cygwin" = "xyes"; then
@@ -2553,7 +2551,6 @@ else
   USING_CYGWIN_TRUE='#'
   USING_CYGWIN_FALSE=
 fi
-
 
 
 DEPDIR="${am__leading_dot}deps"
@@ -10197,8 +10194,7 @@ $debug ||
 if test -n "$CONFIG_FILES"; then
 
 
-ac_cr='
-'
+ac_cr=''
 ac_cs_awk_cr=`$AWK 'BEGIN { print "a\rb" }' </dev/null 2>/dev/null`
 if test "$ac_cs_awk_cr" = "a${ac_cr}b"; then
   ac_cs_awk_cr='\\r'

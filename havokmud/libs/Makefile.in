@@ -43,6 +43,7 @@ target_triplet = @target@
 @HAVE_LIBESMTP_FALSE@am__append_1 = libesmtp-1.0.4
 DIST_COMMON = $(srcdir)/Makefile.local $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am
+@USING_CYGWIN_TRUE@am__append_2 = USING_CYGWIN=1
 subdir = libs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/scripts/acx_pthread.m4 \
@@ -68,7 +69,6 @@ CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CUT = @CUT@
 CYGPATH_W = @CYGPATH_W@
-CYGWIN = @CYGWIN@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -167,6 +167,7 @@ EMPTY_AUTOMAKE_TARGETS = install-info installdirs check installcheck \
 	dvi pdf ps info html tags ctags distdir all clean
 RECURSE_AUTOMAKE_TARGETS = install install-exec install-data
 MY_SUBDIRS = $(am__append_1)
+MY_VARS = $(am__append_2)
 all: all-am
 
 .SUFFIXES:
@@ -292,7 +293,7 @@ uninstall-am: uninstall-info-am
 
 all-local:
 	[ "${MY_SUBDIRS}" != "" ] && \
-	for i in ${MY_SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ; done
+	for i in ${MY_SUBDIRS} ; do ${MAKE} -C $$i -f Makefile.gjh all ${MY_VARS}; done
 
 clean-local:
 	[ "${MY_SUBDIRS}" != "" ] && \
