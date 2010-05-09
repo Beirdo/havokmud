@@ -455,9 +455,9 @@ MYSQL_RES *db_query( const char *query, MYSQL_BIND *args, int arg_count,
 
         if( retval == CR_SERVER_GONE_ERROR || retval == CR_SERVER_LOST ) {
             *connected = FALSE;
-            ProtectedDataUnlock( sql );
-            return( NULL );
         }
+        ProtectedDataUnlock( sql );
+        return( NULL );
     }
 
     res = mysql_store_result(item->sql);

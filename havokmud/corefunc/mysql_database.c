@@ -109,6 +109,7 @@ char *db_get_setting(char *name)
     data = CREATEN(MYSQL_BIND, 1);
 
     bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
+    result = NULL;
 
     db_queue_query( 0, QueryTable, data, 1, result_get_setting, (void *)&result,
                     mutex );
@@ -262,8 +263,7 @@ void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 
     resp = (char **)arg;
 
-    count = mysql_num_rows(res);
-    if( count == 0 ) {
+    if( !res || !(count = mysql_num_rows(res)) ) {
         *resp = NULL;
         return;
     }
