@@ -1776,14 +1776,14 @@ int SiteLock(char *site)
 }
 
 
-#define MAX_EMAIL_LEN 4196
+#define MAX_EMAIL_LEN 4096
 
 void CreateSendConfirmEmail( PlayerStruct_t *player )
 {
     char            buffer[MAX_EMAIL_LEN];
     struct timeval  now;
     void           *ctx;
-    char            digest[8];
+    char            digest[9];
 
     if( !player->account->confcode || !*player->account->confcode ) {
         /* New email, create new confcode */
