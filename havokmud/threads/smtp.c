@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2008, 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
  * $Id$
  *
- * Copyright 2008 Gavin Hurlbut
+ * Copyright 2008, 2010 Gavin Hurlbut
  * All rights reserved
  */
 
@@ -74,10 +74,8 @@ void *SmtpThread( void *arg )
 
     pthread_mutex_lock( startupMutex );
 
-    session = smtp_create_session();
-
     hostname = db_get_setting( "smtpHostname" );
-    server = db_get_setting( "smtpServer" );
+    server   = db_get_setting( "smtpServer" );
     fromAddr = db_get_setting( "smtpFrom" );
 
     if( !hostname || !server || !fromAddr ) {
@@ -100,6 +98,7 @@ void *SmtpThread( void *arg )
         }
 
         LogPrintNoArg(LOG_INFO, "Discarding all sent emails");
+        pthread_mutex_unlock( startupMutex );
 
         while( !GlobalAbort ) {
             item = (MailItem_t *)QueueDequeueItem( MailQ, -1 );
@@ -115,6 +114,8 @@ void *SmtpThread( void *arg )
         LogPrintNoArg(LOG_INFO, "Ending SMTPThread");
         return( NULL );
     }
+
+    session = smtp_create_session();
 
     smtp_set_server( session, server );
     smtp_set_hostname( session, hostname );
