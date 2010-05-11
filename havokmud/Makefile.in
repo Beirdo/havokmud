@@ -199,11 +199,12 @@ SUBDIRS = libs util corefunc threads plugins
 havoknew_SOURCES = 
 havoknew_LDADD = util/*.o corefunc/*.o threads/*.o $(am__append_1) \
 	$(am__append_2)
-havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} $(am__append_3)
+havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} ${PTHREAD_LIBS} \
+	$(am__append_3)
 havoknew_LINK = ${CCLD} -o $@
 INCDIRS = -I${top_srcdir}/include @INCLUDES@
 AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
-	    -pedantic  ${INCDIRS}
+	    -pedantic  ${INCDIRS} ${PTHREAD_CFLAGS}
 
 all: all-recursive
 

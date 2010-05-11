@@ -13,7 +13,7 @@ else
 havoknew_LDADD += -lesmtp
 endif
 
-havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS}
+havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} ${PTHREAD_LIBS}
 
 if !USING_CYGWIN
 havoknew_LDFLAGS += -rdynamic

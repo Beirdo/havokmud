@@ -7,7 +7,7 @@ INCDIRS = -I${top_srcdir}/include @INCLUDES@
 
 ##  these are architecture dependent flags
 AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
-	    -pedantic  ${INCDIRS}
+	    -pedantic  ${INCDIRS} ${PTHREAD_CFLAGS}
 
 
 lib/libhavokutils.a:
