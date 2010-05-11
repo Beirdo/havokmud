@@ -77,24 +77,47 @@ void *SmtpThread( void *arg )
     session = smtp_create_session();
 
     hostname = db_get_setting( "smtpHostname" );
-    if( !hostname ) {
-        LogPrintNoArg( LOG_CRIT, "No SMTP Hostname defined!" );
-        return( NULL );
-    }
-    smtp_set_hostname( session, hostname );
-
     server = db_get_setting( "smtpServer" );
-    if( !server ) {
-        LogPrintNoArg( LOG_CRIT, "No SMTP Server defined!" );
-        return( NULL );
-    }
-    smtp_set_server( session, server );
-
     fromAddr = db_get_setting( "smtpFrom" );
-    if( !fromAddr ) {
-        LogPrintNoArg( LOG_CRIT, "No SMTP From Address defined!" );
+
+    if( !hostname || !server || !fromAddr ) {
+        if( !hostname ) {
+            LogPrintNoArg( LOG_CRIT, "No SMTP Hostname defined!" );
+        } else {
+            memfree( hostname );
+        }
+
+        if( !server ) {
+            LogPrintNoArg( LOG_CRIT, "No SMTP Server defined!" );
+        } else {
+            memfree( server );
+        }
+
+        if( !fromAddr ) {
+            LogPrintNoArg( LOG_CRIT, "No SMTP From Address defined!" );
+        } else {
+            memfree( fromAddr );
+        }
+
+        LogPrintNoArg(LOG_INFO, "Discarding all sent emails");
+
+        while( !GlobalAbort ) {
+            item = (MailItem_t *)QueueDequeueItem( MailQ, -1 );
+            if( !item ) {
+                continue;
+            }
+
+            memfree( item->body );
+            memfree( item->subject );
+            memfree( item );
+        }
+
+        LogPrintNoArg(LOG_INFO, "Ending SMTPThread");
         return( NULL );
     }
+
+    smtp_set_server( session, server );
+    smtp_set_hostname( session, hostname );
 
     /** Todo: move this earlier?
      * Ignore SIGPIPE as the remote server could disconnect at any time
