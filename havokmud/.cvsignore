@@ -1,9 +1,0 @@
-*.d
-*.a
-pcedit
-havokmud
-config.h
-config.status
-config.log
-Makefile
-autom4te.cache
