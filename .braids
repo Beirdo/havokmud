@@ -1,4 +1,10 @@
 --- 
+havokmud/libs/protobuf-c: 
+  squashed: true
+  url: http://protobuf-c.googlecode.com/svn/trunk
+  type: svn
+  revision: 224
+  remote: braid/havokmud/libs/protobuf-c
 havokmud/libs/protobuf: 
   squashed: true
   url: http://protobuf.googlecode.com/svn/trunk
