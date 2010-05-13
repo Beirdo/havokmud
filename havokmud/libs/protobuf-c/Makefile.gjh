@@ -1,0 +1,15 @@
+.PHONY:	all clean
+
+all:	../../lib/libprotobuf-c.a
+
+../../lib/libprotobuf-c.a:
+	./autogen.sh --prefix=`cd ../.. ; pwd` \
+		CXXFLAGS=-I`cd ../../include ; pwd` \
+		LDFLAGS=-L`cd ../../lib ; pwd` \
+		PATH=${PATH}:`cd ../../bin ; pwd` ${CONFARG}
+	${MAKE}
+	${MAKE} install
+
+clean:
+	${MAKE} uninstall
+	${MAKE} distclean

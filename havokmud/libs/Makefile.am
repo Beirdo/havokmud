@@ -8,6 +8,6 @@ if !HAVE_LIBESMTP
 MY_SUBDIRS += libesmtp-1.0.4
 endif
 
-MY_SUBDIRS += protobuf
+MY_SUBDIRS += protobuf protobuf-c
 
 include Makefile.local
