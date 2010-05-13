@@ -1,2 +1,3 @@
 Need:
 autoconf1.9
+curl (for protobuf)

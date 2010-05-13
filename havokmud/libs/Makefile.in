@@ -97,6 +97,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POW_LIB = @POW_LIB@
@@ -166,7 +167,7 @@ AUTOMAKE_OPTIONS = no-dist
 EMPTY_AUTOMAKE_TARGETS = install-info installdirs check installcheck \
 	dvi pdf ps info html tags ctags distdir all clean
 RECURSE_AUTOMAKE_TARGETS = install install-exec install-data
-MY_SUBDIRS = $(am__append_1)
+MY_SUBDIRS = $(am__append_1) protobuf
 MY_VARS = $(am__append_2)
 all: all-am
 
