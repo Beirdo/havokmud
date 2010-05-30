@@ -6,7 +6,8 @@ all:	../../lib/libprotobuf-c.a
 	./autogen.sh --prefix=`cd ../.. ; pwd` \
 		CXXFLAGS=-I`cd ../../include ; pwd` \
 		LDFLAGS=-L`cd ../../lib ; pwd` \
-		PATH=${PATH}:`cd ../../bin ; pwd` ${CONFARG}
+		PATH=`cd ../../bin ; pwd`:${PATH} \
+		PROTOC=`cd ../../bin ; pwd`/protoc ${CONFARG}
 	${MAKE}
 	${MAKE} install
 

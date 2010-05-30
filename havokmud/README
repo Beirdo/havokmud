@@ -1,3 +1,4 @@
 Need:
-autoconf1.9
+autoconf
+automake1.9 or newer
 curl (for protobuf)
