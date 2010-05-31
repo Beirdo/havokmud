@@ -217,8 +217,10 @@ void StartThreads( void )
 
     LogBanner();
 
+    memset( &callbacks, 0, sizeof(ThreadCallback_t) );
+    callbacks.sigusr2Func = memoryStats;
     thread_create( &memoryThreadId, MemoryCoalesceThread, NULL, 
-                   "MemoryCoalesceThread", NULL );
+                   "MemoryCoalesceThread", &callbacks );
     thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
     thread_create( &inputThreadId, InputThread, NULL, "InputThread", NULL );
     thread_create( &loginThreadId, LoginThread, NULL, "LoginThread", NULL );

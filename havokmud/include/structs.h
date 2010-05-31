@@ -724,6 +724,8 @@ typedef void (*SigFunc_t)( int, void * );
 typedef struct { 
     SigFunc_t               sighupFunc; 
     void                   *sighupArg; 
+    SigFunc_t               sigusr2Func;
+    void                   *sigusr2Arg;
 } ThreadCallback_t; 
 
 typedef struct {

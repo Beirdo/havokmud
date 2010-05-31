@@ -208,7 +208,7 @@ void do_backtrace( int signum, void *ip );
  * From memory.c
  */
 void *MemoryCoalesceThread( void *arg );
-
+void memoryStats( int signum, void *ip );
 
 
 #endif

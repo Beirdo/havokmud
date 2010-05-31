@@ -35,6 +35,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "ansi_vt100.h"
+#include <string.h>
 
 
 static char ident[] _UNUSED_= 
@@ -115,12 +116,15 @@ void thread_register( pthread_t *pthreadId, char *name,
     thread = CREATE(Thread_t);
     thread->threadId   = pthreadId;
     thread->name       = name;
-    thread->callbacks  = callbacks;
+    if( callbacks ) {
+        thread->callbacks  = CREATE(ThreadCallback_t);
+        memcpy(thread->callbacks, callbacks, sizeof(ThreadCallback_t));
+    }
     threadCount++;
     thread->background = (threadCount - 1) / 15;
     thread->foreground = (threadCount - 1) % 15;
     if( thread->foreground >= thread->background) {
-	thread->foreground++;
+        thread->foreground++;
     }
 
     item = CREATE(BalancedBTreeItem_t);
@@ -132,8 +136,7 @@ void thread_register( pthread_t *pthreadId, char *name,
               backgroundColors[thread->background], 
               foregroundColors[thread->foreground], name,
               backgroundColors[0], foregroundColors[1],
-              thread->background,
-              thread->foreground );
+              thread->background, thread->foreground );
 }
 
 char *thread_name( pthread_t pthreadId )
@@ -159,7 +162,7 @@ void thread_colors( pthread_t pthreadId, char **bg, char **fg )
 
     item = BalancedBTreeFind( ThreadTree, (void *)&pthreadId, UNLOCKED, FALSE );
     if( !item ) {
-	*bg = empty;
+        *bg = empty;
         *fg = empty;
         return;
     }
@@ -186,6 +189,9 @@ void thread_deregister( pthread_t pthreadId )
     LogPrint( LOG_INFO, "Removed Thread %ld as \"%s\"", pthreadId, 
                         (char *)thread->name );
 
+    if( thread->callbacks ) {
+        memfree( thread->callbacks );
+    }
     memfree( thread );
     memfree( item );
 
@@ -253,7 +259,19 @@ SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg )
 
     switch( signum ) {
     case SIGUSR2:
-        return( do_backtrace );
+        if( parg ) {
+            if( thread->callbacks ) {
+                *parg = thread->callbacks->sigusr2Arg;
+            } else {
+                *parg = NULL;
+            }
+        }
+
+        if( !thread->callbacks || !thread->callbacks->sigusr2Func ) {
+            return( do_backtrace );
+        }
+
+        return( thread->callbacks->sigusr2Func );
         break;
     case SIGHUP:
         if( parg ) {
@@ -264,7 +282,7 @@ SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg )
             }
         }
 
-        if( !thread->callbacks ) {
+        if( !thread->callbacks || !thread->callbacks->sighupFunc ) {
             return( NULL );
         }
 

@@ -88,10 +88,17 @@ static MemoryPool_t     fragmentDeferPool;
 
 static BalancedBTree_t  memoryStringTree;
 
+static uint64           memAllocTrueBytes;
+static uint64           memAllocBytes;
+static int              memAllocBlocks;
+
 
 void meminit( void )
 {
     memoryPageSize = getpagesize();
+    memAllocBytes  = 0;
+    memAllocTrueBytes = 0;
+    memAllocBlocks = 0;
 
     LinkedListCreate( &memoryBlockUsedList );
     LinkedListCreate( &memoryBlockFreeList );
@@ -129,6 +136,7 @@ void *memalloc( int size )
     /* Search the free pool */
     fragment = memoryFragmentFindBySize(&fragmentFreePool, size);
     if( fragment ) {
+        memAllocBytes += size;
         memset( fragment->start, 0, size );
         return( fragment->start );
     }
@@ -136,6 +144,7 @@ void *memalloc( int size )
     /* Next check the deferred pool */
     fragment = memoryFragmentFindBySize(&fragmentDeferPool, size);
     if( fragment ) {
+        memAllocBytes += size;
         memset( fragment->start, 0, size );
         return( fragment->start );
     }
@@ -144,6 +153,8 @@ void *memalloc( int size )
     pageReq = (size / memoryPageSize) + (size % memoryPageSize ? 1 : 0);
     reqSize = pageReq * memoryPageSize;
     blk = malloc(reqSize);
+    memAllocTrueBytes += reqSize;
+    memAllocBlocks++;
 
     block            = memoryBlockGetNew();
     LinkedListCreate(&block->fragmentList);
@@ -162,6 +173,7 @@ void *memalloc( int size )
                    AT_TAIL );
 
     fragment = memoryFragmentSplit(fragment, size);
+    memAllocBytes += size;
     memset( fragment->start, 0, size );
     return( fragment->start );
 }
@@ -178,6 +190,9 @@ MemoryBlock_t *memoryBlockGetNew( void )
         /* Ran out, allocate more */
         count = memoryPageSize / sizeof(MemoryBlock_t);
         blk = malloc(memoryPageSize);
+        memAllocTrueBytes += memoryPageSize;
+        memAllocBlocks++;
+        
         block = (MemoryBlock_t *)blk;
         for( i = 0; i < count; i++ ) {
             block->start = NULL;
@@ -206,6 +221,8 @@ void memoryBlockRelease( MemoryBlock_t *block )
     LinkedListAdd( &memoryBlockUsedList, (LinkedListItem_t *)block, UNLOCKED,
                    AT_TAIL );
     if( block->start ) {
+        memAllocBlocks--;
+        memAllocTrueBytes -= block->size;
         free( block->start );
         block->start = NULL;
     }
@@ -227,6 +244,9 @@ MemoryFragment_t *memoryFragmentGetNew( void )
         /* Ran out, allocate more */
         count = memoryPageSize / sizeof(MemoryFragment_t);
         frag = malloc(memoryPageSize);
+        memAllocTrueBytes += memoryPageSize;
+        memAllocBlocks++;
+
         fragment = (MemoryFragment_t *)frag;
         for( i = 0; i < count; i++ ) {
             LinkedListAdd( &memoryFragmentFreeList, &fragment->poolLinkage,
@@ -457,11 +477,13 @@ void memfree( void *buffer )
     }
 
     /* OK, let's check the allocated pool then */
-    fragment = memoryFragmentFindByAddr( &fragmentAllocPool, buffer);
+    fragment = memoryFragmentFindByAddr( &fragmentAllocPool, buffer );
     if( !fragment ) {
         /* Whine and exit */
         return;
     }
+
+    memAllocBytes -= fragment->size;
 
     memoryFragmentRemove( &fragmentAllocPool, fragment, UNLOCKED );
 
@@ -543,7 +565,9 @@ bool memoryStringFree( char *buffer )
 {
     BalancedBTreeItem_t    *item;
     MemoryString_t         *string;
+    int                     remove;
 
+    remove = 0;
     BalancedBTreeLock( &memoryStringTree );
 
     item = BalancedBTreeFind( &memoryStringTree, &buffer, LOCKED, FALSE );
@@ -552,9 +576,14 @@ bool memoryStringFree( char *buffer )
         string->count--;
         if( string->count <= 0 ) {
             BalancedBTreeRemove( &memoryStringTree, item, LOCKED, TRUE );
+            remove = 1;
         }
     }
     BalancedBTreeUnlock( &memoryStringTree );
+
+    if( item && remove ) {
+        memfree( item );
+    }
 
     return( item ? TRUE : FALSE );
 }
@@ -577,7 +606,7 @@ void *MemoryCoalesceThread( void *arg )
         to.tv_usec = 500000 * (TIME_DEFER % 2);
         select(0, NULL, NULL, NULL, &to);
 
-        if( GlobalAbort ) {
+        if( GlobalAbort || 1 ) {
             continue;
         }
 
@@ -696,6 +725,15 @@ void *MemoryCoalesceThread( void *arg )
 
     LogPrintNoArg( LOG_INFO, "Ending MemoryCoalesceThread" );
     return( NULL );
+}
+
+void memoryStats( int signum, void *ip )
+{
+    do_backtrace( signum, ip );
+
+    LogPrint( LOG_INFO, "Memory allocated: %lld bytes (%lld bytes) in %d "
+                        "blocks", 
+              memAllocBytes, memAllocTrueBytes, memAllocBlocks );
 }
 
 /*
