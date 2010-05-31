@@ -71,6 +71,7 @@ static pthread_t mortalPlayingThreadId;
 static pthread_t immortPlayingThreadId;
 static pthread_t mysqlThreadId;
 static pthread_t smtpThreadId;
+static pthread_t memoryThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
@@ -216,6 +217,8 @@ void StartThreads( void )
 
     LogBanner();
 
+    thread_create( &memoryThreadId, MemoryCoalesceThread, NULL, 
+                   "MemoryCoalesceThread", NULL );
     thread_create( &dnsThreadId, DnsThread, NULL, "DnsThread", NULL );
     thread_create( &inputThreadId, InputThread, NULL, "InputThread", NULL );
     thread_create( &loginThreadId, LoginThread, NULL, "LoginThread", NULL );

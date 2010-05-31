@@ -40,6 +40,7 @@
 #include <sys/time.h>
 #include <sys/select.h>
 #include "logging.h"
+#include "interthread.h"
 
 /**
  * @file
@@ -86,6 +87,7 @@ static MemoryPool_t     fragmentAllocPool;
 static MemoryPool_t     fragmentDeferPool;
 
 static BalancedBTree_t  memoryStringTree;
+
 
 void meminit( void )
 {
@@ -567,12 +569,17 @@ void *MemoryCoalesceThread( void *arg )
     MemoryBlock_t          *block;
     LinkedListItem_t       *listItem, *next;
 
-    LogPrintNoArg( LOG_NOTICE, "Started MemoryCoalesceThread" );
+    LogPrint( LOG_NOTICE, "Coalescing memory every %.1gs", 
+              (double)(TIME_DEFER)/2.0 );
 
-    while( 1 ) {
+    while( !GlobalAbort ) {
         to.tv_sec  = TIME_DEFER / 2;
         to.tv_usec = 500000 * (TIME_DEFER % 2);
         select(0, NULL, NULL, NULL, &to);
+
+        if( GlobalAbort ) {
+            continue;
+        }
 
         BalancedBTreeLock( &fragmentDeferPool.addrTree );
         BalancedBTreeLock( &fragmentDeferPool.sizeTree );
@@ -687,6 +694,7 @@ void *MemoryCoalesceThread( void *arg )
         BalancedBTreeUnlock( &fragmentDeferPool.addrTree );
     }
 
+    LogPrintNoArg( LOG_INFO, "Ending MemoryCoalesceThread" );
     return( NULL );
 }
 
