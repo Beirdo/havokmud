@@ -606,7 +606,7 @@ void *MemoryCoalesceThread( void *arg )
         to.tv_usec = 500000 * (TIME_DEFER % 2);
         select(0, NULL, NULL, NULL, &to);
 
-        if( GlobalAbort || 1 ) {
+        if( GlobalAbort ) {
             continue;
         }
 
@@ -620,7 +620,6 @@ void *MemoryCoalesceThread( void *arg )
         tree = &fragmentDeferPool.addrTree;
 
         BalancedBTreeClearVisited( tree, LOCKED );
-        item = BalancedBTreeFindLeast( tree->root );
         for( item = BalancedBTreeFindLeast( tree->root ); item;
              item = BalancedBTreeFindNext( tree, item, LOCKED ) ) {
             /* Looking for fragments to coalesce */

@@ -877,7 +877,7 @@ BalancedBTreeItem_t *BalancedBTreeFindNext( BalancedBTree_t *btree,
             item = item->parent;
         }
 
-        if( !item->visited ) {
+        if( item && !item->visited ) {
             retitem = item;
             found = 1;
         }
