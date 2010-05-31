@@ -227,7 +227,7 @@ char           *strdup(const char *str)
     char           *copy;
 
     len = strlen(str) + 1;
-    if (!(copy = CREATEN(char, len))) {
+    if (!(copy = CREATENR(char, len))) {
         return ((char *) NULL);
     }
     bcopy(str, copy, len);
@@ -269,7 +269,7 @@ char *strndup(const char *s, size_t n)
 
     len = strnlen(s, n);
 
-    if (!(copy = CREATEN(char, len+1))) {
+    if (!(copy = CREATENR(char, len+1))) {
         return ((char *) NULL);
     }
     bcopy(s, copy, len);

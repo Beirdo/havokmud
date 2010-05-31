@@ -16,6 +16,7 @@ License Agreement applies to this software.
 
 	History:
 
+	Modified by gjhurlbu@gmail.com to use havokmud memory allocation
         Modified by cmetz for OPIE 2.2. Use FUNCTION declaration et al.
               Remove unnecessary address futzing with Wp in opiebtoe.
               Changed unsigned long to UINT4 for Alpha.
@@ -28,6 +29,7 @@ License Agreement applies to this software.
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "memory.h"
 
 #define UINT4 uint32_t
 
@@ -2132,11 +2134,9 @@ int opieetob ( char *out, char *e )
   if ((i = strlen(e)) > 64)
     i = 64;
 
-  if (!(input = malloc(i+1)))
+  if (!(input = memstrndup( e, i )))
     return -1;
 
-  strncpy(input, e, i);
-  input[i] = 0;
   memset(b, 0, sizeof(b));
   memset(out, 0, 8);
 
@@ -2193,7 +2193,7 @@ int opieetob ( char *out, char *e )
   rval = 1;
 
 opiebtoeret:
-  free(input);
+  memfree(input);
   return rval;
 }
 

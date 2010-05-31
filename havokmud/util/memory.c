@@ -502,8 +502,31 @@ char *memstrdup( char *orig )
     /* Actually duplicates! */
 
     len = strlen(orig);
-    out = (char *)memalloc(len+1);
-    strcpy( out, orig );
+    out = CREATEN(char, len+1);
+    if( out ) {
+        strcpy( out, orig );
+    }
+
+    return( out );
+}
+
+
+char *memstrndup( char *orig, int maxlen )
+{
+    int         len;
+    char       *out;
+
+    /* Actually duplicates! */
+
+    len = strlen(orig);
+    if( len > maxlen ) {
+        len = maxlen;
+    }
+    out = CREATEN(char, len+1);
+    if( out ) {
+        strncpy( out, orig, len );
+        out[len] = '\0';
+    }
 
     return( out );
 }

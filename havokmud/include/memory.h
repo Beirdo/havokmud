@@ -105,6 +105,7 @@ extern "C" {
 void *memalloc( int size );
 void memfree( void *buffer );
 char *memstrdup( char *orig );
+char *memstrndup( char *orig, int maxlen );
 char *memstrlink( char *orig );
 char *memstrnlink( char *orig, int len );
 void *MemoryCoalesceThread( void *arg );
