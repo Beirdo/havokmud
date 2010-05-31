@@ -263,7 +263,7 @@ char *svn_version( void ) {
 
 void LogBanner( void )
 {
-    LogPrintNoArg( LOG_CRIT, "havokmud  (c) 2009 Gavin Hurlbut" );
+    LogPrintNoArg( LOG_CRIT, "havokmud  (c) 2010 Gavin Hurlbut" );
     LogPrint( LOG_CRIT, "%s", svn_version() );
 
 #if 0
