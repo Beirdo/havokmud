@@ -216,9 +216,9 @@ void memoryBlockRelease( MemoryBlock_t *block )
         return;
     }
 
-    LinkedListRemove( &memoryBlockFreeList, (LinkedListItem_t *)block, 
+    LinkedListRemove( &memoryBlockUsedList, (LinkedListItem_t *)block, 
                       UNLOCKED );
-    LinkedListAdd( &memoryBlockUsedList, (LinkedListItem_t *)block, UNLOCKED,
+    LinkedListAdd( &memoryBlockFreeList, (LinkedListItem_t *)block, UNLOCKED,
                    AT_TAIL );
     if( block->start ) {
         memAllocBlocks--;
