@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2008, 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
 * $Id$
 *
-* Copyright 2008 Gavin Hurlbut
+* Copyright 2008, 2010 Gavin Hurlbut
 * All rights reserved
 *
 * Comments :

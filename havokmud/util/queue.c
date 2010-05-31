@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2005 Gavin Hurlbut
+ *  Copyright (C) 2005, 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
 * $Id$
 *
-* Copyright 2005 Gavin Hurlbut
+* Copyright 2005, 2010 Gavin Hurlbut
 * All rights reserved
 *
 * Comments :
@@ -116,11 +116,13 @@ QueueObject_t * QueueCreate( uint32 numElements )
 
     /* Initialize the condition variables */
     queue->full = FALSE;
-    queue->cNotFull = CREATE(pthread_cond_t);
+    queue->condNotFull = CREATEA(pthread_cond_t, 8);
+    queue->cNotFull = ALIGN(pthread_cond_t, queue->condNotFull, 8);
     status = pthread_cond_init( queue->cNotFull, NULL );
 
     queue->empty = TRUE;
-    queue->cNotEmpty = CREATE(pthread_cond_t);
+    queue->condNotEmpty = CREATEA(pthread_cond_t, 8);
+    queue->cNotEmpty = ALIGN(pthread_cond_t, queue->condNotEmpty, 8);
     status = pthread_cond_init( queue->cNotEmpty, NULL );
 
     if( !QueueList ) {
@@ -386,15 +388,18 @@ void QueueDestroy( QueueObject_t *queue )
      */
     pthread_cond_broadcast( queue->cNotFull );
     pthread_cond_destroy( queue->cNotFull );
+    memfree( queue->condNotFull );
 
     pthread_cond_broadcast( queue->cNotEmpty );
     pthread_cond_destroy( queue->cNotEmpty );
+    memfree( queue->condNotEmpty );
 
     /*
      * get rid of the mutex
      */
     pthread_mutex_unlock( queue->mutex );
     pthread_mutex_destroy( queue->mutex );
+    memfree( queue->mutex );
 
     /*
      * get rid of the item table

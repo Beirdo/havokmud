@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2008, 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /*HEADER---------------------------------------------------
 * $Id$
 *
-* Copyright 2008 Gavin Hurlbut
+* Copyright 2008, 2010 Gavin Hurlbut
 * All rights reserved
 *
 * Comments :
@@ -46,10 +46,19 @@
 static char memory_h_ident[] _UNUSED_ = 
     "$Id$";
 
-#define CREATE(type)    (type *)memalloc(sizeof(type))
-#define CREATEN(type,n) (type *)memalloc((n)*sizeof(type))
-#define CREATER(type)   (type *)malloc(sizeof(type))
-#define CREATERN(type,n)    (type *)malloc((n)*sizeof(type))
+/* Using memalloc, no alignment requirements */
+#define CREATE(type)            (type *)memalloc(sizeof(type))
+#define CREATEN(type,n)         (type *)memalloc((n)*sizeof(type))
+
+/* Using memalloc, with alignment requrements */
+#define ALIGN(type,ptr,align)   (type *)((((uaddr)(ptr) + align - 1) / \
+                                          align) * align)
+#define CREATEA(type,align)     (type *)memalloc(sizeof(type) + align - 1)
+#define CREATENA(type,n,align)  (type *)memalloc((n)*sizeof(type) + align - 1)
+
+/* Using malloc, which always does page alignment or something */
+#define CREATER(type)           (type *)malloc(sizeof(type))
+#define CREATERN(type,n)        (type *)malloc((n)*sizeof(type))
 
 struct _MemoryFragment_t;
 struct _MemoryBlock_t;

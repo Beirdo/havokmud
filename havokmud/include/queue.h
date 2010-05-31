@@ -56,8 +56,10 @@ typedef struct
     QueueItem_t *itemTable;
     pthread_mutex_t *mutex;
     bool full;
+    void *condNotFull;
     pthread_cond_t *cNotFull;
     bool empty;
+    void *condNotEmpty;
     pthread_cond_t *cNotEmpty;
 } QueueObject_t;
 

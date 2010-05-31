@@ -39,6 +39,7 @@
 #define environment_h_
 
 #include "config.h"
+#include <sys/types.h>
 
 #ifdef __GNUC__
 /* We are compiling with GCC */
@@ -112,6 +113,12 @@ typedef unsigned char          uint8;
 typedef unsigned short int     uint16;
 typedef unsigned int           uint32;
 typedef unsigned long long int uint64;
+
+#if __WORDSIZE == 64
+typedef unsigned long long int uaddr;
+#else
+typedef unsigned int           uaddr;
+#endif
 
 
 /* Values for bool type */
