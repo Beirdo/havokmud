@@ -103,7 +103,7 @@ void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
     struct timeval tv;
     va_list arguments;
 
-    item = CREATE(LoggingItem_t);
+    item = CREATER(LoggingItem_t);
     if( !item ) {
         return;
     }
@@ -116,9 +116,9 @@ void LogPrintLine( LogLevel_t level, char *file, int line, const char *function,
     gettimeofday( &tv, NULL );
     item->time_sec  = tv.tv_sec;
     item->time_usec = tv.tv_usec;
-    item->message   = CREATEN(char, LOGLINE_MAX+1);
+    item->message   = CREATERN(char, LOGLINE_MAX+1);
     if( !item->message ) {
-        memfree( item );
+        free( item );
         return;
     }
 
@@ -409,6 +409,8 @@ void LogItemOutput( void *vitem )
     item = (LoggingItem_t *)vitem;
 
     if( item->level > LogLevel ) {
+        free( item->message );
+        free( item );
         return;
     }
 
@@ -466,8 +468,8 @@ void LogItemOutput( void *vitem )
 
     LinkedListUnlock( LogList );
 
-    memfree( item->message );
-    memfree( item );
+    free( item->message );
+    free( item );
 }
 
 void LogFlushOutput( void )
