@@ -46,46 +46,46 @@
 static char memory_h_ident[] _UNUSED_ = 
     "$Id$";
 
-#define CREATE(type)	(type *)memalloc(sizeof(type))
-#define CREATEN(type,n)	(type *)memalloc((n)*sizeof(type))
-#define CREATER(type)	(type *)malloc(sizeof(type))
-#define CREATERN(type,n)	(type *)malloc((n)*sizeof(type))
+#define CREATE(type)    (type *)memalloc(sizeof(type))
+#define CREATEN(type,n) (type *)memalloc((n)*sizeof(type))
+#define CREATER(type)   (type *)malloc(sizeof(type))
+#define CREATERN(type,n)    (type *)malloc((n)*sizeof(type))
 
 struct _MemoryFragment_t;
 struct _MemoryBlock_t;
 struct _MemoryPool_t;
 
 typedef struct _MemoryFragment_t {
-	LinkedListItem_t		blockLinkage;
-	LinkedListItem_t		poolLinkage;
-	BalancedBTreeItem_t	    sizeItem;
+    LinkedListItem_t        blockLinkage;
+    LinkedListItem_t        poolLinkage;
+    BalancedBTreeItem_t     sizeItem;
     BalancedBTreeItem_t     addrItem;
-	struct _MemoryBlock_t  *block;
-	struct _MemoryPool_t   *pool;
-	int						size;
-	void                   *start;
-	void				   *end;
-	time_t					timestamp;
+    struct _MemoryBlock_t  *block;
+    struct _MemoryPool_t   *pool;
+    int                     size;
+    void                   *start;
+    void                   *end;
+    time_t                  timestamp;
 } MemoryFragment_t;
 
 typedef struct _MemoryBlock_t {
-	LinkedListItem_t		linkage;
-	LinkedList_t		    fragmentList;
-	int						size;
-	void				   *start;
-	void				   *end;
+    LinkedListItem_t        linkage;
+    LinkedList_t            fragmentList;
+    int                     size;
+    void                   *start;
+    void                   *end;
 } MemoryBlock_t;
 
 typedef struct _MemoryPool_t {
-	BalancedBTree_t 		sizeTree;
-	BalancedBTree_t			addrTree;
+    BalancedBTree_t         sizeTree;
+    BalancedBTree_t         addrTree;
 } MemoryPool_t;
 
 typedef struct _MemoryString_t {
-	int					count;
-	BalancedBTreeItem_t	item;
+    int                 count;
+    BalancedBTreeItem_t item;
         char *addr;
-	char				buf[1];	/* NOTE: +strlen at alloc, must be last item */
+    char                buf[1]; /* NOTE: +strlen at alloc, must be last item */
 } MemoryString_t;
 
 #ifdef __cplusplus
