@@ -621,6 +621,8 @@ void *MemoryCoalesceThread( void *arg )
     MemoryBlock_t          *block;
     LinkedListItem_t       *listItem, *next;
 
+    LogPrint( LOG_NOTICE, "Memory Page Size: 0x%08X (%d)", 
+              memoryPageSize, memoryPageSize );
     LogPrint( LOG_NOTICE, "Coalescing memory every %.1gs", 
               (double)(TIME_DEFER)/2.0 );
 

@@ -37,6 +37,7 @@
 #include "ansi_vt100.h"
 #include <string.h>
 
+#define DEFAULT_STACK_SIZE  (1*1024*1024)
 
 static char ident[] _UNUSED_= 
     "$Id$";
@@ -88,13 +89,19 @@ int thread_mutex_init( pthread_mutex_t *mutex )
 void thread_create( pthread_t *pthreadId, void * (*routine)(void *), 
                     void *arg, char *name, ThreadCallback_t *callbacks )
 {
+    pthread_attr_t  attr;
+
     if( !startupMutex ) {
         startupMutex = CREATE(pthread_mutex_t);
         thread_mutex_init( startupMutex );
     }
 
     pthread_mutex_lock( startupMutex );
-    pthread_create( pthreadId, NULL, routine, arg );
+
+    pthread_attr_init(&attr);
+    pthread_attr_setstacksize(&attr, DEFAULT_STACK_SIZE);
+    pthread_create( pthreadId, &attr, routine, arg );
+    pthread_attr_destroy(&attr);
     thread_register( pthreadId, name, callbacks );
     pthread_mutex_unlock( startupMutex );
 }
