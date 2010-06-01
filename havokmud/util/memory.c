@@ -621,10 +621,14 @@ void *MemoryCoalesceThread( void *arg )
     MemoryBlock_t          *block;
     LinkedListItem_t       *listItem, *next;
 
+    pthread_mutex_lock( startupMutex );
+
     LogPrint( LOG_NOTICE, "Memory Page Size: 0x%08X (%d)", 
               memoryPageSize, memoryPageSize );
     LogPrint( LOG_NOTICE, "Coalescing memory every %.1gs", 
               (double)(TIME_DEFER)/2.0 );
+
+    pthread_mutex_unlock( startupMutex );
 
     while( !GlobalAbort ) {
         to.tv_sec  = TIME_DEFER / 2;
