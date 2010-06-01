@@ -1783,7 +1783,7 @@ void CreateSendConfirmEmail( PlayerStruct_t *player )
     char            buffer[MAX_EMAIL_LEN];
     struct timeval  now;
     void           *ctx;
-    char            digest[9];
+    char            digest[16];
 
     if( !player->account->confcode || !*player->account->confcode ) {
         /* New email, create new confcode */
