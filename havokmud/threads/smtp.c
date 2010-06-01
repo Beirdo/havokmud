@@ -201,7 +201,9 @@ void event_cb( smtp_session_t session, int event_no, void *arg, ... )
         break;
     }
 
+#if 0
     LogPrint( LOG_INFO, "SMTP event %d", event_no );
+#endif
 
     va_end(alist);
 }
