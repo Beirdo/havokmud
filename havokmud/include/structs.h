@@ -62,8 +62,8 @@ typedef struct {
 } connectThreadArgs_t;
 
 typedef enum {
-    STATE_INITIAL,		 /**< Initial state, show login banner */
-    STATE_GET_EMAIL,	         /**< Get the user's email address */
+    STATE_INITIAL,               /**< Initial state, show login banner */
+    STATE_GET_EMAIL,             /**< Get the user's email address */
     STATE_CONFIRM_EMAIL,         /**< Confirm a new user's email address */
     STATE_GET_NEW_USER_PASSWORD, /**< Get a password for the new user */
     STATE_CONFIRM_PASSWORD,      /**< Confirm the password for the new user */
