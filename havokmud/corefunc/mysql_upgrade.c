@@ -48,7 +48,38 @@ static SchemaUpgrade_t coreSchemaUpgrade[CURRENT_SCHEMA] = {
     { { "ALTER TABLE `accounts` ADD `confirmed` TINYINT DEFAULT 0 NOT NULL ,\n"
         "ADD `confcode` VARCHAR( 255 ) NOT NULL ,\n"
         "ADD KEY ( `confcode` )\n", NULL, NULL, FALSE },
-      { NULL, NULL, NULL, FALSE } }
+      { NULL, NULL, NULL, FALSE } },
+    { { "CREATE TABLE `pcs` (\n"
+        "  `id` INT NOT NULL AUTO_INCREMENT,\n"
+        "  `account_id` INT NOT NULL,\n"
+        "  `name` VARCHAR( 80 ) NOT NULL,\n"
+        "  `complete` TINYINT NOT NULL DEFAULT 0,\n"
+        "  `race_id` INT NOT NULL,\n"
+        "  `align_moral` INT NOT NULL,\n"
+        "  `align_ethical` INT NOT NULL,\n"
+        "  `strength` INT NOT NULL,\n"
+        "  `dexterity` INT NOT NULL,\n"
+        "  `constitution` INT NOT NULL,\n"
+        "  `intelligence` INT NOT NULL,\n"
+        "  `wisdom` INT NOT NULL,\n"
+        "  `charisma` INT NOT NULL,\n"
+        "  `social_class` INT NOT NULL,\n"
+        "  `birth_order` INT NOT NULL,\n"
+        "  `siblings` INT NOT NULL,\n"
+        "  `parents_married` TINYINT NOT NULL DEFAULT -1,\n"
+        "  `max_hit_points` INT NOT NULL,\n"
+        "  `hit_points` INT NOT NULL,\n"
+        "  `height` INT NOT NULL,\n"
+        "  `weight` INT NOT NULL,\n"
+        "  `age` INT NOT NULL,\n"
+        "  `hair_color` INT NOT NULL,\n"
+        "  `eye_color` INT NOT NULL,\n"
+        "  `hair_length` VARCHAR( 80 ) NOT NULL,\n"
+        "  `skin_tone` INT NOT NULL,\n"
+        "  `experience` INT NOT NULL,\n"
+        "  PRIMARY KEY ( `id` ) ,\n"
+        "  INDEX ( `name` )\n"
+        ")\n", NULL, NULL, FALSE } }
     /* 2 -> 3 */
 };
 
