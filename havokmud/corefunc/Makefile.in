@@ -59,7 +59,7 @@ am_libhavokcore_a_OBJECTS = main.$(OBJEXT) signals.$(OBJEXT) \
 	ansi_output.$(OBJEXT) char_data.$(OBJEXT) \
 	object_data.$(OBJEXT) keywords.$(OBJEXT) weather.$(OBJEXT) \
 	room_data.$(OBJEXT) mobile_data.$(OBJEXT) \
-	special_funcs.$(OBJEXT) mysql_upgrade.$(OBJEXT)
+	special_funcs.$(OBJEXT) mysql_upgrade.$(OBJEXT) dice.$(OBJEXT)
 libhavokcore_a_OBJECTS = $(am_libhavokcore_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -185,7 +185,8 @@ noinst_LIBRARIES = libhavokcore.a
 libhavokcore_a_SOURCES = main.c signals.c login-sm.c output.c \
 	mysql_database.c command_parser.c core_commands.c \
 	ansi_output.c char_data.c object_data.c keywords.c weather.c \
-	room_data.c mobile_data.c special_funcs.c mysql_upgrade.c
+	room_data.c mobile_data.c special_funcs.c mysql_upgrade.c \
+	dice.c
 all: all-am
 
 .SUFFIXES:
@@ -237,6 +238,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/char_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/core_commands.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login-sm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
