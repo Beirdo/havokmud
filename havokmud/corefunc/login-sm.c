@@ -427,7 +427,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         } else {
             SendOutput(player, "Resending your confirmation email...\n\r");
         }
-	CreateSendConfirmEmail(player);
+        CreateSendConfirmEmail(player);
         break;
 
     case STATE_CHOOSE_SEX:
