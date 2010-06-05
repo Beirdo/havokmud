@@ -1,0 +1,22 @@
+Havokmud is a MUD that was originally an offshoot of DaleMUD, making it a 
+decendant of DikuMUD.
+
+For various reasons, we have decided that we no longer wish to use a Diku
+license, but to do this requires that the code no longer be a derivative of 
+DikuMUD.  For this reason, to relicense as GPL, we have undertaken the 
+gargantuan task of completely rewriting this code-base.  The goal is to have
+no Diku-derivative code remaining.
+
+In the process, several more modern features are being implemented:
+- multi-threaded design rather than monolithic
+- MySQL data backend rather than flat files and binary files
+- shared-library plugins for classes, races and zones
+- account-based play with multiple PCs per account
+- email validation of accounts
+- web-based management rather than in-mud zone creation
+- custom memory allocation mechanism to minimize system resource use
+
+The initial MUD design is to be based on Dungeons & Dragons, 4th Edition (d20)
+for simplicity.
+
+The directory structure will change over time as the code is more perfected.
