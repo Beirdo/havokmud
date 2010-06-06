@@ -395,6 +395,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     case STATE_SHOW_CREATION_MENU:
         ShowCreationMenu(player);
         break;
+    case STATE_CHOOSE_NAME:
+        SendOutput(player, "Choose the name of your new PC: ");
+        break;
 
 
     case STATE_CHOOSE_SEX:
@@ -411,12 +414,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         GET_CON(ch) = 0;
         SendOutput(player, "\n\rSelect your class now.\n\r");
         SendOutput(player, "Enter ? for help.\n\r\n\rClass :");
-        break;
-    case STATE_CHOOSE_MAIN_CLASS:
-        SendOutput(player, "\n\rSelect your main class from the options "
-                           "below.\n\r");
-
-        SendOutput(player, "\n\rMain Class :");
         break;
     case STATE_CHOOSE_STATS:
         SendOutput(player, "\n\rSelect your stat priority, by listing them from"
@@ -871,6 +868,21 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         DoCreationMenu(player, *arg);
         break;
 
+    case STATE_CHOOSE_NAME:
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            SendOutput(player, "Mever mind then.\n\r");
+        } else {
+            if( GET_NAME(ch) ) {
+                memfree( GET_NAME(ch) );
+            }
+            GET_NAME(ch) = memstrlink( arg );
+        }
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+        break;
+
+    /* Sorted to here */
+
     case STATE_CHOOSE_ALIGNMENT:
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -1066,21 +1078,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } else {
             EnterState(player, STATE_SHOW_CREATION_MENU);
         }
-        break;
-
-    case STATE_CHOOSE_MAIN_CLASS:
-        arg = skip_spaces(arg);
-        ch->specials.remortclass = 0;
-
-        if (arg && (pick = atoi(arg)) &&
-            HasClass(ch, pc_num_class(pick-1))) {
-            ch->specials.remortclass = pick;
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-            return;
-        } 
-        
-        SendOutput(player, "\n\rInvalid class picked.\n\r");
-        EnterState(player, STATE_CHOOSE_MAIN_CLASS);
         break;
 
     case STATE_CHOOSE_CLASS:
@@ -1317,10 +1314,10 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     switch (arg) 
     {
     case '1':
-        EnterState(player, STATE_CHOOSE_SEX);
+        EnterState(player, STATE_CHOOSE_NAME);
         break;
     case '2':
-        EnterState(player, STATE_CHOOSE_ANSI);
+        EnterState(player, STATE_CHOOSE_SEX);
         break;
     case '3':
         EnterState(player, STATE_CHOOSE_RACE);
@@ -1329,13 +1326,6 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         EnterState(player, STATE_CHOOSE_CLASS);
         break;
     case '5':
-        if (ch->player.class != 0) {
-            EnterState(player, STATE_CHOOSE_MAIN_CLASS);
-        } else {
-            SendOutput(player, "\nPlease select a class first.\n\r");
-        }
-        break;
-    case '6':
         ch->reroll = 20;
         if (ch->player.class != 0) {
             EnterState(player, STATE_CHOOSE_STATS);
@@ -1343,21 +1333,19 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
             SendOutput(player, "\nPlease select a class first.\n\r");
         }
         break;
-    case '7':
+    case '6':
         EnterState(player, STATE_CHOOSE_ALIGNMENT);
         break;
 
     case 'd':
     case 'D':
+#if 0
         bitcount = 0;
         if (bitcount <= 0) {
             SendOutput(player, "Please enter a valid class.");
             return;
         }
-        if (ch->specials.remortclass <= 0) {
-            SendOutput(player, "Please enter a valid main class.");
-            return;
-        }
+#endif
 
         if (GET_SEX(ch) == 0) {
             SendOutput(player, "Please enter a proper sex.");
@@ -1368,6 +1356,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
             SendOutput(player, "Please choose an alignment.");
             return;
         }
+
         if (GET_CON(ch) == 0) {
             SendOutput(player, "Please pick your stats.");
             return;
@@ -1395,7 +1384,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         save_char(ch, AUTO_RENT);
 #endif
 
-        EnterState(player, STATE_SHOW_MOTD);
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
     default:
         ShowCreationMenu(player);

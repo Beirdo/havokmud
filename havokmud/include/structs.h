@@ -79,16 +79,14 @@ typedef enum {
     STATE_CONFIRM_NEW_PASSWORD,  /**< Confirm the new password */
     STATE_ENTER_CONFIRM_CODE,    /**< Prompt for emailed confirmation code */
     STATE_RESEND_CONFIRM_EMAIL,  /**< Resend the emailed confirmation code */
+    STATE_SHOW_CREATION_MENU,    /**< Show the PC creation menu */
+    STATE_CHOOSE_NAME,           /**< Choose the name of the new PC */
+    STATE_CHOOSE_SEX,            /**< Choose the sex of the new PC */
+    STATE_CHOOSE_RACE,           /**< Choose the race of the new PC */
+    STATE_CHOOSE_CLASS,          /**< Choose the class of the new PC */
+    STATE_CHOOSE_STATS,          /**< Choose the stats of the new PC */
+    STATE_CHOOSE_ALIGNMENT,      /**< Choose the alignment of the new PC */
 /* sorted to here */
-    STATE_NEW_CHAR,
-    STATE_CONFIRM_NEW_CHAR,
-    STATE_CHOOSE_SEX,
-    STATE_CHOOSE_RACE,
-    STATE_CHOOSE_CLASS,
-    STATE_CHOOSE_MAIN_CLASS,
-    STATE_CHOOSE_STATS,
-    STATE_CHOOSE_ALIGNMENT,
-    STATE_SHOW_CREATION_MENU,
     STATE_SHOW_LOGIN_MENU,
     STATE_REROLL,
     STATE_WAIT_FOR_AUTH,
