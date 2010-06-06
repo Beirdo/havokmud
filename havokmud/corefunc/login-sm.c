@@ -399,6 +399,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Choose the name of your new PC: ");
         break;
 
+    /* sorted to here */
 
     case STATE_CHOOSE_SEX:
         SendOutput(player, "What is your sex (M/F) ? ");
@@ -873,6 +874,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if( !arg ) {
             SendOutput(player, "Mever mind then.\n\r");
         } else {
+            /* TODO: check for dupes and banned names */
             if( GET_NAME(ch) ) {
                 memfree( GET_NAME(ch) );
             }
