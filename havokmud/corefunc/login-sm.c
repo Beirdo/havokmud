@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2008, 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
- * Copyright 2008 Gavin Hurlbut
+ * Copyright 2008, 2010 Gavin Hurlbut
  * All rights reserved
  */
 
@@ -46,16 +46,12 @@
 #include "interthread.h"
 #include "protos.h"
 
-static char ident[] _UNUSED_ =
-    "$Id$";
-
-
 #define MAX_NAME_LENGTH 20
 #define MAX_EMAIL_LENGTH 300
 
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
-void show_menu(PlayerStruct_t *player);
-void show_account_menu(PlayerStruct_t *player);
+void ShowCreationMenu(PlayerStruct_t *player);
+void ShowAccountMenu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
 void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
@@ -254,67 +250,34 @@ int checkAssName(char *name)
 }
 
 
-void show_menu(PlayerStruct_t *player)
+void ShowCreationMenu(PlayerStruct_t *player)
 {
     struct char_data   *ch;
 
     ch = player->charData;
 
 
-    SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu [%s]"
-                       "$c0009=-\n\r\n\r", GET_NAME(ch));
-    SendOutput(player, "$c00151) $c0012Gender. [$c0015%s$c0012]\n\r",
+    SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu"
+                       "$c0009=-\n\r\n\r");
+
+    SendOutput(player, "$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
+                       (GET_NAME(ch) ? GET_NAME(ch) : "not chosen"));
+    SendOutput(player, "$c00152) $c0012Gender. [$c0015%s$c0012]\n\r",
                        Sex[((int) GET_SEX(ch))]);
-    SendOutput(player, "$c00152) $c0012ANSI Colors.\n\r");
-
-    if (GET_RACE(ch) == 0) {
-        /*
-         * make default race to Human rather than half-breed
-         */
-        GET_RACE(ch) = 1;
-    }
-#if 0
     SendOutput(player, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
-                           races[GET_RACE(ch)].racename);
-#endif
+                           "TODO");
+    SendOutput(player, "$c00154) $c0012Class. [$c0015%s$c0012]\n\r", "TODO" );
 
-#if 0
-    cls[0] = '\0';
-    if (!(strcmp(cls, ""))) {
-        sprintf(cls, "None Selected");
-    }
-    SendOutput(player, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", cls);
-
-    cls[0] = '\0';
-    if (ch->specials.remortclass) {
-       /*
-        * remort == 0 means none picked
-        */
-        strcat(cls, classes[(ch->specials.remortclass - 1)].abbrev);
-    }
-    if (!(strcmp(cls, ""))) {
-        sprintf(cls, "None Selected");
-    }
-    SendOutput(player, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", cls );
-
-    if (GET_CON(ch) == 0) {
-        SendOutput(player, "$c00156) $c0012Character Stats.[$c0015None "
-                           "Picked$c0012]\n\r");
-    } else {
-        SendOutput(player, "$c00156) $c0012Character Stats.[$c0015Done$c0012]"
-                           "\n\r");
-    }
-#endif
-
-    SendOutput(player, "$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r",
-                       (GET_ALIGNMENT(ch) ?
-                       AlignDesc(GET_ALIGNMENT(ch)) : "None"));
+    SendOutput(player, "$c00155) $c0012Character Stats. [$c0015%s$c0012]\n\r",
+                       "TODO");
+    SendOutput(player, "$c00156) $c0012Alignment. [$c0015%s$c0012]\n\r\n\r",
+                       "TODO");
 
     SendOutput(player, "$c0015D) $c0012Done!\n\r\n\r");
     SendOutput(player, "$c0011Please pick an option: \n\r");
 }
 
-void show_account_menu(PlayerStruct_t *player)
+void ShowAccountMenu(PlayerStruct_t *player)
 {
     SendOutput(player, "\n\r\n\r$c0009-=$c0015Havok Account Menu [%s]"
                        "$c0009=-\n\r\n\r", player->account->email);
@@ -411,7 +374,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Goodbye.\n\r");
         break;
     case STATE_SHOW_ACCOUNT_MENU:
-        show_account_menu(player);
+        ShowAccountMenu(player);
         break;
     case STATE_GET_NEW_PASSWORD:
         SendOutput(player, "Enter a new password: ");
@@ -429,6 +392,10 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         }
         CreateSendConfirmEmail(player);
         break;
+    case STATE_SHOW_CREATION_MENU:
+        ShowCreationMenu(player);
+        break;
+
 
     case STATE_CHOOSE_SEX:
         SendOutput(player, "What is your sex (M/F) ? ");
@@ -478,10 +445,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         SendOutput(player, "Please select your alignment "
                            "($c000WGood$c000w/Neutral$c000w/"
                            "$c000REvil$c000w)");
-        break;
-
-    case STATE_SHOW_CREATION_MENU:
-        show_menu(player);
         break;
 
     case STATE_PLAYING:
@@ -815,7 +778,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_SHOW_ACCOUNT_MENU:
         arg = skip_spaces(arg);
         if( !arg ) {
-            show_account_menu(player);
+            ShowAccountMenu(player);
             SendOutput(player, "Invalid Choice.. Try again..\n\r");
             return;
         }
@@ -900,7 +863,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_SHOW_CREATION_MENU:
         arg = skip_spaces(arg);
         if( !arg ) {
-            show_menu(player);
+            ShowCreationMenu(player);
             SendOutput(player, "Invalid Choice.. Try again..\n\r");
             return;
         }
@@ -1435,7 +1398,7 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
         EnterState(player, STATE_SHOW_MOTD);
         break;
     default:
-        show_menu(player);
+        ShowCreationMenu(player);
         SendOutput(player, "Invalid Choice.. Try again..\n\r");
         break;
     }
@@ -1459,7 +1422,7 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
         break;
     case '5':
         if( player->account->confirmed ) {
-            EnterState(player, STATE_NEW_CHAR);
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         }
         break;
     case '6':
@@ -1487,7 +1450,7 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
         EnterState(player, STATE_WIZLOCKED);
         return;
     default:
-        show_account_menu(player);
+        ShowAccountMenu(player);
         SendOutput(player, "Invalid Choice.. Try again..\n\r");
         break;
     }
