@@ -220,6 +220,8 @@ void StartThreads( void )
 
     LogBanner();
 
+    db_init();
+
     memset( &callbacks, 0, sizeof(ThreadCallback_t) );
     callbacks.sigusr2Func = memoryStats;
     thread_create( &memoryThreadId, MemoryCoalesceThread, NULL, 

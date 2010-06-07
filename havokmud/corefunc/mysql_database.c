@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2010 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,9 +18,8 @@
  */
 
 /*HEADER---------------------------------------------------
- * $Id$
  *
- * Copyright 2008 Gavin Hurlbut
+ * Copyright 2010 Gavin Hurlbut
  * All rights reserved
  *
  * Comments :
@@ -44,6 +43,7 @@
 #include "interthread.h"
 #include "protos.h"
 #include "memory.h"
+#include "db_api.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -54,6 +54,10 @@ static char ident[] _UNUSED_ =
  * @brief Contains the API for the system to use to access the MySQL database.
  */
 
+char *db_mysql_get_setting(char *name);
+void db_mysql_set_setting( char *name, char *format, ... );
+PlayerAccount_t *db_mysql_load_account( char *email );
+void db_mysql_save_account( PlayerAccount_t *account );
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
 void chain_save_account( MYSQL_RES *res, QueryItem_t *item );
 
@@ -93,7 +97,15 @@ QueryTable_t QueryTable[] = {
     { NULL, NULL, NULL, FALSE }
 };
 
-char *db_get_setting(char *name)
+void db_mysql_init( void )
+{
+    db_api_funcs.get_setting  = db_mysql_get_setting;
+    db_api_funcs.set_setting  = db_mysql_set_setting;
+    db_api_funcs.load_account = db_mysql_load_account;
+    db_api_funcs.save_account = db_mysql_save_account;
+}
+
+char *db_mysql_get_setting(char *name)
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
@@ -120,7 +132,7 @@ char *db_get_setting(char *name)
     return( result );
 }
         
-void db_set_setting( char *name, char *format, ... )
+void db_mysql_set_setting( char *name, char *format, ... )
 {
     MYSQL_BIND     *data;
     char            value[256];
@@ -142,7 +154,7 @@ void db_set_setting( char *name, char *format, ... )
     db_queue_query( 1, QueryTable, data, 2, NULL, NULL, NULL);
 }
     
-PlayerAccount_t *db_load_account( char *email )
+PlayerAccount_t *db_mysql_load_account( char *email )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
@@ -168,7 +180,7 @@ PlayerAccount_t *db_load_account( char *email )
     return( result );
 }
 
-void db_save_account( PlayerAccount_t *account )
+void db_mysql_save_account( PlayerAccount_t *account )
 {
     MYSQL_BIND         *data;
 
