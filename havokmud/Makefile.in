@@ -197,7 +197,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
-SUBDIRS = libs util corefunc threads plugins
+SUBDIRS = libs protobuf util corefunc threads plugins
 havoknew_SOURCES = 
 havoknew_LDADD = util/*.o corefunc/*.o threads/*.o protobuf/src/*.o -L \
 	lib -lprotobuf -lprotobuf-c $(am__append_1) $(am__append_2)

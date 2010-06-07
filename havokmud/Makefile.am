@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
-SUBDIRS = libs util corefunc threads plugins
+SUBDIRS = libs protobuf util corefunc threads plugins
 
 bin_PROGRAMS = havoknew
 havoknew_SOURCES =
