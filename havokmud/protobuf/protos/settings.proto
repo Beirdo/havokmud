@@ -1,0 +1,8 @@
+//
+// vim:ts=4:sw=4:ai:et:si:sts=4
+//
+
+message ReqSettingsType {
+    required string setting_name = 1601;
+    optional string setting_value = 1602;
+}
