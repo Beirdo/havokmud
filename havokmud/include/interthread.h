@@ -65,6 +65,7 @@ extern QueueObject_t *InputImmortQ;
 extern QueueObject_t *LoggingQ;
 extern QueueObject_t *MailQ;
 extern QueueObject_t *QueryQ;
+extern QueueObject_t *ProtobufQ;
 
 extern BalancedBTree_t    *commandName;
 extern BalancedBTree_t    *commandNum;
@@ -156,6 +157,7 @@ void *LoggingThread( void *arg );
 void *PlayingThread( void *arg );
 void *MysqlThread( void *arg );
 void *SmtpThread( void *arg );
+void *ProtobufThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks

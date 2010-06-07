@@ -193,7 +193,7 @@ void *MysqlThread( void *arg )
         }
     }
 
-    LogPrintNoArg( LOG_NOTICE, "Ending MySQL thread" );
+    LogPrintNoArg( LOG_NOTICE, "Ending MySQLThread" );
     mysql_thread_end();
     return(NULL);
 }

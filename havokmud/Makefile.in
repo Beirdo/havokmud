@@ -68,7 +68,7 @@ am_havoknew_OBJECTS =
 havoknew_OBJECTS = $(am_havoknew_OBJECTS)
 @HAVE_LIBESMTP_FALSE@am__DEPENDENCIES_1 = lib
 am__DEPENDENCIES_2 =
-havoknew_DEPENDENCIES = util/*.o corefunc/*.o threads/*.o \
+havoknew_DEPENDENCIES = util/*.o corefunc/*.o threads/*.o lib \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -198,8 +198,8 @@ ACLOCAL_AMFLAGS = -I scripts
 AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs util corefunc threads plugins
 havoknew_SOURCES = 
-havoknew_LDADD = util/*.o corefunc/*.o threads/*.o $(am__append_1) \
-	$(am__append_2)
+havoknew_LDADD = util/*.o corefunc/*.o threads/*.o -L lib -lprotobuf \
+	-lprotobuf-c $(am__append_1) $(am__append_2)
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} ${PTHREAD_LIBS} \
 	$(am__append_3)
 havoknew_LINK = ${CCLD} -o $@

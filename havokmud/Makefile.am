@@ -5,7 +5,8 @@ SUBDIRS = libs util corefunc threads plugins
 bin_PROGRAMS = havoknew
 havoknew_SOURCES =
 
-havoknew_LDADD = util/*.o corefunc/*.o threads/*.o
+havoknew_LDADD  = util/*.o corefunc/*.o threads/*.o
+havoknew_LDADD += -L lib -lprotobuf -lprotobuf-c
 
 if !HAVE_LIBESMTP
 havoknew_LDADD += -L lib -lesmtp

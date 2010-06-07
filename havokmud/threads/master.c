@@ -59,6 +59,7 @@ QueueObject_t *InputImmortQ;    /**< between Input and Immortal threads */
 QueueObject_t *LoggingQ;        /**< feeds the Logging thread */
 QueueObject_t *MailQ;           /**< outbound emails */
 QueueObject_t *QueryQ;          /**< MySQL query queue */
+QueueObject_t *ProtobufQ;       /**< protobuf queue */
 
 pthread_t mainThreadId;
 static pthread_t connectionThreadId;
@@ -72,6 +73,7 @@ static pthread_t immortPlayingThreadId;
 static pthread_t mysqlThreadId;
 static pthread_t smtpThreadId;
 static pthread_t memoryThreadId;
+static pthread_t protobufThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
@@ -149,6 +151,7 @@ void StartThreads( void )
     InputImmortQ  = QueueCreate( 256 );
     MailQ         = QueueCreate( 128 );
     QueryQ        = QueueCreate( 1024 );
+    ProtobufQ     = QueueCreate( 1024 );
 
     mainThreadId = pthread_self();
     /* 
@@ -235,6 +238,8 @@ void StartThreads( void )
                    "ImmortPlayingThread", NULL );
 
     thread_create( &mysqlThreadId, MysqlThread, NULL, "MySQLThread", NULL );
+    thread_create( &protobufThreadId, ProtobufThread, NULL, "ProtobufThread", 
+                   NULL );
 
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
