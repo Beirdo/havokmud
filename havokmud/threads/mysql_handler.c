@@ -98,6 +98,7 @@ void *MysqlThread( void *arg )
 
     pthread_mutex_lock( startupMutex );
 
+    db_mysql_init();
     db_setup();
 
     mysql_thread_init();
