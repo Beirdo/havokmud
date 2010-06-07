@@ -144,7 +144,7 @@ static int db_upgrade_schema( char *setting, char *desc,
         return( current );
     }
 
-    if( current == 0 ) {
+    if( current <= 0 ) {
         /* There is no dbSchema, assume that it is an empty database, populate
          * with the default schema
          */

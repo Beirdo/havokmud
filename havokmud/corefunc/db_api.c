@@ -34,6 +34,7 @@
 #include "interthread.h"
 #include "protos.h"
 #include "db_api.h"
+#include "logging.h"
 
 DatabaseAPIFuncs_t db_api_funcs;
 
@@ -47,6 +48,7 @@ char *db_get_setting(char *name)
     if( db_api_funcs.get_setting ) {
         return( db_api_funcs.get_setting(name) );
     } else {
+        LogPrintNoArg( LOG_CRIT, "Database API: no get_setting" );
         return( NULL );
     }
 }
@@ -56,6 +58,7 @@ void db_set_setting( char *name, char *format, ... )
     va_list         arguments;
 
     if( !db_api_funcs.set_setting ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no set_setting" );
         return;
     }
 
@@ -69,6 +72,7 @@ PlayerAccount_t *db_load_account( char *email )
     if( db_api_funcs.load_account ) {
         return( db_api_funcs.load_account(email) );
     } else {
+        LogPrintNoArg( LOG_CRIT, "Database API: no load_account" );
         return( NULL );
     }
 }
@@ -76,6 +80,7 @@ PlayerAccount_t *db_load_account( char *email )
 void db_save_account( PlayerAccount_t *account )
 {
     if( !db_api_funcs.save_account ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no save_account" );
         return;
     }
 

@@ -28,10 +28,11 @@
 
 #include "environment.h"
 #include "structs.h"
+#include <stdarg.h>
 
 typedef struct {
     char *(*get_setting)( char * );
-    void (*set_setting)( char *, char *, ... );
+    void (*set_setting)( char *, char *, va_list );
     PlayerAccount_t *(*load_account)( char * );
     void (*save_account)( PlayerAccount_t * );
 } DatabaseAPIFuncs_t;

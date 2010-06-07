@@ -221,6 +221,7 @@ void StartThreads( void )
     LogBanner();
 
     db_init();
+    db_mysql_init();
 
     memset( &callbacks, 0, sizeof(ThreadCallback_t) );
     callbacks.sigusr2Func = memoryStats;
