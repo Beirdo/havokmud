@@ -1,4 +1,5 @@
 PROTOCC = ../bin/protoc-c
+INSTALL = install
 
 PROTO_FILES  = havokrequest.proto settings.proto accounts.proto pcs.proto
 PROTO_SRCS   = ${PROTO_FILES:%.proto=src/%.pb-c.c}
@@ -28,3 +29,9 @@ src/havokrequest.pb-c.c::	src/pcs.pb-c.h
 
 clean:	force
 	-${RM} ${PROTO_SRCS} ${PROTO_HDRS} ${PROTO_OBJS}
+
+install:	all
+	${INSTALL} ${PROTO_HDRS} ../include/
+
+uninstall:	force
+	-for i in ${PROTO_HDRS:src/%=../include/%} ; do ${RM} $$i ; done

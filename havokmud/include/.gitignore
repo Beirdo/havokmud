@@ -1,3 +1,4 @@
+*.pb-c.h
 auth-client.h
 auth-plugin.h
 config.h

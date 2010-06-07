@@ -37,18 +37,23 @@
 #define protobufs_h_
 
 #include "google/protobuf-c/protobuf-c.h"
+#include "havokrequest.pb-c.h"
 
 typedef void (*ProtobufResFunc_t)( ProtobufCMessage *result, void *arg );
 
 typedef struct {
-    ProtobufCMessage   *request;
+    HavokRequest       *request;
+    ProtobufCMessage   *response;
     ProtobufResFunc_t   callback;
     void               *callbackArg;
     pthread_mutex_t    *mutex;
 } ProtobufItem_t;
 
-void ProtobufQueue( ProtobufCMessage *request, ProtobufResFunc_t callback,
-                    void *arg, bool block );
+ProtobufCMessage *protobufQueue( HavokRequest *request, 
+                                 ProtobufResFunc_t callback,
+                                 void *arg, bool block );
+void protobufDestroyMessage( ProtobufCMessage *msg );
+HavokRequest *protobufCreateRequest( void );
 
 #ifdef __cplusplus
 }

@@ -39,12 +39,14 @@
 #include "protos.h"
 #include "logging.h"
 #include "protobufs.h"
+#include "havokrequest.pb-c.h"
 
 
 /* Internal protos */
-void *protobuf_memalloc(void *allocator_data, size_t size);
-void protobuf_memfree(void *allocator_data, void *pointer);
-ProtobufCMessage   *protobufHandle( ProtobufCMessage *request );
+void *protobufMemalloc(void *allocator_data, size_t size);
+void protobufMemfree(void *allocator_data, void *pointer);
+ProtobufCMessage   *protobufHandle( HavokRequest *request );
+void protobufDestroyItem( ProtobufItem_t *item );
 
 /**
  * @brief Thread to handle all protobuf accesses
@@ -61,8 +63,8 @@ void *ProtobufThread( void *arg )
     pthread_mutex_lock( startupMutex );
 
     /* Setup to use our own memory allocator */
-    protobuf_c_default_allocator.alloc     = protobuf_memalloc;
-    protobuf_c_default_allocator.free      = protobuf_memfree;
+    protobuf_c_default_allocator.alloc     = protobufMemalloc;
+    protobuf_c_default_allocator.free      = protobufMemfree;
     protobuf_c_default_allocator.tmp_alloc = NULL;
 
     pthread_mutex_unlock( startupMutex );
@@ -73,31 +75,60 @@ void *ProtobufThread( void *arg )
             continue;
         }
 
-        resp = protobufHandle( item->request );
+        item->response = protobufHandle( item->request );
         if( item->callback ) {
-            item->callback( resp, item->callbackArg );
+            item->callback( item->response, item->callbackArg );
         }
 
         if( item->mutex ) {
             pthread_mutex_unlock( item->mutex );
-        } 
-        
-        if( resp ) {
-            protobuf_c_message_free_unpacked( resp, NULL );
+        } else {
+            protobufDestroyItem( item );
+            protobufDestroyMessage( (ProtobufCMessage *)item->response );
         }
-
-        if( item->request ) {
-            protobuf_c_message_free_unpacked( item->request, NULL );
-        }
-
-        memfree( item );
     }
 
     LogPrintNoArg( LOG_NOTICE, "Ending ProtobufThread" );
     return(NULL);
 }
 
-void *protobuf_memalloc(void *allocator_data, size_t size)
+void protobufDestroyMessage( ProtobufCMessage *msg )
+{
+    if( msg ) {
+        protobuf_c_message_free_unpacked( msg, NULL );
+    }
+}
+
+void protobufDestroyItem( ProtobufItem_t *item )
+{
+    if( !item ) {
+        return;
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)item->request );
+
+    if( item->mutex ) {
+        pthread_mutex_unlock( item->mutex );
+        pthread_mutex_destroy( item->mutex );
+        memfree( item->mutex );
+    }
+
+    memfree( item );
+}
+
+HavokRequest *protobufCreateRequest( void )
+{
+    HavokRequest   *msg;
+
+    msg = CREATE(HavokRequest);
+    if( msg ) {
+        havok_request__init( msg );
+    }
+
+    return( msg );
+}
+
+void *protobufMemalloc(void *allocator_data, size_t size)
 {
     void       *buf;
 
@@ -109,12 +140,12 @@ void *protobuf_memalloc(void *allocator_data, size_t size)
 
     buf = CREATEN(char, size);
     if( !buf ) {
-        LogPrintNoArg( LOG_CRIT, "Out of memory in protobuf_memalloc" );
+        LogPrintNoArg( LOG_CRIT, "Out of memory in protobufMemalloc" );
     }
     return( buf );
 }
 
-void protobuf_memfree(void *allocator_data, void *pointer)
+void protobufMemfree(void *allocator_data, void *pointer)
 {
     (void)allocator_data;
 
@@ -123,15 +154,17 @@ void protobuf_memfree(void *allocator_data, void *pointer)
     }
 }
 
-ProtobufCMessage   *protobufHandle( ProtobufCMessage *request )
+ProtobufCMessage   *protobufHandle( HavokRequest *request )
 {
     return( NULL );
 }
 
-void ProtobufQueue( ProtobufCMessage *request, ProtobufResFunc_t callback,
-                    void *arg, bool block )
+ProtobufCMessage *protobufQueue( HavokRequest *request, 
+                                 ProtobufResFunc_t callback,
+                                 void *arg, bool block )
 {
-    ProtobufItem_t *item;
+    ProtobufItem_t     *item;
+    ProtobufCMessage   *response;
 
     if( !request ) {
         return;
@@ -154,9 +187,15 @@ void ProtobufQueue( ProtobufCMessage *request, ProtobufResFunc_t callback,
 
     QueueEnqueueItem( ProtobufQ, item );
 
-    if( block ) {
-        pthread_mutex_lock( item->mutex );
+    if( !block ) {
+        return( NULL );
     }
+
+    pthread_mutex_lock( item->mutex );
+    response = item->response;
+    protobufDestroyItem( item );
+
+    return( response );
 }
 
 /*
