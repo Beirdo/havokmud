@@ -38,16 +38,7 @@
 #include "memory.h"
 #include "protos.h"
 #include "logging.h"
-
-typedef void (*ProtobufResFunc_t)( ProtobufCMessage *result, void *arg );
-
-typedef struct {
-    ProtobufCMessage   *request;
-    ProtobufResFunc_t   callback;
-    void               *callbackArg;
-    pthread_mutex_t    *mutex;
-} ProtobufItem_t;
-
+#include "protobufs.h"
 
 
 /* Internal protos */
@@ -89,8 +80,8 @@ void *ProtobufThread( void *arg )
 
         if( item->mutex ) {
             pthread_mutex_unlock( item->mutex );
-        }
-
+        } 
+        
         if( resp ) {
             protobuf_c_message_free_unpacked( resp, NULL );
         }
@@ -135,6 +126,37 @@ void protobuf_memfree(void *allocator_data, void *pointer)
 ProtobufCMessage   *protobufHandle( ProtobufCMessage *request )
 {
     return( NULL );
+}
+
+void ProtobufQueue( ProtobufCMessage *request, ProtobufResFunc_t callback,
+                    void *arg, bool block )
+{
+    ProtobufItem_t *item;
+
+    if( !request ) {
+        return;
+    }
+
+    item = CREATE(ProtobufItem_t);
+    if( !item ) {
+        return;
+    }
+
+    item->request     = request;
+    item->callback    = callback;
+    item->callbackArg = arg;
+    
+    if( block ) {
+        item->mutex = CREATE(pthread_mutex_t);
+        pthread_mutex_init( item->mutex, NULL );
+        pthread_mutex_lock( item->mutex );
+    }
+
+    QueueEnqueueItem( ProtobufQ, item );
+
+    if( block ) {
+        pthread_mutex_lock( item->mutex );
+    }
 }
 
 /*
