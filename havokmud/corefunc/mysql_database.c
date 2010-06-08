@@ -55,7 +55,7 @@ static char ident[] _UNUSED_ =
  */
 
 char *db_mysql_get_setting(char *name);
-void db_mysql_set_setting( char *name, char *format, va_list arguments );
+void db_mysql_set_setting( char *name, char *value );
 PlayerAccount_t *db_mysql_load_account( char *email );
 void db_mysql_save_account( PlayerAccount_t *account );
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
@@ -132,19 +132,16 @@ char *db_mysql_get_setting(char *name)
     return( result );
 }
         
-void db_mysql_set_setting( char *name, char *format, va_list arguments )
+void db_mysql_set_setting( char *name, char *value )
 {
     MYSQL_BIND     *data;
-    char            value[256];
     
-    if( !name || !format ) {
+    if( !name || !value ) {
         return;
     }
     
     data = CREATEN(MYSQL_BIND, 2);
 
-    vsnprintf( value, 256, format, arguments );
-    
     bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
     bind_string( &data[1], value, MYSQL_TYPE_VAR_STRING );
     

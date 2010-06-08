@@ -30,7 +30,6 @@
 #include "config.h"
 #include "environment.h"
 #include <string.h>
-#include <stdarg.h>
 #include "interthread.h"
 #include "protos.h"
 #include "db_api.h"
@@ -53,18 +52,14 @@ char *db_get_setting(char *name)
     }
 }
 
-void db_set_setting( char *name, char *format, ... )
+void db_set_setting( char *name, char *value )
 {
-    va_list         arguments;
-
     if( !db_api_funcs.set_setting ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no set_setting" );
         return;
     }
 
-    va_start( arguments, format );
-    db_api_funcs.set_setting( name, format, arguments );
-    va_end( arguments );
+    db_api_funcs.set_setting( name, value );
 }
 
 PlayerAccount_t *db_load_account( char *email )

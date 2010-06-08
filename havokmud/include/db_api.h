@@ -32,7 +32,7 @@
 
 typedef struct {
     char *(*get_setting)( char * );
-    void (*set_setting)( char *, char *, va_list );
+    void (*set_setting)( char *, char * );
     PlayerAccount_t *(*load_account)( char * );
     void (*save_account)( PlayerAccount_t * );
 } DatabaseAPIFuncs_t;

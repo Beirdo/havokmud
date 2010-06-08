@@ -156,8 +156,57 @@ void protobufMemfree(void *allocator_data, void *pointer)
     }
 }
 
-ProtobufCMessage   *protobufHandle( HavokRequest *request )
+ProtobufCMessage   *protobufHandle( HavokRequest *req )
 {
+    char               *buf;
+    ProtobufCMessage   *resp;
+    HavokRequest       *respReq;
+
+    if( !req ) {
+        return( NULL );
+    }
+
+    if( req->protocol_version != PROTOBUF_API_VERSION ) {
+        LogPrint( LOG_DEBUG, "Bad protobuf API version: %d, expected %d",
+                             req->protocol_version, PROTOBUF_API_VERSION );
+        return( NULL );
+    }
+
+    switch( req->request_type ) {
+        case HAVOK_REQUEST__REQ_TYPE__GET_SETTING:
+            if( !req->settings_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No settings data on GET_SETTING" );
+                return( NULL );
+            }
+            buf = db_get_setting( req->settings_data->setting_name );
+            respReq = protobufCreateRequest();
+            if( !respReq ) {
+                return( NULL );
+            }
+            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__GET_SETTING;
+            respReq->settings_data = CREATE(ReqSettingsType);
+            req_settings_type__init( respReq->settings_data );
+            respReq->settings_data->setting_name = 
+                memstrlink( req->settings_data->setting_name );
+            respReq->settings_data->setting_value = buf;
+
+            return( respReq );
+            break;
+        case HAVOK_REQUEST__REQ_TYPE__SET_SETTING:
+            if( !req->settings_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No settings data on SET_SETTING" );
+                return( NULL );
+            }
+            db_set_setting( req->settings_data->setting_name,
+                            req->settings_data->setting_value );
+            return( NULL );
+            break;
+        default:
+            /* Not handled yet */
+            return( NULL );
+    }
+
+    /* Should never get here, but just in case! */
     return( NULL );
 }
 

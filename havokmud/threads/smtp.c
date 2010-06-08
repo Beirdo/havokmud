@@ -74,9 +74,9 @@ void *SmtpThread( void *arg )
 
     pthread_mutex_lock( startupMutex );
 
-    hostname = db_get_setting( "smtpHostname" );
-    server   = db_get_setting( "smtpServer" );
-    fromAddr = db_get_setting( "smtpFrom" );
+    hostname = pb_get_setting( "smtpHostname" );
+    server   = pb_get_setting( "smtpServer" );
+    fromAddr = pb_get_setting( "smtpFrom" );
 
     if( !hostname || !server || !fromAddr ) {
         if( !hostname ) {

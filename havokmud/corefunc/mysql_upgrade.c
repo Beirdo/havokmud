@@ -111,7 +111,7 @@ void db_check_schema( char *setting, char *desc, int codeSupports,
     ver = -1;
     printed = FALSE;
     do {
-        verString = db_get_setting( setting );
+        verString = pb_get_setting( setting );
         if( !verString ) {
             ver = 0;
         } else {
@@ -153,7 +153,7 @@ static int db_upgrade_schema( char *setting, char *desc,
         for( i = 0; i < defSchemaCount; i++ ) {
             db_queue_query( i, defSchema, NULL, 0, NULL, NULL, NULL );
         }
-        db_set_setting( setting, "%d", codeSupports );
+        pb_set_setting( setting, "%d", codeSupports );
         return( codeSupports );
     }
 
@@ -165,7 +165,7 @@ static int db_upgrade_schema( char *setting, char *desc,
 
     current++;
 
-    db_set_setting( setting, "%d", current );
+    pb_set_setting( setting, "%d", current );
     return( current );
 }
 

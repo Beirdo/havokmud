@@ -146,10 +146,26 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
                      QueryResFunc_t queryCallback, void *queryCallbackArg,
                      pthread_mutex_t *queryMutex );
 
+/*
+ * db_api.c
+ */
+
 char *db_get_setting(char *name);
-void db_set_setting( char *name, char *format, ... );
+void db_set_setting( char *name, char *value );
 PlayerAccount_t *db_load_account( char *email );
 void db_save_account( PlayerAccount_t *account );
+
+
+/*
+ * protobuf_api.c
+ */
+
+char *pb_get_setting(char *name);
+void pb_set_setting( char *name, char *format, ... );
+PlayerAccount_t *pb_load_account( char *email );
+void pb_save_account( PlayerAccount_t *account );
+
+
 
 
 /*
