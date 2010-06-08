@@ -39,6 +39,8 @@
 #include "google/protobuf-c/protobuf-c.h"
 #include "havokrequest.pb-c.h"
 
+#define PROTOBUF_API_VERSION 1
+
 typedef void (*ProtobufResFunc_t)( ProtobufCMessage *result, void *arg );
 
 typedef struct {

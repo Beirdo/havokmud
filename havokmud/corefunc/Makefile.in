@@ -60,7 +60,7 @@ am_libhavokcore_a_OBJECTS = main.$(OBJEXT) signals.$(OBJEXT) \
 	object_data.$(OBJEXT) keywords.$(OBJEXT) weather.$(OBJEXT) \
 	room_data.$(OBJEXT) mobile_data.$(OBJEXT) \
 	special_funcs.$(OBJEXT) mysql_upgrade.$(OBJEXT) dice.$(OBJEXT) \
-	db_api.$(OBJEXT)
+	db_api.$(OBJEXT) protobuf_api.$(OBJEXT)
 libhavokcore_a_OBJECTS = $(am_libhavokcore_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -115,6 +115,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POW_LIB = @POW_LIB@
@@ -186,7 +187,7 @@ libhavokcore_a_SOURCES = main.c signals.c login-sm.c output.c \
 	mysql_database.c command_parser.c core_commands.c \
 	ansi_output.c char_data.c object_data.c keywords.c weather.c \
 	room_data.c mobile_data.c special_funcs.c mysql_upgrade.c \
-	dice.c db_api.c
+	dice.c db_api.c protobuf_api.c
 all: all-am
 
 .SUFFIXES:
@@ -248,6 +249,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mysql_upgrade.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/protobuf_api.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/room_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/special_funcs.Po@am__quote@

@@ -125,6 +125,8 @@ HavokRequest *protobufCreateRequest( void )
         havok_request__init( msg );
     }
 
+    msg->protocol_version = PROTOBUF_API_VERSION;
+
     return( msg );
 }
 
