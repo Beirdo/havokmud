@@ -159,6 +159,7 @@ void protobufMemfree(void *allocator_data, void *pointer)
 ProtobufCMessage   *protobufHandle( HavokRequest *req )
 {
     char               *buf;
+    PlayerAccount_t    *acct;
     ProtobufCMessage   *resp;
     HavokRequest       *respReq;
 
@@ -190,7 +191,7 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
                 memstrlink( req->settings_data->setting_name );
             respReq->settings_data->setting_value = buf;
 
-            return( respReq );
+            return( (ProtobufCMessage *)respReq );
             break;
         case HAVOK_REQUEST__REQ_TYPE__SET_SETTING:
             if( !req->settings_data ) {
@@ -199,6 +200,58 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
             }
             db_set_setting( req->settings_data->setting_name,
                             req->settings_data->setting_value );
+            return( NULL );
+            break;
+        case HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT:
+            if( !req->account_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No account data on LOAD_ACCOUNT" );
+                return( NULL );
+            }
+            acct = db_load_account( req->account_data->email );
+            respReq = protobufCreateRequest();
+            if( !respReq ) {
+                return( NULL );
+            }
+            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT;
+            respReq->account_data = CREATE(ReqAccountType);
+            req_account_type__init( respReq->account_data );
+            respReq->account_data->email = memstrlink( acct->email );
+            respReq->account_data->id = acct->id;
+            respReq->account_data->passwd = memstrlink( acct->pwd );
+            respReq->account_data->ansi = acct->ansi;
+            respReq->account_data->confirmed = acct->confirmed;
+            respReq->account_data->confcode = memstrlink( acct->confcode );
+            respReq->account_data->has_id = TRUE;
+            respReq->account_data->has_ansi = TRUE;
+            respReq->account_data->has_confirmed = TRUE;
+
+            memfree( acct->email );
+            memfree( acct->pwd );
+            memfree( acct->confcode );
+            memfree( acct );
+
+            return( (ProtobufCMessage *)respReq );
+            break;
+        case HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT:
+            if( !req->account_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No account data on SAVE_ACCOUNT" );
+                return( NULL );
+            }
+
+            acct = CREATE(PlayerAccount_t);
+            acct->email = memstrlink( req->account_data->email );
+            acct->id = req->account_data->id;
+            acct->pwd = memstrlink( req->account_data->passwd );
+            acct->ansi = req->account_data->ansi;
+            acct->confirmed = req->account_data->confirmed;
+            acct->confcode = memstrlink( req->account_data->confcode );
+            db_save_account( acct );
+
+            memfree( acct->email );
+            memfree( acct->pwd );
+            memfree( acct->confcode );
+            memfree( acct );
+
             return( NULL );
             break;
         default:

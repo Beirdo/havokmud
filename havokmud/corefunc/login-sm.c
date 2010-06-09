@@ -547,7 +547,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             player->account = NULL;
         }
 
-        player->account = db_load_account(tmp_name);
+        player->account = pb_load_account(tmp_name);
         if( player->account ) {
             /*
              * connecting an existing account ...
@@ -706,7 +706,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
             break;
         }
-        db_save_account(player->account);
+        pb_save_account(player->account);
         if( !player->account->confcode || !*player->account->confcode ) {
             EnterState(player, STATE_RESEND_CONFIRM_EMAIL);
             EnterState(player, STATE_SHOW_ACCOUNT_MENU);
@@ -828,7 +828,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
 	SendOutput(player, "Password changed...\n\r");
 
-        db_save_account(player->account);
+        pb_save_account(player->account);
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
 
@@ -847,13 +847,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             player->account->confirmed = TRUE;
             memfree( player->account->confcode );
             player->account->confcode = NULL;
-            db_save_account( player->account );
+            pb_save_account( player->account );
         } else {
             SendOutput(player, "\n\rConfirmation code does not match our "
                                "records.  Please try again,\n\r"
                                "or resend the confirmation email.\n\r" );
             player->account->confirmed = FALSE;
-            db_save_account( player->account );
+            pb_save_account( player->account );
         }
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
@@ -1755,7 +1755,7 @@ void CreateSendConfirmEmail( PlayerStruct_t *player )
         }
         player->account->confcode = memstrlink( buffer );
         player->account->confirmed = FALSE;
-        db_save_account(player->account);
+        pb_save_account(player->account);
     }
 
     snprintf( buffer, MAX_EMAIL_LEN, 

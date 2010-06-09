@@ -481,10 +481,14 @@ static ConnectionItem_t *connRemove(ConnectionItem_t *item)
  */
 void connClose( ConnectionItem_t *connItem, Locked_t locked )
 {
-    LogPrint( LOG_INFO, "Disconnect from %s", 
+    ProtectedDataLock(connItem->player->connection->hostName);
+    LogPrint( LOG_INFO, "Disconnect from %s[%s]", 
               (connItem->player && connItem->player->account &&
                connItem->player->account->email ? 
-               connItem->player->account->email : "unknown") );
+               connItem->player->account->email : "unknown"),
+              (char *)connItem->player->connection->hostName->data );
+    ProtectedDataUnlock(connItem->player->connection->hostName);
+
     if( locked == UNLOCKED ) {
         LinkedListLock( ConnectionList );
     }

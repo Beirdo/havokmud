@@ -104,11 +104,75 @@ void pb_set_setting( char *name, char *format, ... )
 
 PlayerAccount_t *pb_load_account( char *email )
 {
-    return( NULL );
+    HavokRequest       *req;
+    HavokRequest       *resp;
+    PlayerAccount_t    *acct;
+
+    if( !email ) {
+        return( NULL );
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return( NULL );
+    }
+
+    req->request_type  = HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT;
+    req->account_data = CREATE(ReqAccountType);
+    req_account_type__init( req->account_data );
+    req->account_data->email = memstrlink(email);
+
+    resp = (HavokRequest *)protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return( NULL );
+    }
+
+    if( !resp->account_data ) {
+        acct = NULL;
+    } else {
+        acct = CREATE(PlayerAccount_t);
+        if( acct ) {
+            acct->email = memstrlink( resp->account_data->email );
+            acct->id = resp->account_data->id;
+            acct->pwd = memstrlink( resp->account_data->passwd );
+            acct->ansi = resp->account_data->ansi;
+            acct->confirmed = resp->account_data->confirmed;
+            acct->confcode = memstrlink( resp->account_data->confcode );
+        }
+    }
+
+    protobufDestroyMessage( resp );
+
+    return( acct );
 }
 
 void pb_save_account( PlayerAccount_t *account )
 {
+    HavokRequest       *req;
+
+    if( !account ) {
+        return;
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return;
+    }
+
+    req->request_type  = HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT;
+    req->account_data = CREATE(ReqAccountType);
+    req_account_type__init( req->account_data );
+    req->account_data->email = memstrlink(account->email);
+    req->account_data->id = account->id;
+    req->account_data->passwd = memstrlink( account->pwd );
+    req->account_data->ansi = account->ansi;
+    req->account_data->confirmed = account->confirmed;
+    req->account_data->confcode = memstrlink( account->confcode );
+    req->account_data->has_id = TRUE;
+    req->account_data->has_ansi = TRUE;
+    req->account_data->has_confirmed = TRUE;
+
+    protobufQueue( req, NULL, NULL, FALSE );
 }
 
 
