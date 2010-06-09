@@ -69,7 +69,7 @@ char *pb_get_setting(char *name)
         value = memstrlink( resp->settings_data->setting_value );
     }
 
-    protobufDestroyMessage( resp );
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
 
     return( value );
 }
@@ -90,7 +90,7 @@ void pb_set_setting( char *name, char *format, ... )
 
     req = protobufCreateRequest();
     if( !req ) {
-        return( NULL );
+        return;
     }
 
     req->request_type  = HAVOK_REQUEST__REQ_TYPE__SET_SETTING;
@@ -141,7 +141,7 @@ PlayerAccount_t *pb_load_account( char *email )
         }
     }
 
-    protobufDestroyMessage( resp );
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
 
     return( acct );
 }

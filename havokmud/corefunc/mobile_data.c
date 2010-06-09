@@ -467,6 +467,7 @@ void mobileInitScripts(void)
                     count;
     struct char_data *mob;
     extern struct char_data *character_list;
+    char *blah;
 
     if (!script_data) {
         top_of_scripts = 0;
@@ -531,7 +532,7 @@ void mobileInitScripts(void)
 
             count = 0;
             while (!feof(f2)) {
-                fgets(buf, 254, f2);
+                blah = fgets(buf, 254, f2);
                 if (buf[strlen(buf) - 1] == '\n') {
                     buf[strlen(buf) - 1] = '\0';
                 }

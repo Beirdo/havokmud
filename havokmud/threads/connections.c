@@ -103,6 +103,7 @@ void *ConnectionThread( void *arg )
     ConnDnsItem_t          *dnsItem;
     uint32                  i;
     int                     on;
+    int                     retval;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
@@ -339,8 +340,9 @@ void *ConnectionThread( void *arg )
                     LogPrint( LOG_INFO, "Output sent to: %p", item );
 #endif
                     if( item->outBufDesc ) {
-                        write( item->fd, item->outBufDesc->buf, 
-                               item->outBufDesc->len );
+                        /* TODO: deal with partial block writes */
+                        retval = write( item->fd, item->outBufDesc->buf, 
+                                        item->outBufDesc->len );
                         memfree( item->outBufDesc->buf );
                         memfree( item->outBufDesc );
                         item->outBufDesc = NULL;
