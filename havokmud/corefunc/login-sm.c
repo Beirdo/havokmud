@@ -543,6 +543,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             if( player->account->email ) {
                 memfree( player->account->email );
             }
+            if( player->account->pwd ) {
+                memfree( player->account->pwd );
+            }
+            if( player->account->confcode ) {
+                memfree( player->account->confcode );
+            }
             memfree( player->account );
             player->account = NULL;
         }

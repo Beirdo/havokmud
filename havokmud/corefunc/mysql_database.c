@@ -57,7 +57,7 @@ static char ident[] _UNUSED_ =
 char *db_mysql_get_setting(char *name);
 void db_mysql_set_setting( char *name, char *value );
 PlayerAccount_t *db_mysql_load_account( char *email );
-void db_mysql_save_account( PlayerAccount_t *account );
+int db_mysql_save_account( PlayerAccount_t *account );
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
 void chain_save_account( MYSQL_RES *res, QueryItem_t *item );
 
@@ -174,13 +174,17 @@ PlayerAccount_t *db_mysql_load_account( char *email )
     return( result );
 }
 
-void db_mysql_save_account( PlayerAccount_t *account )
+int db_mysql_save_account( PlayerAccount_t *account )
 {
     MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
 
     if( !account ) {
         return;
     }
+
+    mutex = CREATE(pthread_mutex_t);
+    thread_mutex_init( mutex );
 
     data = CREATEN(MYSQL_BIND, 7);
 
@@ -193,7 +197,13 @@ void db_mysql_save_account( PlayerAccount_t *account )
                  MYSQL_TYPE_VAR_STRING );
     bind_null_blob( &data[6], account );
 
-    db_queue_query( 5, QueryTable, data, 7, NULL, NULL, NULL );
+    db_queue_query( 5, QueryTable, data, 7, NULL, NULL, mutex );
+
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+
+    return( account->id );
 }
 
 

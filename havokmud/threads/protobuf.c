@@ -158,6 +158,7 @@ void protobufMemfree(void *allocator_data, void *pointer)
 
 ProtobufCMessage   *protobufHandle( HavokRequest *req )
 {
+    int                 retval;
     char               *buf;
     PlayerAccount_t    *acct;
     ProtobufCMessage   *resp;
@@ -209,7 +210,7 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
             }
             acct = db_load_account( req->account_data->email );
             respReq = protobufCreateRequest();
-            if( !respReq ) {
+            if( !respReq || !acct ) {
                 return( NULL );
             }
             respReq->request_type = HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT;
@@ -245,14 +246,32 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
             acct->ansi = req->account_data->ansi;
             acct->confirmed = req->account_data->confirmed;
             acct->confcode = memstrlink( req->account_data->confcode );
-            db_save_account( acct );
+            retval = db_save_account( acct );
+
+            respReq = protobufCreateRequest();
+            if( !respReq || !acct ) {
+                return( NULL );
+            }
+
+            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT;
+            respReq->account_data = CREATE(ReqAccountType);
+            req_account_type__init( respReq->account_data );
+            respReq->account_data->email = memstrlink( acct->email );
+            respReq->account_data->id = acct->id;
+            respReq->account_data->passwd = memstrlink( acct->pwd );
+            respReq->account_data->ansi = acct->ansi;
+            respReq->account_data->confirmed = acct->confirmed;
+            respReq->account_data->confcode = memstrlink( acct->confcode );
+            respReq->account_data->has_id = TRUE;
+            respReq->account_data->has_ansi = TRUE;
+            respReq->account_data->has_confirmed = TRUE;
 
             memfree( acct->email );
             memfree( acct->pwd );
             memfree( acct->confcode );
             memfree( acct );
 
-            return( NULL );
+            return( (ProtobufCMessage *)respReq );
             break;
         default:
             /* Not handled yet */

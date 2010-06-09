@@ -72,14 +72,14 @@ PlayerAccount_t *db_load_account( char *email )
     }
 }
 
-void db_save_account( PlayerAccount_t *account )
+int db_save_account( PlayerAccount_t *account )
 {
     if( !db_api_funcs.save_account ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no save_account" );
-        return;
+        return( 0 );
     }
 
-    db_api_funcs.save_account( account );
+    return( db_api_funcs.save_account( account ) );
 }
 
 

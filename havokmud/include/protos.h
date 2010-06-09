@@ -153,7 +153,7 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
 char *db_get_setting(char *name);
 void db_set_setting( char *name, char *value );
 PlayerAccount_t *db_load_account( char *email );
-void db_save_account( PlayerAccount_t *account );
+int db_save_account( PlayerAccount_t *account );
 
 
 /*

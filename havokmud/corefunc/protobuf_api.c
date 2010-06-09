@@ -149,6 +149,7 @@ PlayerAccount_t *pb_load_account( char *email )
 void pb_save_account( PlayerAccount_t *account )
 {
     HavokRequest       *req;
+    HavokRequest       *resp;
 
     if( !account ) {
         return;
@@ -172,7 +173,16 @@ void pb_save_account( PlayerAccount_t *account )
     req->account_data->has_ansi = TRUE;
     req->account_data->has_confirmed = TRUE;
 
-    protobufQueue( req, NULL, NULL, FALSE );
+    resp = (HavokRequest *)protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return;
+    }
+
+    if( resp->account_data ) {
+        account->id = resp->account_data->id;
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
 }
 
 

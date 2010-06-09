@@ -34,7 +34,7 @@ typedef struct {
     char *(*get_setting)( char * );
     void (*set_setting)( char *, char * );
     PlayerAccount_t *(*load_account)( char * );
-    void (*save_account)( PlayerAccount_t * );
+    int (*save_account)( PlayerAccount_t * );
 } DatabaseAPIFuncs_t;
 
 extern DatabaseAPIFuncs_t db_api_funcs;
