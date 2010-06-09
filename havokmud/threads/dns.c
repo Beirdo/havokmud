@@ -56,6 +56,9 @@ static char ident[] _UNUSED_ =
  * the ConnectDnsQ, and the results are placed into the connection structure
  * directly.  To keep away from data synchronization issues, the hostname is 
  * protected by a mutex using ProtectedDataLock.
+ * 
+ * TODO: make a binary tree of lookups with an expiry to cache
+ *
  */
 void *DnsThread( void *arg )
 {
