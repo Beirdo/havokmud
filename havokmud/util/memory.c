@@ -540,6 +540,10 @@ char *memstrnlink( char *orig, int len )
     /* used when linking to a common string is acceptable (consumer is NOT
      * changing either copy)
      */
+    if( !orig || !len ) {
+        return( NULL );
+    }
+
     shortorig = CREATEN( char, len + 1 );
     strncpy( shortorig, orig, len );
     shortorig[len] = '\0';
@@ -561,6 +565,9 @@ char *memstrlink( char *orig )
     /* used when linking to a common string is acceptable (consumer is NOT
      * changing either copy)
      */
+    if( !orig ) {
+        return( NULL );
+    }
 
     BalancedBTreeLock( &memoryStringTree );
 
@@ -589,6 +596,10 @@ bool memoryStringFree( char *buffer )
     BalancedBTreeItem_t    *item;
     MemoryString_t         *string;
     int                     remove;
+
+    if( !buffer ) {
+        return( FALSE );
+    }
 
     remove = 0;
     BalancedBTreeLock( &memoryStringTree );
