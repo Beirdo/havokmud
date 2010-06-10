@@ -33,8 +33,8 @@
  * @brief Protobuf Support
  */
 
-#ifndef protobufs_h_
-#define protobufs_h_
+#ifndef protobuf_api_h_
+#define protobuf_api_h_
 
 #include "google/protobuf-c/protobuf-c.h"
 #include "havokrequest.pb-c.h"

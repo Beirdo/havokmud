@@ -32,7 +32,7 @@
 #include <stdarg.h>
 #include "interthread.h"
 #include "protos.h"
-#include "protobufs.h"
+#include "protobuf_api.h"
 #include "havokrequest.pb-c.h"
 #include "memory.h"
 

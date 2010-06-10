@@ -38,9 +38,10 @@
 #include "memory.h"
 #include "protos.h"
 #include "logging.h"
-#include "protobufs.h"
+#include "protobuf_api.h"
 #include "havokrequest.pb-c.h"
 #include "havokresponse.pb-c.h"
+#include "db_api.h"
 
 
 /* Internal protos */
