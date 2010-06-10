@@ -41,7 +41,7 @@
 char *pb_get_setting(char *name) 
 {
     HavokRequest       *req;
-    HavokRequest       *resp;
+    HavokResponse      *resp;
     char               *value;
 
     if( !name ) {
@@ -53,12 +53,12 @@ char *pb_get_setting(char *name)
         return( NULL );
     }
 
-    req->request_type  = HAVOK_REQUEST__REQ_TYPE__GET_SETTING;
+    req->request_type  = REQ_TYPE__GET_SETTING;
     req->settings_data = CREATE(ReqSettingsType);
     req_settings_type__init( req->settings_data );
     req->settings_data->setting_name = memstrlink(name);
 
-    resp = (HavokRequest *)protobufQueue( req, NULL, NULL, TRUE );
+    resp = protobufQueue( req, NULL, NULL, TRUE );
     if( !resp ) {
         return( NULL );
     }
@@ -93,7 +93,7 @@ void pb_set_setting( char *name, char *format, ... )
         return;
     }
 
-    req->request_type  = HAVOK_REQUEST__REQ_TYPE__SET_SETTING;
+    req->request_type  = REQ_TYPE__SET_SETTING;
     req->settings_data = CREATE(ReqSettingsType);
     req_settings_type__init( req->settings_data );
     req->settings_data->setting_name  = memstrlink(name);
@@ -105,7 +105,7 @@ void pb_set_setting( char *name, char *format, ... )
 PlayerAccount_t *pb_load_account( char *email )
 {
     HavokRequest       *req;
-    HavokRequest       *resp;
+    HavokResponse      *resp;
     PlayerAccount_t    *acct;
 
     if( !email ) {
@@ -117,12 +117,12 @@ PlayerAccount_t *pb_load_account( char *email )
         return( NULL );
     }
 
-    req->request_type  = HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT;
+    req->request_type  = REQ_TYPE__LOAD_ACCOUNT;
     req->account_data = CREATE(ReqAccountType);
     req_account_type__init( req->account_data );
     req->account_data->email = memstrlink(email);
 
-    resp = (HavokRequest *)protobufQueue( req, NULL, NULL, TRUE );
+    resp = protobufQueue( req, NULL, NULL, TRUE );
     if( !resp ) {
         return( NULL );
     }
@@ -149,7 +149,7 @@ PlayerAccount_t *pb_load_account( char *email )
 void pb_save_account( PlayerAccount_t *account )
 {
     HavokRequest       *req;
-    HavokRequest       *resp;
+    HavokResponse      *resp;
 
     if( !account ) {
         return;
@@ -160,7 +160,7 @@ void pb_save_account( PlayerAccount_t *account )
         return;
     }
 
-    req->request_type  = HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT;
+    req->request_type  = REQ_TYPE__SAVE_ACCOUNT;
     req->account_data = CREATE(ReqAccountType);
     req_account_type__init( req->account_data );
     req->account_data->email = memstrlink(account->email);
@@ -173,7 +173,7 @@ void pb_save_account( PlayerAccount_t *account )
     req->account_data->has_ansi = TRUE;
     req->account_data->has_confirmed = TRUE;
 
-    resp = (HavokRequest *)protobufQueue( req, NULL, NULL, TRUE );
+    resp = protobufQueue( req, NULL, NULL, TRUE );
     if( !resp ) {
         return;
     }

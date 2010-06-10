@@ -40,12 +40,13 @@
 #include "logging.h"
 #include "protobufs.h"
 #include "havokrequest.pb-c.h"
+#include "havokresponse.pb-c.h"
 
 
 /* Internal protos */
 void *protobufMemalloc(void *allocator_data, size_t size);
 void protobufMemfree(void *allocator_data, void *pointer);
-ProtobufCMessage   *protobufHandle( HavokRequest *request );
+HavokResponse *protobufHandle( HavokRequest *req );
 void protobufDestroyItem( ProtobufItem_t *item );
 
 /**
@@ -58,7 +59,6 @@ void protobufDestroyItem( ProtobufItem_t *item );
 void *ProtobufThread( void *arg )
 {
     ProtobufItem_t     *item;
-    ProtobufCMessage   *resp;
 
     pthread_mutex_lock( startupMutex );
 
@@ -130,6 +130,20 @@ HavokRequest *protobufCreateRequest( void )
     return( msg );
 }
 
+HavokResponse *protobufCreateResponse( void )
+{
+    HavokResponse  *msg;
+
+    msg = CREATE(HavokResponse);
+    if( msg ) {
+        havok_response__init( msg );
+    }
+
+    msg->protocol_version = PROTOBUF_API_VERSION;
+
+    return( msg );
+}
+
 void *protobufMemalloc(void *allocator_data, size_t size)
 {
     void       *buf;
@@ -156,13 +170,12 @@ void protobufMemfree(void *allocator_data, void *pointer)
     }
 }
 
-ProtobufCMessage   *protobufHandle( HavokRequest *req )
+HavokResponse *protobufHandle( HavokRequest *req )
 {
     int                 retval;
     char               *buf;
     PlayerAccount_t    *acct;
-    ProtobufCMessage   *resp;
-    HavokRequest       *respReq;
+    HavokResponse      *resp;
 
     if( !req ) {
         return( NULL );
@@ -175,26 +188,26 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
     }
 
     switch( req->request_type ) {
-        case HAVOK_REQUEST__REQ_TYPE__GET_SETTING:
+        case REQ_TYPE__GET_SETTING:
             if( !req->settings_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No settings data on GET_SETTING" );
                 return( NULL );
             }
             buf = db_get_setting( req->settings_data->setting_name );
-            respReq = protobufCreateRequest();
-            if( !respReq ) {
+            resp = protobufCreateResponse();
+            if( !resp ) {
                 return( NULL );
             }
-            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__GET_SETTING;
-            respReq->settings_data = CREATE(ReqSettingsType);
-            req_settings_type__init( respReq->settings_data );
-            respReq->settings_data->setting_name = 
+            resp->request_type = REQ_TYPE__GET_SETTING;
+            resp->settings_data = CREATE(ReqSettingsType);
+            req_settings_type__init( resp->settings_data );
+            resp->settings_data->setting_name = 
                 memstrlink( req->settings_data->setting_name );
-            respReq->settings_data->setting_value = buf;
+            resp->settings_data->setting_value = buf;
 
-            return( (ProtobufCMessage *)respReq );
+            return( resp );
             break;
-        case HAVOK_REQUEST__REQ_TYPE__SET_SETTING:
+        case REQ_TYPE__SET_SETTING:
             if( !req->settings_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No settings data on SET_SETTING" );
                 return( NULL );
@@ -203,37 +216,37 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
                             req->settings_data->setting_value );
             return( NULL );
             break;
-        case HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT:
+        case REQ_TYPE__LOAD_ACCOUNT:
             if( !req->account_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No account data on LOAD_ACCOUNT" );
                 return( NULL );
             }
             acct = db_load_account( req->account_data->email );
-            respReq = protobufCreateRequest();
-            if( !respReq || !acct ) {
+            resp = protobufCreateResponse();
+            if( !resp || !acct ) {
                 return( NULL );
             }
-            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__LOAD_ACCOUNT;
-            respReq->account_data = CREATE(ReqAccountType);
-            req_account_type__init( respReq->account_data );
-            respReq->account_data->email = memstrlink( acct->email );
-            respReq->account_data->id = acct->id;
-            respReq->account_data->passwd = memstrlink( acct->pwd );
-            respReq->account_data->ansi = acct->ansi;
-            respReq->account_data->confirmed = acct->confirmed;
-            respReq->account_data->confcode = memstrlink( acct->confcode );
-            respReq->account_data->has_id = TRUE;
-            respReq->account_data->has_ansi = TRUE;
-            respReq->account_data->has_confirmed = TRUE;
+            resp->request_type = REQ_TYPE__LOAD_ACCOUNT;
+            resp->account_data = CREATE(ReqAccountType);
+            req_account_type__init( resp->account_data );
+            resp->account_data->email = memstrlink( acct->email );
+            resp->account_data->id = acct->id;
+            resp->account_data->passwd = memstrlink( acct->pwd );
+            resp->account_data->ansi = acct->ansi;
+            resp->account_data->confirmed = acct->confirmed;
+            resp->account_data->confcode = memstrlink( acct->confcode );
+            resp->account_data->has_id = TRUE;
+            resp->account_data->has_ansi = TRUE;
+            resp->account_data->has_confirmed = TRUE;
 
             memfree( acct->email );
             memfree( acct->pwd );
             memfree( acct->confcode );
             memfree( acct );
 
-            return( (ProtobufCMessage *)respReq );
+            return( resp );
             break;
-        case HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT:
+        case REQ_TYPE__SAVE_ACCOUNT:
             if( !req->account_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No account data on SAVE_ACCOUNT" );
                 return( NULL );
@@ -248,30 +261,30 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
             acct->confcode = memstrlink( req->account_data->confcode );
             retval = db_save_account( acct );
 
-            respReq = protobufCreateRequest();
-            if( !respReq || !acct ) {
+            resp = protobufCreateResponse();
+            if( !resp || !acct ) {
                 return( NULL );
             }
 
-            respReq->request_type = HAVOK_REQUEST__REQ_TYPE__SAVE_ACCOUNT;
-            respReq->account_data = CREATE(ReqAccountType);
-            req_account_type__init( respReq->account_data );
-            respReq->account_data->email = memstrlink( acct->email );
-            respReq->account_data->id = acct->id;
-            respReq->account_data->passwd = memstrlink( acct->pwd );
-            respReq->account_data->ansi = acct->ansi;
-            respReq->account_data->confirmed = acct->confirmed;
-            respReq->account_data->confcode = memstrlink( acct->confcode );
-            respReq->account_data->has_id = TRUE;
-            respReq->account_data->has_ansi = TRUE;
-            respReq->account_data->has_confirmed = TRUE;
+            resp->request_type = REQ_TYPE__SAVE_ACCOUNT;
+            resp->account_data = CREATE(ReqAccountType);
+            req_account_type__init( resp->account_data );
+            resp->account_data->email = memstrlink( acct->email );
+            resp->account_data->id = acct->id;
+            resp->account_data->passwd = memstrlink( acct->pwd );
+            resp->account_data->ansi = acct->ansi;
+            resp->account_data->confirmed = acct->confirmed;
+            resp->account_data->confcode = memstrlink( acct->confcode );
+            resp->account_data->has_id = TRUE;
+            resp->account_data->has_ansi = TRUE;
+            resp->account_data->has_confirmed = TRUE;
 
             memfree( acct->email );
             memfree( acct->pwd );
             memfree( acct->confcode );
             memfree( acct );
 
-            return( (ProtobufCMessage *)respReq );
+            return( resp );
             break;
         default:
             /* Not handled yet */
@@ -282,12 +295,12 @@ ProtobufCMessage   *protobufHandle( HavokRequest *req )
     return( NULL );
 }
 
-ProtobufCMessage *protobufQueue( HavokRequest *request, 
-                                 ProtobufResFunc_t callback,
-                                 void *arg, bool block )
+HavokResponse *protobufQueue( HavokRequest *request, 
+                              ProtobufResFunc_t callback,
+                              void *arg, bool block )
 {
     ProtobufItem_t     *item;
-    ProtobufCMessage   *response;
+    HavokResponse      *response;
 
     if( !request ) {
         return;

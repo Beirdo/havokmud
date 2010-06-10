@@ -38,24 +38,26 @@
 
 #include "google/protobuf-c/protobuf-c.h"
 #include "havokrequest.pb-c.h"
+#include "havokresponse.pb-c.h"
 
 #define PROTOBUF_API_VERSION 1
 
-typedef void (*ProtobufResFunc_t)( ProtobufCMessage *result, void *arg );
+typedef void (*ProtobufResFunc_t)( HavokResponse *result, void *arg );
 
 typedef struct {
     HavokRequest       *request;
-    ProtobufCMessage   *response;
+    HavokResponse      *response;
     ProtobufResFunc_t   callback;
     void               *callbackArg;
     pthread_mutex_t    *mutex;
 } ProtobufItem_t;
 
-ProtobufCMessage *protobufQueue( HavokRequest *request, 
-                                 ProtobufResFunc_t callback,
-                                 void *arg, bool block );
+HavokResponse *protobufQueue( HavokRequest *request, 
+                              ProtobufResFunc_t callback,
+                              void *arg, bool block );
 void protobufDestroyMessage( ProtobufCMessage *msg );
-HavokRequest *protobufCreateRequest( void );
+HavokRequest  *protobufCreateRequest( void );
+HavokResponse *protobufCreateResponse( void );
 
 #ifdef __cplusplus
 }

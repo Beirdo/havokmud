@@ -6,7 +6,7 @@ import "settings.proto";
 import "accounts.proto";
 import "pcs.proto";
 
-message HavokRequest {
+message HavokResponse {
     required uint32 protocol_version = 1;
 
     required ReqType request_type = 2;
@@ -14,9 +14,9 @@ message HavokRequest {
     // Required for GET_SETTING and SET_SETTING
     optional ReqSettingsType settings_data = 16;
 
-    // Required for LOAD_ACCOUNT, SAVE_ACCOUNT and GET_PC_LIST
+    // Required for LOAD_ACCOUNT and SAVE_ACCOUNT
     optional ReqAccountType account_data = 17;
 
-    // Required for LOAD_PC and SAVE_PC
-    optional ReqPCType pc_data = 18;
+    // Required for LOAD_PC, SAVE_PC and GET_PC_LIST
+    repeated ReqPCType pc_data = 18;
 }
