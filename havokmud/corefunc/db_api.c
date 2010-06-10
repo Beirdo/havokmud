@@ -34,6 +34,7 @@
 #include "protos.h"
 #include "db_api.h"
 #include "logging.h"
+#include "protobuf_api.h"
 
 DatabaseAPIFuncs_t db_api_funcs;
 
@@ -42,7 +43,7 @@ void db_init( void )
     memset( &db_api_funcs, 0, sizeof(db_api_funcs) );
 }
 
-char *db_get_setting(char *name) 
+HavokResponse *db_get_setting(char *name) 
 {
     if( db_api_funcs.get_setting ) {
         return( db_api_funcs.get_setting(name) );
@@ -62,7 +63,7 @@ void db_set_setting( char *name, char *value )
     db_api_funcs.set_setting( name, value );
 }
 
-PlayerAccount_t *db_load_account( char *email )
+HavokResponse *db_load_account( char *email )
 {
     if( db_api_funcs.load_account ) {
         return( db_api_funcs.load_account(email) );
@@ -72,11 +73,11 @@ PlayerAccount_t *db_load_account( char *email )
     }
 }
 
-int db_save_account( PlayerAccount_t *account )
+HavokResponse *db_save_account( PlayerAccount_t *account )
 {
     if( !db_api_funcs.save_account ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no save_account" );
-        return( 0 );
+        return( NULL );
     }
 
     return( db_api_funcs.save_account( account ) );

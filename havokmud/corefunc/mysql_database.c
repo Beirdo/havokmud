@@ -44,6 +44,7 @@
 #include "protos.h"
 #include "memory.h"
 #include "db_api.h"
+#include "protobuf_api.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -54,10 +55,11 @@ static char ident[] _UNUSED_ =
  * @brief Contains the API for the system to use to access the MySQL database.
  */
 
-char *db_mysql_get_setting(char *name);
+HavokResponse *db_mysql_get_setting(char *name);
 void db_mysql_set_setting( char *name, char *value );
-PlayerAccount_t *db_mysql_load_account( char *email );
-int db_mysql_save_account( PlayerAccount_t *account );
+HavokResponse *db_mysql_load_account( char *email );
+HavokResponse *db_mysql_save_account( PlayerAccount_t *account );
+
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
 void chain_save_account( MYSQL_RES *res, QueryItem_t *item );
 
@@ -105,10 +107,11 @@ void db_mysql_init( void )
     db_api_funcs.save_account = db_mysql_save_account;
 }
 
-char *db_mysql_get_setting(char *name)
+HavokResponse *db_mysql_get_setting(char *name)
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
+    HavokResponse      *resp;
     char               *result;
 
     if( !name ) {
@@ -129,7 +132,18 @@ char *db_mysql_get_setting(char *name)
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
-    return( result );
+    resp = protobufCreateResponse();
+    if( !resp ) {
+        return( NULL );
+    }
+
+    resp->request_type = REQ_TYPE__GET_SETTING;
+    resp->settings_data = CREATE(ReqSettingsType);
+    req_settings_type__init( resp->settings_data );
+    resp->settings_data->setting_name = memstrlink( name );
+    resp->settings_data->setting_value = result;
+
+    return( resp );
 }
         
 void db_mysql_set_setting( char *name, char *value )
@@ -148,11 +162,12 @@ void db_mysql_set_setting( char *name, char *value )
     db_queue_query( 1, QueryTable, data, 2, NULL, NULL, NULL);
 }
     
-PlayerAccount_t *db_mysql_load_account( char *email )
+HavokResponse *db_mysql_load_account( char *email )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     PlayerAccount_t    *result;
+    HavokResponse      *resp;
 
     if( !email ) {
         return( NULL );
@@ -171,13 +186,41 @@ PlayerAccount_t *db_mysql_load_account( char *email )
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
-    return( result );
+    if( !result ) {
+        return( NULL );
+    }
+
+    resp = protobufCreateResponse();
+    if( !resp ) {
+        return( NULL );
+    }
+
+    resp->request_type = REQ_TYPE__LOAD_ACCOUNT;
+    resp->account_data = CREATE(ReqAccountType);
+    req_account_type__init( resp->account_data );
+    resp->account_data->email = memstrlink( result->email );
+    resp->account_data->id = result->id;
+    resp->account_data->passwd = memstrlink( result->pwd );
+    resp->account_data->ansi = result->ansi;
+    resp->account_data->confirmed = result->confirmed;
+    resp->account_data->confcode = memstrlink( result->confcode );
+    resp->account_data->has_id = TRUE;
+    resp->account_data->has_ansi = TRUE;
+    resp->account_data->has_confirmed = TRUE;
+
+    memfree( result->email );
+    memfree( result->pwd );
+    memfree( result->confcode );
+    memfree( result );
+
+    return( resp );
 }
 
-int db_mysql_save_account( PlayerAccount_t *account )
+HavokResponse *db_mysql_save_account( PlayerAccount_t *account )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
+    HavokResponse      *resp;
 
     if( !account ) {
         return;
@@ -203,7 +246,30 @@ int db_mysql_save_account( PlayerAccount_t *account )
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
-    return( account->id );
+    resp = protobufCreateResponse();
+    if( !resp ) {
+        return( NULL );
+    }
+
+    resp->request_type = REQ_TYPE__SAVE_ACCOUNT;
+    resp->account_data = CREATE(ReqAccountType);
+    req_account_type__init( resp->account_data );
+    resp->account_data->email = memstrlink( account->email );
+    resp->account_data->id = account->id;
+    resp->account_data->passwd = memstrlink( account->pwd );
+    resp->account_data->ansi = account->ansi;
+    resp->account_data->confirmed = account->confirmed;
+    resp->account_data->confcode = memstrlink( account->confcode );
+    resp->account_data->has_id = TRUE;
+    resp->account_data->has_ansi = TRUE;
+    resp->account_data->has_confirmed = TRUE;
+
+    memfree( account->email );
+    memfree( account->pwd );
+    memfree( account->confcode );
+    memfree( account );
+
+    return( resp );
 }
 
 

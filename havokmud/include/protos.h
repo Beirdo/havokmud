@@ -47,6 +47,7 @@
 #include "balanced_btree.h"
 #include "oldstructs.h"
 #include "structs.h"
+#include "protobuf_api.h"
 
 /* CVS generated ID string (optional for h files) */
 static char protos_h_ident[] _UNUSED_ = 
@@ -150,10 +151,10 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
  * db_api.c
  */
 
-char *db_get_setting(char *name);
+HavokResponse *db_get_setting(char *name);
 void db_set_setting( char *name, char *value );
-PlayerAccount_t *db_load_account( char *email );
-int db_save_account( PlayerAccount_t *account );
+HavokResponse *db_load_account( char *email );
+HavokResponse *db_save_account( PlayerAccount_t *account );
 
 
 /*

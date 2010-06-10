@@ -29,12 +29,13 @@
 #include "environment.h"
 #include "structs.h"
 #include <stdarg.h>
+#include "protobuf_api.h"
 
 typedef struct {
-    char *(*get_setting)( char * );
+    HavokResponse *(*get_setting)( char * );
     void (*set_setting)( char *, char * );
-    PlayerAccount_t *(*load_account)( char * );
-    int (*save_account)( PlayerAccount_t * );
+    HavokResponse *(*load_account)( char * );
+    HavokResponse *(*save_account)( PlayerAccount_t * );
 } DatabaseAPIFuncs_t;
 
 extern DatabaseAPIFuncs_t db_api_funcs;
