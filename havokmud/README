@@ -1,5 +1,0 @@
-Need:
-libtool
-autoconf
-automake1.9 or newer
-curl (for protobuf)

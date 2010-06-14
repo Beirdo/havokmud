@@ -20,3 +20,10 @@ The initial MUD design is to be based on Dungeons & Dragons, 4th Edition (d20)
 for simplicity.
 
 The directory structure will change over time as the code is more perfected.
+
+
+Packages needed to build this:
+libtool
+autoconf
+automake1.9 or newer
+curl (for protobuf)

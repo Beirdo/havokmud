@@ -1,0 +1,11 @@
+install-exec-local:	../lib/libhavokthread.a
+
+../lib/libhavokthread.a:	libhavokthread.a
+	${INSTALL} -m 644 libhavokthread.a ../lib
+
+uninstall-local:
+	${RM} ../lib/libhavokthread.a
+
+all-local:	install-exec-local
+
+clean-local:	uninstall-local

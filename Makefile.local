@@ -1,0 +1,46 @@
+#
+# Makefile.local
+# 
+
+## Include dirs
+INCDIRS = -I${top_srcdir}/include @INCLUDES@
+
+##  these are architecture dependent flags
+AM_CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -std=c99 \
+	    -pedantic  ${INCDIRS} ${PTHREAD_CFLAGS}
+
+
+lib/libhavokutils.a:
+	make -C util
+
+lib/libhavokthread.a:
+	make -C threads
+
+lib/libhavokcore.a:
+	make -C corefunc
+
+
+distclean-local:
+	-${RM} code-review.ps
+
+
+doxygen:
+	doxygen doxygen/Doxyfile
+
+doxygen-rsync:
+	rsync -e ssh -avz --delete doxygen/output/html/ flagon:/var/www/sites/www2.beirdo.ca/doxygen/havokmud/
+
+review:	code-review.ps
+
+code-review.ps:	util/*.c corefunc/*.c threads/*.c include/*.h
+	(for i in ${SUBDIRS} include ; do find $$i -name \*.\[ch\]; done) | \
+		sort | xargs enscript -p$@ -Ec --color -MLetter -U4 -C 
+
+
+.PHONY:	force
+force:
+
+#
+# End of Makefile.local
+# 
+
