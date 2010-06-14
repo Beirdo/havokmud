@@ -9,6 +9,7 @@
 all:	../../lib/libesmtp.a
 
 ../../lib/libesmtp.a:
+	autoreconf -f -i -Wall,no-obsolete
 	./configure --prefix=`cd ../.. ; pwd` ${CONFARG}
 	${MAKE}
 	${MAKE} install
