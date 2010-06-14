@@ -3,4 +3,7 @@
 config.h
 libesmtp-config
 libtool
+ltmain.sh
+aclocal.m4
+missing
 stamp-h1
