@@ -209,6 +209,10 @@ void *ConnectionThread( void *arg )
                 ProtectedDataLock( item->hostName );
                 item->hostName->data = CREATEN(char, 50);
                 inet_ntop(AF_INET6, &sa.sin6_addr, item->hostName->data, 50);   
+                if( !strncmp(item->hostName->data, "::ffff:", 7) ) {
+                    bcopy((char *)item->hostName->data + 7, 
+                          item->hostName->data, 43);
+                }
                 ProtectedDataUnlock( item->hostName );
 
                 if (!IS_SET(SystemFlags, SYS_SKIPDNS)) {

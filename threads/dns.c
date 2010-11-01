@@ -64,7 +64,7 @@ void *DnsThread( void *arg )
 {
     ConnDnsItem_t      *item;
     ConnectionItem_t   *connect;
-    struct sockaddr_in  sa;
+    struct sockaddr_in6 sa;
     struct hostent     *from;
 
     pthread_mutex_lock( startupMutex );
@@ -77,10 +77,9 @@ void *DnsThread( void *arg )
         }
 
         LogPrint( LOG_INFO, "Resolving %s", item->connection->hostName->data );
-        sa.sin_addr.s_addr = item->ipAddr;
 
-        from = gethostbyaddr((char *)&sa.sin_addr, sizeof(sa.sin_addr), 
-                             AF_INET);
+        from = gethostbyaddr((char *)item->ipAddr, sizeof(sa.sin6_addr), 
+                             AF_INET6);
         if( from ) {
             connect = item->connection;
             ProtectedDataLock(connect->hostName);
