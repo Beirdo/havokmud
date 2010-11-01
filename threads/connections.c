@@ -91,7 +91,7 @@ void *ConnectionThread( void *arg )
     connectThreadArgs_t    *argStruct;
     int                     portNum;
     char                   *port;
-    struct sockaddr_in      sa;
+    struct sockaddr_in6     sa;
     int                     count;
     int                     fdCount;
     int                     newFd;
@@ -104,6 +104,7 @@ void *ConnectionThread( void *arg )
     uint32                  i;
     int                     on;
     int                     retval;
+    char                    ch;
 
     argStruct = (connectThreadArgs_t *)arg;
     portNum = argStruct->port;
@@ -123,7 +124,7 @@ void *ConnectionThread( void *arg )
     /*
      * Start listening
      */
-    listenFd = socket( PF_INET, SOCK_STREAM, 0 );
+    listenFd = socket( AF_INET6, SOCK_STREAM, 0 );
     if( listenFd < 0 ) {
         perror("Opening listener socket");
         exit(1);
@@ -136,8 +137,9 @@ void *ConnectionThread( void *arg )
     }
 
     memset(&sa, 0, sizeof(sa));
-    sa.sin_family = AF_INET;
-    sa.sin_port = htons(portNum);
+    sa.sin6_family = AF_INET6;
+    sa.sin6_port = htons(portNum);
+    sa.sin6_addr = in6addr_any;
 
     if (bind(listenFd, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
         perror("Binding listener socket");
@@ -186,7 +188,7 @@ void *ConnectionThread( void *arg )
          * Open a connection for listener
          */
         if( FD_ISSET(listenFd, &readFds) ) {
-            salen = sizeof(struct sockaddr);
+            salen = sizeof(struct sockaddr_in6);
             newFd = accept(listenFd, (struct sockaddr *)&sa, &salen);
 
             connAddFd(newFd, &saveReadFds);
@@ -205,18 +207,15 @@ void *ConnectionThread( void *arg )
 
                 item->hostName = ProtectedDataCreate();
                 ProtectedDataLock( item->hostName );
-                item->hostName->data = CREATEN(char, 16);
-                i = sa.sin_addr.s_addr;
-                sprintf((char *)item->hostName->data, "%d.%d.%d.%d", 
-                        (i & 0x000000FF), (i & 0x0000FF00) >> 8, 
-                        (i & 0x00FF0000) >> 16, (i & 0xFF000000) >> 24);
+                item->hostName->data = CREATEN(char, 50);
+                inet_ntop(AF_INET6, &sa.sin6_addr, item->hostName->data, 50);   
                 ProtectedDataUnlock( item->hostName );
 
                 if (!IS_SET(SystemFlags, SYS_SKIPDNS)) {
                     dnsItem = CREATE(ConnDnsItem_t);
                     if( dnsItem ) {
                         dnsItem->connection = item;
-                        dnsItem->ipAddr = sa.sin_addr.s_addr;
+                        memcpy(dnsItem->ipAddr, &sa.sin6_addr, 16);
                         QueueEnqueueItem(ConnectDnsQ, dnsItem);
                     }
                 }

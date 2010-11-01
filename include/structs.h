@@ -181,7 +181,7 @@ typedef struct
 
 typedef struct
 {
-    uint32              ipAddr;
+    char                ipAddr[16];
     ConnectionItem_t   *connection;
 } ConnDnsItem_t;
 
