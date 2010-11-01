@@ -165,6 +165,7 @@ char *pb_get_setting(char *name);
 void pb_set_setting( char *name, char *format, ... );
 PlayerAccount_t *pb_load_account( char *email );
 void pb_save_account( PlayerAccount_t *account );
+PlayerPC_t *pb_get_pc_list( int account_id );
 
 
 
