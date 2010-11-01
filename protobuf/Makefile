@@ -39,7 +39,7 @@ src/havokresponse.pb-c.c::	src/pcs.pb-c.h src/reqtype.pb-c.h
 clean:	force
 	-${RM} ${PROTO_SRCS} ${PROTO_HDRS} ${PROTO_OBJS}
 
-install:	all
+install:	all ${PROTO_HDRS}
 	${INSTALL} ${PROTO_HDRS} ../include/
 
 uninstall:	force
