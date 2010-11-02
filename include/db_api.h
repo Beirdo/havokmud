@@ -35,8 +35,10 @@ typedef struct {
     HavokResponse *(*get_setting)( char * );
     void (*set_setting)( char *, char * );
     HavokResponse *(*load_account)( char * );
-    HavokResponse *(*save_account)( PlayerAccount_t * );
+    HavokResponse *(*save_account)( HavokRequest * );
     HavokResponse *(*get_pc_list)( int );
+    HavokResponse *(*load_pc)( int, int );
+    HavokResponse *(*save_pc)( HavokRequest * );
 } DatabaseAPIFuncs_t;
 
 extern DatabaseAPIFuncs_t db_api_funcs;

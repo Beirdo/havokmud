@@ -73,14 +73,14 @@ HavokResponse *db_load_account( char *email )
     }
 }
 
-HavokResponse *db_save_account( PlayerAccount_t *account )
+HavokResponse *db_save_account( HavokRequest *req )
 {
     if( !db_api_funcs.save_account ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no save_account" );
         return( NULL );
     }
 
-    return( db_api_funcs.save_account( account ) );
+    return( db_api_funcs.save_account( req ) );
 }
 
 HavokResponse *db_get_pc_list( int account_id )
@@ -91,6 +91,26 @@ HavokResponse *db_get_pc_list( int account_id )
     }
 
     return( db_api_funcs.get_pc_list( account_id ) );
+}
+
+HavokResponse *db_load_pc( int account_id, int pc_id )
+{
+    if( !db_api_funcs.load_pc ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no load_pc" );
+        return( NULL );
+    }
+
+    return( db_api_funcs.load_pc( account_id, pc_id ) );
+}
+
+HavokResponse *db_save_pc( HavokRequest *req )
+{
+    if( !db_api_funcs.save_pc ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no save_pc" );
+        return( NULL );
+    }
+
+    return( db_api_funcs.save_pc( req ) );
 }
 
 

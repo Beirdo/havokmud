@@ -38,6 +38,9 @@
 
 #define MAX_BUFFER_SIZE 256
 
+void pb_fill_pc( PlayerPC_t *pc, ReqPCType *pb );
+void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb );
+
 char *pb_get_setting(char *name) 
 {
     HavokRequest       *req;
@@ -218,34 +221,7 @@ PlayerPC_t *pb_get_pc_list( int account_id )
 
         if( pcs ) {
             for( i = 0; i < resp->n_pc_data; i++ ) {
-                pc = &pcs[i];
-                pc->id = resp->pc_data[i]->id;
-                pc->account_id = resp->pc_data[i]->account_id;
-                pc->name = memstrlink( resp->pc_data[i]->name );
-                pc->complete = resp->pc_data[i]->complete;
-                pc->race_id = resp->pc_data[i]->race_id;
-                pc->align_moral = resp->pc_data[i]->align_moral;
-                pc->align_ethical = resp->pc_data[i]->align_ethical;
-                pc->strength = resp->pc_data[i]->strength;
-                pc->dexterity = resp->pc_data[i]->dexterity;
-                pc->constitution = resp->pc_data[i]->constitution;
-                pc->intelligence = resp->pc_data[i]->intelligence;
-                pc->wisdom = resp->pc_data[i]->wisdom;
-                pc->charisma = resp->pc_data[i]->charisma;
-                pc->social_class = resp->pc_data[i]->social_class;
-                pc->birth_order = resp->pc_data[i]->birth_order;
-                pc->siblings = resp->pc_data[i]->siblings;
-                pc->parents_married = resp->pc_data[i]->parents_married;
-                pc->max_hit_points = resp->pc_data[i]->max_hit_points;
-                pc->hit_points = resp->pc_data[i]->hit_points;
-                pc->height = resp->pc_data[i]->height;
-                pc->weight = resp->pc_data[i]->weight;
-                pc->age = resp->pc_data[i]->age;
-                pc->hair_color = resp->pc_data[i]->hair_color;
-                pc->eye_color = resp->pc_data[i]->eye_color;
-                pc->hair_length = memstrlink( resp->pc_data[i]->hair_length );
-                pc->skin_tone = resp->pc_data[i]->skin_tone;
-                pc->experience = resp->pc_data[i]->experience;
+                pb_fill_pc( &pcs[i], resp->pc_data[i] );
             }
         }
     }
@@ -254,6 +230,139 @@ PlayerPC_t *pb_get_pc_list( int account_id )
 
     return( pcs );
 }
+
+void pb_fill_pc( PlayerPC_t *pc, ReqPCType *pb )
+{
+    pc->id              = pb->id;
+    pc->account_id      = pb->account_id;
+    pc->name            = memstrlink( pb->name );
+    pc->complete        = pb->complete;
+    pc->race_id         = pb->race_id;
+    pc->align_moral     = pb->align_moral;
+    pc->align_ethical   = pb->align_ethical;
+    pc->strength        = pb->strength;
+    pc->dexterity       = pb->dexterity;
+    pc->constitution    = pb->constitution;
+    pc->intelligence    = pb->intelligence;
+    pc->wisdom          = pb->wisdom;
+    pc->charisma        = pb->charisma;
+    pc->social_class    = pb->social_class;
+    pc->birth_order     = pb->birth_order;
+    pc->siblings        = pb->siblings;
+    pc->parents_married = pb->parents_married;
+    pc->max_hit_points  = pb->max_hit_points;
+    pc->hit_points      = pb->hit_points;
+    pc->height          = pb->height;
+    pc->weight          = pb->weight;
+    pc->age             = pb->age;
+    pc->hair_color      = pb->hair_color;
+    pc->eye_color       = pb->eye_color;
+    pc->hair_length     = memstrlink( pb->hair_length );
+    pc->skin_tone       = pb->skin_tone;
+    pc->experience      = pb->experience;
+}
+
+void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb )
+{
+    pb->id              = pc->id;
+    pb->account_id      = pc->account_id;
+    pb->name            = memstrlink( pc->name );
+    pb->complete        = pc->complete;
+    pb->race_id         = pc->race_id;
+    pb->align_moral     = pc->align_moral;
+    pb->align_ethical   = pc->align_ethical;
+    pb->strength        = pc->strength;
+    pb->dexterity       = pc->dexterity;
+    pb->constitution    = pc->constitution;
+    pb->intelligence    = pc->intelligence;
+    pb->wisdom          = pc->wisdom;
+    pb->charisma        = pc->charisma;
+    pb->social_class    = pc->social_class;
+    pb->birth_order     = pc->birth_order;
+    pb->siblings        = pc->siblings;
+    pb->parents_married = pc->parents_married;
+    pb->max_hit_points  = pc->max_hit_points;
+    pb->hit_points      = pc->hit_points;
+    pb->height          = pc->height;
+    pb->weight          = pc->weight;
+    pb->age             = pc->age;
+    pb->hair_color      = pc->hair_color;
+    pb->eye_color       = pc->eye_color;
+    pb->hair_length     = memstrlink( pc->hair_length );
+    pb->skin_tone       = pc->skin_tone;
+    pb->experience      = pc->experience;
+}
+
+PlayerPC_t *pb_load_pc( int account_id, int pc_id )
+{
+    HavokRequest       *req;
+    HavokResponse      *resp;
+    PlayerPC_t         *pc;
+
+    if( !account_id || !pc_id ) {
+        return( NULL );
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return( NULL );
+    }
+
+    req->request_type  = REQ_TYPE__LOAD_PC;
+    req->pc_data = CREATE(ReqPCType);
+    req_pctype__init( req->pc_data );
+    req->pc_data->id = pc_id;
+    req->pc_data->account_id = account_id;
+
+    resp = protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return( NULL );
+    }
+
+    pc = NULL;
+    if( resp->n_pc_data ) {
+        pc = CREATE(PlayerPC_t);
+
+        pb_fill_pc( pc, resp->pc_data[0] );
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
+
+    return( pc );
+}
+
+void pb_save_pc( PlayerPC_t *pc )
+{
+    HavokRequest       *req;
+    HavokResponse      *resp;
+
+    if( !pc || !pc->account_id ) {
+        return;
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return;
+    }
+
+    req->request_type  = REQ_TYPE__SAVE_PC;
+    req->pc_data = CREATE(ReqPCType);
+    req_pctype__init( req->pc_data );
+    pb_fill_pc_pb( pc, req->pc_data );
+
+    resp = protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return;
+    }
+
+    pc = NULL;
+    if( resp->n_pc_data ) {
+        pc->id = resp->pc_data[0]->id;
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

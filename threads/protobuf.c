@@ -218,16 +218,7 @@ HavokResponse *protobufHandle( HavokRequest *req )
                 LogPrintNoArg( LOG_DEBUG, "No account data on SAVE_ACCOUNT" );
                 return( NULL );
             }
-
-            acct = CREATE(PlayerAccount_t);
-            acct->email = memstrlink( req->account_data->email );
-            acct->id = req->account_data->id;
-            acct->pwd = memstrlink( req->account_data->passwd );
-            acct->ansi = req->account_data->ansi;
-            acct->confirmed = req->account_data->confirmed;
-            acct->confcode = memstrlink( req->account_data->confcode );
-
-            return( db_save_account( acct ) );
+            return( db_save_account( req ) );
             break;
         case REQ_TYPE__GET_PC_LIST:
             if( !req->account_data ) {
@@ -235,6 +226,21 @@ HavokResponse *protobufHandle( HavokRequest *req )
                 return( NULL );
             }
             return( db_get_pc_list( req->account_data->id ) );
+            break;
+        case REQ_TYPE__LOAD_PC:
+            if( !req->pc_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No PC data on LOAD_PC" );
+                return( NULL );
+            }
+            return( db_load_pc( req->pc_data->account_id,
+                                req->pc_data->id ) );
+            break;
+        case REQ_TYPE__SAVE_PC:
+            if( !req->pc_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No PC data on SAVE_ACCOUNT" );
+                return( NULL );
+            }
+            return( db_save_pc( req ) );
             break;
         default:
             /* Not handled yet */
