@@ -57,7 +57,7 @@ static char ident[] _UNUSED_ =
 
 #define COL_INT(row, x)     (atoi((row)[(x)]))
 #define COL_BOOL(row, x)    ((atoi((row)[(x)])) ? TRUE : FALSE)
-#define COL_STRING(row, x)  (memstrdup((row)[(x)]))
+#define COL_STRING(row, x)  (memstrlink((row)[(x)]))
 
 HavokResponse *db_mysql_get_setting(char *name);
 void db_mysql_set_setting( char *name, char *value );
@@ -142,22 +142,11 @@ HavokResponse *db_mysql_get_setting(char *name)
     bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
     result = NULL;
 
-    db_queue_query( 0, QueryTable, data, 1, result_get_setting, (void *)&result,
+    db_queue_query( 0, QueryTable, data, 1, result_get_setting, (void *)&resp,
                     mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );
-
-    resp = protobufCreateResponse();
-    if( !resp ) {
-        return( NULL );
-    }
-
-    resp->request_type = REQ_TYPE__GET_SETTING;
-    resp->settings_data = CREATE(ReqSettingsType);
-    req_settings_type__init( resp->settings_data );
-    resp->settings_data->setting_name = memstrlink( name );
-    resp->settings_data->setting_value = result;
 
     return( resp );
 }
@@ -182,7 +171,6 @@ HavokResponse *db_mysql_load_account( char *email )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
-    PlayerAccount_t    *result;
     HavokResponse      *resp;
 
     if( !email ) {
@@ -196,38 +184,11 @@ HavokResponse *db_mysql_load_account( char *email )
 
     bind_string( &data[0], email, MYSQL_TYPE_VAR_STRING );
 
-    db_queue_query( 4, QueryTable, data, 1, result_load_account, 
-                    (void *)&result, mutex );
+    db_queue_query( 4, QueryTable, data, 1, result_load_account, (void *)&resp,
+                    mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );
-
-    if( !result ) {
-        return( NULL );
-    }
-
-    resp = protobufCreateResponse();
-    if( !resp ) {
-        return( NULL );
-    }
-
-    resp->request_type = REQ_TYPE__LOAD_ACCOUNT;
-    resp->account_data = CREATE(ReqAccountType);
-    req_account_type__init( resp->account_data );
-    resp->account_data->email = memstrlink( result->email );
-    resp->account_data->id = result->id;
-    resp->account_data->passwd = memstrlink( result->pwd );
-    resp->account_data->ansi = result->ansi;
-    resp->account_data->confirmed = result->confirmed;
-    resp->account_data->confcode = memstrlink( result->confcode );
-    resp->account_data->has_id = TRUE;
-    resp->account_data->has_ansi = TRUE;
-    resp->account_data->has_confirmed = TRUE;
-
-    memfree( result->email );
-    memfree( result->pwd );
-    memfree( result->confcode );
-    memfree( result );
 
     return( resp );
 }
@@ -292,7 +253,6 @@ HavokResponse *db_mysql_get_pc_list( int account_id )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
-    PlayerPC_t         *result;
     HavokResponse      *resp;
     int                 i;
 
@@ -307,88 +267,11 @@ HavokResponse *db_mysql_get_pc_list( int account_id )
 
     bind_numeric( &data[0], account_id, MYSQL_TYPE_LONG );
 
-    db_queue_query( 8, QueryTable, data, 1, result_get_pc_list, 
-                    (void *)&result, mutex );
+    db_queue_query( 8, QueryTable, data, 1, result_get_pc_list, (void *)&resp, 
+                    mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );
-
-    if( !result ) {
-        return( NULL );
-    }
-
-    resp = protobufCreateResponse();
-    if( !resp ) {
-        return( NULL );
-    }
-
-    for( i = 0; result[i].account_id == account_id; i++ );
-
-    resp->request_type = REQ_TYPE__GET_PC_LIST;
-    resp->n_pc_data = i;
-    resp->pc_data = CREATEN(ReqPCType *, i);
-
-    for( i = 0; i < resp->n_pc_data; i++ ) {
-        resp->pc_data[i] = CREATE(ReqPCType);
-        req_pctype__init( resp->pc_data[i] );
-
-        resp->pc_data[i]->id = result[i].id;
-        resp->pc_data[i]->account_id = result[i].account_id;
-        resp->pc_data[i]->name = memstrlink( result[i].name );
-        resp->pc_data[i]->complete = result[i].complete;
-        resp->pc_data[i]->race_id = result[i].race_id;
-        resp->pc_data[i]->align_moral = result[i].align_moral;
-        resp->pc_data[i]->align_ethical = result[i].align_ethical;
-        resp->pc_data[i]->strength = result[i].strength;
-        resp->pc_data[i]->dexterity = result[i].dexterity;
-        resp->pc_data[i]->constitution = result[i].constitution;
-        resp->pc_data[i]->intelligence = result[i].intelligence;
-        resp->pc_data[i]->wisdom = result[i].wisdom;
-        resp->pc_data[i]->charisma = result[i].charisma;
-        resp->pc_data[i]->social_class = result[i].social_class;
-        resp->pc_data[i]->birth_order = result[i].birth_order;
-        resp->pc_data[i]->siblings = result[i].siblings;
-        resp->pc_data[i]->parents_married = result[i].parents_married;
-        resp->pc_data[i]->max_hit_points = result[i].max_hit_points;
-        resp->pc_data[i]->hit_points = result[i].hit_points;
-        resp->pc_data[i]->height = result[i].height;
-        resp->pc_data[i]->weight = result[i].weight;
-        resp->pc_data[i]->age = result[i].age;
-        resp->pc_data[i]->hair_color = result[i].hair_color;
-        resp->pc_data[i]->eye_color = result[i].eye_color;
-        resp->pc_data[i]->hair_length = memstrlink( result[i].hair_length );
-        resp->pc_data[i]->skin_tone = result[i].skin_tone;
-        resp->pc_data[i]->experience = result[i].experience;
-        resp->pc_data[i]->has_id = TRUE;
-        resp->pc_data[i]->has_account_id = TRUE;
-        resp->pc_data[i]->has_complete = TRUE;
-        resp->pc_data[i]->has_race_id = TRUE;
-        resp->pc_data[i]->has_align_moral = TRUE;
-        resp->pc_data[i]->has_align_ethical = TRUE;
-        resp->pc_data[i]->has_strength = TRUE;
-        resp->pc_data[i]->has_dexterity = TRUE;
-        resp->pc_data[i]->has_constitution = TRUE;
-        resp->pc_data[i]->has_intelligence = TRUE;
-        resp->pc_data[i]->has_wisdom = TRUE;
-        resp->pc_data[i]->has_charisma = TRUE;
-        resp->pc_data[i]->has_social_class = TRUE;
-        resp->pc_data[i]->has_birth_order = TRUE;
-        resp->pc_data[i]->has_siblings = TRUE;
-        resp->pc_data[i]->has_parents_married = TRUE;
-        resp->pc_data[i]->has_max_hit_points = TRUE;
-        resp->pc_data[i]->has_hit_points = TRUE;
-        resp->pc_data[i]->has_height = TRUE;
-        resp->pc_data[i]->has_weight = TRUE;
-        resp->pc_data[i]->has_age = TRUE;
-        resp->pc_data[i]->has_hair_color = TRUE;
-        resp->pc_data[i]->has_eye_color = TRUE;
-        resp->pc_data[i]->has_skin_tone = TRUE;
-        resp->pc_data[i]->has_experience = TRUE;
-
-        memfree( result[i].name );
-        memfree( result[i].hair_length );
-    }
-    memfree( result );
 
     return( resp );
 }
@@ -458,12 +341,11 @@ void chain_save_account( MYSQL_RES *res, QueryItem_t *item )
 void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid )
 {
-    char          **resp;
-    char           *value;
+    HavokResponse **resp;
     int             count;
     MYSQL_ROW       row;
 
-    resp = (char **)arg;
+    resp = (HavokResponse **)arg;
 
     if( !res || !(count = mysql_num_rows(res)) ) {
         *resp = NULL;
@@ -471,19 +353,26 @@ void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     }
     row = mysql_fetch_row(res);
 
-    value = memstrlink(row[0]);
-    *resp = value;
+    *resp = protobufCreateResponse();
+    if( !*resp ) {
+        return;
+    }
+
+    (*resp)->request_type = REQ_TYPE__GET_SETTING;
+    (*resp)->settings_data = CREATE(ReqSettingsType);
+    req_settings_type__init( (*resp)->settings_data );
+    (*resp)->settings_data->setting_name  = memstrlink( input[0].buffer );
+    (*resp)->settings_data->setting_value = COL_STRING(row, 0);
 }
 
 void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                           long insertid )
 {
-    PlayerAccount_t   **resp;
-    PlayerAccount_t    *account;
+    HavokResponse     **resp;
     int                 count;
     MYSQL_ROW           row;
 
-    resp = (PlayerAccount_t **)arg;
+    resp = (HavokResponse **)arg;
 
     count = mysql_num_rows(res);
     if( count == 0 ) {
@@ -492,14 +381,23 @@ void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     }
     row = mysql_fetch_row(res);
 
-    account = CREATE(PlayerAccount_t);
-    account->id        = COL_INT(row, 0);
-    account->email     = COL_STRING(row, 1);
-    account->pwd       = COL_STRING(row, 2);
-    account->ansi      = COL_BOOL(row, 3);
-    account->confirmed = COL_BOOL(row, 4);
-    account->confcode  = COL_STRING(row, 5);
-    *resp = account;
+    *resp = protobufCreateResponse();
+    if( !resp ) {
+        return;
+    }
+
+    (*resp)->request_type = REQ_TYPE__LOAD_ACCOUNT;
+    (*resp)->account_data = CREATE(ReqAccountType);
+    req_account_type__init( (*resp)->account_data );
+    (*resp)->account_data->id            = COL_INT(row, 0);
+    (*resp)->account_data->email         = COL_STRING(row, 1);
+    (*resp)->account_data->passwd        = COL_STRING(row, 2);
+    (*resp)->account_data->ansi          = COL_BOOL(row, 3);
+    (*resp)->account_data->confirmed     = COL_BOOL(row, 4);
+    (*resp)->account_data->confcode      = COL_STRING(row, 5);
+    (*resp)->account_data->has_id        = TRUE;
+    (*resp)->account_data->has_ansi      = TRUE;
+    (*resp)->account_data->has_confirmed = TRUE;
 }
 
 
@@ -519,13 +417,12 @@ void result_insert_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 void result_get_pc_list( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid )
 {
-    PlayerPC_t        **resp;
-    PlayerPC_t         *pc;
+    HavokResponse     **resp;
     int                 count;
     MYSQL_ROW           row;
     int                 i;
 
-    resp = (PlayerPC_t **)arg;
+    resp = (HavokResponse **)arg;
 
     count = mysql_num_rows(res);
     if( count == 0 ) {
@@ -533,41 +430,73 @@ void result_get_pc_list( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
         return;
     }
 
-    pc = CREATEN(PlayerPC_t, count);
+    *resp = protobufCreateResponse();
+    if( !*resp ) {
+        return;
+    }
+
+    (*resp)->request_type = REQ_TYPE__GET_PC_LIST;
+    (*resp)->n_pc_data = count;
+    (*resp)->pc_data = CREATEN(ReqPCType *, count);
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
+        (*resp)->pc_data[i] = CREATE(ReqPCType);
+        req_pctype__init( (*resp)->pc_data[i] );
 
-        pc[i].id              = COL_INT(row, 0);
-        pc[i].account_id      = COL_INT(row, 1);
-        pc[i].name            = COL_STRING(row, 2);
-        pc[i].complete        = COL_BOOL(row, 3);
-        pc[i].race_id         = COL_INT(row, 4);
-        pc[i].align_moral     = COL_INT(row, 5);
-        pc[i].align_ethical   = COL_INT(row, 6);
-        pc[i].strength        = COL_INT(row, 7);
-        pc[i].dexterity       = COL_INT(row, 8);
-        pc[i].constitution    = COL_INT(row, 9);
-        pc[i].intelligence    = COL_INT(row, 10);
-        pc[i].wisdom          = COL_INT(row, 11);
-        pc[i].charisma        = COL_INT(row, 12);
-        pc[i].social_class    = COL_INT(row, 13);
-        pc[i].birth_order     = COL_INT(row, 14);
-        pc[i].siblings        = COL_INT(row, 15);
-        pc[i].parents_married = COL_BOOL(row, 16);
-        pc[i].max_hit_points  = COL_INT(row, 17);
-        pc[i].hit_points      = COL_INT(row, 18);
-        pc[i].height          = COL_INT(row, 19);
-        pc[i].weight          = COL_INT(row, 20);
-        pc[i].age             = COL_INT(row, 21);
-        pc[i].hair_color      = COL_INT(row, 22);
-        pc[i].eye_color       = COL_INT(row, 23);
-        pc[i].hair_length     = COL_STRING(row, 24);
-        pc[i].skin_tone       = COL_INT(row, 25);
-        pc[i].experience      = COL_INT(row, 26);
+        (*resp)->pc_data[i]->id                  = COL_INT(row, 0);
+        (*resp)->pc_data[i]->account_id          = COL_INT(row, 1);
+        (*resp)->pc_data[i]->name                = COL_STRING(row, 2);
+        (*resp)->pc_data[i]->complete            = COL_BOOL(row, 3);
+        (*resp)->pc_data[i]->race_id             = COL_INT(row, 4);
+        (*resp)->pc_data[i]->align_moral         = COL_INT(row, 5);
+        (*resp)->pc_data[i]->align_ethical       = COL_INT(row, 6);
+        (*resp)->pc_data[i]->strength            = COL_INT(row, 7);
+        (*resp)->pc_data[i]->dexterity           = COL_INT(row, 8);
+        (*resp)->pc_data[i]->constitution        = COL_INT(row, 9);
+        (*resp)->pc_data[i]->intelligence        = COL_INT(row, 10);
+        (*resp)->pc_data[i]->wisdom              = COL_INT(row, 11);
+        (*resp)->pc_data[i]->charisma            = COL_INT(row, 12);
+        (*resp)->pc_data[i]->social_class        = COL_INT(row, 13);
+        (*resp)->pc_data[i]->birth_order         = COL_INT(row, 14);
+        (*resp)->pc_data[i]->siblings            = COL_INT(row, 15);
+        (*resp)->pc_data[i]->parents_married     = COL_BOOL(row, 16);
+        (*resp)->pc_data[i]->max_hit_points      = COL_INT(row, 17);
+        (*resp)->pc_data[i]->hit_points          = COL_INT(row, 18);
+        (*resp)->pc_data[i]->height              = COL_INT(row, 19);
+        (*resp)->pc_data[i]->weight              = COL_INT(row, 20);
+        (*resp)->pc_data[i]->age                 = COL_INT(row, 21);
+        (*resp)->pc_data[i]->hair_color          = COL_INT(row, 22);
+        (*resp)->pc_data[i]->eye_color           = COL_INT(row, 23);
+        (*resp)->pc_data[i]->hair_length         = COL_STRING(row, 24);
+        (*resp)->pc_data[i]->skin_tone           = COL_INT(row, 25);
+        (*resp)->pc_data[i]->experience          = COL_INT(row, 26);
+        (*resp)->pc_data[i]->has_id              = TRUE;
+        (*resp)->pc_data[i]->has_account_id      = TRUE;
+        (*resp)->pc_data[i]->has_complete        = TRUE;
+        (*resp)->pc_data[i]->has_race_id         = TRUE;
+        (*resp)->pc_data[i]->has_align_moral     = TRUE;
+        (*resp)->pc_data[i]->has_align_ethical   = TRUE;
+        (*resp)->pc_data[i]->has_strength        = TRUE;
+        (*resp)->pc_data[i]->has_dexterity       = TRUE;
+        (*resp)->pc_data[i]->has_constitution    = TRUE;
+        (*resp)->pc_data[i]->has_intelligence    = TRUE;
+        (*resp)->pc_data[i]->has_wisdom          = TRUE;
+        (*resp)->pc_data[i]->has_charisma        = TRUE;
+        (*resp)->pc_data[i]->has_social_class    = TRUE;
+        (*resp)->pc_data[i]->has_birth_order     = TRUE;
+        (*resp)->pc_data[i]->has_siblings        = TRUE;
+        (*resp)->pc_data[i]->has_parents_married = TRUE;
+        (*resp)->pc_data[i]->has_max_hit_points  = TRUE;
+        (*resp)->pc_data[i]->has_hit_points      = TRUE;
+        (*resp)->pc_data[i]->has_height          = TRUE;
+        (*resp)->pc_data[i]->has_weight          = TRUE;
+        (*resp)->pc_data[i]->has_age             = TRUE;
+        (*resp)->pc_data[i]->has_hair_color      = TRUE;
+        (*resp)->pc_data[i]->has_eye_color       = TRUE;
+        (*resp)->pc_data[i]->has_skin_tone       = TRUE;
+        (*resp)->pc_data[i]->has_experience      = TRUE;
     }
-
-    *resp = pc;
 }
 
 /*
