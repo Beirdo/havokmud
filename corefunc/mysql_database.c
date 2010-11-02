@@ -55,6 +55,10 @@ static char ident[] _UNUSED_ =
  * @brief Contains the API for the system to use to access the MySQL database.
  */
 
+#define COL_INT(row, x)     (atoi((row)[(x)]))
+#define COL_BOOL(row, x)    ((atoi((row)[(x)])) ? TRUE : FALSE)
+#define COL_STRING(row, x)  (memstrdup((row)[(x)]))
+
 HavokResponse *db_mysql_get_setting(char *name);
 void db_mysql_set_setting( char *name, char *value );
 HavokResponse *db_mysql_load_account( char *email );
@@ -489,12 +493,12 @@ void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     row = mysql_fetch_row(res);
 
     account = CREATE(PlayerAccount_t);
-    account->id        = atoi(row[0]);
-    account->email     = memstrdup(row[1]);
-    account->pwd       = memstrdup(row[2]);
-    account->ansi      = (atoi(row[3]) ? TRUE : FALSE);
-    account->confirmed = (atoi(row[4]) ? TRUE : FALSE);
-    account->confcode  = memstrdup(row[5]);
+    account->id        = COL_INT(row, 0);
+    account->email     = COL_STRING(row, 1);
+    account->pwd       = COL_STRING(row, 2);
+    account->ansi      = COL_BOOL(row, 3);
+    account->confirmed = COL_BOOL(row, 4);
+    account->confcode  = COL_STRING(row, 5);
     *resp = account;
 }
 
@@ -534,33 +538,33 @@ void result_get_pc_list( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
-        pc[i].id              = atoi(row[0]);
-        pc[i].account_id      = atoi(row[1]);
-        pc[i].name            = memstrdup(row[2]);
-        pc[i].complete        = (atoi(row[3]) ? TRUE : FALSE);
-        pc[i].race_id         = atoi(row[4]);
-        pc[i].align_moral     = atoi(row[5]);
-        pc[i].align_ethical   = atoi(row[6]);
-        pc[i].strength        = atoi(row[7]);
-        pc[i].dexterity       = atoi(row[8]);
-        pc[i].constitution    = atoi(row[9]);
-        pc[i].intelligence    = atoi(row[10]);
-        pc[i].wisdom          = atoi(row[11]);
-        pc[i].charisma        = atoi(row[12]);
-        pc[i].social_class    = atoi(row[13]);
-        pc[i].birth_order     = atoi(row[14]);
-        pc[i].siblings        = atoi(row[15]);
-        pc[i].parents_married = (atoi(row[16]) ? TRUE : FALSE);
-        pc[i].max_hit_points  = atoi(row[17]);
-        pc[i].hit_points      = atoi(row[18]);
-        pc[i].height          = atoi(row[19]);
-        pc[i].weight          = atoi(row[20]);
-        pc[i].age             = atoi(row[21]);
-        pc[i].hair_color      = atoi(row[22]);
-        pc[i].eye_color       = atoi(row[23]);
-        pc[i].hair_length     = memstrdup(row[24]);
-        pc[i].skin_tone       = atoi(row[25]);
-        pc[i].experience      = atoi(row[26]);
+        pc[i].id              = COL_INT(row, 0);
+        pc[i].account_id      = COL_INT(row, 1);
+        pc[i].name            = COL_STRING(row, 2);
+        pc[i].complete        = COL_BOOL(row, 3);
+        pc[i].race_id         = COL_INT(row, 4);
+        pc[i].align_moral     = COL_INT(row, 5);
+        pc[i].align_ethical   = COL_INT(row, 6);
+        pc[i].strength        = COL_INT(row, 7);
+        pc[i].dexterity       = COL_INT(row, 8);
+        pc[i].constitution    = COL_INT(row, 9);
+        pc[i].intelligence    = COL_INT(row, 10);
+        pc[i].wisdom          = COL_INT(row, 11);
+        pc[i].charisma        = COL_INT(row, 12);
+        pc[i].social_class    = COL_INT(row, 13);
+        pc[i].birth_order     = COL_INT(row, 14);
+        pc[i].siblings        = COL_INT(row, 15);
+        pc[i].parents_married = COL_BOOL(row, 16);
+        pc[i].max_hit_points  = COL_INT(row, 17);
+        pc[i].hit_points      = COL_INT(row, 18);
+        pc[i].height          = COL_INT(row, 19);
+        pc[i].weight          = COL_INT(row, 20);
+        pc[i].age             = COL_INT(row, 21);
+        pc[i].hair_color      = COL_INT(row, 22);
+        pc[i].eye_color       = COL_INT(row, 23);
+        pc[i].hair_length     = COL_STRING(row, 24);
+        pc[i].skin_tone       = COL_INT(row, 25);
+        pc[i].experience      = COL_INT(row, 26);
     }
 
     *resp = pc;
