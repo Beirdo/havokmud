@@ -155,6 +155,7 @@ HavokResponse *db_get_setting(char *name);
 void db_set_setting( char *name, char *value );
 HavokResponse *db_load_account( char *email );
 HavokResponse *db_save_account( PlayerAccount_t *account );
+HavokResponse *db_get_pc_list( int account_id );
 
 
 /*

@@ -83,6 +83,16 @@ HavokResponse *db_save_account( PlayerAccount_t *account )
     return( db_api_funcs.save_account( account ) );
 }
 
+HavokResponse *db_get_pc_list( int account_id )
+{
+    if( !db_api_funcs.get_pc_list ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no get_pc_list" );
+        return( NULL );
+    }
+
+    return( db_api_funcs.get_pc_list( account_id ) );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

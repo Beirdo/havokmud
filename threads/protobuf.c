@@ -229,6 +229,13 @@ HavokResponse *protobufHandle( HavokRequest *req )
 
             return( db_save_account( acct ) );
             break;
+        case REQ_TYPE__GET_PC_LIST:
+            if( !req->account_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No account data on GET_PC_LIST" );
+                return( NULL );
+            }
+            return( db_get_pc_list( req->account_data->id ) );
+            break;
         default:
             /* Not handled yet */
             return( NULL );
