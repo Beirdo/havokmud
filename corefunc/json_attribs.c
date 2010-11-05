@@ -168,6 +168,72 @@ void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs,
     cJSON_Delete(jsonTree);
 }
 
+void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
+{
+    if( !item ) {
+        return;
+    }
+
+    AppendAttribToJSON( jsonTree, item->left );
+
+    cJSON_AddItemToObject( jsonTree, (char *)item->key, 
+                           cJSON_Clone( (cJSON *)item->item ) );
+
+    AppendAttribToJSON( jsonTree, item->right );
+}
+
+int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
+{
+    int             count = 0;
+    cJSON          *jsonItem;
+
+    if( !item ) {
+        return( 0 );
+    }
+
+    count += AppendSourceToJSON( jsonTree, item->left );
+    count += 1;
+
+    jsonItem = cJSON_CreateObject();
+    cJSON_AddItemToObject(jsonTree, (char *)item->key, jsonItem);
+    AppendAttribToJSON( jsonItem, ((BalancedBTree_t *)item->item)->root );
+
+    count += AppendSourceToJSON( jsonTree, item->right );
+
+    return( count );
+}
+
+JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources )
+{
+    JSONSource_t           *js;
+    cJSON                  *jsonTree;
+    cJSON                  *jsonItem;
+    int                     srcCount;
+    int                     i;
+
+    if( !sources ) {
+        return;
+    }
+
+    jsonTree = cJSON_CreateObject();
+
+    BalancedBTreeLock( sources );
+    srcCount = AppendSourceToJSON( jsonTree, sources->root );
+    BalancedBTreeUnlock( sources );
+
+    js = CREATEN(JSONSource_t, srcCount+1);
+
+    for( i = 0, jsonItem = jsonTree->child; 
+         i < srcCount && jsonItem; 
+         i++, jsonItem = jsonItem->next ) {
+        js[i].source = memstrlink(jsonItem->string);
+        js[i].json   = cJSON_Print(jsonItem);
+    }
+
+    cJSON_Delete(jsonTree);
+}
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
