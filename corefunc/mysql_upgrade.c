@@ -48,7 +48,9 @@ static SchemaUpgrade_t coreSchemaUpgrade[CURRENT_SCHEMA] = {
     { { "ALTER TABLE `accounts` ADD `confirmed` TINYINT DEFAULT 0 NOT NULL ,\n"
         "ADD `confcode` VARCHAR( 255 ) NOT NULL ,\n"
         "ADD KEY ( `confcode` )\n", NULL, NULL, FALSE },
-      { NULL, NULL, NULL, FALSE } },
+      { NULL, NULL, NULL, FALSE }
+    },
+    /* 2 -> 3 */
     { { "CREATE TABLE `pcs` (\n"
         "  `id` INT NOT NULL AUTO_INCREMENT,\n"
         "  `account_id` INT NOT NULL,\n"
@@ -79,8 +81,29 @@ static SchemaUpgrade_t coreSchemaUpgrade[CURRENT_SCHEMA] = {
         "  `experience` INT NOT NULL,\n"
         "  PRIMARY KEY ( `id` ) ,\n"
         "  INDEX ( `name` )\n"
-        ")\n", NULL, NULL, FALSE } }
-    /* 2 -> 3 */
+        ")\n", NULL, NULL, FALSE },
+      { NULL, NULL, NULL, FALSE }
+    },
+    /* 3 -> 4 */
+    { { "ALTER TABLE `pcs` DROP `complete`, DROP `race_id`, "
+        "  DROP `align_moral`, DROP `align_ethical`, DROP `strength`, "
+        "  DROP `dexterity`, DROP `constitution`, DROP `intelligence`, "
+        "  DROP `wisdom`, DROP `charisma`, DROP `social_class`, "
+        "  DROP `birth_order`, DROP `siblings`, DROP `parents_married`, "
+        "  DROP `max_hit_points`, DROP `hit_points`, DROP `height`, "
+        "  DROP `weight`, DROP `age`, DROP `hair_color`, DROP `eye_color`, "
+        "  DROP `hair_length`, DROP `skin_tone`, DROP `experience`;",
+        NULL, NULL, FALSE },
+      { "CREATE TABLE `pcattribs` (\n"
+        "  `pc_id` int(11) NOT NULL AUTO_INCREMENT,\n"
+        "  `attribsrc` varchar(255) NOT NULL,\n"
+        "  `attribjson` longtext NOT NULL,\n"
+        "  PRIMARY KEY (`pc_id`),\n"
+        "  KEY `attribsrc` (`attribsrc`)\n"
+        ")\n", NULL, NULL, FALSE },
+      { NULL, NULL, NULL, FALSE }
+    }
+    /* 4 -> 5 */
 };
 
 /* Internal protos */
