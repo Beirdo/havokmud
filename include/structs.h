@@ -129,30 +129,6 @@ typedef struct _PlayerPC_t
     int                 id;
     int                 account_id;
     char               *name;
-    bool                complete;
-    int                 race_id;
-    int                 align_moral;
-    int                 align_ethical;
-    int                 strength;
-    int                 dexterity;
-    int                 constitution;
-    int                 intelligence;
-    int                 wisdom;
-    int                 charisma;
-    int                 social_class;
-    int                 birth_order;
-    int                 siblings;
-    bool                parents_married;
-    unsigned int        max_hit_points;
-    unsigned int        hit_points;
-    int                 height;
-    int                 weight;
-    int                 age;
-    int                 hair_color;
-    int                 eye_color;
-    char               *hair_length;
-    int                 skin_tone;
-    unsigned int        experience;
 } PlayerPC_t;
 
 typedef struct _PlayerStruct_t

@@ -236,30 +236,6 @@ void pb_fill_pc( PlayerPC_t *pc, ReqPCType *pb )
     pc->id              = pb->id;
     pc->account_id      = pb->account_id;
     pc->name            = memstrlink( pb->name );
-    pc->complete        = pb->complete;
-    pc->race_id         = pb->race_id;
-    pc->align_moral     = pb->align_moral;
-    pc->align_ethical   = pb->align_ethical;
-    pc->strength        = pb->strength;
-    pc->dexterity       = pb->dexterity;
-    pc->constitution    = pb->constitution;
-    pc->intelligence    = pb->intelligence;
-    pc->wisdom          = pb->wisdom;
-    pc->charisma        = pb->charisma;
-    pc->social_class    = pb->social_class;
-    pc->birth_order     = pb->birth_order;
-    pc->siblings        = pb->siblings;
-    pc->parents_married = pb->parents_married;
-    pc->max_hit_points  = pb->max_hit_points;
-    pc->hit_points      = pb->hit_points;
-    pc->height          = pb->height;
-    pc->weight          = pb->weight;
-    pc->age             = pb->age;
-    pc->hair_color      = pb->hair_color;
-    pc->eye_color       = pb->eye_color;
-    pc->hair_length     = memstrlink( pb->hair_length );
-    pc->skin_tone       = pb->skin_tone;
-    pc->experience      = pb->experience;
 }
 
 void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb )
@@ -267,30 +243,6 @@ void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb )
     pb->id              = pc->id;
     pb->account_id      = pc->account_id;
     pb->name            = memstrlink( pc->name );
-    pb->complete        = pc->complete;
-    pb->race_id         = pc->race_id;
-    pb->align_moral     = pc->align_moral;
-    pb->align_ethical   = pc->align_ethical;
-    pb->strength        = pc->strength;
-    pb->dexterity       = pc->dexterity;
-    pb->constitution    = pc->constitution;
-    pb->intelligence    = pc->intelligence;
-    pb->wisdom          = pc->wisdom;
-    pb->charisma        = pc->charisma;
-    pb->social_class    = pc->social_class;
-    pb->birth_order     = pc->birth_order;
-    pb->siblings        = pc->siblings;
-    pb->parents_married = pc->parents_married;
-    pb->max_hit_points  = pc->max_hit_points;
-    pb->hit_points      = pc->hit_points;
-    pb->height          = pc->height;
-    pb->weight          = pc->weight;
-    pb->age             = pc->age;
-    pb->hair_color      = pc->hair_color;
-    pb->eye_color       = pc->eye_color;
-    pb->hair_length     = memstrlink( pc->hair_length );
-    pb->skin_tone       = pc->skin_tone;
-    pb->experience      = pc->experience;
 }
 
 PlayerPC_t *pb_load_pc( int account_id, int pc_id )

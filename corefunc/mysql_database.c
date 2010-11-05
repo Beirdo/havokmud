@@ -108,47 +108,20 @@ QueryTable_t QueryTable[] = {
       "`confcode`) VALUES (?, ?, ?, ?, ?, ?)",
       NULL, NULL, FALSE },
     /* 8 */
-    { "SELECT `id`, `account_id`, `name`, `complete`, `race_id`, "
-      "`align_moral`, `align_ethical`, `strength`, `dexterity`, "
-      "`constitution`, `intelligence`, `wisdom`, `charisma`, `social_class`, "
-      "`birth_order`, `siblings`, `parents_married`, `max_hit_points`, "
-      "`hit_points`, `height`, `weight`, `age`, `hair_color`, `eye_color`, "
-      "`hair_length`, `skin_tone`, `experience` FROM `pcs` "
+    { "SELECT `id`, `account_id`, `name` FROM `pcs` "
       "WHERE `account_id` = ? ORDER BY `id`", NULL, NULL, FALSE },
     /* 9 */
-    { "SELECT `id`, `account_id`, `name`, `complete`, `race_id`, "
-      "`align_moral`, `align_ethical`, `strength`, `dexterity`, "
-      "`constitution`, `intelligence`, `wisdom`, `charisma`, `social_class`, "
-      "`birth_order`, `siblings`, `parents_married`, `max_hit_points`, "
-      "`hit_points`, `height`, `weight`, `age`, `hair_color`, `eye_color`, "
-      "`hair_length`, `skin_tone`, `experience` FROM `pcs` "
+    { "SELECT `id`, `account_id`, `name` FROM `pcs` "
       "WHERE `account_id` = ? AND `id` = ? ORDER BY `id`", NULL, NULL, FALSE },
     /* 10 */
-    { "SELECT `id`, `account_id`, `name`, `complete`, `race_id`, "
-      "`align_moral`, `align_ethical`, `strength`, `dexterity`, "
-      "`constitution`, `intelligence`, `wisdom`, `charisma`, `social_class`, "
-      "`birth_order`, `siblings`, `parents_married`, `max_hit_points`, "
-      "`hit_points`, `height`, `weight`, `age`, `hair_color`, `eye_color`, "
-      "`hair_length`, `skin_tone`, `experience` FROM `pcs` "
+    { "SELECT `id`, `account_id`, `name` FROM `pcs` "
       "WHERE `id` = ? ORDER BY `id` LIMIT 1", chain_save_pc, NULL, FALSE },
     /* 11 */
-    { "UPDATE `pcs` SET `account_id` = ?, `name` = ?, `complete` = ?, "
-      "`race_id` = ?, `align_moral` = ?, `align_ethical` = ?, `strength` = ?, "
-      "`dexterity` = ?, `constitution` = ?, `intelligence` = ?, `wisdom` = ?, "
-      "`charisma` = ?, `social_class` = ?, `birth_order` = ?, `siblings` = ?, "
-      "`parents_married` = ?, `max_hit_points` = ?, `hit_points` = ?, "
-      "`height` = ?, `weight` = ?, `age` = ?, `hair_color` = ?, "
-      "`eye_color` = ?, `hair_length` = ?, `skin_tone` = ?, `experience` = ? "
+    { "UPDATE `pcs` SET `account_id` = ?, `name` = ? "
       "WHERE `id` = ?", NULL, NULL, FALSE },
     /* 12 */
-    { "INSERT INTO `pcs` (`account_id`, `name`, `complete`, `race_id`, "
-      "`align_moral`, `align_ethical`, `strength`, `dexterity`, "
-      "`constitution`, `intelligence`, `wisdom`, `charisma`, `social_class`, "
-      "`birth_order`, `siblings`, `parents_married`, `max_hit_points`, "
-      "`hit_points`, `height`, `weight`, `age`, `hair_color`, `eye_color`, "
-      "`hair_length`, `skin_tone`, `experience`) VALUES (?, ?, ?, ?, ?, ?, "
-      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", NULL,
-      NULL, FALSE },
+    { "INSERT INTO `pcs` (`account_id`, `name`) VALUES (?, ?)", NULL, NULL,
+      FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
 };
@@ -351,43 +324,14 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     mutex = CREATE(pthread_mutex_t);
     thread_mutex_init( mutex );
 
-    data = CREATEN(MYSQL_BIND, 28);
+    data = CREATEN(MYSQL_BIND, 4);
 
     bind_numeric( &data[0], req->pc_data->id, MYSQL_TYPE_LONG );
     bind_numeric( &data[1], req->pc_data->account_id, MYSQL_TYPE_LONG );
     bind_string( &data[2], req->pc_data->name, MYSQL_TYPE_VAR_STRING );
-    bind_numeric( &data[3], (req->pc_data->complete ? 1 : 0), 
-                            MYSQL_TYPE_TINY );
-    bind_numeric( &data[4], req->pc_data->race_id, MYSQL_TYPE_LONG );
-    bind_numeric( &data[5], req->pc_data->align_moral, MYSQL_TYPE_LONG );
-    bind_numeric( &data[6], req->pc_data->align_ethical, MYSQL_TYPE_LONG );
-    bind_numeric( &data[7], req->pc_data->strength, MYSQL_TYPE_LONG );
-    bind_numeric( &data[8], req->pc_data->dexterity, MYSQL_TYPE_LONG );
-    bind_numeric( &data[9], req->pc_data->constitution, MYSQL_TYPE_LONG );
-    bind_numeric( &data[10], req->pc_data->intelligence, MYSQL_TYPE_LONG );
-    bind_numeric( &data[11], req->pc_data->wisdom, MYSQL_TYPE_LONG );
-    bind_numeric( &data[12], req->pc_data->charisma, MYSQL_TYPE_LONG );
-    bind_numeric( &data[13], req->pc_data->social_class, MYSQL_TYPE_LONG );
-    bind_numeric( &data[14], req->pc_data->birth_order, MYSQL_TYPE_LONG );
-    bind_numeric( &data[15], req->pc_data->siblings, MYSQL_TYPE_LONG );
-    bind_numeric( &data[16], (req->pc_data->parents_married ? 1 : 0),
-                             MYSQL_TYPE_TINY );
-    bind_numeric( &data[17], req->pc_data->max_hit_points, MYSQL_TYPE_LONG );
-    bind_numeric( &data[18], req->pc_data->hit_points, MYSQL_TYPE_LONG );
-    bind_numeric( &data[19], req->pc_data->height, MYSQL_TYPE_LONG );
-    bind_numeric( &data[20], req->pc_data->weight, MYSQL_TYPE_LONG );
-    bind_numeric( &data[21], req->pc_data->age, MYSQL_TYPE_LONG );
-    bind_numeric( &data[22], req->pc_data->hair_color, MYSQL_TYPE_LONG );
-    bind_numeric( &data[23], req->pc_data->eye_color, MYSQL_TYPE_LONG );
-    bind_string( &data[24], (req->pc_data->hair_length ?
-                             req->pc_data->hair_length : ""), 
-                            MYSQL_TYPE_VAR_STRING );
-    bind_numeric( &data[25], req->pc_data->skin_tone, MYSQL_TYPE_LONG );
-    bind_numeric( &data[26], req->pc_data->experience, MYSQL_TYPE_LONG );
+    bind_null_blob( &data[3], &id );
 
-    bind_null_blob( &data[27], &id );
-
-    db_queue_query( 10, QueryTable, data, 28, NULL, NULL, mutex );
+    db_queue_query( 10, QueryTable, data, 4, NULL, NULL, mutex );
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
@@ -405,7 +349,6 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     req_pctype__init( resp->pc_data[0] );
     memcpy( resp->pc_data[0], req->pc_data, sizeof(ReqPCType) );
     resp->pc_data[0]->name = memstrlink( req->pc_data->name );
-    resp->pc_data[0]->hair_length = memstrlink( req->pc_data->hair_length );
 
     return( resp );
 }
@@ -486,12 +429,12 @@ void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
         /* swap argument order */
         *id = *(int *)data[0].buffer;
         memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
-        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 27 );
-        memcpy(  &data[27], temp,    sizeof(MYSQL_BIND) );
-        db_queue_query( 11, QueryTable, data, 28, NULL, NULL, NULL );
+        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
+        memcpy(  &data[2], temp,     sizeof(MYSQL_BIND) );
+        db_queue_query( 11, QueryTable, data, 4, NULL, NULL, NULL );
     } else {
         /* insert */
-        db_queue_query( 12, QueryTable, data, 27, result_insert_id, id,
+        db_queue_query( 12, QueryTable, data, 3, result_insert_id, id,
                         NULL );
     }
 }
@@ -589,55 +532,8 @@ void db_fill_row_load_pc( MYSQL_ROW row, HavokResponse *resp, int i )
     resp->pc_data[i]->id                  = COL_INT(row, 0);
     resp->pc_data[i]->account_id          = COL_INT(row, 1);
     resp->pc_data[i]->name                = COL_STRING(row, 2);
-    resp->pc_data[i]->complete            = COL_BOOL(row, 3);
-    resp->pc_data[i]->race_id             = COL_INT(row, 4);
-    resp->pc_data[i]->align_moral         = COL_INT(row, 5);
-    resp->pc_data[i]->align_ethical       = COL_INT(row, 6);
-    resp->pc_data[i]->strength            = COL_INT(row, 7);
-    resp->pc_data[i]->dexterity           = COL_INT(row, 8);
-    resp->pc_data[i]->constitution        = COL_INT(row, 9);
-    resp->pc_data[i]->intelligence        = COL_INT(row, 10);
-    resp->pc_data[i]->wisdom              = COL_INT(row, 11);
-    resp->pc_data[i]->charisma            = COL_INT(row, 12);
-    resp->pc_data[i]->social_class        = COL_INT(row, 13);
-    resp->pc_data[i]->birth_order         = COL_INT(row, 14);
-    resp->pc_data[i]->siblings            = COL_INT(row, 15);
-    resp->pc_data[i]->parents_married     = COL_BOOL(row, 16);
-    resp->pc_data[i]->max_hit_points      = COL_INT(row, 17);
-    resp->pc_data[i]->hit_points          = COL_INT(row, 18);
-    resp->pc_data[i]->height              = COL_INT(row, 19);
-    resp->pc_data[i]->weight              = COL_INT(row, 20);
-    resp->pc_data[i]->age                 = COL_INT(row, 21);
-    resp->pc_data[i]->hair_color          = COL_INT(row, 22);
-    resp->pc_data[i]->eye_color           = COL_INT(row, 23);
-    resp->pc_data[i]->hair_length         = COL_STRING(row, 24);
-    resp->pc_data[i]->skin_tone           = COL_INT(row, 25);
-    resp->pc_data[i]->experience          = COL_INT(row, 26);
     resp->pc_data[i]->has_id              = TRUE;
     resp->pc_data[i]->has_account_id      = TRUE;
-    resp->pc_data[i]->has_complete        = TRUE;
-    resp->pc_data[i]->has_race_id         = TRUE;
-    resp->pc_data[i]->has_align_moral     = TRUE;
-    resp->pc_data[i]->has_align_ethical   = TRUE;
-    resp->pc_data[i]->has_strength        = TRUE;
-    resp->pc_data[i]->has_dexterity       = TRUE;
-    resp->pc_data[i]->has_constitution    = TRUE;
-    resp->pc_data[i]->has_intelligence    = TRUE;
-    resp->pc_data[i]->has_wisdom          = TRUE;
-    resp->pc_data[i]->has_charisma        = TRUE;
-    resp->pc_data[i]->has_social_class    = TRUE;
-    resp->pc_data[i]->has_birth_order     = TRUE;
-    resp->pc_data[i]->has_siblings        = TRUE;
-    resp->pc_data[i]->has_parents_married = TRUE;
-    resp->pc_data[i]->has_max_hit_points  = TRUE;
-    resp->pc_data[i]->has_hit_points      = TRUE;
-    resp->pc_data[i]->has_height          = TRUE;
-    resp->pc_data[i]->has_weight          = TRUE;
-    resp->pc_data[i]->has_age             = TRUE;
-    resp->pc_data[i]->has_hair_color      = TRUE;
-    resp->pc_data[i]->has_eye_color       = TRUE;
-    resp->pc_data[i]->has_skin_tone       = TRUE;
-    resp->pc_data[i]->has_experience      = TRUE;
 }
 
 void result_get_pc_list( MYSQL_RES *res, MYSQL_BIND *input, void *arg,

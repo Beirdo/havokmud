@@ -1,0 +1,28 @@
+{
+  "core-pc": {
+    "complete": false,
+    "race_id": 0,
+    "align_moral": 0,
+    "align_ethical": 0,
+    "strength": 0,
+    "dexterity": 0,
+    "contitution": 0,
+    "intelligence": 0,
+    "wisdom": 0,
+    "charisma": 0,
+    "social_class": 0,
+    "birth_order": 0,
+    "siblings": 0,
+    "parents_married": false,
+    "max_hit_points": 0,
+    "hit_points": 0,
+    "height": 0,
+    "weight": 0,
+    "age": 0,
+    "hair_color": 0,
+    "eye_color": 0,
+    "hair_length": "short",
+    "skin_tone": 0,
+    "experience": 0
+  }
+}
