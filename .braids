@@ -1,4 +1,10 @@
 --- 
+libs/cjson: 
+  squashed: true
+  url: https://cjson.svn.sourceforge.net/svnroot/cjson
+  type: svn
+  revision: 33
+  remote: braid/libs/cjson
 libs/protobuf-c: 
   squashed: true
   url: http://protobuf-c.googlecode.com/svn/trunk
