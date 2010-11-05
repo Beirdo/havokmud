@@ -59,7 +59,7 @@ am_libhavokcore_a_OBJECTS = main.$(OBJEXT) signals.$(OBJEXT) \
 	object_data.$(OBJEXT) keywords.$(OBJEXT) weather.$(OBJEXT) \
 	room_data.$(OBJEXT) mobile_data.$(OBJEXT) \
 	special_funcs.$(OBJEXT) mysql_upgrade.$(OBJEXT) dice.$(OBJEXT) \
-	db_api.$(OBJEXT) protobuf_api.$(OBJEXT)
+	db_api.$(OBJEXT) protobuf_api.$(OBJEXT) json_attribs.$(OBJEXT)
 libhavokcore_a_OBJECTS = $(am_libhavokcore_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -188,7 +188,7 @@ libhavokcore_a_SOURCES = main.c signals.c login-sm.c output.c \
 	mysql_database.c command_parser.c core_commands.c \
 	ansi_output.c char_data.c object_data.c keywords.c weather.c \
 	room_data.c mobile_data.c special_funcs.c mysql_upgrade.c \
-	dice.c db_api.c protobuf_api.c
+	dice.c db_api.c protobuf_api.c json_attribs.c
 all: all-am
 
 .SUFFIXES:
@@ -243,6 +243,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/core_commands.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/db_api.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dice.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/json_attribs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login-sm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@

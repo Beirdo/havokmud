@@ -129,6 +129,8 @@ typedef struct _PlayerPC_t
     int                 id;
     int                 account_id;
     char               *name;
+    BalancedBTree_t    *attribs;
+    BalancedBTree_t    *sources;
 } PlayerPC_t;
 
 typedef struct _PlayerStruct_t
@@ -147,6 +149,10 @@ typedef struct _PlayerStruct_t
     QueueObject_t      *outputQ;
 
     PlayerAccount_t    *account;
+    PlayerPC_t         *pcs;        /* Should be a btree? */
+    PlayerPC_t         *pc;         /* PC being played */
+
+    /* sorted to here */
 
     struct char_data   *charData;
     struct char_data   *originalData;
@@ -764,6 +770,10 @@ typedef struct {
 } Version_t;
 
 
+typedef struct {
+    char *source;
+    char *json;
+} JSONSource_t;
 
 #endif
 
