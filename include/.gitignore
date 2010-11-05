@@ -5,3 +5,4 @@ config.h
 libesmtp.h
 stamp-h1
 google
+cJSON.h

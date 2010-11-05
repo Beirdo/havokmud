@@ -9,5 +9,6 @@ MY_SUBDIRS += libesmtp-1.0.4
 endif
 
 MY_SUBDIRS += protobuf protobuf-c
+MY_SUBDIRS += cjson
 
 include Makefile.local

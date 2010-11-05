@@ -6,7 +6,7 @@ bin_PROGRAMS = havoknew
 havoknew_SOURCES =
 
 havoknew_LDADD  = util/*.o corefunc/*.o threads/*.o protobuf/src/*.o
-havoknew_LDADD += -L lib -lprotobuf -lprotobuf-c
+havoknew_LDADD += -L lib -lprotobuf -lprotobuf-c -lcJSON
 
 if !HAVE_LIBESMTP
 havoknew_LDADD += -L lib -lesmtp
