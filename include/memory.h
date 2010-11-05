@@ -102,7 +102,7 @@ extern "C" {
 #endif
 
 /* Function Prototypes */
-void *memalloc( int size );
+void *memalloc( size_t size );
 void memfree( void *buffer );
 char *memstrdup( char *orig );
 char *memstrndup( char *orig, int maxlen );

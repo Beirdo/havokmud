@@ -41,6 +41,7 @@
 #include <sys/select.h>
 #include "logging.h"
 #include "interthread.h"
+#include "cJSON.h"
 
 /**
  * @file
@@ -91,6 +92,7 @@ static BalancedBTree_t  memoryStringTree;
 static uint64           memAllocTrueBytes;
 static uint64           memAllocBytes;
 static int              memAllocBlocks;
+static cJSON_Hooks      memcJSONHooks;
 
 
 void meminit( void )
@@ -115,9 +117,13 @@ void meminit( void )
     BalancedBTreeCreate( &fragmentDeferPool.addrTree, BTREE_KEY_POINTER );
 
     BalancedBTreeCreate( &memoryStringTree, BTREE_KEY_STRING );
+
+    memcJSONHooks.malloc_fn = memalloc;
+    memcJSONHooks.free_fn = memfree;
+    cJSON_InitHooks( &memcJSONHooks );
 }
 
-void *memalloc( int size )
+void *memalloc( size_t size )
 {
     int                 pageReq;
     int                 reqSize;
