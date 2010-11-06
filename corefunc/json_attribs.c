@@ -39,6 +39,11 @@
 #include "cJSON.h"
 #include "memory.h"
 
+char *strip_whitespace(char *string);
+cJSON *cJSON_Clone(cJSON *obj);
+void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item );
+int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item );
+
 char *strip_whitespace(char *string)
 {
     int     len;
@@ -233,6 +238,55 @@ JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources )
     cJSON_Delete(jsonTree);
 }
 
+char *CombineJSON( JSONSource_t *js )
+{
+    cJSON          *jsonTree;
+    cJSON          *jsonItem;
+    char           *json;
+
+    jsonTree = cJSON_CreateObject();
+    while( js->source ) {
+        jsonItem = cJSON_Parse( js->json );
+        cJSON_AddItemToObject( jsonTree, js->source, jsonItem );
+    }
+
+    json = cJSON_Print( jsonTree );
+    cJSON_Delete( jsonTree );
+}
+
+JSONSource_t *SplitJSON( char *json )
+{
+    cJSON          *jsonTree;
+    cJSON          *jsonItem;
+    JSONSource_t   *js;
+    int             count;
+    int             i;
+    
+    jsonTree = cJSON_Parse( json );
+    for( count = 0, jsonItem = jsonTree->child; jsonItem; 
+         jsonItem = jsonItem->next, count++ );
+
+    js = CREATEN(JSONSource_t, count+1);
+    for( i = 0, jsonItem = jsonTree->child; i < count && jsonItem;
+         jsonItem = jsonItem->next, i++ ) {
+        js[i].source = memstrlink(jsonItem->string);
+        js[i].json   = cJSON_Print(jsonItem);
+    }
+         
+    cJSON_Delete( jsonTree );
+    return( js );
+}
+
+void DestroyJSONSource( JSONSource_t *js )
+{
+    JSONSource_t       *jsItem;
+
+    for( jsItem = js; jsItem->source; jsItem++ ) {
+        memfree( jsItem->source );
+        memfree( jsItem->json );
+    }
+    memfree( js );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -6,5 +6,5 @@ message ReqPCType {
     optional uint32 id = 1801;
     optional uint32 account_id = 1802;
     optional string name = 1803;
-    optional string core_attribs = 1804;
+    optional string attribs = 1804;
 }

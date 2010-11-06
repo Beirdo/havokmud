@@ -38,9 +38,6 @@
 
 #define MAX_BUFFER_SIZE 256
 
-void pb_fill_pc( PlayerPC_t *pc, ReqPCType *pb );
-void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb );
-
 char *pb_get_setting(char *name) 
 {
     HavokRequest       *req;
@@ -135,12 +132,12 @@ PlayerAccount_t *pb_load_account( char *email )
     } else {
         acct = CREATE(PlayerAccount_t);
         if( acct ) {
-            acct->email = memstrlink( resp->account_data->email );
-            acct->id = resp->account_data->id;
-            acct->pwd = memstrlink( resp->account_data->passwd );
-            acct->ansi = resp->account_data->ansi;
+            acct->email     = memstrlink( resp->account_data->email );
+            acct->id        = resp->account_data->id;
+            acct->pwd       = memstrlink( resp->account_data->passwd );
+            acct->ansi      = resp->account_data->ansi;
             acct->confirmed = resp->account_data->confirmed;
-            acct->confcode = memstrlink( resp->account_data->confcode );
+            acct->confcode  = memstrlink( resp->account_data->confcode );
         }
     }
 
@@ -166,14 +163,15 @@ void pb_save_account( PlayerAccount_t *account )
     req->request_type  = REQ_TYPE__SAVE_ACCOUNT;
     req->account_data = CREATE(ReqAccountType);
     req_account_type__init( req->account_data );
-    req->account_data->email = memstrlink(account->email);
-    req->account_data->id = account->id;
-    req->account_data->passwd = memstrlink( account->pwd );
-    req->account_data->ansi = account->ansi;
-    req->account_data->confirmed = account->confirmed;
-    req->account_data->confcode = memstrlink( account->confcode );
-    req->account_data->has_id = TRUE;
-    req->account_data->has_ansi = TRUE;
+
+    req->account_data->email         = memstrlink(account->email);
+    req->account_data->id            = account->id;
+    req->account_data->passwd        = memstrlink( account->pwd );
+    req->account_data->ansi          = account->ansi;
+    req->account_data->confirmed     = account->confirmed;
+    req->account_data->confcode      = memstrlink( account->confcode );
+    req->account_data->has_id        = TRUE;
+    req->account_data->has_ansi      = TRUE;
     req->account_data->has_confirmed = TRUE;
 
     resp = protobufQueue( req, NULL, NULL, TRUE );
@@ -221,7 +219,9 @@ PlayerPC_t *pb_get_pc_list( int account_id )
 
         if( pcs ) {
             for( i = 0; i < resp->n_pc_data; i++ ) {
-                pb_fill_pc( &pcs[i], resp->pc_data[i] );
+                pcs[i].id              = resp->pc_data[i]->id;
+                pcs[i].account_id      = resp->pc_data[i]->account_id;
+                pcs[i].name            = memstrlink( resp->pc_data[i]->name );
             }
         }
     }
@@ -231,25 +231,13 @@ PlayerPC_t *pb_get_pc_list( int account_id )
     return( pcs );
 }
 
-void pb_fill_pc( PlayerPC_t *pc, ReqPCType *pb )
-{
-    pc->id              = pb->id;
-    pc->account_id      = pb->account_id;
-    pc->name            = memstrlink( pb->name );
-}
-
-void pb_fill_pc_pb( PlayerPC_t *pc, ReqPCType *pb )
-{
-    pb->id              = pc->id;
-    pb->account_id      = pc->account_id;
-    pb->name            = memstrlink( pc->name );
-}
-
 PlayerPC_t *pb_load_pc( int account_id, int pc_id )
 {
     HavokRequest       *req;
     HavokResponse      *resp;
     PlayerPC_t         *pc;
+    JSONSource_t       *js;
+    JSONSource_t       *jsItem;
 
     if( !account_id || !pc_id ) {
         return( NULL );
@@ -275,7 +263,15 @@ PlayerPC_t *pb_load_pc( int account_id, int pc_id )
     if( resp->n_pc_data ) {
         pc = CREATE(PlayerPC_t);
 
-        pb_fill_pc( pc, resp->pc_data[0] );
+        pc->id              = resp->pc_data[0]->id;
+        pc->account_id      = resp->pc_data[0]->account_id;
+        pc->name            = memstrlink( resp->pc_data[0]->name );
+
+        js = SplitJSON( resp->pc_data[0]->attribs );
+        for( jsItem = js; jsItem && jsItem->source; jsItem++ ) {
+            AddJSONToTrees( jsItem, pc->attribs, pc->sources );
+        }
+        DestroyJSONSource( js );
     }
 
     protobufDestroyMessage( (ProtobufCMessage *)resp );
@@ -287,6 +283,7 @@ void pb_save_pc( PlayerPC_t *pc )
 {
     HavokRequest       *req;
     HavokResponse      *resp;
+    JSONSource_t       *js;
 
     if( !pc || !pc->account_id ) {
         return;
@@ -300,7 +297,14 @@ void pb_save_pc( PlayerPC_t *pc )
     req->request_type  = REQ_TYPE__SAVE_PC;
     req->pc_data = CREATE(ReqPCType);
     req_pctype__init( req->pc_data );
-    pb_fill_pc_pb( pc, req->pc_data );
+
+    req->pc_data->id              = pc->id;
+    req->pc_data->account_id      = pc->account_id;
+    req->pc_data->name            = memstrlink( pc->name );
+
+    js = ExtractJSONFromTree( pc->sources );
+    req->pc_data->attribs = CombineJSON( js );
+    DestroyJSONSource( js );
 
     resp = protobufQueue( req, NULL, NULL, TRUE );
     if( !resp ) {

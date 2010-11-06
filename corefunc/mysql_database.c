@@ -66,10 +66,13 @@ HavokResponse *db_mysql_save_account( HavokRequest *req );
 HavokResponse *db_mysql_get_pc_list( int account_id );
 HavokResponse *db_mysql_load_pc( int account_id, int pc_id );
 HavokResponse *db_mysql_save_pc( HavokRequest *req );
+char *db_mysql_load_pc_attribs( int pc_id );
+void db_mysql_save_pc_attribs( int pc_id, char *json );
 
 void chain_set_setting( MYSQL_RES *res, QueryItem_t *item );
 void chain_save_account( MYSQL_RES *res, QueryItem_t *item );
 void chain_save_pc( MYSQL_RES *res, QueryItem_t *item );
+void chain_save_pc_attribs( MYSQL_RES *res, QueryItem_t *item );
 
 void result_get_setting( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid );
@@ -81,6 +84,8 @@ void result_get_pc_list( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                          long insertid );
 void result_load_pc( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                      long insertid );
+void result_load_pc_attribs( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                             long insertid );
 
 QueryTable_t QueryTable[] = {
     /* 0 */
@@ -122,6 +127,18 @@ QueryTable_t QueryTable[] = {
     /* 12 */
     { "INSERT INTO `pcs` (`account_id`, `name`) VALUES (?, ?)", NULL, NULL,
       FALSE },
+    /* 13 */
+    { "SELECT `attribsrc`, `attribjson` FROM `pcattribs` WHERE `pc_id` = ?",
+      NULL, NULL, FALSE },
+    /* 14 */
+    { "SELECT `attribjson` FROM `pcattribs` WHERE `pc_id` = ? "
+      "AND `attribsrc` = ?", chain_save_pc_attribs, NULL, FALSE },
+    /* 15 */
+    { "UPDATE `pcattribs` SET `attribjson` = ? WHERE `pc_id` = ? "
+      "AND `attribsrc` = ?", NULL, NULL, FALSE },
+    /* 16 */
+    { "INSERT INTO `pcattribs` (`pc_id`, `attribsrc`, `attribjson`) "
+      "VALUES (?, ?, ?)", NULL, NULL, FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
 };
@@ -307,6 +324,7 @@ HavokResponse *db_mysql_load_pc( int account_id, int pc_id )
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
+    resp->pc_data[0]->attribs = db_mysql_load_pc_attribs( pc_id );
     return( resp );
 }
 
@@ -337,6 +355,8 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
+    db_mysql_save_pc_attribs( id, req->pc_data->attribs );
+
     resp = protobufCreateResponse();
     if( !resp ) {
         return( NULL );
@@ -352,6 +372,69 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
 
     return( resp );
 }
+
+char *db_mysql_load_pc_attribs( int pc_id )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    char               *resp;
+
+    if( !pc_id ) {
+        return( NULL );
+    }
+
+    mutex = CREATE(pthread_mutex_t);
+    thread_mutex_init( mutex );
+
+    data = CREATEN(MYSQL_BIND, 1);
+
+    bind_numeric( &data[0], pc_id, MYSQL_TYPE_LONG );
+
+    db_queue_query( 13, QueryTable, data, 1, result_load_pc_attribs, 
+                    (void *)&resp, mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+
+    return( resp );
+}
+
+void db_mysql_save_pc_attribs( int pc_id, char *json )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    JSONSource_t       *js;
+    JSONSource_t       *jsItem;
+
+    if( !pc_id || !json ) {
+        return;
+    }
+
+    js = SplitJSON( json );
+    if( !js ) {
+        return;
+    }
+
+    mutex = CREATE(pthread_mutex_t);
+    thread_mutex_init( mutex );
+
+    jsItem = js;
+    while( jsItem ) {
+        data = CREATEN(MYSQL_BIND, 2);
+
+        bind_numeric( &data[0], pc_id, MYSQL_TYPE_LONG );
+        bind_string( &data[1], jsItem->source, MYSQL_TYPE_VAR_STRING );
+        bind_string( &data[2], jsItem->json, MYSQL_TYPE_VAR_STRING );
+
+        db_queue_query( 14, QueryTable, data, 3, NULL, NULL, mutex );
+
+        pthread_mutex_unlock( mutex );
+    }
+
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+}
+
 
 /*
  * Query chaining functions
@@ -439,7 +522,29 @@ void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
     }
 }
 
+void chain_save_pc_attribs( MYSQL_RES *res, QueryItem_t *item )
+{
+    int             count;
+    MYSQL_BIND     *data;
+    MYSQL_BIND      temp[1];
+    
+    data = item->queryData;
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        count = 0;
+    }
 
+    if( count ) {
+        /* update */
+        /* swap argument order */
+        memcpy(  temp,     &data[2], sizeof(MYSQL_BIND) );
+        memmove( &data[1], &data[0], sizeof(MYSQL_BIND) * 2 );
+        memcpy(  &data[0], temp,     sizeof(MYSQL_BIND) );
+        db_queue_query( 15, QueryTable, data, 3, NULL, NULL, NULL );
+    } else {
+        /* insert */
+        db_queue_query( 16, QueryTable, data, 3, NULL, NULL, NULL );
+    }
+}
 /*
  * Query result callbacks
  */
@@ -593,6 +698,38 @@ void result_load_pc( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 
     row = mysql_fetch_row(res);
     db_fill_row_load_pc( row, *resp, 0 );
+}
+
+void result_load_pc_attribs( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                             long insertid )
+{
+    char              **json;
+    JSONSource_t       *js;
+    int                 count;
+    int                 i;
+    MYSQL_ROW           row;
+
+    json = (char **)arg;
+    *json = NULL;
+
+    count = mysql_num_rows(res);
+    if( count == 0 ) {
+        return;
+    }
+
+    js = CREATEN(JSONSource_t, count+1);
+    if( !js ) {
+        return;
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        js[i].source = COL_STRING(row, 0);
+        js[i].json   = COL_STRING(row, 1);
+    }
+
+    *json = CombineJSON(js);
+    memfree(js);
 }
 
 /*

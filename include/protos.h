@@ -318,6 +318,18 @@ void logging_toggle_debug( int signum, void *info, void *secret );
 
 
 /*
+ * From json_attribs.c
+ */
+void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs, 
+                     BalancedBTree_t *sources );
+JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources );
+char *CombineJSON( JSONSource_t *js );
+JSONSource_t *SplitJSON( char *json );
+void DestroyJSONSource( JSONSource_t *js );
+
+
+
+/*
  * From main.c
  */
 void MainDelayExit( void );
