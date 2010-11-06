@@ -43,6 +43,10 @@ char *strip_whitespace(char *string);
 cJSON *cJSON_Clone(cJSON *obj);
 void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item );
 int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item );
+void SourceDeleteAttrib( char *attrib, BalancedBTree_t *tree );
+void SourceTreeDeleteAttrib( char *attrib, BalancedBTreeItem_t *item );
+bool SourceTreeCleanup( BalancedBTreeItem_t *item );
+bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item );
 
 char *strip_whitespace(char *string)
 {
@@ -93,8 +97,7 @@ cJSON *cJSON_Clone(cJSON *obj)
 }
 
 
-void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs, 
-                     BalancedBTree_t *sources )
+void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
 {
     static char            *empty = "{ }";
     char                   *json;
@@ -104,7 +107,8 @@ void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs,
     BalancedBTree_t        *subTree;
     BalancedBTree_t        *srcSubTree;
 
-    if( !js || !js->source || !js->json || !attribs || !sources ) {
+    if( !js || !js->source || !js->json || !pc || !pc->attribs || 
+        !pc->sources ) {
         return;
     }
 
@@ -118,11 +122,11 @@ void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs,
     }
 
     jsonTree = cJSON_Parse(json);
-    BalancedBTreeLock( attribs );
-    BalancedBTreeLock( sources );
+    BalancedBTreeLock( pc->attribs );
+    BalancedBTreeLock( pc->sources );
 
     /* Find or make the subtree for the sources tree.  Once. */
-    item = BalancedBTreeFind( sources, js->source, LOCKED, FALSE );
+    item = BalancedBTreeFind( pc->sources, js->source, LOCKED, FALSE );
     if( item ) {
         srcSubTree = (BalancedBTree_t *)item->item;
         BalancedBTreeLock( srcSubTree );
@@ -133,14 +137,15 @@ void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs,
         item = CREATE(BalancedBTreeItem_t);
         item->key  = memstrlink(js->source);
         item->item = srcSubTree;
-        BalancedBTreeAdd( sources, item, LOCKED, TRUE );
+        BalancedBTreeAdd( pc->sources, item, LOCKED, TRUE );
     }
 
     for( jsonItem = jsonTree->child; jsonItem; jsonItem = jsonItem->next ) {
         /* For each data item, stuff it into two separate two-layer trees */
 
         /* First the attribs tree.  attrib->source */
-        item = BalancedBTreeFind( attribs, jsonItem->string, LOCKED, FALSE );
+        item = BalancedBTreeFind( pc->attribs, jsonItem->string, LOCKED, 
+                                  FALSE );
         if( item ) {
             subTree = (BalancedBTree_t *)item->item;
         } else {
@@ -148,28 +153,40 @@ void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs,
             item = CREATE(BalancedBTreeItem_t);
             item->key  = memstrlink(jsonItem->string);
             item->item = subTree;
-            BalancedBTreeAdd( attribs, item, LOCKED, FALSE );
+            BalancedBTreeAdd( pc->attribs, item, LOCKED, FALSE );
         }
 
-        item = CREATE(BalancedBTreeItem_t);
-        item->key  = memstrlink(js->source);
-        item->item = cJSON_Clone(jsonItem);
-        BalancedBTreeAdd( subTree, item, UNLOCKED, TRUE );
+        item = BalancedBTreeFind( subTree, js->source, UNLOCKED, FALSE );
+        if( item ) {
+            cJSON_Delete(item->item);
+            item->item = cJSON_Clone(jsonItem);
+        } else {
+            item = CREATE(BalancedBTreeItem_t);
+            item->key  = memstrlink(js->source);
+            item->item = cJSON_Clone(jsonItem);
+            BalancedBTreeAdd( subTree, item, UNLOCKED, TRUE );
+        }
 
         /* Second the sources tree.  source->attrib */
-        item = CREATE(BalancedBTreeItem_t);
-        item->key  = memstrlink(jsonItem->string);
-        item->item = cJSON_Clone(jsonItem);
-        BalancedBTreeAdd( srcSubTree, item, UNLOCKED, FALSE );
+        item = BalancedBTreeFind( srcSubTree, jsonItem->string, LOCKED, FALSE );
+        if( item ) {
+            cJSON_Delete(item->item);
+            item->item = cJSON_Clone(jsonItem);
+        } else {
+            item = CREATE(BalancedBTreeItem_t);
+            item->key  = memstrlink(jsonItem->string);
+            item->item = cJSON_Clone(jsonItem);
+            BalancedBTreeAdd( srcSubTree, item, LOCKED, FALSE );
+        }
     }
 
     /* Rebalance the two unbalanced trees */
-    BalancedBTreeAdd( attribs, NULL, LOCKED, TRUE );
+    BalancedBTreeAdd( pc->attribs, NULL, LOCKED, TRUE );
     BalancedBTreeAdd( srcSubTree, NULL, LOCKED, TRUE );
 
     BalancedBTreeUnlock( srcSubTree );
-    BalancedBTreeUnlock( sources );
-    BalancedBTreeUnlock( attribs );
+    BalancedBTreeUnlock( pc->sources );
+    BalancedBTreeUnlock( pc->attribs );
     cJSON_Delete(jsonTree);
 }
 
@@ -208,7 +225,7 @@ int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
     return( count );
 }
 
-JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources )
+JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc )
 {
     JSONSource_t           *js;
     cJSON                  *jsonTree;
@@ -216,15 +233,15 @@ JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources )
     int                     srcCount;
     int                     i;
 
-    if( !sources ) {
-        return;
+    if( !pc || !pc->sources ) {
+        return( NULL );
     }
 
     jsonTree = cJSON_CreateObject();
 
-    BalancedBTreeLock( sources );
-    srcCount = AppendSourceToJSON( jsonTree, sources->root );
-    BalancedBTreeUnlock( sources );
+    BalancedBTreeLock( pc->sources );
+    srcCount = AppendSourceToJSON( jsonTree, pc->sources->root );
+    BalancedBTreeUnlock( pc->sources );
 
     js = CREATEN(JSONSource_t, srcCount+1);
 
@@ -286,6 +303,175 @@ void DestroyJSONSource( JSONSource_t *js )
         memfree( jsItem->json );
     }
     memfree( js );
+}
+
+void AddAttribute( char *json, char *source, PlayerPC_t *pc )
+{
+    JSONSource_t       *js;
+
+    if( !json || !source || !pc ) {
+        return;
+    }
+
+    js = CREATE(JSONSource_t);
+    if( !js ) {
+        return;
+    }
+
+    js->source = memstrlink(source);
+    js->json = memstrlink(json);
+
+    AddJSONToTrees( js, pc );
+
+    DestroyJSONSource( js );
+}
+
+void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
+{
+    BalancedBTreeItem_t    *item;
+    BalancedBTree_t        *subTree;
+    BalancedBTree_t        *srcSubTree;
+    bool                    cleaned;
+
+    if( !attrib || !pc ) {
+        return;
+    }
+
+    BalancedBTreeLock( pc->attribs );
+    BalancedBTreeLock( pc->sources );
+
+    /* First the attribs tree.  attrib->source */
+    item = BalancedBTreeFind( pc->attribs, attrib, LOCKED, FALSE );
+    if( item ) {
+        subTree = (BalancedBTree_t *)item->item;
+        BalancedBTreeLock( subTree );
+        if( !source ) {
+            /* Want to remove the entire attribute */
+            while( AttribTreeItemsDestroy( subTree->root ) );
+            BalancedBTreeDestroy( subTree );
+            BalancedBTreeRemove( pc->attribs, item, LOCKED, TRUE );
+            memfree( item->key );
+            memfree( item );
+        } else {
+            item = BalancedBTreeFind( subTree, source, LOCKED, FALSE );
+            if( item ) {
+                BalancedBTreeRemove( subTree, item, LOCKED, TRUE );
+                cJSON_Delete( item->item );
+                memfree( item->key );
+                memfree( item );
+            }
+            BalancedBTreeUnlock( subTree );
+        }
+    }
+
+    /* Second the sources tree.  source->attrib */
+    if( !source ) {
+        /* Gotta check each source tree */
+        SourceTreeDeleteAttrib( attrib, pc->sources->root );
+        cleaned = FALSE;
+        while( SourceTreeCleanup( pc->sources->root ) ) {
+            cleaned = TRUE;
+        }
+
+        if( cleaned ) {
+            /* Rebalance after cleaning */
+            BalancedBTreeAdd( pc->sources, NULL, LOCKED, TRUE );
+        }
+    } else {
+        item = BalancedBTreeFind( pc->sources, source, LOCKED, FALSE );
+        if( item ) {
+            subTree = (BalancedBTree_t *)item->item;
+            BalancedBTreeLock( subTree );
+            SourceDeleteAttrib( attrib, subTree );
+            if( !subTree->root ) {
+                /* subTree now empty! */
+                BalancedBTreeDestroy( subTree );
+                BalancedBTreeRemove( pc->sources, item, LOCKED, TRUE );
+                memfree( item->key );
+                memfree( item );
+            } else {
+                BalancedBTreeUnlock( subTree );
+            }
+        }
+    }
+
+    BalancedBTreeUnlock( pc->sources );
+    BalancedBTreeUnlock( pc->attribs );
+}
+
+void SourceDeleteAttrib( char *attrib, BalancedBTree_t *tree )
+{
+    BalancedBTreeItem_t    *item;
+
+    BalancedBTreeLock( tree );
+    item = BalancedBTreeFind( tree, attrib, LOCKED, FALSE );
+    if( item ) {
+        BalancedBTreeRemove( tree, item, LOCKED, TRUE );
+        cJSON_Delete(item->item);
+        memfree(item->key);
+        memfree(item);
+    }
+    BalancedBTreeUnlock( tree );
+}
+
+void SourceTreeDeleteAttrib( char *attrib, BalancedBTreeItem_t *item )
+{
+    SourceTreeDeleteAttrib( attrib, item->left );
+
+    SourceDeleteAttrib( attrib, (BalancedBTree_t *)item->item );
+
+    SourceTreeDeleteAttrib( attrib, item->right );
+}
+
+bool SourceTreeCleanup( BalancedBTreeItem_t *item )
+{
+    BalancedBTree_t        *subTree;
+
+    if( !item ) {
+        return( FALSE );
+    }
+
+    if( SourceTreeCleanup( item->left ) ) {
+        return( TRUE );
+    }
+
+    if( SourceTreeCleanup( item->right ) ) {
+        return( TRUE );
+    }
+
+    subTree = (BalancedBTree_t *)item->item;
+    BalancedBTreeLock( subTree );
+    if( !subTree->root ) {
+        BalancedBTreeDestroy( subTree );
+        BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
+        memfree( item->key );
+        memfree( item );
+        return( TRUE );
+    }
+    BalancedBTreeUnlock( subTree );
+    return( FALSE );
+}
+
+bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item )
+{
+    if( !item ) {
+        return( FALSE );
+    }
+
+    if( AttribTreeItemsDestroy( item->left ) ) {
+        return( TRUE );
+    }
+
+    if( AttribTreeItemsDestroy( item->right ) ) {
+        return( TRUE );
+    }
+
+    BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
+    cJSON_Delete( item->item );
+    memfree( item->key );
+    memfree( item );
+
+    return( TRUE );
 }
 
 /*

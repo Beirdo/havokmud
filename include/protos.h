@@ -322,9 +322,9 @@ void logging_toggle_debug( int signum, void *info, void *secret );
 /*
  * From json_attribs.c
  */
-void AddJSONToTrees( JSONSource_t *js, BalancedBTree_t *attribs, 
-                     BalancedBTree_t *sources );
-JSONSource_t *ExtractJSONFromTree( BalancedBTree_t *sources );
+void AddAttribute( char *json, char *source, PlayerPC_t *pc );
+void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc );
+JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc );
 char *CombineJSON( JSONSource_t *js );
 JSONSource_t *SplitJSON( char *json );
 void DestroyJSONSource( JSONSource_t *js );

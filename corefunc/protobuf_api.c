@@ -269,7 +269,7 @@ PlayerPC_t *pb_load_pc( int account_id, int pc_id )
 
         js = SplitJSON( resp->pc_data[0]->attribs );
         for( jsItem = js; jsItem && jsItem->source; jsItem++ ) {
-            AddJSONToTrees( jsItem, pc->attribs, pc->sources );
+            AddJSONToTrees( jsItem, pc );
         }
         DestroyJSONSource( js );
     }
@@ -302,7 +302,7 @@ void pb_save_pc( PlayerPC_t *pc )
     req->pc_data->account_id      = pc->account_id;
     req->pc_data->name            = memstrlink( pc->name );
 
-    js = ExtractJSONFromTree( pc->sources );
+    js = ExtractJSONFromTree( pc );
     req->pc_data->attribs = CombineJSON( js );
     DestroyJSONSource( js );
 
