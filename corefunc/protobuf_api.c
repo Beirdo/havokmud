@@ -319,6 +319,44 @@ void pb_save_pc( PlayerPC_t *pc )
     protobufDestroyMessage( (ProtobufCMessage *)resp );
 }
 
+PlayerPC_t *pb_find_pc( char *name )
+{
+    HavokRequest       *req;
+    HavokResponse      *resp;
+    PlayerPC_t         *pc;
+
+    if( !name ) {
+        return( NULL );
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return( NULL );
+    }
+
+    req->request_type  = REQ_TYPE__FIND_PC;
+    req->pc_data = CREATE(ReqPCType);
+    req_pctype__init( req->pc_data );
+    req->pc_data->name = memstrlink(name);
+
+    resp = protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return( NULL );
+    }
+
+    pc = NULL;
+    if( resp->n_pc_data ) {
+        pc = CREATE(PlayerPC_t);
+
+        pc->id              = resp->pc_data[0]->id;
+        pc->account_id      = resp->pc_data[0]->account_id;
+        pc->name            = memstrlink( resp->pc_data[0]->name );
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
+
+    return( pc );
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -194,16 +194,14 @@ HavokResponse *protobufHandle( HavokRequest *req )
                 return( NULL );
             }
 
-            return( db_get_setting( req->settings_data->setting_name ) );
+            return( db_get_setting( req ) );
             break;
         case REQ_TYPE__SET_SETTING:
             if( !req->settings_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No settings data on SET_SETTING" );
                 return( NULL );
             }
-            db_set_setting( req->settings_data->setting_name,
-                            req->settings_data->setting_value );
-            return( NULL );
+            return( db_set_setting( req ) );
             break;
         case REQ_TYPE__LOAD_ACCOUNT:
             if( !req->account_data ) {
@@ -211,7 +209,7 @@ HavokResponse *protobufHandle( HavokRequest *req )
                 return( NULL );
             }
 
-            return( db_load_account( req->account_data->email ) );
+            return( db_load_account( req ) );
             break;
         case REQ_TYPE__SAVE_ACCOUNT:
             if( !req->account_data ) {
@@ -225,22 +223,28 @@ HavokResponse *protobufHandle( HavokRequest *req )
                 LogPrintNoArg( LOG_DEBUG, "No account data on GET_PC_LIST" );
                 return( NULL );
             }
-            return( db_get_pc_list( req->account_data->id ) );
+            return( db_get_pc_list( req ) );
             break;
         case REQ_TYPE__LOAD_PC:
             if( !req->pc_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No PC data on LOAD_PC" );
                 return( NULL );
             }
-            return( db_load_pc( req->pc_data->account_id,
-                                req->pc_data->id ) );
+            return( db_load_pc( req ) );
             break;
         case REQ_TYPE__SAVE_PC:
             if( !req->pc_data ) {
-                LogPrintNoArg( LOG_DEBUG, "No PC data on SAVE_ACCOUNT" );
+                LogPrintNoArg( LOG_DEBUG, "No PC data on SAVE_PC" );
                 return( NULL );
             }
             return( db_save_pc( req ) );
+            break;
+        case REQ_TYPE__FIND_PC:
+            if( !req->pc_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No PC data on FIND_PC" );
+                return( NULL );
+            }
+            return( db_find_pc( req ) );
             break;
         default:
             /* Not handled yet */

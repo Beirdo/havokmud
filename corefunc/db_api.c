@@ -43,34 +43,34 @@ void db_init( void )
     memset( &db_api_funcs, 0, sizeof(db_api_funcs) );
 }
 
-HavokResponse *db_get_setting(char *name) 
+HavokResponse *db_get_setting( HavokRequest *req ) 
 {
     if( db_api_funcs.get_setting ) {
-        return( db_api_funcs.get_setting(name) );
+        return( db_api_funcs.get_setting(req) );
     } else {
         LogPrintNoArg( LOG_CRIT, "Database API: no get_setting" );
         return( NULL );
     }
 }
 
-void db_set_setting( char *name, char *value )
+HavokResponse *db_set_setting( HavokRequest *req )
 {
     if( !db_api_funcs.set_setting ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no set_setting" );
-        return;
+        return( NULL );
     }
 
-    db_api_funcs.set_setting( name, value );
+    return( db_api_funcs.set_setting( req ) );
 }
 
-HavokResponse *db_load_account( char *email )
+HavokResponse *db_load_account( HavokRequest *req )
 {
-    if( db_api_funcs.load_account ) {
-        return( db_api_funcs.load_account(email) );
-    } else {
+    if( !db_api_funcs.load_account ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no load_account" );
         return( NULL );
     }
+
+    return( db_api_funcs.load_account(req) );
 }
 
 HavokResponse *db_save_account( HavokRequest *req )
@@ -83,24 +83,24 @@ HavokResponse *db_save_account( HavokRequest *req )
     return( db_api_funcs.save_account( req ) );
 }
 
-HavokResponse *db_get_pc_list( int account_id )
+HavokResponse *db_get_pc_list( HavokRequest *req )
 {
     if( !db_api_funcs.get_pc_list ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no get_pc_list" );
         return( NULL );
     }
 
-    return( db_api_funcs.get_pc_list( account_id ) );
+    return( db_api_funcs.get_pc_list( req ) );
 }
 
-HavokResponse *db_load_pc( int account_id, int pc_id )
+HavokResponse *db_load_pc( HavokRequest *req )
 {
     if( !db_api_funcs.load_pc ) {
         LogPrintNoArg( LOG_CRIT, "Database API: no load_pc" );
         return( NULL );
     }
 
-    return( db_api_funcs.load_pc( account_id, pc_id ) );
+    return( db_api_funcs.load_pc( req ) );
 }
 
 HavokResponse *db_save_pc( HavokRequest *req )
@@ -111,6 +111,16 @@ HavokResponse *db_save_pc( HavokRequest *req )
     }
 
     return( db_api_funcs.save_pc( req ) );
+}
+
+HavokResponse *db_find_pc( HavokRequest *req )
+{
+    if( !db_api_funcs.find_pc ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no find_pc" );
+        return( NULL );
+    }
+
+    return( db_api_funcs.find_pc( req ) );
 }
 
 

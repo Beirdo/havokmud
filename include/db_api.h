@@ -32,13 +32,14 @@
 #include "protobuf_api.h"
 
 typedef struct {
-    HavokResponse *(*get_setting)( char * );
-    void (*set_setting)( char *, char * );
-    HavokResponse *(*load_account)( char * );
+    HavokResponse *(*get_setting)( HavokRequest * );
+    HavokResponse *(*set_setting)( HavokRequest * );
+    HavokResponse *(*load_account)( HavokRequest * );
     HavokResponse *(*save_account)( HavokRequest * );
-    HavokResponse *(*get_pc_list)( int );
-    HavokResponse *(*load_pc)( int, int );
+    HavokResponse *(*get_pc_list)( HavokRequest * );
+    HavokResponse *(*load_pc)( HavokRequest * );
     HavokResponse *(*save_pc)( HavokRequest * );
+    HavokResponse *(*find_pc)( HavokRequest * );
 } DatabaseAPIFuncs_t;
 
 extern DatabaseAPIFuncs_t db_api_funcs;

@@ -59,13 +59,15 @@ static char ident[] _UNUSED_ =
 #define COL_BOOL(row, x)    ((atoi((row)[(x)])) ? TRUE : FALSE)
 #define COL_STRING(row, x)  (memstrlink((row)[(x)]))
 
-HavokResponse *db_mysql_get_setting(char *name);
-void db_mysql_set_setting( char *name, char *value );
-HavokResponse *db_mysql_load_account( char *email );
+HavokResponse *db_mysql_get_setting( HavokRequest *req );
+HavokResponse *db_mysql_set_setting( HavokRequest *req );
+HavokResponse *db_mysql_load_account( HavokRequest *req );
 HavokResponse *db_mysql_save_account( HavokRequest *req );
-HavokResponse *db_mysql_get_pc_list( int account_id );
-HavokResponse *db_mysql_load_pc( int account_id, int pc_id );
+HavokResponse *db_mysql_get_pc_list( HavokRequest *req );
+HavokResponse *db_mysql_load_pc( HavokRequest *req );
 HavokResponse *db_mysql_save_pc( HavokRequest *req );
+HavokResponse *db_mysql_find_pc( HavokRequest *req );
+
 char *db_mysql_load_pc_attribs( int pc_id );
 void db_mysql_save_pc_attribs( int pc_id, char *json );
 
@@ -86,6 +88,8 @@ void result_load_pc( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                      long insertid );
 void result_load_pc_attribs( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                              long insertid );
+void result_find_pc( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                     long insertid );
 
 QueryTable_t QueryTable[] = {
     /* 0 */
@@ -139,6 +143,9 @@ QueryTable_t QueryTable[] = {
     /* 16 */
     { "INSERT INTO `pcattribs` (`pc_id`, `attribsrc`, `attribjson`) "
       "VALUES (?, ?, ?)", NULL, NULL, FALSE },
+    /* 17 */
+    { "SELECT `id`, `account_id`, `name` FROM `pcs` WHERE `name` = ?",
+      NULL, NULL, FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
 };
@@ -152,16 +159,17 @@ void db_mysql_init( void )
     db_api_funcs.get_pc_list  = db_mysql_get_pc_list;
     db_api_funcs.load_pc      = db_mysql_load_pc;
     db_api_funcs.save_pc      = db_mysql_save_pc;
+    db_api_funcs.find_pc      = db_mysql_find_pc;
 }
 
-HavokResponse *db_mysql_get_setting(char *name)
+HavokResponse *db_mysql_get_setting( HavokRequest *req )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
     char               *result;
 
-    if( !name ) {
+    if( !req || !req->settings_data->setting_name ) {
         return( NULL );
     }
 
@@ -170,7 +178,8 @@ HavokResponse *db_mysql_get_setting(char *name)
 
     data = CREATEN(MYSQL_BIND, 1);
 
-    bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[0], req->settings_data->setting_name, 
+                 MYSQL_TYPE_VAR_STRING );
     result = NULL;
 
     db_queue_query( 0, QueryTable, data, 1, result_get_setting, (void *)&resp,
@@ -182,29 +191,34 @@ HavokResponse *db_mysql_get_setting(char *name)
     return( resp );
 }
         
-void db_mysql_set_setting( char *name, char *value )
+HavokResponse *db_mysql_set_setting( HavokRequest *req )
 {
     MYSQL_BIND     *data;
     
-    if( !name || !value ) {
-        return;
+    if( !req || !req->settings_data->setting_name || 
+        !req->settings_data->setting_value ) {
+        return( NULL );
     }
     
     data = CREATEN(MYSQL_BIND, 2);
 
-    bind_string( &data[0], name, MYSQL_TYPE_VAR_STRING );
-    bind_string( &data[1], value, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[0], req->settings_data->setting_name, 
+                 MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[1], req->settings_data->setting_value, 
+                 MYSQL_TYPE_VAR_STRING );
     
     db_queue_query( 1, QueryTable, data, 2, NULL, NULL, NULL);
+
+    return( NULL );
 }
     
-HavokResponse *db_mysql_load_account( char *email )
+HavokResponse *db_mysql_load_account( HavokRequest *req )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
 
-    if( !email ) {
+    if( !req || !req->account_data->email ) {
         return( NULL );
     }
 
@@ -213,7 +227,7 @@ HavokResponse *db_mysql_load_account( char *email )
 
     data = CREATEN(MYSQL_BIND, 1);
 
-    bind_string( &data[0], email, MYSQL_TYPE_VAR_STRING );
+    bind_string( &data[0], req->account_data->email, MYSQL_TYPE_VAR_STRING );
 
     db_queue_query( 4, QueryTable, data, 1, result_load_account, (void *)&resp,
                     mutex );
@@ -274,13 +288,13 @@ HavokResponse *db_mysql_save_account( HavokRequest *req )
     return( resp );
 }
 
-HavokResponse *db_mysql_get_pc_list( int account_id )
+HavokResponse *db_mysql_get_pc_list( HavokRequest *req)
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
 
-    if( !account_id ) {
+    if( !req || !req->account_data->id ) {
         return( NULL );
     }
 
@@ -289,7 +303,7 @@ HavokResponse *db_mysql_get_pc_list( int account_id )
 
     data = CREATEN(MYSQL_BIND, 1);
 
-    bind_numeric( &data[0], account_id, MYSQL_TYPE_LONG );
+    bind_numeric( &data[0], req->account_data->id, MYSQL_TYPE_LONG );
 
     db_queue_query( 8, QueryTable, data, 1, result_get_pc_list, (void *)&resp, 
                     mutex );
@@ -300,13 +314,13 @@ HavokResponse *db_mysql_get_pc_list( int account_id )
     return( resp );
 }
 
-HavokResponse *db_mysql_load_pc( int account_id, int pc_id )
+HavokResponse *db_mysql_load_pc( HavokRequest *req )
 {
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
 
-    if( !account_id ) {
+    if( !req || !req->pc_data->account_id || !req->pc_data->id ) {
         return( NULL );
     }
 
@@ -315,8 +329,8 @@ HavokResponse *db_mysql_load_pc( int account_id, int pc_id )
 
     data = CREATEN(MYSQL_BIND, 2);
 
-    bind_numeric( &data[0], account_id, MYSQL_TYPE_LONG );
-    bind_numeric( &data[1], pc_id, MYSQL_TYPE_LONG );
+    bind_numeric( &data[0], req->pc_data->account_id, MYSQL_TYPE_LONG );
+    bind_numeric( &data[1], req->pc_data->id, MYSQL_TYPE_LONG );
 
     db_queue_query( 9, QueryTable, data, 2, result_load_pc, (void *)&resp, 
                     mutex );
@@ -324,7 +338,7 @@ HavokResponse *db_mysql_load_pc( int account_id, int pc_id )
     pthread_mutex_destroy( mutex );
     memfree( mutex );
 
-    resp->pc_data[0]->attribs = db_mysql_load_pc_attribs( pc_id );
+    resp->pc_data[0]->attribs = db_mysql_load_pc_attribs( req->pc_data->id );
     return( resp );
 }
 
@@ -435,6 +449,31 @@ void db_mysql_save_pc_attribs( int pc_id, char *json )
     memfree( mutex );
 }
 
+HavokResponse *db_mysql_find_pc( HavokRequest *req )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    HavokResponse      *resp;
+
+    if( !req || !req->pc_data || !req->pc_data->name ) {
+        return( NULL );
+    }
+
+    mutex = CREATE(pthread_mutex_t);
+    thread_mutex_init( mutex );
+
+    data = CREATEN(MYSQL_BIND, 1);
+
+    bind_string( &data[0], req->pc_data->name, MYSQL_TYPE_VAR_STRING );
+
+    db_queue_query( 17, QueryTable, data, 1, result_find_pc, (void *)&resp, 
+                    mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+
+    return( resp );
+}
 
 /*
  * Query chaining functions
@@ -730,6 +769,35 @@ void result_load_pc_attribs( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 
     *json = CombineJSON(js);
     memfree(js);
+}
+
+void result_find_pc( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
+                     long insertid )
+{
+    HavokResponse     **resp;
+    int                 count;
+    MYSQL_ROW           row;
+
+    resp = (HavokResponse **)arg;
+
+    count = mysql_num_rows(res);
+    if( count == 0 ) {
+        *resp = NULL;
+        return;
+    }
+
+    *resp = protobufCreateResponse();
+    if( !*resp ) {
+        return;
+    }
+
+    (*resp)->request_type = REQ_TYPE__FIND_PC;
+    (*resp)->n_pc_data = 1;
+    (*resp)->pc_data = CREATE(ReqPCType *);
+
+    row = mysql_fetch_row(res);
+    (*resp)->pc_data[0] = CREATE(ReqPCType);
+    db_fill_row_load_pc( row, *resp, 0 );
 }
 
 /*

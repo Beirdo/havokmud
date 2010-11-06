@@ -17,6 +17,6 @@ message HavokResponse {
     // Required for LOAD_ACCOUNT and SAVE_ACCOUNT
     optional ReqAccountType account_data = 17;
 
-    // Required for LOAD_PC, SAVE_PC and GET_PC_LIST
+    // Required for LOAD_PC, SAVE_PC and GET_PC_LIST and FIND_PC
     repeated ReqPCType pc_data = 18;
 }

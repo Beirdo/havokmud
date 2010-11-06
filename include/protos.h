@@ -151,13 +151,14 @@ void db_queue_query( int queryId, QueryTable_t *queryTable,
  * db_api.c
  */
 
-HavokResponse *db_get_setting(char *name);
-void db_set_setting( char *name, char *value );
-HavokResponse *db_load_account( char *email );
+HavokResponse *db_get_setting( HavokRequest *req );
+HavokResponse *db_set_setting( HavokRequest *req );
+HavokResponse *db_load_account( HavokRequest *req );
 HavokResponse *db_save_account( HavokRequest *req );
-HavokResponse *db_get_pc_list( int account_id );
-HavokResponse *db_load_pc( int account_id, int pc_id );
+HavokResponse *db_get_pc_list( HavokRequest *req );
+HavokResponse *db_load_pc( HavokRequest *req );
 HavokResponse *db_save_pc( HavokRequest *req );
+HavokResponse *db_find_pc( HavokRequest *req );
 
 
 /*
@@ -171,6 +172,7 @@ void pb_save_account( PlayerAccount_t *account );
 PlayerPC_t *pb_get_pc_list( int account_id );
 PlayerPC_t *pb_load_pc( int account_id, int pc_id );
 void pb_save_pc( PlayerPC_t *pc );
+PlayerPC_t *pb_find_pc( char *name );
 
 
 
