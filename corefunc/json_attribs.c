@@ -31,6 +31,8 @@
 #include "environment.h"
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include <float.h>
 #include "logging.h"
 #include "structs.h"
 #include "interthread.h"
@@ -357,7 +359,7 @@ void AddAttribute( char *json, char *source, PlayerPC_t *pc )
     DestroyJSONSource( js );
 }
 
-void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
+void DeleteAttribute( char *attrib, char *source, PlayerPC_t *pc )
 {
     BalancedBTreeItem_t    *item;
     BalancedBTree_t        *subTree;
@@ -806,6 +808,91 @@ bool GetAttributeBool( PlayerPC_t *pc, char *attrib, char *source )
     cJSON_Delete(jsonItem);
 
     return( value );
+}
+
+void SetAttributeString( PlayerPC_t *pc, char *attrib, char *source, 
+                         char *val )
+{
+    char           *string;
+    int             len;
+
+    if( !attrib | !source ) {
+        return;
+    }
+
+    if( !val ) {
+        len = 2;
+    } else {
+        len = strlen(val);
+    }
+    string = CREATEN(char, strlen(attrib)+len+11);
+    if( !val ) {
+        sprintf( string, "{ \"%s\": null }", attrib );
+    } else {
+        sprintf( string, "{ \"%s\": \"%s\" }", attrib, val );
+    }
+
+    AddAttribute( string, source, pc );
+    memfree( string );
+}
+
+void SetAttributeInt( PlayerPC_t *pc, char *attrib, char *source, int val )
+{
+    char           *string;
+
+    if( !attrib | !source ) {
+        return;
+    }
+
+    string = CREATEN(char, strlen(attrib)+21+9);
+    sprintf( string, "{ \"%s\": %d }", attrib, val );
+
+    AddAttribute( string, source, pc );
+    memfree( string );
+}
+
+void SetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source, 
+                         double val )
+{
+    char           *string;
+    char           *sval;
+    int             len;
+
+    if( !attrib | !source ) {
+        return;
+    }
+
+    sval   = CREATEN(char, 64);
+
+    if( fabs(floor(val)-val) <= DBL_EPSILON ) {
+        sprintf( sval, "%.0f", val );
+    } else if( fabs(val) < 1.0e-6 || fabs(val) > 1.0e9 ) {
+        sprintf( sval, "%e", val );
+    } else {
+        sprintf( sval, "%f", val );
+    }
+
+    string = CREATEN(char, strlen(attrib)+strlen(sval)+9);
+    sprintf( string, "{ \"%s\": %s }", attrib, sval );
+
+    AddAttribute( string, source, pc );
+    memfree( string );
+    memfree( sval );
+}
+
+void SetAttributeBool( PlayerPC_t *pc, char *attrib, char *source, bool val )
+{
+    char           *string;
+
+    if( !attrib | !source ) {
+        return;
+    }
+
+    string = CREATEN(char, strlen(attrib)+5+9);
+    sprintf( string, "{ \"%s\": %s }", attrib, (val ? "true" : "false") );
+
+    AddAttribute( string, source, pc );
+    memfree( string );
 }
 
 /*

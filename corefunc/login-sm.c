@@ -904,8 +904,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 pc = CREATE(PlayerPC_t);
                 player->pc = pc;
                 pc->account_id = player->account->id;
-                sprintf( attrib, "{ \"complete\": false }" );
-                AddAttribute( attrib, "core-pc", pc );
+                SetAttributeBool( pc, "complete", "core-pc", FALSE );
             }
             pc->name = memstrlink( arg );
             pb_save_pc( pc );
@@ -926,15 +925,15 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         switch (tolower(*arg)) {
         case 'm':
-            sprintf( attrib, "{ \"sex\": %d }", SEX_MALE );
+            SetAttributeInt( pc, "sex", "core-pc", SEX_MALE );
             break;
 
         case 'f':
-            sprintf( attrib, "{ \"sex\": %d }", SEX_FEMALE );
+            SetAttributeInt( pc, "sex", "core-pc", SEX_FEMALE );
             break;
 
         case 'n':
-            sprintf( attrib, "{ \"sex\": %d }", SEX_NEUTRAL );
+            SetAttributeInt( pc, "sex", "core-pc", SEX_NEUTRAL );
             break;
 
         default:
@@ -944,7 +943,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             break;
         }
 
-        AddAttribute( attrib, "core-pc", pc );
         pb_save_pc( pc );
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;

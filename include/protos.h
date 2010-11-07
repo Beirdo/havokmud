@@ -322,16 +322,26 @@ void logging_toggle_debug( int signum, void *info, void *secret );
 /*
  * From json_attribs.c
  */
-void AddAttribute( char *json, char *source, PlayerPC_t *pc );
 void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc );
 JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc );
 char *CombineJSON( JSONSource_t *js );
 JSONSource_t *SplitJSON( char *json );
 void DestroyJSONSource( JSONSource_t *js );
+
+void AddAttribute( char *json, char *source, PlayerPC_t *pc );
+void DeleteAttribute( char *attrib, char *source, PlayerPC_t *pc );
+
 char *GetAttributeString( PlayerPC_t *pc, char *attrib, char *source );
 int GetAttributeInt( PlayerPC_t *pc, char *attrib, char *source );
 double GetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source );
 bool GetAttributeBool( PlayerPC_t *pc, char *attrib, char *source );
+
+void SetAttributeString( PlayerPC_t *pc, char *attrib, char *source, 
+                         char *val );
+void SetAttributeInt( PlayerPC_t *pc, char *attrib, char *source, int val );
+void SetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source, 
+                         double val );
+void SetAttributeBool( PlayerPC_t *pc, char *attrib, char *source, bool val );
 
 
 
