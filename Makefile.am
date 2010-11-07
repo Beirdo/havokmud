@@ -20,6 +20,6 @@ if !USING_CYGWIN
 havoknew_LDFLAGS += -rdynamic
 endif
 
-havoknew_LINK = ${CCLD} -o $@
+havoknew_LINK = ${CCLD} ${havoknew_LDFLAGS} -o $@
 
 include Makefile.local
