@@ -347,10 +347,10 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
-    int                 id;
+    volatile int        id;
 
-    if( !req || !req->account_data ) {
-        return;
+    if( !req || !req->pc_data ) {
+        return( NULL );
     }
 
     mutex = CREATE(pthread_mutex_t);
@@ -361,7 +361,7 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     bind_numeric( &data[0], req->pc_data->id, MYSQL_TYPE_LONG );
     bind_numeric( &data[1], req->pc_data->account_id, MYSQL_TYPE_LONG );
     bind_string( &data[2], req->pc_data->name, MYSQL_TYPE_VAR_STRING );
-    bind_null_blob( &data[3], &id );
+    bind_null_blob( &data[3], (void *)&id );
 
     db_queue_query( 10, QueryTable, data, 4, NULL, NULL, mutex );
 
@@ -382,6 +382,7 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     resp->pc_data[0] = CREATE(ReqPCType);
     req_pctype__init( resp->pc_data[0] );
     memcpy( resp->pc_data[0], req->pc_data, sizeof(ReqPCType) );
+    resp->pc_data[0]->id   = id;
     resp->pc_data[0]->name = memstrlink( req->pc_data->name );
 
     return( resp );
@@ -432,9 +433,8 @@ void db_mysql_save_pc_attribs( int pc_id, char *json )
     mutex = CREATE(pthread_mutex_t);
     thread_mutex_init( mutex );
 
-    jsItem = js;
-    while( jsItem ) {
-        data = CREATEN(MYSQL_BIND, 2);
+    for( jsItem = js; jsItem->source; jsItem++ ) {
+        data = CREATEN(MYSQL_BIND, 3);
 
         bind_numeric( &data[0], pc_id, MYSQL_TYPE_LONG );
         bind_string( &data[1], jsItem->source, MYSQL_TYPE_VAR_STRING );
@@ -447,6 +447,8 @@ void db_mysql_save_pc_attribs( int pc_id, char *json )
 
     pthread_mutex_destroy( mutex );
     memfree( mutex );
+
+    DestroyJSONSource( js );
 }
 
 HavokResponse *db_mysql_find_pc( HavokRequest *req )
@@ -544,7 +546,7 @@ void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
         count = 0;
     }
 
-    id = (int *)data[27].buffer;
+    id = (int *)data[3].buffer;
     
     if( count ) {
         /* update */
@@ -556,7 +558,8 @@ void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
         db_queue_query( 11, QueryTable, data, 4, NULL, NULL, NULL );
     } else {
         /* insert */
-        db_queue_query( 12, QueryTable, data, 3, result_insert_id, id,
+        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
+        db_queue_query( 12, QueryTable, data, 2, result_insert_id, id,
                         NULL );
     }
 }

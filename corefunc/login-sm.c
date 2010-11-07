@@ -252,18 +252,20 @@ int checkAssName(char *name)
 
 void ShowCreationMenu(PlayerStruct_t *player)
 {
-    struct char_data   *ch;
+    PlayerPC_t     *pc;
 
-    ch = player->charData;
-
+    pc = player->pc;
 
     SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu"
                        "$c0009=-\n\r\n\r");
 
     SendOutput(player, "$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
-                       (GET_NAME(ch) ? GET_NAME(ch) : "not chosen"));
+                       (pc && pc->name ? pc->name : "not chosen"));
     SendOutput(player, "$c00152) $c0012Gender. [$c0015%s$c0012]\n\r",
+                       "TODO");
+#if 0
                        Sex[((int) GET_SEX(ch))]);
+#endif
     SendOutput(player, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
                            "TODO");
     SendOutput(player, "$c00154) $c0012Class. [$c0015%s$c0012]\n\r", "TODO" );
@@ -497,23 +499,23 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                     index = 0;
     char            tmp_name[20];
     char           *tmp;
-    struct char_data *ch;
     int             pick = 0;
-#if 0
-    PlayerStruct_t *oldPlayer;
-#endif
     InputStateItem_t   *stateItem;
+    PlayerPC_t     *pc;
+    PlayerPC_t     *tempPc;
 
-    ch = player->charData;
+    pc = player->pc;
     SendOutputRaw(player, echo_on, 6);
 
     switch (player->state) {
     case STATE_INITIAL:
+#if 0
         if (!ch) {
             player->charData = CREATE(struct char_data);
             ch = player->charData;
             ch->playerDesc = player;
         }
+#endif
         EnterState(player, STATE_GET_EMAIL);
         break;
 
@@ -656,14 +658,17 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         }
 
+#if 0
         if (ch->specials.hostip == NULL) {
             if (!IS_IMMORTAL(ch) ||
                 ch->invis_level <= 58) {
+#endif
                 ProtectedDataLock(player->connection->hostName);
                 LogPrint(LOG_INFO, "%s[%s] has connected.", 
                          player->account->email,
                          (char *)player->connection->hostName->data);
                 ProtectedDataUnlock(player->connection->hostName);
+#if 0
             }
         } else if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
             ProtectedDataLock(player->connection->hostName);
@@ -682,6 +687,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                         memstrlink((char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
         ch->last_tell = NULL;
+#endif
 
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
@@ -725,6 +731,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /*
          * read CR after printing motd
          */
+#if 0
         if (IS_IMMORTAL(ch)) {
             EnterState(player, STATE_SHOW_WMOTD);
             break;
@@ -747,12 +754,16 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         }
+#else
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+#endif
         break;
 
     case STATE_SHOW_WMOTD:
         /*
          * read CR after printing motd
          */
+#if 0
         ProtectedDataLock(player->connection->hostName);
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || 
              SiteLock((char *)player->connection->hostName->data)) &&
@@ -765,6 +776,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             ProtectedDataUnlock(player->connection->hostName);
             EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         }
+#else
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+#endif
         break;
 
     case STATE_SHOW_CREDITS:
@@ -829,10 +843,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             memfree( player->account->pwd );
         }
 
-	player->account->pwd = player->account->newpwd;
+        player->account->pwd = player->account->newpwd;
         player->account->newpwd = NULL;
 
-	SendOutput(player, "Password changed...\n\r");
+        SendOutput(player, "Password changed...\n\r");
 
         pb_save_account(player->account);
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
@@ -878,13 +892,23 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     case STATE_CHOOSE_NAME:
         arg = skip_spaces(arg);
         if( !arg ) {
-            SendOutput(player, "Mever mind then.\n\r");
+            SendOutput(player, "Never mind then.\n\r");
+        } else if ( (tempPc = pb_find_pc( arg ) ) ) {
+            SendOutput(player, "Name taken.\n\r");
+            memfree( tempPc->name );
+            memfree( tempPc );
         } else {
-            /* TODO: check for dupes and banned names */
-            if( GET_NAME(ch) ) {
-                memfree( GET_NAME(ch) );
+            /* TODO: check for banned names */
+            if( pc && pc->name ) {
+                memfree( pc->name );
+            } else if( !pc ) {
+                pc = CREATE(PlayerPC_t);
+                player->pc = pc;
+                pc->account_id = player->account->id;
+                AddAttribute( "{ \"complete\": false }", "core-pc", pc );
             }
-            GET_NAME(ch) = memstrlink( arg );
+            pc->name = memstrlink( arg );
+            pb_save_pc( pc );
         }
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
@@ -892,6 +916,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     /* Sorted to here */
 
     case STATE_CHOOSE_ALIGNMENT:
+#if 0
         arg = skip_spaces(arg);
         if( !arg ) {
             SendOutput(player, "Please select a alignment.\n\r");
@@ -921,9 +946,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             SendOutput(player, "Please select a alignment.\n\r");
             break;
         }
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_CHOOSE_RACE:
+#if 0
         ch->reroll = 20;
         arg = skip_spaces(arg);
         if (!arg) {
@@ -943,9 +972,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #if 0
         }
 #endif
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_CHOOSE_SEX:
+#if 0
         /*
          * query sex of new user
          */
@@ -982,9 +1015,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         EnterState(player, STATE_SHOW_CREATION_MENU);
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_CHOOSE_STATS:
+#if 0
         /*
          * skip whitespaces
          */
@@ -1048,9 +1085,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         ch->reroll--;
         EnterState(player, STATE_REROLL);
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_REROLL:
+#if 0
         arg = skip_spaces(arg);
         ch->reroll--;
 
@@ -1086,9 +1127,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } else {
             EnterState(player, STATE_SHOW_CREATION_MENU);
         }
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_CHOOSE_CLASS:
+#if 0
         /*
          * skip whitespaces
          */
@@ -1144,9 +1189,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                                       "screwy!!");
             EnterState(player, STATE_SHOW_CREATION_MENU);
         }
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_WAIT_FOR_AUTH:
+#if 0
         if (ch->generic >= NEWBIE_START) {
             /*
              * now that classes are set, initialize
@@ -1202,9 +1251,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         } else {
             EnterState(player, STATE_WIZLOCKED);
         }
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_DELETE_USER:
+#if 0
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(ch))) {
@@ -1213,9 +1266,13 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         EnterState(player, STATE_SHOW_LOGIN_MENU);
+#else
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+#endif
         break;
 
     case STATE_SHOW_LOGIN_MENU:
+#if 0
         /* 
          * get selection from main menu
          * skip whitespaces
@@ -1296,6 +1353,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             EnterState(player, STATE_SHOW_LOGIN_MENU);
             break;
         }
+#else
+        EnterState(player, STATE_SHOW_LOGIN_MENU);
+#endif
         break;
 
     case STATE_EDIT_EXTRA_DESCR:

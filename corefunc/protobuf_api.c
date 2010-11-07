@@ -311,7 +311,6 @@ void pb_save_pc( PlayerPC_t *pc )
         return;
     }
 
-    pc = NULL;
     if( resp->n_pc_data ) {
         pc->id = resp->pc_data[0]->id;
     }

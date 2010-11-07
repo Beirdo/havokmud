@@ -107,9 +107,16 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     BalancedBTree_t        *subTree;
     BalancedBTree_t        *srcSubTree;
 
-    if( !js || !js->source || !js->json || !pc || !pc->attribs || 
-        !pc->sources ) {
+    if( !js || !js->source || !js->json || !pc ) {
         return;
+    }
+
+    if( !pc->attribs ) {
+        pc->attribs = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
+    }
+
+    if( !pc->sources ) {
+        pc->sources = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
     }
 
     json = strip_whitespace(js->json);
@@ -122,6 +129,7 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     }
 
     jsonTree = cJSON_Parse(json);
+    LogPrint(LOG_DEBUG, "JSON parsed - %s", json);
     BalancedBTreeLock( pc->attribs );
     BalancedBTreeLock( pc->sources );
 
@@ -188,6 +196,7 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     BalancedBTreeUnlock( pc->sources );
     BalancedBTreeUnlock( pc->attribs );
     cJSON_Delete(jsonTree);
+    LogPrintNoArg(LOG_DEBUG, "JSON inserted into trees");
 }
 
 void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
@@ -200,6 +209,7 @@ void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
 
     cJSON_AddItemToObject( jsonTree, (char *)item->key, 
                            cJSON_Clone( (cJSON *)item->item ) );
+    LogPrint(LOG_DEBUG, "Appended: %s", item->key);
 
     AppendAttribToJSON( jsonTree, item->right );
 }
@@ -218,6 +228,7 @@ int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
 
     jsonItem = cJSON_CreateObject();
     cJSON_AddItemToObject(jsonTree, (char *)item->key, jsonItem);
+    LogPrint(LOG_DEBUG, "Appended Tree: %s", item->key);
     AppendAttribToJSON( jsonItem, ((BalancedBTree_t *)item->item)->root );
 
     count += AppendSourceToJSON( jsonTree, item->right );
@@ -242,6 +253,7 @@ JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc )
     BalancedBTreeLock( pc->sources );
     srcCount = AppendSourceToJSON( jsonTree, pc->sources->root );
     BalancedBTreeUnlock( pc->sources );
+    LogPrint(LOG_DEBUG, "Appended %d items", srcCount);
 
     js = CREATEN(JSONSource_t, srcCount+1);
 
@@ -250,9 +262,12 @@ JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc )
          i++, jsonItem = jsonItem->next ) {
         js[i].source = memstrlink(jsonItem->string);
         js[i].json   = cJSON_Print(jsonItem);
+        LogPrint(LOG_DEBUG, "Source: %s, JSON: %s", js[i].source, js[i].json );
     }
 
     cJSON_Delete(jsonTree);
+
+    return( js );
 }
 
 char *CombineJSON( JSONSource_t *js )
@@ -262,13 +277,16 @@ char *CombineJSON( JSONSource_t *js )
     char           *json;
 
     jsonTree = cJSON_CreateObject();
-    while( js->source ) {
+    for( ; js->source; js++ ) {
         jsonItem = cJSON_Parse( js->json );
         cJSON_AddItemToObject( jsonTree, js->source, jsonItem );
     }
 
     json = cJSON_Print( jsonTree );
+    LogPrint(LOG_DEBUG, "Merged JSON: %s", json);
     cJSON_Delete( jsonTree );
+
+    return( json );
 }
 
 JSONSource_t *SplitJSON( char *json )
@@ -279,15 +297,18 @@ JSONSource_t *SplitJSON( char *json )
     int             count;
     int             i;
     
+    LogPrint(LOG_DEBUG, "JSON to split: %s", json );
     jsonTree = cJSON_Parse( json );
     for( count = 0, jsonItem = jsonTree->child; jsonItem; 
          jsonItem = jsonItem->next, count++ );
 
+    LogPrint(LOG_DEBUG, "Count: %d", count );
     js = CREATEN(JSONSource_t, count+1);
     for( i = 0, jsonItem = jsonTree->child; i < count && jsonItem;
          jsonItem = jsonItem->next, i++ ) {
         js[i].source = memstrlink(jsonItem->string);
         js[i].json   = cJSON_Print(jsonItem);
+        LogPrint(LOG_DEBUG, "Source: %s, JSON: %s", js[i].source, js[i].json );
     }
          
     cJSON_Delete( jsonTree );
@@ -299,8 +320,12 @@ void DestroyJSONSource( JSONSource_t *js )
     JSONSource_t       *jsItem;
 
     for( jsItem = js; jsItem->source; jsItem++ ) {
-        memfree( jsItem->source );
-        memfree( jsItem->json );
+        if( jsItem->source ) {
+            memfree( jsItem->source );
+        }
+        if( jsItem->json ) {
+            memfree( jsItem->json );
+        }
     }
     memfree( js );
 }
@@ -313,7 +338,7 @@ void AddAttribute( char *json, char *source, PlayerPC_t *pc )
         return;
     }
 
-    js = CREATE(JSONSource_t);
+    js = CREATEN(JSONSource_t,2);
     if( !js ) {
         return;
     }
