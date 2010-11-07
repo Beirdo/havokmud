@@ -262,10 +262,7 @@ void ShowCreationMenu(PlayerStruct_t *player)
     SendOutput(player, "$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
                        (pc && pc->name ? pc->name : "not chosen"));
     SendOutput(player, "$c00152) $c0012Gender. [$c0015%s$c0012]\n\r",
-                       "TODO");
-#if 0
-                       Sex[((int) GET_SEX(ch))]);
-#endif
+                       Sex[GetAttributeInt(pc, "sex", "core-pc")]);
     SendOutput(player, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
                            "TODO");
     SendOutput(player, "$c00154) $c0012Class. [$c0015%s$c0012]\n\r", "TODO" );
@@ -400,12 +397,11 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
     case STATE_CHOOSE_NAME:
         SendOutput(player, "Choose the name of your new PC: ");
         break;
+    case STATE_CHOOSE_SEX:
+        SendOutput(player, "What is your sex (M)ale/(F)emale/(N)eutral) ? ");
+        break;
 
     /* sorted to here */
-
-    case STATE_CHOOSE_SEX:
-        SendOutput(player, "What is your sex (M/F) ? ");
-        break;
     case STATE_CHOOSE_RACE:
         SendOutput(player, "For help type '?'- will list level limits. \n\r"
                            " RACE:  ");
@@ -503,6 +499,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     InputStateItem_t   *stateItem;
     PlayerPC_t     *pc;
     PlayerPC_t     *tempPc;
+    char            attrib[256];
 
     pc = player->pc;
     SendOutputRaw(player, echo_on, 6);
@@ -893,10 +890,12 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         arg = skip_spaces(arg);
         if( !arg ) {
             SendOutput(player, "Never mind then.\n\r");
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         } else if ( (tempPc = pb_find_pc( arg ) ) ) {
             SendOutput(player, "Name taken.\n\r");
             memfree( tempPc->name );
             memfree( tempPc );
+            EnterState(player, STATE_CHOOSE_NAME);
         } else {
             /* TODO: check for banned names */
             if( pc && pc->name ) {
@@ -905,11 +904,48 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
                 pc = CREATE(PlayerPC_t);
                 player->pc = pc;
                 pc->account_id = player->account->id;
-                AddAttribute( "{ \"complete\": false }", "core-pc", pc );
+                sprintf( attrib, "{ \"complete\": false }" );
+                AddAttribute( attrib, "core-pc", pc );
             }
             pc->name = memstrlink( arg );
             pb_save_pc( pc );
+            EnterState(player, STATE_SHOW_CREATION_MENU);
         }
+        break;
+
+    case STATE_CHOOSE_SEX:
+        /*
+         * query sex of new user
+         */
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            SendOutput(player, "That's not a sex..\n\r");
+            EnterState(player, STATE_CHOOSE_SEX);
+            return;
+        }
+
+        switch (tolower(*arg)) {
+        case 'm':
+            sprintf( attrib, "{ \"sex\": %d }", SEX_MALE );
+            break;
+
+        case 'f':
+            sprintf( attrib, "{ \"sex\": %d }", SEX_FEMALE );
+            break;
+
+        case 'n':
+            sprintf( attrib, "{ \"sex\": %d }", SEX_NEUTRAL );
+            break;
+
+        default:
+            SendOutput(player, "That's not a sex..\n\r");
+            EnterState(player, STATE_CHOOSE_SEX);
+            return;
+            break;
+        }
+
+        AddAttribute( attrib, "core-pc", pc );
+        pb_save_pc( pc );
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
@@ -977,48 +1013,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 #endif
         break;
 
-    case STATE_CHOOSE_SEX:
-#if 0
-        /*
-         * query sex of new user
-         */
-        /*
-         * skip whitespaces
-         */
-        arg = skip_spaces(arg);
-        if( !arg ) {
-            SendOutput(player, "That's not a sex..\n\r");
-            EnterState(player, STATE_CHOOSE_SEX);
-            return;
-        }
-
-        switch (tolower(*arg)) {
-        case 'm':
-            /*
-             * sex MALE
-             */
-            ch->player.sex = SEX_MALE;
-            break;
-
-        case 'f':
-            /*
-             * sex FEMALE
-             */
-            ch->player.sex = SEX_FEMALE;
-            break;
-
-        default:
-            SendOutput(player, "That's not a sex..\n\r");
-            EnterState(player, STATE_CHOOSE_SEX);
-            return;
-            break;
-        }
-
-        EnterState(player, STATE_SHOW_CREATION_MENU);
-#else
-        EnterState(player, STATE_SHOW_CREATION_MENU);
-#endif
-        break;
 
     case STATE_CHOOSE_STATS:
 #if 0

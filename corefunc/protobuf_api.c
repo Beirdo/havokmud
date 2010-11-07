@@ -312,7 +312,10 @@ void pb_save_pc( PlayerPC_t *pc )
     }
 
     if( resp->n_pc_data ) {
-        pc->id = resp->pc_data[0]->id;
+        if( pc->id != resp->pc_data[0]->id ) {
+            pc->id = resp->pc_data[0]->id;
+            LogPrint( LOG_DEBUG, "New PC ID: %d", pc->id );
+        }
     }
 
     protobufDestroyMessage( (ProtobufCMessage *)resp );

@@ -547,20 +547,22 @@ void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
     }
 
     id = (int *)data[3].buffer;
+    *id = *(int *)data[0].buffer;
+
+    memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
+    memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
+    memcpy(  &data[2], temp,     sizeof(MYSQL_BIND) );
     
     if( count ) {
         /* update */
         /* swap argument order */
-        *id = *(int *)data[0].buffer;
-        memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
-        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
-        memcpy(  &data[2], temp,     sizeof(MYSQL_BIND) );
-        db_queue_query( 11, QueryTable, data, 4, NULL, NULL, NULL );
+        LogPrint(LOG_DEBUG, "Updating id %d", *id);
+        db_queue_query( 11, QueryTable, data, 3, NULL, NULL, NULL );
     } else {
         /* insert */
-        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
-        db_queue_query( 12, QueryTable, data, 2, result_insert_id, id,
-                        NULL );
+        *id = 0;
+        LogPrintNoArg(LOG_DEBUG, "Inserting");
+        db_queue_query( 12, QueryTable, data, 2, result_insert_id, id, NULL );
     }
 }
 

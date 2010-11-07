@@ -328,6 +328,10 @@ JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc );
 char *CombineJSON( JSONSource_t *js );
 JSONSource_t *SplitJSON( char *json );
 void DestroyJSONSource( JSONSource_t *js );
+char *GetAttributeString( PlayerPC_t *pc, char *attrib, char *source );
+int GetAttributeInt( PlayerPC_t *pc, char *attrib, char *source );
+double GetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source );
+bool GetAttributeBool( PlayerPC_t *pc, char *attrib, char *source );
 
 
 

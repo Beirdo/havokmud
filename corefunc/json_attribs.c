@@ -47,6 +47,7 @@ void SourceDeleteAttrib( char *attrib, BalancedBTree_t *tree );
 void SourceTreeDeleteAttrib( char *attrib, BalancedBTreeItem_t *item );
 bool SourceTreeCleanup( BalancedBTreeItem_t *item );
 bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item );
+cJSON *GetAttribute( PlayerPC_t *pc, char *attrib, char *source );
 
 char *strip_whitespace(char *string)
 {
@@ -134,7 +135,7 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     BalancedBTreeLock( pc->sources );
 
     /* Find or make the subtree for the sources tree.  Once. */
-    item = BalancedBTreeFind( pc->sources, js->source, LOCKED, FALSE );
+    item = BalancedBTreeFind( pc->sources, &js->source, LOCKED, FALSE );
     if( item ) {
         srcSubTree = (BalancedBTree_t *)item->item;
         BalancedBTreeLock( srcSubTree );
@@ -143,7 +144,8 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
         BalancedBTreeLock( srcSubTree );
 
         item = CREATE(BalancedBTreeItem_t);
-        item->key  = memstrlink(js->source);
+        item->key  = CREATE(char *);
+        *(char **)item->key = memstrlink(js->source);
         item->item = srcSubTree;
         BalancedBTreeAdd( pc->sources, item, LOCKED, TRUE );
     }
@@ -152,37 +154,41 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
         /* For each data item, stuff it into two separate two-layer trees */
 
         /* First the attribs tree.  attrib->source */
-        item = BalancedBTreeFind( pc->attribs, jsonItem->string, LOCKED, 
+        item = BalancedBTreeFind( pc->attribs, &jsonItem->string, LOCKED, 
                                   FALSE );
         if( item ) {
             subTree = (BalancedBTree_t *)item->item;
         } else {
             subTree = BalancedBTreeCreate( NULL, BTREE_KEY_STRING );
             item = CREATE(BalancedBTreeItem_t);
-            item->key  = memstrlink(jsonItem->string);
+            item->key  = CREATE(char *);
+            *(char **)item->key = memstrlink(jsonItem->string);
             item->item = subTree;
             BalancedBTreeAdd( pc->attribs, item, LOCKED, FALSE );
         }
 
-        item = BalancedBTreeFind( subTree, js->source, UNLOCKED, FALSE );
+        item = BalancedBTreeFind( subTree, &js->source, UNLOCKED, FALSE );
         if( item ) {
             cJSON_Delete(item->item);
             item->item = cJSON_Clone(jsonItem);
         } else {
             item = CREATE(BalancedBTreeItem_t);
-            item->key  = memstrlink(js->source);
+            item->key  = CREATE(char *);
+            *(char **)item->key = memstrlink(js->source);
             item->item = cJSON_Clone(jsonItem);
             BalancedBTreeAdd( subTree, item, UNLOCKED, TRUE );
         }
 
         /* Second the sources tree.  source->attrib */
-        item = BalancedBTreeFind( srcSubTree, jsonItem->string, LOCKED, FALSE );
+        item = BalancedBTreeFind( srcSubTree, &jsonItem->string, LOCKED, 
+                                  FALSE );
         if( item ) {
             cJSON_Delete(item->item);
             item->item = cJSON_Clone(jsonItem);
         } else {
             item = CREATE(BalancedBTreeItem_t);
-            item->key  = memstrlink(jsonItem->string);
+            item->key  = CREATE(char *);
+            *(char **)item->key = memstrlink(jsonItem->string);
             item->item = cJSON_Clone(jsonItem);
             BalancedBTreeAdd( srcSubTree, item, LOCKED, FALSE );
         }
@@ -207,9 +213,9 @@ void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
 
     AppendAttribToJSON( jsonTree, item->left );
 
-    cJSON_AddItemToObject( jsonTree, (char *)item->key, 
+    cJSON_AddItemToObject( jsonTree, *(char **)item->key, 
                            cJSON_Clone( (cJSON *)item->item ) );
-    LogPrint(LOG_DEBUG, "Appended: %s", item->key);
+    LogPrint(LOG_DEBUG, "Appended: %s", *(char **)item->key);
 
     AppendAttribToJSON( jsonTree, item->right );
 }
@@ -227,8 +233,8 @@ int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
     count += 1;
 
     jsonItem = cJSON_CreateObject();
-    cJSON_AddItemToObject(jsonTree, (char *)item->key, jsonItem);
-    LogPrint(LOG_DEBUG, "Appended Tree: %s", item->key);
+    cJSON_AddItemToObject(jsonTree, *(char **)item->key, jsonItem);
+    LogPrint(LOG_DEBUG, "Appended Tree: %s", *(char **)item->key);
     AppendAttribToJSON( jsonItem, ((BalancedBTree_t *)item->item)->root );
 
     count += AppendSourceToJSON( jsonTree, item->right );
@@ -366,7 +372,7 @@ void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
     BalancedBTreeLock( pc->sources );
 
     /* First the attribs tree.  attrib->source */
-    item = BalancedBTreeFind( pc->attribs, attrib, LOCKED, FALSE );
+    item = BalancedBTreeFind( pc->attribs, &attrib, LOCKED, FALSE );
     if( item ) {
         subTree = (BalancedBTree_t *)item->item;
         BalancedBTreeLock( subTree );
@@ -375,14 +381,14 @@ void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
             while( AttribTreeItemsDestroy( subTree->root ) );
             BalancedBTreeDestroy( subTree );
             BalancedBTreeRemove( pc->attribs, item, LOCKED, TRUE );
-            memfree( item->key );
+            memfree( *(char **)item->key );
             memfree( item );
         } else {
-            item = BalancedBTreeFind( subTree, source, LOCKED, FALSE );
+            item = BalancedBTreeFind( subTree, &source, LOCKED, FALSE );
             if( item ) {
                 BalancedBTreeRemove( subTree, item, LOCKED, TRUE );
                 cJSON_Delete( item->item );
-                memfree( item->key );
+                memfree( *(char **)item->key );
                 memfree( item );
             }
             BalancedBTreeUnlock( subTree );
@@ -403,7 +409,7 @@ void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
             BalancedBTreeAdd( pc->sources, NULL, LOCKED, TRUE );
         }
     } else {
-        item = BalancedBTreeFind( pc->sources, source, LOCKED, FALSE );
+        item = BalancedBTreeFind( pc->sources, &source, LOCKED, FALSE );
         if( item ) {
             subTree = (BalancedBTree_t *)item->item;
             BalancedBTreeLock( subTree );
@@ -412,7 +418,7 @@ void DeleteAtribute( char *attrib, char *source, PlayerPC_t *pc )
                 /* subTree now empty! */
                 BalancedBTreeDestroy( subTree );
                 BalancedBTreeRemove( pc->sources, item, LOCKED, TRUE );
-                memfree( item->key );
+                memfree( *(char **)item->key );
                 memfree( item );
             } else {
                 BalancedBTreeUnlock( subTree );
@@ -429,11 +435,11 @@ void SourceDeleteAttrib( char *attrib, BalancedBTree_t *tree )
     BalancedBTreeItem_t    *item;
 
     BalancedBTreeLock( tree );
-    item = BalancedBTreeFind( tree, attrib, LOCKED, FALSE );
+    item = BalancedBTreeFind( tree, &attrib, LOCKED, FALSE );
     if( item ) {
         BalancedBTreeRemove( tree, item, LOCKED, TRUE );
         cJSON_Delete(item->item);
-        memfree(item->key);
+        memfree(*(char **)item->key);
         memfree(item);
     }
     BalancedBTreeUnlock( tree );
@@ -469,7 +475,7 @@ bool SourceTreeCleanup( BalancedBTreeItem_t *item )
     if( !subTree->root ) {
         BalancedBTreeDestroy( subTree );
         BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
-        memfree( item->key );
+        memfree( *(char **)item->key );
         memfree( item );
         return( TRUE );
     }
@@ -493,10 +499,313 @@ bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item )
 
     BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
     cJSON_Delete( item->item );
-    memfree( item->key );
+    memfree( *(char **)item->key );
     memfree( item );
 
     return( TRUE );
+}
+
+typedef enum {
+    AGG_SUM,
+    AGG_SUB_FROM_CORE,
+    AGG_AVERAGE,
+    AGG_RECIP_SUM,
+    AGG_BIN_OR,
+    AGG_BIN_AND,
+    AGG_LOG_OR,
+    AGG_LOG_AND,
+    AGG_CONCAT
+} AggregateOp_t;
+
+typedef struct {
+    char           *text;
+    AggregateOp_t   op;
+    int             type;
+} AggregateMap_t;
+
+static AggregateMap_t aggOpMap[] = {
+    { "+",    AGG_SUM,           cJSON_Number },
+    { "-",    AGG_SUB_FROM_CORE, cJSON_Number },
+    { "avg",  AGG_AVERAGE,       cJSON_Number },
+    { "+1/x", AGG_RECIP_SUM,     cJSON_Number },
+    { "|",    AGG_BIN_OR,        cJSON_Number },
+    { "&",    AGG_BIN_AND,       cJSON_Number },
+    { "||",   AGG_LOG_OR,        cJSON_False  },
+    { "&&",   AGG_LOG_AND,       cJSON_False  },
+    { ".",    AGG_CONCAT,        cJSON_String }
+};
+static int aggOpMapCount = NELEMENTS(aggOpMap);
+
+typedef struct {
+    int                     iVal;
+    double                  fVal;
+    bool                    bVal;
+    char                   *sVal;
+    int                     count;
+    int                     type;
+} AggregateVal_t;
+    
+
+void AggregateAttrib( BalancedBTreeItem_t *item, AggregateOp_t aggOp, 
+                      AggregateVal_t *aggVal )
+{
+    cJSON          *jsonItem;
+    char           *tmp;
+    int             len1;
+    int             len2;
+
+    if( !item ) {
+        return;
+    }
+
+    AggregateAttrib( item->left, aggOp, aggVal );
+
+    if( strcmp(*(char **)item->key, "core-pc") && 
+        strcmp(*(char **)item->key, "aggregate") ) {
+        jsonItem = (cJSON *)item->item;
+
+        switch( aggOp ) {
+        case AGG_SUM:
+        case AGG_AVERAGE:
+            if( jsonItem->type == cJSON_Number ) {
+                aggVal->fVal += jsonItem->valuedouble;
+                aggVal->count++;
+            }
+            break;
+        case AGG_SUB_FROM_CORE:
+            if( jsonItem->type == cJSON_Number ) {
+                aggVal->fVal -= jsonItem->valuedouble;
+                aggVal->count++;
+            }
+            break;
+        case AGG_RECIP_SUM:
+            if( jsonItem->type == cJSON_Number && 
+                jsonItem->valuedouble != 0.0 ) {
+                aggVal->fVal += (1.0 / jsonItem->valuedouble);
+                aggVal->count++;
+            }
+            break;
+        case AGG_BIN_OR:
+            if( jsonItem->type == cJSON_Number ) {
+                aggVal->iVal |= jsonItem->valueint;
+                aggVal->count++;
+            }
+            break;
+        case AGG_BIN_AND:
+            if( jsonItem->type == cJSON_Number ) {
+                aggVal->iVal &= jsonItem->valueint;
+                aggVal->count++;
+            }
+            break;
+        case AGG_LOG_OR:
+            if( jsonItem->type == cJSON_True || 
+                jsonItem->type == cJSON_False ) {
+                aggVal->bVal |= jsonItem->type;
+                aggVal->count++;
+            }
+            break;
+        case AGG_LOG_AND:
+            if( jsonItem->type == cJSON_True || 
+                jsonItem->type == cJSON_False ) {
+                aggVal->bVal &= jsonItem->type;
+                aggVal->count++;
+            }
+            break;
+        case AGG_CONCAT:
+            len1 = (aggVal->sVal ? strlen(aggVal->sVal) : 0);
+            len2 = (jsonItem->valuestring ? strlen(jsonItem->valuestring) : 0);
+
+            if( len1+len2 ) {
+                tmp = CREATEN(char, len1+len2+1);
+                *tmp = '\0';
+                
+                if( aggVal->sVal ) {
+                    strcat(tmp, aggVal->sVal);
+                    memfree( aggVal->sVal );
+                }
+                if( jsonItem->valuestring ) {
+                    strcat(tmp, jsonItem->valuestring);
+                }
+                aggVal->sVal = tmp;
+                aggVal->count++;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    AggregateAttrib( item->right, aggOp, aggVal );
+}
+
+cJSON *GetAttribute( PlayerPC_t *pc, char *attrib, char *source )
+{
+    BalancedBTree_t        *subTree;
+    BalancedBTreeItem_t    *item;
+    cJSON                  *jsonItem;
+    char                   *aggOpText;
+    static char            *aggOpDefault = "+";
+    int                     i;
+    AggregateOp_t           aggOp;
+    AggregateVal_t          aggVal;
+
+    if( !pc || !attrib || !pc->attribs ) {
+        return( NULL );
+    }
+
+    BalancedBTreeLock( pc->attribs );
+    item = BalancedBTreeFind( pc->attribs, &attrib, LOCKED, FALSE );
+    if( !item ) {
+        BalancedBTreeUnlock( pc->attribs );
+        return( NULL );
+    }
+
+    subTree = (BalancedBTree_t *)item->item;
+    BalancedBTreeLock( subTree );
+
+    if( !source ) {
+        /* 
+         * This is an aggregated attribute.  Aggregation method is in source
+         * "aggregate", defaulting to + if not found
+         */
+        jsonItem = GetAttribute( pc, attrib, "aggregate" );
+        if( jsonItem ) {
+            aggOpText = jsonItem->valuestring;
+        } else {
+            aggOpText = aggOpDefault;
+        }
+
+        aggOp = AGG_SUM;
+        memset( &aggVal, 0x00, sizeof(AggregateVal_t) );
+        for( i = 0; i < aggOpMapCount; i++ ) {
+            if( !strcmp( aggOpMap[i].text, aggOpText ) ) {
+                aggOp = aggOpMap[i].op;
+                aggVal.type = aggOpMap[i].type;
+                break;
+            }
+        }
+
+        item = BalancedBTreeFind( subTree, &"core-pc", LOCKED, FALSE );
+        if( item ) {
+            jsonItem = (cJSON *)item->item;
+            aggVal.type = jsonItem->type;
+            aggVal.iVal = jsonItem->valueint;
+            aggVal.fVal = jsonItem->valuedouble;
+            aggVal.bVal = ((aggVal.type == cJSON_True || 
+                            aggVal.type == cJSON_False) ? aggVal.type : 0);
+            aggVal.sVal = memstrlink(jsonItem->valuestring);
+            aggVal.count = 1;
+        }
+        AggregateAttrib( subTree->root, aggOp, &aggVal );
+
+        switch( aggOp ) {
+        case AGG_RECIP_SUM:
+            if( aggVal.fVal != 0.0 ) {
+                aggVal.fVal = 1.0 / aggVal.fVal;
+                aggVal.iVal = (int)aggVal.fVal;
+            }
+            break;
+        case AGG_AVERAGE:
+            if( aggVal.count ) {
+                aggVal.fVal = aggVal.fVal / (double)aggVal.count;
+                aggVal.iVal = (int)aggVal.fVal;
+            }
+            break;
+        case AGG_SUM:
+        case AGG_SUB_FROM_CORE:
+            aggVal.iVal = (int)aggVal.fVal;
+            break;
+        case AGG_BIN_OR:
+        case AGG_BIN_AND:
+            aggVal.fVal = (double)aggVal.iVal;
+            break;
+        default:
+            break;
+        }
+
+        jsonItem = CREATE(cJSON);
+        if( aggVal.type == cJSON_False || aggVal.type == cJSON_True ) {
+            jsonItem->type = (aggVal.bVal ? cJSON_True : cJSON_False);
+        } else {
+            jsonItem->type = aggVal.type;
+        }
+
+        jsonItem->valuedouble = aggVal.fVal;
+        jsonItem->valueint    = aggVal.iVal;
+        jsonItem->valuestring = aggVal.sVal;
+        jsonItem->string      = memstrlink(attrib);
+    } else {
+        item = BalancedBTreeFind( subTree, &source, LOCKED, FALSE );
+        if( !item ) {
+            jsonItem = NULL;
+        }
+        jsonItem = cJSON_Clone( item->item );
+    }
+
+    BalancedBTreeUnlock( subTree );
+    BalancedBTreeUnlock( pc->attribs );
+
+    return( jsonItem );
+}
+
+char *GetAttributeString( PlayerPC_t *pc, char *attrib, char *source )
+{
+    cJSON      *jsonItem;
+    char       *string;
+
+    jsonItem = GetAttribute(pc, attrib, source);
+    if( !jsonItem ) {
+        return( NULL );
+    }
+    string = memstrlink(jsonItem->valuestring);
+    cJSON_Delete(jsonItem);
+
+    return( string );
+}
+
+int GetAttributeInt( PlayerPC_t *pc, char *attrib, char *source )
+{
+    cJSON      *jsonItem;
+    int         value;
+
+    jsonItem = GetAttribute(pc, attrib, source);
+    if( !jsonItem ) {
+        return( 0 );
+    }
+    value = jsonItem->valueint;
+    cJSON_Delete(jsonItem);
+
+    return( value );
+}
+
+double GetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source )
+{
+    cJSON      *jsonItem;
+    double      value;
+
+    jsonItem = GetAttribute(pc, attrib, source);
+    if( !jsonItem ) {
+        return( 0.0 );
+    }
+    value = jsonItem->valuedouble;
+    cJSON_Delete(jsonItem);
+
+    return( value );
+}
+
+bool GetAttributeBool( PlayerPC_t *pc, char *attrib, char *source )
+{
+    cJSON      *jsonItem;
+    bool        value;
+
+    jsonItem = GetAttribute(pc, attrib, source);
+    if( !jsonItem ) {
+        return( FALSE );
+    }
+    value = (jsonItem->type == cJSON_True ? TRUE : FALSE );
+    cJSON_Delete(jsonItem);
+
+    return( value );
 }
 
 /*

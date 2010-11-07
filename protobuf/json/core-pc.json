@@ -19,6 +19,7 @@
     "height": 0,
     "weight": 0,
     "age": 0,
+    "sex": 0,
     "hair_color": 0,
     "eye_color": 0,
     "hair_length": "short",
