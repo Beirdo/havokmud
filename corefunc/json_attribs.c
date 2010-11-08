@@ -50,6 +50,8 @@ void SourceTreeDeleteAttrib( char *attrib, BalancedBTreeItem_t *item );
 bool SourceTreeCleanup( BalancedBTreeItem_t *item );
 bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item );
 cJSON *GetAttribute( PlayerPC_t *pc, char *attrib, char *source );
+bool DestroyAttrib2Tree( BalancedBTreeItem_t *item );
+bool DestroyAttribTree( BalancedBTreeItem_t *item );
 
 char *strip_whitespace(char *string)
 {
@@ -404,6 +406,7 @@ void DeleteAttribute( char *attrib, char *source, PlayerPC_t *pc )
             BalancedBTreeDestroy( subTree );
             BalancedBTreeRemove( pc->attribs, item, LOCKED, TRUE );
             memfree( *(char **)item->key );
+            memfree( item->key );
             memfree( item );
         } else {
             item = BalancedBTreeFind( subTree, &source, LOCKED, FALSE );
@@ -411,6 +414,7 @@ void DeleteAttribute( char *attrib, char *source, PlayerPC_t *pc )
                 BalancedBTreeRemove( subTree, item, LOCKED, TRUE );
                 cJSON_Delete( item->item );
                 memfree( *(char **)item->key );
+                memfree( item->key );
                 memfree( item );
             }
             BalancedBTreeUnlock( subTree );
@@ -441,6 +445,7 @@ void DeleteAttribute( char *attrib, char *source, PlayerPC_t *pc )
                 BalancedBTreeDestroy( subTree );
                 BalancedBTreeRemove( pc->sources, item, LOCKED, TRUE );
                 memfree( *(char **)item->key );
+                memfree( item->key );
                 memfree( item );
             } else {
                 BalancedBTreeUnlock( subTree );
@@ -462,6 +467,7 @@ void SourceDeleteAttrib( char *attrib, BalancedBTree_t *tree )
         BalancedBTreeRemove( tree, item, LOCKED, TRUE );
         cJSON_Delete(item->item);
         memfree(*(char **)item->key);
+        memfree( item->key );
         memfree(item);
     }
     BalancedBTreeUnlock( tree );
@@ -498,6 +504,7 @@ bool SourceTreeCleanup( BalancedBTreeItem_t *item )
         BalancedBTreeDestroy( subTree );
         BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
         memfree( *(char **)item->key );
+        memfree( item->key );
         memfree( item );
         return( TRUE );
     }
@@ -522,6 +529,7 @@ bool AttribTreeItemsDestroy( BalancedBTreeItem_t *item )
     BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
     cJSON_Delete( item->item );
     memfree( *(char **)item->key );
+    memfree( item->key );
     memfree( item );
 
     return( TRUE );
@@ -913,6 +921,77 @@ void SetAttributeBool( PlayerPC_t *pc, char *attrib, char *source, bool val )
 
     AddAttribute( string, source, pc );
     memfree( string );
+}
+
+bool DestroyAttrib2Tree( BalancedBTreeItem_t *item )
+{
+    if( !item ) {
+        return( FALSE );
+    }
+
+    if( DestroyAttrib2Tree( item->left ) ) {
+        return( TRUE );
+    }
+
+    if( DestroyAttrib2Tree( item->right ) ) {
+        return( TRUE );
+    }
+
+    BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
+    cJSON_Delete( item->item );
+    memfree( *(char **)item->key );
+    memfree( item->key );
+    memfree( item );
+    return( TRUE );
+}
+
+bool DestroyAttribTree( BalancedBTreeItem_t *item )
+{
+    BalancedBTree_t    *subTree;
+
+    if( !item ) {
+        return( FALSE );
+    }
+
+    if( DestroyAttribTree( item->left ) ) {
+        return( TRUE );
+    }
+
+    if( DestroyAttribTree( item->right ) ) {
+        return( TRUE );
+    }
+
+    subTree = (BalancedBTree_t *)item->item;
+    BalancedBTreeLock( subTree );
+    while( DestroyAttrib2Tree( subTree->root ) );
+    BalancedBTreeDestroy( subTree );
+
+    BalancedBTreeRemove( item->btree, item, LOCKED, FALSE );
+    memfree( *(char **)item->key );
+    memfree( item->key );
+    memfree( item );
+    return( TRUE );
+}
+
+void DestroyAttributes( PlayerPC_t *pc )
+{
+    if( !pc ) {
+        return;
+    }
+
+    if( pc->attribs ) {
+        BalancedBTreeLock( pc->attribs );
+        while( DestroyAttribTree( pc->attribs->root ) );
+        BalancedBTreeDestroy( pc->attribs );
+        pc->attribs = NULL;
+    }
+
+    if( pc->sources ) {
+        BalancedBTreeLock( pc->sources );
+        while( DestroyAttribTree( pc->sources->root ) );
+        BalancedBTreeDestroy( pc->sources );
+        pc->sources = NULL;
+    }
 }
 
 /*

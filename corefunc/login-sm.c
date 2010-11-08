@@ -255,9 +255,14 @@ void ShowPlayerListMenu(PlayerStruct_t *player)
     PlayerPC_t     *pcs;
     PlayerPC_t     *pc;
 
-    if( !player->pcs ) {
-        player->pcs = pb_get_pc_list( player->account->id );
+    if( player->pcs ) {
+        for( pc = player->pcs; pc->id; pc++ ) {
+            DestroyAttributes( pc );
+            memfree( pc->name );
+        }
+        memfree( player->pcs );
     }
+    player->pcs = pb_get_pc_list( player->account->id );
 
     pcs = player->pcs;
     if( !pcs ) {
@@ -929,6 +934,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if ( (tempPc = pb_find_pc( arg ) ) ) {
             if( tempPc->account_id != player->account->id ) {
                 SendOutput(player, "Name taken.\n\r");
+                DestroyAttributes( tempPc );
                 memfree( tempPc->name );
                 memfree( tempPc );
                 EnterState(player, STATE_CHOOSE_NAME);
@@ -936,14 +942,16 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             }
             
             player->pc = pb_load_pc(player->account->id, tempPc->id);
+            DestroyAttributes( tempPc );
             memfree( tempPc->name );
             memfree( tempPc );
 
             if( GetAttributeBool(player->pc, "complete", "core-pc") ) {
                 SendOutput(player, "That PC is completed!\n\r");
 
-                memfree(player->pc->name);
-                memfree(player->pc);
+                DestroyAttributes( player->pc );
+                memfree( player->pc->name );
+                memfree( player->pc );
                 player->pc = NULL;
                 EnterState(player, STATE_SHOW_ACCOUNT_MENU);
                 return;

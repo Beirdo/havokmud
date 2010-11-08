@@ -347,6 +347,7 @@ void SetAttributeInt( PlayerPC_t *pc, char *attrib, char *source, int val );
 void SetAttributeDouble( PlayerPC_t *pc, char *attrib, char *source, 
                          double val );
 void SetAttributeBool( PlayerPC_t *pc, char *attrib, char *source, bool val );
+void DestroyAttributes( PlayerPC_t *pc );
 
 
 
