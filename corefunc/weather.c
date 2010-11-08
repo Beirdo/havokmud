@@ -257,7 +257,8 @@ void weather_change()
     } else {
         diff = (weather_info.pressure > 1015 ? -2 : 2);
     }
-    weather_info.change += (dice(1, 4) * diff + dice(2, 6) - dice(2, 6));
+    weather_info.change += (dice(NULL, 1, 4, 1) * diff + dice(NULL, 2, 6, 2) - 
+                            dice(NULL, 2, 6, 2));
 
     weather_info.change = MIN(weather_info.change, 12);
     weather_info.change = MAX(weather_info.change, -12);
@@ -273,7 +274,7 @@ void weather_change()
     case SKY_CLOUDLESS:
         if (weather_info.pressure < 990) {
             change = 1;
-        } else if (weather_info.pressure < 1010 && dice(1, 4) == 1) {
+        } else if (weather_info.pressure < 1010 && dice(NULL, 1, 4, 1) == 1) {
             change = 1;
         }
         break;
@@ -281,32 +282,32 @@ void weather_change()
         if (weather_info.pressure < 970) {
             change = 2;
         } else if (weather_info.pressure < 990) {
-            if (dice(1, 4) == 1) {
+            if (dice(NULL, 1, 4, 1) == 1) {
                 change = 2;
             } else {
                 change = 0;
             }
-        } else if (weather_info.pressure > 1030 && dice(1, 4) == 1) {
+        } else if (weather_info.pressure > 1030 && dice(NULL, 1, 4, 1) == 1) {
                 change = 3;
         }
         break;
     case SKY_RAINING:
         if (weather_info.pressure < 970) {
-            if (dice(1, 4) == 1) {
+            if (dice(NULL, 1, 4, 1) == 1) {
                 change = 4;
             } else {
                 change = 0;
             }
         } else if (weather_info.pressure > 1030) {
             change = 5;
-        } else if (weather_info.pressure > 1010 && dice(1, 4) == 1) {
+        } else if (weather_info.pressure > 1010 && dice(NULL, 1, 4, 1) == 1) {
             change = 5;
         }
         break;
     case SKY_LIGHTNING:
         if (weather_info.pressure > 1010) {
             change = 6;
-        } else if (weather_info.pressure > 990 && dice(1, 4) == 1) {
+        } else if (weather_info.pressure > 990 && dice(NULL, 1, 4, 1) == 1) {
             change = 6;
         }
         break;

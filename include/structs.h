@@ -75,6 +75,7 @@ typedef enum {
     STATE_WIZLOCKED,             /**< User is locked out, disconnect them */
     STATE_PRESS_ENTER,           /**< Await the user hitting enter */
     STATE_SHOW_ACCOUNT_MENU,     /**< Show the account menu */
+    STATE_SHOW_PLAYER_LIST,      /**< Show the PC list */
     STATE_GET_NEW_PASSWORD,      /**< Get a new password */
     STATE_CONFIRM_NEW_PASSWORD,  /**< Confirm the new password */
     STATE_ENTER_CONFIRM_CODE,    /**< Prompt for emailed confirmation code */

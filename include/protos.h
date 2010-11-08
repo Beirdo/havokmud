@@ -119,8 +119,13 @@ int HasClass(struct char_data *ch, int clss);
 int HowManyClasses( struct char_data *ch );
 int pc_num_class(int clss);
 char *AlignDesc(int value);
+
+
+/*
+ * dice.c
+ */
 int number(int from, int to);
-int dice(int number, int size);
+int dice(PlayerStruct_t *player, int number, int size, int top);
 
 /*
  * core_commands.c

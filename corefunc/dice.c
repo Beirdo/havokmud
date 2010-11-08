@@ -30,7 +30,8 @@
 /* INCLUDE FILES */
 #include "environment.h"
 #include <stdlib.h>
-#include "oldstructs.h"
+#include "structs.h"
+#include "memory.h"
 
 /* CVS generated ID string */
 static char ident[] _UNUSED_ = 
@@ -62,29 +63,67 @@ int number(int from, int to)
     }
 }
 
+int dieSortDesc( const void *l, const void *r )
+{
+    return( *(int *)r - *(int *)l );
+}
+
 /**
  * @brief Simulates dice roll
  * @param number number of dice to roll
  * @param size number of sides on each die
+ * @param top number of dice to count into final roll (top m of n)
  * @return total of the dice rolled
  *
  * Rolls a user-defined number of dice with user-defined numbers of sides (all
  * the same size)
  */
-int dice(int number, int size)
+int dice(PlayerStruct_t *player, int number, int size, int top)
 {
-    int             r;
-    int             sum = 0;
+    int             i;
+    int             sum;
+    int            *rolls;
 
-    /*
-     * instead of crashing the mud we set it to 1
-     */
-    if (size <= 0) {
-        size = 1;
+    if( number <= 0 || size <= 1 || top <= 0 ) {
+        return( 0 );
     }
-    for (r = 1; r <= number; r++) {
-        sum += ((random() % size) + 1);
+
+    if( top > number ) {
+        top = number;
     }
+
+    if( player ) {
+        SendOutput(player, "Rolling %dd%d, keeping top %d dice\n", number, 
+                           size, top );
+    }
+    rolls = CREATEN(int, number);
+
+    if( player ) {
+        SendOutput(player, "Rolled: ");
+    }
+    for( i = 0; i < number; i++ ) {
+        rolls[i] = ((random() % size) + 1);
+        if( player ) {
+            SendOutput(player, "%d ", rolls[i]);
+        }
+    }
+
+    qsort( rolls, number, sizeof(int), dieSortDesc );
+    if( player ) {
+        SendOutput(player, "  Kept: ");
+    }
+    for( i = 0, sum = 0; i < top; i++ ) {
+        if( player ) {
+            SendOutput(player, "%d ", rolls[i]);
+        }
+        sum += rolls[i];
+    }
+
+    if( player ) {
+        SendOutput(player, "  Total: %d\n\r", sum);
+    }
+    memfree(rolls);
+
     return (sum);
 }
 

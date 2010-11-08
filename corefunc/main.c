@@ -658,9 +658,9 @@ void reset_time(void)
 
     weather_info.pressure = 960;
     if ((time_info.month >= 7) && (time_info.month <= 12)) {
-        weather_info.pressure += dice(1, 50);
+        weather_info.pressure += dice(NULL, 1, 50, 1);
     } else {
-        weather_info.pressure += dice(1, 80);
+        weather_info.pressure += dice(NULL, 1, 80, 1);
     }
 
     weather_info.change = 0;

@@ -52,6 +52,7 @@
 void EnterState(PlayerStruct_t *player, PlayerState_t newstate);
 void ShowCreationMenu(PlayerStruct_t *player);
 void ShowAccountMenu(PlayerStruct_t *player);
+void ShowPlayerListMenu(PlayerStruct_t *player);
 void DoCreationMenu( PlayerStruct_t *player, char arg );
 void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
@@ -249,6 +250,28 @@ int checkAssName(char *name)
     return( 0 );
 }
 
+void ShowPlayerListMenu(PlayerStruct_t *player)
+{
+    PlayerPC_t     *pcs;
+    PlayerPC_t     *pc;
+
+    if( !player->pcs ) {
+        player->pcs = pb_get_pc_list( player->account->id );
+    }
+
+    pcs = player->pcs;
+    if( !pcs ) {
+        SendOutput(player, "Currently no players, create one.\n\r\n\r");
+    } else {
+        SendOutput(player, "PC Name\n\r=======\n\r");
+        for( pc = pcs; pc->id; pc++ ) {
+            SendOutput(player, "%s\n\r", pc->name);
+        }
+        SendOutput(player, "\n\r");
+    }
+
+    SendOutput(player, "\n\rHit enter to continue\n\r");
+}
 
 void ShowCreationMenu(PlayerStruct_t *player)
 {
@@ -285,8 +308,9 @@ void ShowAccountMenu(PlayerStruct_t *player)
     SendOutput(player, "$c00153) $c0012View the MOTD.\n\r");
     SendOutput(player, "$c00154) $c0012View the credits.\n\r");
     if( player->account->confirmed ) {
-        SendOutput(player, "$c00155) $c0012Create a new character.\n\r");
-        SendOutput(player, "$c00156) $c0012Play an existing character.\n\r");
+        SendOutput(player, "$c00155) $c0012List characters.\n\r");
+        SendOutput(player, "$c00156) $c0012Create a new character.\n\r");
+        SendOutput(player, "$c00157) $c0012Play an existing character.\n\r");
     }
 
     if( !player->account->confirmed ) {
@@ -374,6 +398,9 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
     case STATE_SHOW_ACCOUNT_MENU:
         ShowAccountMenu(player);
+        break;
+    case STATE_SHOW_PLAYER_LIST:
+        ShowPlayerListMenu(player);
         break;
     case STATE_GET_NEW_PASSWORD:
         SendOutput(player, "Enter a new password: ");
@@ -500,6 +527,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     PlayerPC_t     *pc;
     PlayerPC_t     *tempPc;
     char            attrib[256];
+    int             i;
 
     pc = player->pc;
     SendOutputRaw(player, echo_on, 6);
@@ -801,6 +829,10 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         DoAccountMenu(player, *arg);
         break;
 
+    case STATE_SHOW_PLAYER_LIST:
+        EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+        break;
+
     case STATE_GET_NEW_PASSWORD:
         arg = skip_spaces(arg);
         if (!arg || strlen(arg) > 10) {
@@ -891,25 +923,50 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         if( !arg ) {
             SendOutput(player, "Never mind then.\n\r");
             EnterState(player, STATE_SHOW_CREATION_MENU);
-        } else if ( (tempPc = pb_find_pc( arg ) ) ) {
-            SendOutput(player, "Name taken.\n\r");
+            return;
+        } 
+        
+        if ( (tempPc = pb_find_pc( arg ) ) ) {
+            if( tempPc->account_id != player->account->id ) {
+                SendOutput(player, "Name taken.\n\r");
+                memfree( tempPc->name );
+                memfree( tempPc );
+                EnterState(player, STATE_CHOOSE_NAME);
+                return;
+            }
+            
+            player->pc = pb_load_pc(player->account->id, tempPc->id);
             memfree( tempPc->name );
             memfree( tempPc );
-            EnterState(player, STATE_CHOOSE_NAME);
-        } else {
-            /* TODO: check for banned names */
-            if( pc && pc->name ) {
-                memfree( pc->name );
-            } else if( !pc ) {
-                pc = CREATE(PlayerPC_t);
-                player->pc = pc;
-                pc->account_id = player->account->id;
-                SetAttributeBool( pc, "complete", "core-pc", FALSE );
+
+            if( GetAttributeBool(player->pc, "complete", "core-pc") ) {
+                SendOutput(player, "That PC is completed!\n\r");
+
+                memfree(player->pc->name);
+                memfree(player->pc);
+                player->pc = NULL;
+                EnterState(player, STATE_SHOW_ACCOUNT_MENU);
+                return;
             }
-            pc->name = memstrlink( arg );
-            pb_save_pc( pc );
             EnterState(player, STATE_SHOW_CREATION_MENU);
+            return;
+        } 
+        
+        /* TODO: check for banned names */
+        if( pc && pc->name ) {
+            memfree( pc->name );
+        } else if( !pc ) {
+            pc = CREATE(PlayerPC_t);
+            player->pc = pc;
+            pc->account_id = player->account->id;
+            SetAttributeBool( pc, "complete", "core-pc", FALSE );
         }
+        pc->name = memstrlink( arg );
+        pb_save_pc( pc );
+        for(i = 0; i < 6; i++ ) {
+            dice( player, 4, 6, 3 );
+        }
+        EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
     case STATE_CHOOSE_SEX:
@@ -1471,10 +1528,15 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
         break;
     case '5':
         if( player->account->confirmed ) {
-            EnterState(player, STATE_SHOW_CREATION_MENU);
+            EnterState(player, STATE_SHOW_PLAYER_LIST);
         }
         break;
     case '6':
+        if( player->account->confirmed ) {
+            EnterState(player, STATE_SHOW_CREATION_MENU);
+        }
+        break;
+    case '7':
         if( player->account->confirmed ) {
             EnterState(player, STATE_PLAYING);
         }
