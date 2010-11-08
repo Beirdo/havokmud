@@ -132,7 +132,9 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     }
 
     jsonTree = cJSON_Parse(json);
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "JSON parsed - %s", json);
+#endif
     BalancedBTreeLock( pc->attribs );
     BalancedBTreeLock( pc->sources );
 
@@ -204,7 +206,9 @@ void AddJSONToTrees( JSONSource_t *js, PlayerPC_t *pc )
     BalancedBTreeUnlock( pc->sources );
     BalancedBTreeUnlock( pc->attribs );
     cJSON_Delete(jsonTree);
+#ifdef DEBUG_JSON
     LogPrintNoArg(LOG_DEBUG, "JSON inserted into trees");
+#endif
 }
 
 void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
@@ -217,7 +221,9 @@ void AppendAttribToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
 
     cJSON_AddItemToObject( jsonTree, *(char **)item->key, 
                            cJSON_Clone( (cJSON *)item->item ) );
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "Appended: %s", *(char **)item->key);
+#endif
 
     AppendAttribToJSON( jsonTree, item->right );
 }
@@ -236,7 +242,9 @@ int AppendSourceToJSON( cJSON *jsonTree, BalancedBTreeItem_t *item )
 
     jsonItem = cJSON_CreateObject();
     cJSON_AddItemToObject(jsonTree, *(char **)item->key, jsonItem);
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "Appended Tree: %s", *(char **)item->key);
+#endif
     AppendAttribToJSON( jsonItem, ((BalancedBTree_t *)item->item)->root );
 
     count += AppendSourceToJSON( jsonTree, item->right );
@@ -261,7 +269,9 @@ JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc )
     BalancedBTreeLock( pc->sources );
     srcCount = AppendSourceToJSON( jsonTree, pc->sources->root );
     BalancedBTreeUnlock( pc->sources );
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "Appended %d items", srcCount);
+#endif
 
     js = CREATEN(JSONSource_t, srcCount+1);
 
@@ -270,7 +280,9 @@ JSONSource_t *ExtractJSONFromTree( PlayerPC_t *pc )
          i++, jsonItem = jsonItem->next ) {
         js[i].source = memstrlink(jsonItem->string);
         js[i].json   = cJSON_Print(jsonItem);
+#ifdef DEBUG_JSON
         LogPrint(LOG_DEBUG, "Source: %s, JSON: %s", js[i].source, js[i].json );
+#endif
     }
 
     cJSON_Delete(jsonTree);
@@ -291,7 +303,9 @@ char *CombineJSON( JSONSource_t *js )
     }
 
     json = cJSON_Print( jsonTree );
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "Merged JSON: %s", json);
+#endif
     cJSON_Delete( jsonTree );
 
     return( json );
@@ -305,18 +319,24 @@ JSONSource_t *SplitJSON( char *json )
     int             count;
     int             i;
     
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "JSON to split: %s", json );
+#endif
     jsonTree = cJSON_Parse( json );
     for( count = 0, jsonItem = jsonTree->child; jsonItem; 
          jsonItem = jsonItem->next, count++ );
 
+#ifdef DEBUG_JSON
     LogPrint(LOG_DEBUG, "Count: %d", count );
+#endif
     js = CREATEN(JSONSource_t, count+1);
     for( i = 0, jsonItem = jsonTree->child; i < count && jsonItem;
          jsonItem = jsonItem->next, i++ ) {
         js[i].source = memstrlink(jsonItem->string);
         js[i].json   = cJSON_Print(jsonItem);
+#ifdef DEBUG_JSON
         LogPrint(LOG_DEBUG, "Source: %s, JSON: %s", js[i].source, js[i].json );
+#endif
     }
          
     cJSON_Delete( jsonTree );
