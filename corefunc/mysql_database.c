@@ -45,6 +45,7 @@
 #include "memory.h"
 #include "db_api.h"
 #include "protobuf_api.h"
+#include "protected_data.h"
 
 static char ident[] _UNUSED_ =
     "$Id$";
@@ -243,7 +244,8 @@ HavokResponse *db_mysql_save_account( HavokRequest *req )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
-    int                 id;
+    ProtectedData_t    *protect;
+    volatile int        id;
 
     if( !req || !req->account_data ) {
         return;
@@ -251,6 +253,10 @@ HavokResponse *db_mysql_save_account( HavokRequest *req )
 
     mutex = CREATE(pthread_mutex_t);
     thread_mutex_init( mutex );
+
+    protect = ProtectedDataCreate();
+    protect->data = (void *)&id;
+    ProtectedDataLock( protect );
 
     data = CREATEN(MYSQL_BIND, 7);
 
@@ -264,13 +270,16 @@ HavokResponse *db_mysql_save_account( HavokRequest *req )
     bind_string( &data[5], (req->account_data->confcode ? 
                             req->account_data->confcode : ""), 
                            MYSQL_TYPE_VAR_STRING );
-    bind_null_blob( &data[6], &id );
+    bind_null_blob( &data[6], protect );
 
     db_queue_query( 5, QueryTable, data, 7, NULL, NULL, mutex );
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );
+
+    ProtectedDataLock( protect );
+    ProtectedDataDestroy( protect );
 
     resp = protobufCreateResponse();
     if( !resp ) {
@@ -347,6 +356,7 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     MYSQL_BIND         *data;
     pthread_mutex_t    *mutex;
     HavokResponse      *resp;
+    ProtectedData_t    *protect;
     volatile int        id;
 
     if( !req || !req->pc_data ) {
@@ -356,18 +366,25 @@ HavokResponse *db_mysql_save_pc( HavokRequest *req )
     mutex = CREATE(pthread_mutex_t);
     thread_mutex_init( mutex );
 
+    protect = ProtectedDataCreate();
+    protect->data = (void *)&id;
+    ProtectedDataLock( protect );
+
     data = CREATEN(MYSQL_BIND, 4);
 
     bind_numeric( &data[0], req->pc_data->id, MYSQL_TYPE_LONG );
     bind_numeric( &data[1], req->pc_data->account_id, MYSQL_TYPE_LONG );
     bind_string( &data[2], req->pc_data->name, MYSQL_TYPE_VAR_STRING );
-    bind_null_blob( &data[3], (void *)&id );
+    bind_null_blob( &data[3], protect );
 
     db_queue_query( 10, QueryTable, data, 4, NULL, NULL, mutex );
 
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );
+
+    ProtectedDataLock( protect );
+    ProtectedDataDestroy( protect );
 
     db_mysql_save_pc_attribs( id, req->pc_data->attribs );
 
@@ -507,62 +524,69 @@ void chain_set_setting( MYSQL_RES *res, QueryItem_t *item )
 
 void chain_save_account( MYSQL_RES *res, QueryItem_t *item )
 {
-    int             count;
-    MYSQL_BIND     *data;
-    MYSQL_BIND      temp[1];
-    int            *id;
+    int                 count;
+    MYSQL_BIND         *data;
+    MYSQL_BIND          temp[1];
+    ProtectedData_t    *protect;
+    int                *id;
     
     data = item->queryData;
     if( !res || !(count = mysql_num_rows(res)) ) {
         count = 0;
     }
 
-    id = (int *)data[6].buffer;
+    protect = (ProtectedData_t *)data[6].buffer;
+    id  = (int *)protect->data;
     
     if( count ) {
         /* update */
         /* swap argument order */
         *id = *(int *)data[0].buffer;
+        ProtectedDataUnlock( protect );
         memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
         memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 5 );
         memcpy(  &data[5], temp,     sizeof(MYSQL_BIND) );
         db_queue_query( 6, QueryTable, data, 6, NULL, NULL, NULL );
     } else {
         /* insert */
-        db_queue_query( 7, QueryTable, data, 6, result_insert_id, id,
+        db_queue_query( 7, QueryTable, data, 6, result_insert_id, protect,
                         NULL );
     }
 }
 
 void chain_save_pc( MYSQL_RES *res, QueryItem_t *item )
 {
-    int             count;
-    MYSQL_BIND     *data;
-    MYSQL_BIND      temp[1];
-    int            *id;
+    int                 count;
+    MYSQL_BIND         *data;
+    MYSQL_BIND          temp[1];
+    ProtectedData_t    *protect;
+    int                *id;
     
     data = item->queryData;
     if( !res || !(count = mysql_num_rows(res)) ) {
         count = 0;
     }
 
-    id = (int *)data[3].buffer;
+    protect = (ProtectedData_t *)data[3].buffer;
+    id  = (int *)protect->data;
     *id = *(int *)data[0].buffer;
 
+    /* swap argument order */
     memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
     memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 2 );
     memcpy(  &data[2], temp,     sizeof(MYSQL_BIND) );
     
     if( count ) {
         /* update */
-        /* swap argument order */
+        ProtectedDataUnlock( protect );
         LogPrint(LOG_DEBUG, "Updating id %d", *id);
         db_queue_query( 11, QueryTable, data, 3, NULL, NULL, NULL );
     } else {
         /* insert */
         *id = 0;
         LogPrintNoArg(LOG_DEBUG, "Inserting");
-        db_queue_query( 12, QueryTable, data, 2, result_insert_id, id, NULL );
+        db_queue_query( 12, QueryTable, data, 2, result_insert_id, protect, 
+                        NULL );
     }
 }
 
@@ -659,14 +683,18 @@ void result_load_account( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
 void result_insert_id( MYSQL_RES *res, MYSQL_BIND *input, void *arg,
                        long insertid )
 {
-    int            *id;
+    ProtectedData_t    *protect;
+    int                *id;
 
     if( !arg ) {
         return;
     }
 
-    id = (int *)arg;
+    protect = (ProtectedData_t *)arg;
+    id = (int *)protect->data;
     *id = insertid;
+    LogPrint(LOG_CRIT, "New ID: %d", insertid);
+    ProtectedDataUnlock( protect );
 }
 
 void db_fill_row_load_pc( MYSQL_ROW row, HavokResponse *resp, int i )
