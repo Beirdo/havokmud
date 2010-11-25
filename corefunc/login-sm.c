@@ -287,6 +287,16 @@ void ShowCreationMenu(PlayerStruct_t *player)
     SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu"
                        "$c0009=-\n\r\n\r");
 
+    SendOutput(player, "Current Ability Roll: %d, %d, %d, %d, %d, %d\n\r"
+                       "Available Rerolls: %d\n\r\n\r", 
+                       GetAttributeInt(pc, "roll1",   "core-pc"),
+                       GetAttributeInt(pc, "roll2",   "core-pc"),
+                       GetAttributeInt(pc, "roll3",   "core-pc"),
+                       GetAttributeInt(pc, "roll4",   "core-pc"),
+                       GetAttributeInt(pc, "roll5",   "core-pc"),
+                       GetAttributeInt(pc, "roll6",   "core-pc"),
+                       GetAttributeInt(pc, "rerolls", "core-pc"));
+
     SendOutput(player, "$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
                        (pc && pc->name ? pc->name : "not chosen"));
     SendOutput(player, "$c00152) $c0012Gender. [$c0015%s$c0012]\n\r",
@@ -533,6 +543,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     PlayerPC_t     *tempPc;
     char            attrib[256];
     int             i;
+    int             roll[6];
 
     pc = player->pc;
     SendOutputRaw(player, echo_on, 6);
@@ -912,6 +923,8 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
 
+    /* Creation rework */
+
     case STATE_SHOW_CREATION_MENU:
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -922,6 +935,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         DoCreationMenu(player, *arg);
         break;
+
 
     case STATE_CHOOSE_NAME:
         arg = skip_spaces(arg);
@@ -968,12 +982,23 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             player->pc = pc;
             pc->account_id = player->account->id;
             SetAttributeBool( pc, "complete", "core-pc", FALSE );
+
+            for(i = 0; i < 6; i++ ) {
+                roll[i] = dice( player, 4, 6, 3 );
+                sprintf( attrib, "roll%d", i+1 );
+                SetAttributeInt( pc, attrib, "core-pc", roll[i] );
+            }
+
+            tmp = pb_get_setting("MaxReroll");
+            if( !tmp ) {
+                SetAttributeInt( pc, "rerolls", "core-pc", 0 );
+            } else {
+                SetAttributeInt( pc, "rerolls", "core-pc", atoi(tmp) );
+                memfree( tmp );
+            }
         }
         pc->name = memstrlink( arg );
         pb_save_pc( pc );
-        for(i = 0; i < 6; i++ ) {
-            dice( player, 4, 6, 3 );
-        }
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
