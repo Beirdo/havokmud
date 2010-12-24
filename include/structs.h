@@ -87,9 +87,9 @@ typedef enum {
     STATE_CHOOSE_CLASS,          /**< Choose the class of the new PC */
     STATE_CHOOSE_STATS,          /**< Choose the stats of the new PC */
     STATE_CHOOSE_ALIGNMENT,      /**< Choose the alignment of the new PC */
+    STATE_REROLL_ABILITIES,      /**< Reroll the PC's ability scores */
 /* sorted to here */
     STATE_SHOW_LOGIN_MENU,
-    STATE_REROLL,
     STATE_WAIT_FOR_AUTH,
     STATE_EDIT_EXTRA_DESCR,
     STATE_DELETE_USER,

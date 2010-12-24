@@ -58,6 +58,7 @@ void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
 void CreateSendConfirmEmail( PlayerStruct_t *player );
+void RollAbilities( PlayerStruct_t *player );
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
@@ -281,12 +282,14 @@ void ShowPlayerListMenu(PlayerStruct_t *player)
 void ShowCreationMenu(PlayerStruct_t *player)
 {
     PlayerPC_t     *pc;
+    int             rerolls;
 
     pc = player->pc;
 
     SendOutput(player, "$c0009-=$c0015Havok Character Creation Menu"
                        "$c0009=-\n\r\n\r");
 
+    rerolls = GetAttributeInt(pc, "rerolls", "core-pc");
     SendOutput(player, "Current Ability Roll: %d, %d, %d, %d, %d, %d\n\r"
                        "Available Rerolls: %d\n\r\n\r", 
                        GetAttributeInt(pc, "roll1",   "core-pc"),
@@ -295,7 +298,7 @@ void ShowCreationMenu(PlayerStruct_t *player)
                        GetAttributeInt(pc, "roll4",   "core-pc"),
                        GetAttributeInt(pc, "roll5",   "core-pc"),
                        GetAttributeInt(pc, "roll6",   "core-pc"),
-                       GetAttributeInt(pc, "rerolls", "core-pc"));
+                       rerolls);
 
     SendOutput(player, "$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
                        (pc && pc->name ? pc->name : "not chosen"));
@@ -309,6 +312,10 @@ void ShowCreationMenu(PlayerStruct_t *player)
                        "TODO");
     SendOutput(player, "$c00156) $c0012Alignment. [$c0015%s$c0012]\n\r\n\r",
                        "TODO");
+
+    if( rerolls ) {
+        SendOutput(player, "$c0015R) $c0012Reroll Ability Scores.\n\r\n\r" );
+    }
 
     SendOutput(player, "$c0015D) $c0012Done!\n\r\n\r");
     SendOutput(player, "$c0011Please pick an option: \n\r");
@@ -433,6 +440,11 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         }
         CreateSendConfirmEmail(player);
         break;
+    case STATE_REROLL_ABILITIES:
+        RollAbilities(player);
+        pb_save_pc( player->pc );
+        newstate = STATE_SHOW_CREATION_MENU;
+        /* Fall into the STATE_SHOW_CREATION_MENU state */
     case STATE_SHOW_CREATION_MENU:
         ShowCreationMenu(player);
         break;
@@ -486,19 +498,6 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         break;
 
     case STATE_PLAYING:
-        break;
-    case STATE_REROLL:
-        SendOutput(player, "Your current stats are:\n\r");
-        SendOutput(player, "STR: -]%s\n\r", STAT_SWORD(GET_STR(ch)));
-        SendOutput(player, "CON: -]%s\n\r", STAT_SWORD(GET_CON(ch)));
-        SendOutput(player, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(ch)));
-        SendOutput(player, "INT: -]%s\n\r", STAT_SWORD(GET_INT(ch)));
-        SendOutput(player, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(ch)));
-        SendOutput(player, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(ch)));
-        SendOutput(player, "\n\rYou have %d rerolls left, press R to reroll, "
-                           "any other key to keep.\n\r", ch->reroll);
-        break;
-        SendOutput(player, "Please Wait for authorization.\n\r");
         break;
     case STATE_SHOW_LOGIN_MENU:
 #if 0
@@ -977,27 +976,24 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         /* TODO: check for banned names */
         if( pc && pc->name ) {
             memfree( pc->name );
+            pc->name = memstrlink( arg );
         } else if( !pc ) {
             pc = CREATE(PlayerPC_t);
             player->pc = pc;
             pc->account_id = player->account->id;
+            pc->name = memstrlink( arg );
             SetAttributeBool( pc, "complete", "core-pc", FALSE );
-
-            for(i = 0; i < 6; i++ ) {
-                roll[i] = dice( player, 4, 6, 3 );
-                sprintf( attrib, "roll%d", i+1 );
-                SetAttributeInt( pc, attrib, "core-pc", roll[i] );
-            }
 
             tmp = pb_get_setting("MaxReroll");
             if( !tmp ) {
-                SetAttributeInt( pc, "rerolls", "core-pc", 0 );
+                SetAttributeInt( pc, "rerolls", "core-pc", 1 );
             } else {
-                SetAttributeInt( pc, "rerolls", "core-pc", atoi(tmp) );
+                SetAttributeInt( pc, "rerolls", "core-pc", atoi(tmp) + 1 );
                 memfree( tmp );
             }
+
+            RollAbilities( player );
         }
-        pc->name = memstrlink( arg );
         pb_save_pc( pc );
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
@@ -1034,6 +1030,11 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
         }
 
         pb_save_pc( pc );
+        EnterState(player, STATE_SHOW_CREATION_MENU);
+        break;
+
+    case STATE_REROLL_ABILITIES:
+        /* Shouldn't get here, but if we do, show the creation menu */
         EnterState(player, STATE_SHOW_CREATION_MENU);
         break;
 
@@ -1167,48 +1168,6 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
         ch->reroll--;
         EnterState(player, STATE_REROLL);
-#else
-        EnterState(player, STATE_SHOW_CREATION_MENU);
-#endif
-        break;
-
-    case STATE_REROLL:
-#if 0
-        arg = skip_spaces(arg);
-        ch->reroll--;
-
-        if (!arg || tolower(*arg) != 'r') {
-            SendOutput(player, "Stats chosen!\n\r");
-
-            if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-                EnterState(player, STATE_WAIT_FOR_AUTH);
-            } else {
-                EnterState(player, STATE_SHOW_CREATION_MENU);
-            }
-            return;
-        } 
-        
-        roll_abilities(player);
-
-        if (ch->reroll != 0) {
-            EnterState(player, STATE_REROLL);
-            return;
-        } 
-        
-        SendOutput(player, "Your final stats are:\n\r");
-        SendOutput(player, "STR: -]%s\n\r", STAT_SWORD(GET_STR(ch)));
-        SendOutput(player, "CON: -]%s\n\r", STAT_SWORD(GET_CON(ch)));
-        SendOutput(player, "DEX: -]%s\n\r", STAT_SWORD(GET_DEX(ch)));
-        SendOutput(player, "INT: -]%s\n\r", STAT_SWORD(GET_INT(ch)));
-        SendOutput(player, "WIS: -]%s\n\r", STAT_SWORD(GET_WIS(ch)));
-        SendOutput(player, "CHR: -]%s\n\r", STAT_SWORD(GET_CHR(ch)));
-        SendOutput(player, "Stats chosen!");
-
-        if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-            EnterState(player, STATE_WAIT_FOR_AUTH);
-        } else {
-            EnterState(player, STATE_SHOW_CREATION_MENU);
-        }
 #else
         EnterState(player, STATE_SHOW_CREATION_MENU);
 #endif
@@ -1466,6 +1425,10 @@ void DoCreationMenu( PlayerStruct_t *player, char arg )
     case '1':
         EnterState(player, STATE_CHOOSE_NAME);
         break;
+    case 'r':
+    case 'R':
+        EnterState(player, STATE_REROLL_ABILITIES);
+        break;
     case '2':
         EnterState(player, STATE_CHOOSE_SEX);
         break;
@@ -1599,6 +1562,38 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
         break;
     }
 }
+
+void RollAbilities( PlayerStruct_t *player )
+{
+    int             rerolls;
+    PlayerPC_t     *pc;
+    int             i;
+    int             roll[6];
+    char            attrib[6];
+
+    pc = player->pc;
+
+    rerolls = GetAttributeInt( pc, "rerolls", "core-pc" );
+    if( !rerolls ) {
+        SendOutput( player, "No rerolls remain.  Sorry.\n\r\n\r" );
+        return;
+    }
+
+    SetAttributeInt( pc, "rerolls", "core-pc", --rerolls );
+    
+    SendOutput( player, "Rolling Ability scores - %d rerolls left.\n\r\n\r",
+                rerolls );
+
+    LogPrint( LOG_INFO, "Player %s, PC %s abilities roll.  %d remain.", 
+                        player->account->email, pc->name, rerolls );
+
+    for(i = 0; i < 6; i++ ) {
+        roll[i] = dice( player, 4, 6, 3 );
+        sprintf( attrib, "roll%d", i+1 );
+        SetAttributeInt( pc, attrib, "core-pc", roll[i] );
+    }
+}
+
 
 #if 0
 void show_class_selection(PlayerStruct_t *player, int r)

@@ -93,7 +93,7 @@ int dice(PlayerStruct_t *player, int number, int size, int top)
     }
 
     if( player ) {
-        SendOutput(player, "Rolling %dd%d, keeping top %d dice\n", number, 
+        SendOutput(player, "Rolling %dd%d, keeping top %d dice\n\r", number, 
                            size, top );
     }
     rolls = CREATEN(int, number);
@@ -101,6 +101,7 @@ int dice(PlayerStruct_t *player, int number, int size, int top)
     if( player ) {
         SendOutput(player, "Rolled: ");
     }
+
     for( i = 0; i < number; i++ ) {
         rolls[i] = ((random() % size) + 1);
         if( player ) {
@@ -120,7 +121,7 @@ int dice(PlayerStruct_t *player, int number, int size, int top)
     }
 
     if( player ) {
-        SendOutput(player, "  Total: %d\n\r", sum);
+        SendOutput(player, "  Total: %d\n\r\n\r", sum);
     }
     memfree(rolls);
 
