@@ -180,7 +180,10 @@ void pb_save_account( PlayerAccount_t *account )
     }
 
     if( resp->account_data ) {
-        account->id = resp->account_data->id;
+        if( account->id != resp->account_data->id ) {
+            account->id = resp->account_data->id;
+            LogPrint( LOG_DEBUG, "New Account ID: %d", account->id );
+        }
     }
 
     protobufDestroyMessage( (ProtobufCMessage *)resp );

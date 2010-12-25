@@ -39,6 +39,7 @@
 #include "protected_data.h"
 #include <time.h>
 #include <sys/time.h>
+#include <openssl/md5.h>
 
 #include "oldstructs.h"
 #include "oldutils.h"
@@ -59,6 +60,7 @@ void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
 void CreateSendConfirmEmail( PlayerStruct_t *player );
 void RollAbilities( PlayerStruct_t *player );
+char *MD5Password(char *email, char *passwd);
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
@@ -543,6 +545,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
     char            attrib[256];
     int             i;
     int             roll[6];
+    char           *temppasswd;
 
     pc = player->pc;
     SendOutputRaw(player, echo_on, 6);
@@ -660,9 +663,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             memfree( player->account->pwd );
         }
 
-        tmp = (char *)crypt(arg, player->account->email);
-        tmp[10] = '\0';
-        player->account->pwd = memstrlink(tmp);
+        player->account->pwd = MD5Password(player->account->email, arg);
 
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_PASSWORD);
@@ -670,8 +671,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
     case STATE_CONFIRM_PASSWORD:
         arg = skip_spaces(arg);
-        if (!arg || strncmp((char *)crypt(arg, player->account->pwd), 
-                            player->account->pwd, 10)) {
+        temppasswd = MD5Password(player->account->email, arg);
+        if (!arg || strncmp(temppasswd, player->account->pwd, 32)) {
+            memfree( temppasswd );
             SendOutputRaw(player, echo_on, 6);
 
             SendOutput(player, "Passwords don't match.\n\r");
@@ -679,6 +681,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
+        memfree( temppasswd );
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CHOOSE_ANSI);
         break;
@@ -690,44 +693,22 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
-        if (strncmp((char *)crypt(arg, player->account->pwd), 
-                            player->account->pwd, 10)) {
+        temppasswd = MD5Password(player->account->email, arg);
+        if (strncmp(temppasswd, player->account->pwd, 32)) {
+            memfree( temppasswd );
             SendOutput(player, "Wrong password.\n\r");
             LogPrint(LOG_INFO, "%s entered a wrong password", player->account);
             connClose( player->connection, UNLOCKED );
             return;
         }
 
-#if 0
-        if (ch->specials.hostip == NULL) {
-            if (!IS_IMMORTAL(ch) ||
-                ch->invis_level <= 58) {
-#endif
-                ProtectedDataLock(player->connection->hostName);
-                LogPrint(LOG_INFO, "%s[%s] has connected.", 
-                         player->account->email,
-                         (char *)player->connection->hostName->data);
-                ProtectedDataUnlock(player->connection->hostName);
-#if 0
-            }
-        } else if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
-            ProtectedDataLock(player->connection->hostName);
-            LogPrint(LOG_INFO, "%s[%s] has connected - Last connected from[%s]",
-                     player->account->email, 
-                     (char *)player->connection->hostName->data,
-                     ch->specials.hostip);
-            ProtectedDataUnlock(player->connection->hostName);
-        }
+        memfree( temppasswd );
 
-        if (ch->specials.hostip) {
-            memfree(ch->specials.hostip);
-        }
         ProtectedDataLock(player->connection->hostName);
-        ch->specials.hostip = 
-                        memstrlink((char *)player->connection->hostName->data);
+        LogPrint(LOG_INFO, "%s[%s] has connected.", 
+                 player->account->email,
+                 (char *)player->connection->hostName->data);
         ProtectedDataUnlock(player->connection->hostName);
-        ch->last_tell = NULL;
-#endif
 
         EnterState(player, STATE_SHOW_ACCOUNT_MENU);
         break;
@@ -862,9 +843,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             memfree( player->account->newpwd );
         }
 
-        tmp = (char *)crypt(arg, player->account->email);
-        tmp[10] = '\0';
-        player->account->newpwd = memstrlink(tmp);
+        player->account->newpwd = MD5Password(player->account->email, arg);
 
         SendOutputRaw(player, echo_on, 6);
         EnterState(player, STATE_CONFIRM_NEW_PASSWORD);
@@ -872,8 +851,9 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
 
     case STATE_CONFIRM_NEW_PASSWORD:
         arg = skip_spaces(arg);
-        if (!arg || strncmp((char *)crypt(arg, player->account->newpwd), 
-                            player->account->newpwd, 10)) {
+        temppasswd = MD5Password(player->account->email, arg);
+        if (!arg || strncmp(temppasswd, player->account->newpwd, 32)) {
+            memfree( temppasswd );
             SendOutputRaw(player, echo_on, 6);
 
             SendOutput(player, "Passwords don't match.\n\r");
@@ -881,6 +861,7 @@ void LoginStateMachine(PlayerStruct_t *player, char *arg)
             return;
         } 
 
+        memfree( temppasswd );
         SendOutputRaw(player, echo_on, 6);
 
         if( player->account->pwd ) {
@@ -1918,6 +1899,41 @@ void CreateSendConfirmEmail( PlayerStruct_t *player )
               "Thanks.\r\n\r\n", player->account->confcode );
 
     send_email( player, "Havokmud confirmation email", buffer );
+}
+
+char *MD5Password(char *email, char *passwd)
+{
+    static char     hex[16] = "0123456789abcdef";
+    char           *buf;
+    char           *realm;
+    unsigned char   md[16];
+    int             i;
+    char           *outbuf;
+    
+    if( !email || !passwd ) {
+        return NULL;
+    }
+
+    realm = pb_get_setting( "gameRealm" );
+    if( !realm ) {
+        realm = memstrlink( "havokmud" );
+    }
+
+    buf = CREATEN(char, strlen(email) + strlen(passwd) + strlen(realm) + 3);
+    sprintf( buf, "%s:%s:%s", email, realm, passwd );
+    memfree(realm);
+
+    MD5(buf, strlen(buf), md);
+    memfree(buf);
+
+    buf = CREATEN(char, 33);
+    for( outbuf = buf, i = 0; i < 16; i++ ) {
+        *(buf++) = hex[((md[i] & 0xF0) >> 4)];
+        *(buf++) = hex[(md[i] & 0x0F)];
+    }
+    *(buf++) = '\0';
+
+    return( outbuf );
 }
 
 /*

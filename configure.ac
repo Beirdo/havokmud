@@ -72,9 +72,6 @@ LDFLAGS="$PTHREAD_LDFLAGS $LDFLAGS"
 LIBS="$PTHREAD_LIBS $LIBS"
 CC="$PTHREAD_CC"
 
-# Checks for libraries.
-AC_CHECK_LIB([crypt], [crypt])
-
 # Extra libraries on some systems
 case "${host}" in
   *solaris* )
@@ -114,6 +111,7 @@ MYSQL_LIBS=-L$ac_cv_option_mysql_libs
 LDFLAGS="$LDFLAGS $MYSQL_LIBS"
 
 AC_CHECK_LIB([z], [compress])
+AC_CHECK_LIB([ssl], [MD5_Update])
 AC_CHECK_LIB([mysqlclient], [mysql_query],,
              [AC_MSG_ERROR(libmysqlclient not installed)])
 

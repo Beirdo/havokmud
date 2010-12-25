@@ -114,8 +114,8 @@ QueryTable_t QueryTable[] = {
     { "UPDATE `accounts` SET `email` = ?, `passwd` = ?, `ansi` = ?, "
       "`confirmed` = ?, `confcode` = ? WHERE `id` = ?", NULL, NULL, FALSE },
     /* 7 */
-    { "INSERT INTO `accounts` (`id`, `email`, `passwd`, `ansi`, `confirmed`, "
-      "`confcode`) VALUES (?, ?, ?, ?, ?, ?)",
+    { "INSERT INTO `accounts` (`email`, `passwd`, `ansi`, `confirmed`, "
+      "`confcode`) VALUES (?, ?, ?, ?, ?)",
       NULL, NULL, FALSE },
     /* 8 */
     { "SELECT `id`, `account_id`, `name` FROM `pcs` "
@@ -290,6 +290,7 @@ HavokResponse *db_mysql_save_account( HavokRequest *req )
     resp->account_data = CREATE(ReqAccountType);
     req_account_type__init( resp->account_data );
     memcpy( resp->account_data, req->account_data, sizeof(ReqAccountType) );
+    resp->account_data->id = id;
     resp->account_data->email    = memstrlink( req->account_data->email );
     resp->account_data->passwd   = memstrlink( req->account_data->passwd );
     resp->account_data->confcode = memstrlink( req->account_data->confcode );
@@ -537,19 +538,20 @@ void chain_save_account( MYSQL_RES *res, QueryItem_t *item )
 
     protect = (ProtectedData_t *)data[6].buffer;
     id  = (int *)protect->data;
+    *id = *(int *)data[0].buffer;
+
+    /* swap argument order */
+    memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
+    memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 5 );
+    memcpy(  &data[5], temp,     sizeof(MYSQL_BIND) );
     
     if( count ) {
         /* update */
-        /* swap argument order */
-        *id = *(int *)data[0].buffer;
         ProtectedDataUnlock( protect );
-        memcpy(  temp,     &data[0], sizeof(MYSQL_BIND) );
-        memmove( &data[0], &data[1], sizeof(MYSQL_BIND) * 5 );
-        memcpy(  &data[5], temp,     sizeof(MYSQL_BIND) );
         db_queue_query( 6, QueryTable, data, 6, NULL, NULL, NULL );
     } else {
         /* insert */
-        db_queue_query( 7, QueryTable, data, 6, result_insert_id, protect,
+        db_queue_query( 7, QueryTable, data, 5, result_insert_id, protect,
                         NULL );
     }
 }

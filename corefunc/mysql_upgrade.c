@@ -102,8 +102,13 @@ static SchemaUpgrade_t coreSchemaUpgrade[CURRENT_SCHEMA] = {
         "  KEY `attribsrc` (`attribsrc`)\n"
         ")\n", NULL, NULL, FALSE },
       { NULL, NULL, NULL, FALSE }
-    }
+    },
     /* 4 -> 5 */
+    { { "ALTER TABLE `accounts` CHANGE `passwd` `passwd` VARCHAR(32) NOT NULL",
+        NULL, NULL, FALSE },
+      { NULL, NULL, NULL, FALSE }
+    }
+    /* 5 -> 6 */
 };
 
 /* Internal protos */

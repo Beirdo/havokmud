@@ -365,11 +365,6 @@ void versionRemove( char *what );
  *************************************************************************/
 #include "config.h"
 
-#if defined( __CYGWIN__ )
-/* Since stupid cygwin doesn't define this in the standard place */
-char *crypt(const char *key, const char *salt);
-#endif
-
 #ifndef HAVE_STRNLEN 
 /* FreeBSD and Solaris seem to be missing strnlen */
 size_t strnlen(const char *s, size_t maxlen);

@@ -33,7 +33,7 @@
 static char db_schema_h_ident[] _UNUSED_ = 
     "$Id$";
 
-#define CURRENT_SCHEMA  4
+#define CURRENT_SCHEMA  5
 
 
 static QueryTable_t defCoreSchema[] = {
@@ -45,7 +45,7 @@ static QueryTable_t defCoreSchema[] = {
   { " CREATE TABLE `accounts` (\n"
     "  `id` INT NOT NULL AUTO_INCREMENT ,\n"
     "  `email` VARCHAR( 255 ) NOT NULL ,\n"
-    "  `passwd` VARCHAR( 10 ) NOT NULL ,\n"
+    "  `passwd` VARCHAR( 32 ) NOT NULL ,\n"
     "  `ansi` TINYINT NOT NULL DEFAULT 0,\n"
     "  `confirmed` TINYINT NOT NULL DEFAULT 0,\n"
     "  `confcode` VARCHAR( 255 ) NOT NULL , \n"
