@@ -184,6 +184,41 @@ void *memalloc( size_t size )
     return( fragment->start );
 }
 
+void *memcalloc( size_t nmemb, size_t size )
+{
+    return( memalloc( nmemb * size ) );
+}
+
+void *memrealloc( void *ptr, size_t size )
+{
+    MemoryFragment_t   *fragment;
+    MemoryFragment_t   *newfrag;
+    void               *newptr;
+
+    if( ptr && !size ) {
+        memfree( ptr );
+        return;
+    }
+
+    if( ptr ) {
+        fragment = memoryFragmentFindByAddr( &fragmentAllocPool, ptr );
+        if( fragment->size == size ) {
+            return( ptr );
+        } else if( fragment->size > size ) {
+            newfrag = memoryFragmentSplit(fragment, size);
+            return( ptr );
+        } else {
+            newptr = memalloc( size );
+            memcpy( newptr, ptr, fragment->size );
+            memfree( ptr );
+            return( newptr );
+        }
+    }
+
+    newptr = memalloc( size );
+    return( newptr );
+}
+
 MemoryBlock_t *memoryBlockGetNew( void )
 {
     void           *blk;

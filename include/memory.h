@@ -103,7 +103,9 @@ extern "C" {
 
 /* Function Prototypes */
 void *memalloc( size_t size );
+void *memcalloc( size_t nmemb, size_t size );
 void memfree( void *buffer );
+void *memrealloc( void *ptr, size_t size );
 char *memstrdup( char *orig );
 char *memstrndup( char *orig, int maxlen );
 char *memstrlink( char *orig );
