@@ -167,7 +167,7 @@ AUTOMAKE_OPTIONS = no-dist
 EMPTY_AUTOMAKE_TARGETS = install-info installdirs check installcheck \
 	dvi pdf ps info html tags ctags distdir all clean
 RECURSE_AUTOMAKE_TARGETS = install install-exec install-data
-MY_SUBDIRS = $(am__append_1) protobuf protobuf-c cjson
+MY_SUBDIRS = $(am__append_1) protobuf protobuf-c protojs cjson
 MY_VARS = $(am__append_2)
 all: all-am
 
