@@ -4,8 +4,8 @@ INSTALL = install
 all:	../../lib/libmongoose.a ../../include/mongoose.h
 
 ../../lib/libmongoose.a:
-	${MAKE} linux
-	${MAKE} lib
+	${MAKE} linux COPT=-g
+	${MAKE} lib COPT=-g
 	${INSTALL} -m 644 libmongoose.a $@
 
 ../../include/mongoose.h:

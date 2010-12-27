@@ -64,7 +64,7 @@ void *WebServiceThread( void *arg )
     port = pb_get_setting( "webServicePort" );
     if( !port || !atoi(port) ) {
         LogPrintNoArg( LOG_CRIT, "No WebService Port defined.  Aborting!" );
-        return;
+        return( NULL );
     }
 
     logdir = pb_get_setting( "webServiceLogDir" );
@@ -76,12 +76,12 @@ void *WebServiceThread( void *arg )
     LogPrint( LOG_DEBUG, "Web Logs in %s", logdir );
 
     options = CREATEN(char *, 7);
-    options[0] = memstrlink("ports");
+    options[0] = memstrlink("listening_ports");
     options[1] = memstrdup(port);
-    options[2] = memstrlink("access_log");
+    options[2] = memstrlink("access_log_file");
     sprintf( buf, "%s/access.log", logdir );
     options[3] = memstrdup(buf);
-    options[4] = memstrlink("error_log");
+    options[4] = memstrlink("error_log_file");
     sprintf( buf, "%s/error.log", logdir );
     options[5] = memstrdup(buf);
     options[6] = NULL;
@@ -95,6 +95,11 @@ void *WebServiceThread( void *arg )
      * Start listening on port specified.
      */
     ctx = mg_start(webServiceCallback, NULL, (const char **)options);
+    if( !ctx )
+    {
+        LogPrintNoArg( LOG_CRIT, "Web Service couldn't start!" );
+        return( NULL );
+    }
 
     while( !GlobalAbort ) {
         sleep(1);
