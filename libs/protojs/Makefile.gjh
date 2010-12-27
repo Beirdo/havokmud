@@ -1,0 +1,14 @@
+.PHONY:	all clean
+
+INSTALL = install
+all:	../../bin/pbj
+
+../../bin/pbj:
+	./bootstrap.sh
+	${MAKE}
+	${INSTALL} -m 755 pbj $@
+
+clean:
+	${RM} ../../bin/pbj
+	${MAKE} clean
+
