@@ -45,6 +45,9 @@
 void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
                          const struct mg_request_info *request_info);
 
+static struct mg_allocs webServiceAllocs = { memcalloc, memalloc, memfree, 
+                                             memrealloc };
+
 /**
  * @brief Thread to handle WebService requests
  * @return never returns until shutdown
@@ -89,9 +92,10 @@ void *WebServiceThread( void *arg )
     memfree( port );
     memfree( logdir );
 
+    mg_set_allocs( &webServiceAllocs );
+
     /*
      * Initialize mongoose context.
-     * Set WWW root to current directory.
      * Start listening on port specified.
      */
     ctx = mg_start(webServiceCallback, NULL, (const char **)options);
