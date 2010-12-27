@@ -1,0 +1,10 @@
+*.pbj.js
+*.o
+ProtoJS.tokens
+ProtoJSLexer*
+ProtoJSParser*
+pbj
+*.dSYM
+antlr-3.*
+libantlr3c-*
+output

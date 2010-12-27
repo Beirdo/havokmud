@@ -17,3 +17,10 @@ libs/protobuf:
   type: svn
   revision: 327
   remote: braid/libs/protobuf
+libs/protojs: 
+  squashed: true
+  url: git://github.com/sirikata/protojs.git
+  branch: master
+  type: git
+  revision: 2cf664c330f5ee83df73f7174ad25b07313c4197
+  remote: braid/libs/protojs
