@@ -74,6 +74,7 @@ static pthread_t mysqlThreadId;
 static pthread_t smtpThreadId;
 static pthread_t memoryThreadId;
 static pthread_t protobufThreadId;
+static pthread_t webServiceThreadId;
 
 static connectThreadArgs_t connectThreadArgs;
 static PlayingThreadArgs_t mortalPlayingArgs = { "MortalPlayingThread", NULL };
@@ -255,6 +256,9 @@ void StartThreads( void )
     connectThreadArgs.timeout_usec = 100000;
     thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
                    "ConnectionThread", NULL );
+
+    thread_create( &webServiceThreadId, WebServiceThread, NULL, 
+                   "WebServiceThread", NULL );
 
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );

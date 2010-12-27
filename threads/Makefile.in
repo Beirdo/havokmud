@@ -56,7 +56,7 @@ am_libhavokthread_a_OBJECTS = master.$(OBJEXT) connections.$(OBJEXT) \
 	input.$(OBJEXT) login.$(OBJEXT) dns.$(OBJEXT) \
 	logging.$(OBJEXT) editor.$(OBJEXT) playing.$(OBJEXT) \
 	mysql_handler.$(OBJEXT) thread_api.$(OBJEXT) smtp.$(OBJEXT) \
-	protobuf.$(OBJEXT)
+	protobuf.$(OBJEXT) webservice.$(OBJEXT)
 libhavokthread_a_OBJECTS = $(am_libhavokthread_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -183,7 +183,7 @@ AUTOMAKE_OPTIONS = no-dist
 noinst_LIBRARIES = libhavokthread.a
 libhavokthread_a_SOURCES = master.c connections.c input.c login.c \
 	dns.c logging.c editor.c playing.c mysql_handler.c \
-	thread_api.c smtp.c protobuf.c
+	thread_api.c smtp.c protobuf.c webservice.c
 all: all-am
 
 .SUFFIXES:
@@ -244,6 +244,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/protobuf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thread_api.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/webservice.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

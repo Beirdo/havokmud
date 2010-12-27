@@ -203,7 +203,7 @@ AUTOMAKE_OPTIONS = no-dist
 SUBDIRS = libs protobuf util corefunc threads plugins
 havoknew_SOURCES = 
 havoknew_LDADD = util/*.o corefunc/*.o threads/*.o protobuf/src/*.o -L \
-	lib -lprotobuf -lprotobuf-c -lcJSON $(am__append_1) \
+	lib -lprotobuf -lprotobuf-c -lcJSON -lmongoose $(am__append_1) \
 	$(am__append_2)
 havoknew_LDFLAGS = ${PTHREAD_CFLAGS} -g ${LDFLAGS} ${PTHREAD_LIBS} \
 	$(am__append_3)

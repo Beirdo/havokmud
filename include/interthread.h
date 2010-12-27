@@ -158,6 +158,7 @@ void *PlayingThread( void *arg );
 void *MysqlThread( void *arg );
 void *SmtpThread( void *arg );
 void *ProtobufThread( void *arg );
+void *WebServiceThread( void *arg );
 
 /*
  * Prototypes of connections thread callbacks
