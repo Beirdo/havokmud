@@ -1,0 +1,16 @@
+.PHONY:	all clean
+
+INSTALL = install
+all:	../../lib/libmongoose.a ../../include/mongoose.h
+
+../../lib/libmongoose.a:
+	${MAKE} linux
+	${MAKE} lib
+	${INSTALL} -m 644 libmongoose.a $@
+
+../../include/mongoose.h:
+	${INSTALL} -m 644 mongoose.h $@
+
+clean:
+	${RM} ../../lib/libmongoose.a ../../include/mongoose.h
+	${MAKE} clean

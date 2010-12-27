@@ -1,2 +1,4 @@
 .hg
 .hgtags
+!Makefile
+mongoose
