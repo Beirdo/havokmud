@@ -116,13 +116,13 @@ QueueObject_t * QueueCreate( uint32 numElements )
 
     /* Initialize the condition variables */
     queue->full = FALSE;
-    queue->condNotFull = CREATEA(pthread_cond_t, 8);
-    queue->cNotFull = ALIGN(pthread_cond_t, queue->condNotFull, 8);
+    queue->condNotFull = CREATEA(pthread_cond_t, 16);
+    queue->cNotFull = ALIGN(pthread_cond_t, queue->condNotFull, 16);
     status = pthread_cond_init( queue->cNotFull, NULL );
 
     queue->empty = TRUE;
-    queue->condNotEmpty = CREATEA(pthread_cond_t, 8);
-    queue->cNotEmpty = ALIGN(pthread_cond_t, queue->condNotEmpty, 8);
+    queue->condNotEmpty = CREATEA(pthread_cond_t, 16);
+    queue->cNotEmpty = ALIGN(pthread_cond_t, queue->condNotEmpty, 16);
     status = pthread_cond_init( queue->cNotEmpty, NULL );
 
     if( !QueueList ) {
