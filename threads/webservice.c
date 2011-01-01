@@ -78,7 +78,7 @@ void *WebServiceThread( void *arg )
     LogPrint( LOG_DEBUG, "Web Service listening on port %s", port );
     LogPrint( LOG_DEBUG, "Web Logs in %s", logdir );
 
-    options = CREATEN(char *, 7);
+    options = CREATEN(char *, 8);
     options[0] = memstrlink("listening_ports");
     options[1] = memstrdup(port);
     options[2] = memstrlink("access_log_file");
@@ -87,7 +87,9 @@ void *WebServiceThread( void *arg )
     options[4] = memstrlink("error_log_file");
     sprintf( buf, "%s/error.log", logdir );
     options[5] = memstrdup(buf);
-    options[6] = NULL;
+    options[6] = memstrlink("document_root");
+    options[7] = memstrdup("./havokweb/");
+    options[8] = NULL;
 
     memfree( port );
     memfree( logdir );
@@ -118,6 +120,7 @@ void *WebServiceThread( void *arg )
 void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
                          const struct mg_request_info *request_info)
 {
+    LogPrint(LOG_INFO, "Event: %d, Conn: %p, Info: %p", event, conn, request_info);
     return NULL;
 }
 
