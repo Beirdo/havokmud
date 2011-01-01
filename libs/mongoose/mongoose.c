@@ -424,6 +424,12 @@ static const char *config_options[] = {
 #define ENTRIES_PER_CONFIG_OPTION 3
 
 struct mg_context {
+  pthread_cond_t sq_full;    // Singaled when socket is produced
+  pthread_cond_t sq_empty;   // Signaled when socket is consumed
+  pthread_cond_t  cond;      // Condvar for tracking workers terminations
+  pthread_mutex_t mutex;     // Protects (max|num)_threads
+
+  void *unaligned;		// The unaligned pointer for later freeing
   int stop_flag;                // Should we stop event loop
   SSL_CTX *ssl_ctx;             // SSL context
   char *config[NUM_OPTIONS];    // Mongoose configuration parameters
@@ -433,14 +439,10 @@ struct mg_context {
   struct socket *listening_sockets;
 
   int num_threads;           // Number of threads
-  pthread_mutex_t mutex;     // Protects (max|num)_threads
-  pthread_cond_t  cond;      // Condvar for tracking workers terminations
 
   struct socket queue[20];   // Accepted sockets
   int sq_head;               // Head of the socket queue
   int sq_tail;               // Tail of the socket queue
-  pthread_cond_t sq_full;    // Singaled when socket is produced
-  pthread_cond_t sq_empty;   // Signaled when socket is consumed
 };
 
 struct mg_connection {
@@ -458,6 +460,12 @@ struct mg_connection {
   int request_len;            // Size of the request + headers in a buffer
   int data_len;               // Total size of data in a buffer
 };
+
+#if __WORDSIZE == 64
+typedef unsigned long long int uaddr;
+#else
+typedef unsigned int           uaddr;
+#endif
 
 const char **mg_get_valid_option_names(void) {
   return config_options;
@@ -3878,8 +3886,9 @@ static int consume_socket(struct mg_context *ctx, struct socket *sp) {
 
   // If the queue is empty, wait. We're idle at this point.
   while (ctx->sq_head == ctx->sq_tail && ctx->stop_flag == 0) {
-    pthread_cond_wait(&ctx->sq_full, &ctx->mutex);
+    (void) pthread_cond_wait(&ctx->sq_full, &ctx->mutex);
   }
+
   // Master thread could wake us up without putting a socket.
   // If this happens, it is time to exit.
   if (ctx->stop_flag) {
@@ -4051,6 +4060,7 @@ static void master_thread(struct mg_context *ctx) {
 
 static void free_context(struct mg_context *ctx) {
   int i;
+  void *unaligned;
 
   // Deallocate config parameters
   for (i = 0; i < NUM_OPTIONS; i++) {
@@ -4069,7 +4079,8 @@ static void free_context(struct mg_context *ctx) {
 #endif // !NO_SSL
 
   // Deallocate context itself
-  mg_free(ctx);
+  unaligned = ctx->unaligned;
+  mg_free(unaligned);
 }
 
 void mg_stop(struct mg_context *ctx) {
@@ -4088,7 +4099,7 @@ void mg_stop(struct mg_context *ctx) {
 
 struct mg_context *mg_start(mg_callback_t user_callback, void *user_data,
                             const char **options) {
-  struct mg_context *ctx;
+  struct mg_context *ctx, *unaligned;
   const char *name, *value, *default_value;
   int i;
 
@@ -4099,7 +4110,22 @@ struct mg_context *mg_start(mg_callback_t user_callback, void *user_data,
 
   // Allocate context and initialize reasonable general case defaults.
   // TODO(lsm): do proper error handling here.
-  ctx = mg_calloc(1, sizeof(*ctx));
+
+  /* Align the context to 16-byte alignment as it is an undocumented requirement
+   * for pthread_cond_t that they must be 16-byte aligned in newer glibc in
+   * Linux.  This is not a problem when using calloc or malloc, as glibc always
+   * returns page-aligned blocks.  However, with a custom allocator, this
+   * alignment needs to be forced.  Also changed the order of the mg_context
+   * structure to put pthread_cond_t at the beginning to ease the alignment
+   * requirements
+   */
+  unaligned = mg_malloc(sizeof(struct mg_context) + 15);
+  ctx = (struct mg_context *)((((uaddr)(unaligned) + 15 ) / 16) * 16);
+#if 0
+  DEBUG_TRACE(("unaligned: %p, ctx: %p", unaligned, ctx ));
+  DEBUG_TRACE(("conds: %p, %p, %p, mutex: %p", &ctx->sq_full, &ctx->sq_empty, &ctx->cond, &ctx->mutex ));
+#endif
+  ctx->unaligned = unaligned;
   ctx->user_callback = user_callback;
   ctx->user_data = user_data;
 
