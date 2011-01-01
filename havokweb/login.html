@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="prototype.js"></script>
+    <script type="text/javascript" src="md5.js"></script>
+    <title>HavokMud Login</title>
+</head>
+
+<body>
+<header>
+    <h1>HavokMud Login</h1>
+    <nav>
+        <ul>
+            <li><a href="register">register</a></li>
+            <li><a href="about">about</a></li>
+        </ul>
+    </nav>
+    <div class="clear" />
+</header>
+
+<div id="formdiv">
+    <form name="loginform" id="loginform" action="login" method="post" 
+     onsubmit="md5_ha1_digest()">
+        <table width=100%>
+            <tr>
+                <td><label for="username">Login:</label></td>
+                <td><input type="email" size=40 id="username" name="username" value=""></td>
+            </tr>
+            <tr>
+                <td><label for="password">Password:</label></td>
+                <td><input type="password" size=40 id="password" name="password" value=""></td>
+            </tr>
+            <tr>
+                <td><input type="submit" name="login" value="Login"></td>
+            </tr>
+        </table>
+        <input type="hidden" id="realm" name="realm" value="havokmud" />
+        <input type="hidden" id="nonce" name="nonce" value="1293681521" />
+        <input type="hidden" id="qop" name="qop" value="auth" />
+        <input type="hidden" id="cnonce" name="cnonce" value="" />
+        <input type="hidden" id="nc" name="nc" value="00000001" />
+        <input type="hidden" id="method" name="method" value="GET" />
+        <input type="hidden" id="uri" name="uri" value="" />
+    </form>
+</div>
+<footer>
+    <a href="http://github.com/Beirdo/havokmud">HavokMud</a> (c) 2010 Gavin Hurlbut
+</footer>
+</body>
+</html>
