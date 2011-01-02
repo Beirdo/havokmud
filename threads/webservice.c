@@ -107,6 +107,8 @@ void *WebServiceThread( void *arg )
         return( NULL );
     }
 
+    pthread_mutex_unlock( startupMutex );
+
     while( !GlobalAbort ) {
         sleep(1);
     }
