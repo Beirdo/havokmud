@@ -1,4 +1,5 @@
 % layout 'default';
+<%= tag 'div', id => 'formdiv' => begin %>
 <%= form_for index => (method => 'post') => begin %>
     <% if (param 'user') { %>
         <b>Wrong name or password, please try again.</b><br>
@@ -8,4 +9,5 @@
     Password:<br>
     <%= password_field 'pass' => (size => 40) %><br>
     <%= submit_button 'Login' %>
+<% end %>
 <% end %>

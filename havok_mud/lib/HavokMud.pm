@@ -29,6 +29,7 @@ sub startup {
     $r->any('/')->to('login#index')->name('index');
     $r->get('/protected')->to('login#protected')->name('protected');
     $r->get('/logout')->to('login#logout')->name('logout');
+    $r->get('/about')->to('about')->name('about');
 }
 
 1;

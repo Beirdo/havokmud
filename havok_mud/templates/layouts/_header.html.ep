@@ -3,7 +3,12 @@
  <%= tag 'h1' => begin %>HavokMud Login<% end %>
   <%= tag 'nav' => begin %>
    <%= tag 'ul' => begin %>
+% if (session 'user') {
+    <%= tag 'li' => begin %><%= session 'user' %><% end %>
+    <%= tag 'li' => begin %><%= link_to logout => 'logout' %><% end %>
+% } else { 
     <%= tag 'li' => begin %><%= link_to register => 'register' %><% end %>
+% }
     <%= tag 'li' => begin %><%= link_to about => '/about' %><% end %>
    <% end %>
   <% end %>
