@@ -12,6 +12,8 @@ sub new { bless {}, shift }
 sub check {
     my ($self, $email, $pass) = @_;
 
+    return 0 if (!$email || !$pass);
+
     my $client  = Mojo::Client->new;
     my $json    = Mojo::JSON->new;
     my $msghash = {email => $email, passwd => $pass};
