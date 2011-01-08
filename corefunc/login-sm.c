@@ -60,7 +60,6 @@ void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
 void CreateSendConfirmEmail( PlayerStruct_t *player );
 void RollAbilities( PlayerStruct_t *player );
-char *MD5Password(char *email, char *passwd);
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
                                              stats */
