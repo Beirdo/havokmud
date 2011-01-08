@@ -395,6 +395,7 @@ void LogItemOutput( void *vitem )
     char                usPart[9];
     char                timestamp[TIMESTAMP_MAX];
     int                 length;
+    int                 msglen;
     LinkedListItem_t   *listItem, *next;
     LogFileChain_t     *logFile;
     static char        *unknown = "thread_unknown";
@@ -424,6 +425,12 @@ void LogItemOutput( void *vitem )
     strcat( timestamp, usPart );
     length = strlen( timestamp );
     
+    /* Trim the trailing \n\r from tog messages */
+    for( msglen = strlen( item->message ) ; 
+         msglen && (item->message[msglen-1] == '\n' || 
+                    item->message[msglen-1] == '\r'); 
+         item->message[msglen-1] = '\0' );
+
     LinkedListLock( LogList );
     
     for( listItem = LogList->head; listItem; listItem = next ) {
