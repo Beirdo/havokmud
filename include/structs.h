@@ -741,7 +741,7 @@ typedef struct {
 } ThreadCallback_t; 
 
 typedef struct {
-    PlayerStruct_t         *player;
+    char                   *email;
     char                   *subject;
     char                   *body;
     int                     bodyind;

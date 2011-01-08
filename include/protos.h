@@ -350,6 +350,7 @@ void SetAttributeBool( PlayerPC_t *pc, char *attrib, char *source, bool val );
 void DestroyAttributes( PlayerPC_t *pc );
 
 char *MD5Password(char *email, char *passwd);
+void CreateSendConfirmEmail( PlayerAccount_t *acct );
 
 
 /*

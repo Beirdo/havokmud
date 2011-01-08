@@ -43,10 +43,14 @@
 #include "mongoose.h"
 #include "cJSON.h"
 
+#define MAX_WEB_BUFSIZE 65536
+
 void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
                          const struct mg_request_info *request_info);
 void *webServiceLogin(struct mg_connection *conn, 
                       const struct mg_request_info *request_info);
+void *webServiceRegister(struct mg_connection *conn, 
+                         const struct mg_request_info *request_info);
 
 static struct mg_allocs webServiceAllocs = { memcalloc, memalloc, memfree, 
                                              memrealloc };
@@ -122,16 +126,34 @@ void *WebServiceThread( void *arg )
     return( NULL );
 }
 
+typedef void *(*webHandler)(struct mg_connection *, 
+                            const struct mg_request_info *);
+typedef struct {
+    char           *uri;
+    char           *method;
+    webHandler      handler;
+} webHandle_t;
+
+static webHandle_t handlers[] = {
+    { "/login",    "POST", webServiceLogin },
+    { "/register", "POST", webServiceRegister }
+};
+static int handlerCount = NELEMENTS(handlers);
+
 void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
                          const struct mg_request_info *request_info)
 {
+    int     i;
+
     switch( event ) {
     case MG_NEW_REQUEST:
         LogPrint(LOG_INFO, "mongoose: %s %s", 
                            request_info->request_method, request_info->uri );
-        if( !strcmp( request_info->uri, "/login" ) &&
-            !strcmp( request_info->request_method, "POST" ) ) {
-            return webServiceLogin(conn, request_info);
+        for( i = 0; i < handlerCount; i++ ) {
+            if( !strcmp( request_info->uri, handlers[i].uri ) &&
+                !strcmp( request_info->request_method, handlers[i].method ) ) {
+                return handlers[i].handler(conn, request_info);
+            }
         }
         return NULL;
     case MG_HTTP_ERROR:
@@ -150,23 +172,16 @@ void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
     return NULL;
 }
 
-#define MAX_WEB_BUFSIZE 65536
-void *webServiceLogin(struct mg_connection *conn, 
-                      const struct mg_request_info *request_info)
+cJSON *getJSONPayload(struct mg_connection *conn, char *param)
 {
     char       *buffer;
     char       *query;
     int         len;
     cJSON      *req;
-    cJSON      *item;
-    cJSON      *resp;
-    char       *email = NULL;
-    char       *passwd = NULL;
-    PlayerAccount_t *acct;
-    bool        success;
-    char       *md5;
-    char        date[64];
-    time_t      curtime;
+
+    if( !conn || !param ) {
+        return NULL;
+    }
 
     buffer = CREATEN(char, MAX_WEB_BUFSIZE);
     len = mg_read(conn, buffer, MAX_WEB_BUFSIZE);
@@ -175,7 +190,7 @@ void *webServiceLogin(struct mg_connection *conn,
 #endif
 
     query = CREATEN(char, len+1);
-    len = mg_get_var(buffer, len, "q", query, len);
+    len = mg_get_var(buffer, len, param, query, len);
 #ifdef DEBUG_LOGIN
     LogPrint( LOG_INFO, "mongoose: login len = %d, query = %s", len, query );
 #endif
@@ -190,6 +205,81 @@ void *webServiceLogin(struct mg_connection *conn,
     req = cJSON_Parse(query);
     memfree(query);
 
+    return( req );
+}
+
+void sendJSONResponse(struct mg_connection *conn, cJSON *resp)
+{
+    char       *buffer;
+    char        date[64];
+    time_t      curtime;
+
+    buffer = cJSON_Print(resp);
+    curtime = time(NULL);
+    strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S %Z", 
+             localtime(&curtime));
+
+    /* Send the response */
+    mg_printf( conn, 
+               "HTTP/1.1 200 OK\r\n"
+               "Date: %s\r\n"
+               "Content-Type: %s\r\n"
+               "Content-Length: %d\r\n"
+               "\r\n"
+               "%s",
+               date, "application/json", strlen(buffer), buffer );
+    memfree( buffer );
+}
+
+void addAccountDetails(cJSON *resp, PlayerAccount_t *acct, char *name)
+{
+    cJSON              *item;
+
+    item = cJSON_CreateObject();
+    cJSON_AddItemToObject( resp, name, item );
+    cJSON_AddNumberToObject( item, "id", acct->id );
+    cJSON_AddStringToObject( item, "email", acct->email );
+    if( acct->ansi ) {
+        cJSON_AddTrueToObject( item, "ansi" );
+    } else {
+        cJSON_AddFalseToObject( item, "ansi" );
+    }
+    if( acct->confirmed ) {
+        cJSON_AddTrueToObject( item, "confirmed" );
+    } else {
+        cJSON_AddFalseToObject( item, "confirmed" );
+    }
+}
+
+void freeAccount(PlayerAccount_t *acct)
+{
+    if( acct ) {
+        if( acct->email ) {
+            memfree( acct->email );
+        }
+        if( acct->pwd ) {
+            memfree( acct->pwd );
+        }
+        if( acct->confcode ) {
+            memfree( acct->confcode );
+        }
+        memfree( acct );
+    }
+}
+
+void *webServiceLogin(struct mg_connection *conn, 
+                      const struct mg_request_info *request_info)
+{
+    cJSON              *req;
+    cJSON              *item;
+    cJSON              *resp;
+    char               *email = NULL;
+    char               *passwd = NULL;
+    PlayerAccount_t    *acct;
+    bool                success;
+    char               *md5;
+
+    req = getJSONPayload(conn, "q");
     if( !req ) {
         LogPrintNoArg(LOG_INFO, "mongoose: no JSON payload");
         return NULL;
@@ -219,20 +309,7 @@ void *webServiceLogin(struct mg_connection *conn,
             success = FALSE;
         } else {
             success = TRUE;
-            cJSON_AddItemToObject( resp, "details", 
-                                   item = cJSON_CreateObject() );
-            cJSON_AddNumberToObject( item, "id", acct->id );
-            cJSON_AddStringToObject( item, "email", acct->email );
-            if( acct->ansi ) {
-                cJSON_AddTrueToObject( item, "ansi" );
-            } else {
-                cJSON_AddFalseToObject( item, "ansi" );
-            }
-            if( acct->confirmed ) {
-                cJSON_AddTrueToObject( item, "confirmed" );
-            } else {
-                cJSON_AddFalseToObject( item, "confirmed" );
-            }
+            addAccountDetails(resp, acct, "details");
         }
         memfree( md5 );
     }
@@ -242,35 +319,65 @@ void *webServiceLogin(struct mg_connection *conn,
     } else {
         cJSON_AddFalseToObject( resp, "success" );
     }
-    buffer = cJSON_Print(resp);
+    sendJSONResponse(conn, resp);
 
-    if( acct ) {
-        if( acct->email ) {
-            memfree( acct->email );
-        }
-        if( acct->pwd ) {
-            memfree( acct->pwd );
-        }
-        if( acct->confcode ) {
-            memfree( acct->confcode );
-        }
-        memfree( acct );
+    freeAccount(acct);
+
+    return (void *)1;
+}
+
+void *webServiceRegister(struct mg_connection *conn, 
+                         const struct mg_request_info *request_info)
+{
+    cJSON              *req;
+    cJSON              *item;
+    cJSON              *resp;
+    char               *email = NULL;
+    char               *passwd = NULL;
+    PlayerAccount_t    *acct;
+    bool                success;
+
+    req = getJSONPayload(conn, "q");
+    if( !req ) {
+        LogPrintNoArg(LOG_INFO, "mongoose: no JSON payload");
+        return NULL;
     }
 
-    curtime = time(NULL);
-    strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S %Z", 
-             localtime(&curtime));
+    item = cJSON_GetObjectItem(req, "email");
+    if( item ) {
+        email = memstrdup( item->valuestring );
+    }
 
-    /* Send the response */
-    mg_printf( conn, 
-               "HTTP/1.1 200 OK\r\n"
-               "Date: %s\r\n"
-               "Content-Type: %s\r\n"
-               "Content-Length: %d\r\n"
-               "\r\n"
-               "%s",
-               date, "application/json", strlen(buffer), buffer );
-    memfree( buffer );
+    item = cJSON_GetObjectItem(req, "passwd");
+    if( item ) {
+        passwd = memstrdup( item->valuestring );
+    }
+    cJSON_Delete(req);
+
+    resp = cJSON_CreateObject();
+    acct = pb_load_account(email);
+    if( acct ) {
+        LogPrint(LOG_INFO, "mongoose: account already exists: %s", email);
+        success = FALSE;
+    } else {
+        success = TRUE;
+        acct = CREATE(PlayerAccount_t);
+        acct->email     = memstrdup(email);
+        acct->pwd       = MD5Password(email, passwd);
+        acct->ansi      = TRUE;
+
+        /* Note: includes saving the account */
+        CreateSendConfirmEmail(acct);
+    }
+
+    if( success ) {
+        cJSON_AddTrueToObject( resp, "success" );
+    } else {
+        cJSON_AddFalseToObject( resp, "success" );
+    }
+    sendJSONResponse(conn, resp);
+
+    freeAccount(acct);
 
     return (void *)1;
 }

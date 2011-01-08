@@ -62,7 +62,7 @@ void *SmtpThread( void *arg )
 {
     char                buffer[256];
     MailItem_t         *item;
-    PlayerStruct_t     *player;
+    PlayerAccount_t    *acct;
     smtp_session_t      session;
     smtp_message_t      message;
     smtp_recipient_t    recipient;
@@ -140,12 +140,9 @@ void *SmtpThread( void *arg )
             continue;
         }
 
-        player = item->player;
-
         message = smtp_add_message( session );
         smtp_set_reverse_path( message, fromAddr );
-        recipient = smtp_add_recipient( message, 
-                                        (const char *)player->account->email );
+        recipient = smtp_add_recipient( message, item->email );
         smtp_set_header( message, "To", NULL, NULL );
         smtp_set_header( message, "Subject", item->subject );
         smtp_set_header_option( message, "Subject", Hdr_OVERRIDE, 1 );
@@ -241,16 +238,16 @@ void print_recipient_status( smtp_recipient_t recipient, const char *mailbox,
               status->text );
 }
 
-void send_email( PlayerStruct_t *player, char *subject, char *body )
+void send_email( char *email, char *subject, char *body )
 {
     MailItem_t    *item;
 
-    if( !player || !subject || !body ) {
+    if( !email || !subject || !body ) {
         return;
     }
 
     item = CREATE(MailItem_t);
-    item->player  = player;
+    item->email   = memstrlink( email );
     item->subject = memstrlink( subject );
     item->body    = memstrlink( body );
 

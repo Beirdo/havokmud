@@ -58,7 +58,6 @@ void DoCreationMenu( PlayerStruct_t *player, char arg );
 void DoAccountMenu( PlayerStruct_t *player, char arg );
 void roll_abilities(PlayerStruct_t *player);
 int SiteLock(char *site);
-void CreateSendConfirmEmail( PlayerStruct_t *player );
 void RollAbilities( PlayerStruct_t *player );
 
 static char     swords[] = ">>>>>>>>";  /**< Used with STAT_SWORD to show 
@@ -439,7 +438,7 @@ void EnterState(PlayerStruct_t *player, PlayerState_t newstate)
         } else {
             SendOutput(player, "Resending your confirmation email...\n\r");
         }
-        CreateSendConfirmEmail(player);
+        CreateSendConfirmEmail(player->account);
         break;
     case STATE_REROLL_ABILITIES:
         RollAbilities(player);
@@ -1860,30 +1859,34 @@ int SiteLock(char *site)
 
 #define MAX_EMAIL_LEN 4096
 
-void CreateSendConfirmEmail( PlayerStruct_t *player )
+void CreateSendConfirmEmail( PlayerAccount_t *acct )
 {
     char            buffer[MAX_EMAIL_LEN];
     struct timeval  now;
     void           *ctx;
     char            digest[16];
 
-    if( !player->account->confcode || !*player->account->confcode ) {
+    if( !acct ) {
+        return;
+    }
+
+    if( !acct->confcode || !*acct->confcode ) {
         /* New email, create new confcode */
         gettimeofday( &now, NULL );
         snprintf( buffer, MAX_EMAIL_LEN, "==!%s!==!%ld!==", 
-                  player->account->email, now.tv_sec );
+                  acct->email, now.tv_sec );
         /* MD5 it */
         ctx = opiemd5init();
         opiemd5update(ctx, (unsigned char *)buffer, strlen(buffer));
         opiemd5final((unsigned char *)digest, ctx);
         /* Convert the MD5 digest into English words */
         opiebtoe( buffer, digest );
-        if( player->account->confcode ) {
-            memfree( player->account->confcode );
+        if( acct->confcode ) {
+            memfree( acct->confcode );
         }
-        player->account->confcode = memstrlink( buffer );
-        player->account->confirmed = FALSE;
-        pb_save_account(player->account);
+        acct->confcode = memstrlink( buffer );
+        acct->confirmed = FALSE;
+        pb_save_account(acct);
     }
 
     snprintf( buffer, MAX_EMAIL_LEN, 
@@ -1895,9 +1898,9 @@ void CreateSendConfirmEmail( PlayerStruct_t *player )
               "Please note that the order of the words is important, but not "
               "the upper/lower\r\n"
               "case of the letters.\r\n\r\n"
-              "Thanks.\r\n\r\n", player->account->confcode );
+              "Thanks.\r\n\r\n", acct->confcode );
 
-    send_email( player, "Havokmud confirmation email", buffer );
+    send_email( acct->email, "Havokmud confirmation email", buffer );
 }
 
 char *MD5Password(char *email, char *passwd)

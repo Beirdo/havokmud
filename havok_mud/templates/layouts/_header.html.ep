@@ -8,8 +8,9 @@
     <%= tag 'li' => begin %><%= link_to logout => 'logout' %><% end %>
 % } else { 
     <%= tag 'li' => begin %><%= link_to register => 'register' %><% end %>
+    <%= tag 'li' => begin %><%= link_to login => 'login' %><% end %>
 % }
-    <%= tag 'li' => begin %><%= link_to about => '/about' %><% end %>
+    <%= tag 'li' => begin %><%= link_to about => 'about' %><% end %>
    <% end %>
   <% end %>
  <%= tag 'div', class => 'clear' %>
