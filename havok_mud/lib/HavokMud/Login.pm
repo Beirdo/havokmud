@@ -9,12 +9,12 @@ use base 'Mojolicious::Controller';
 sub index {
     my $self = shift;
 
-    my $user = $self->param('user') || '';
-    my $pass = $self->param('pass') || '';
+    my $email = $self->param('email') || '';
+    my $pass  = $self->param('pass') || '';
 
-    return $self->render unless $self->users->check($user, $pass);
+    return $self->render unless $self->users->check($email, $pass);
 
-    $self->session(user => $user);
+    $self->session(user => $email);
     $self->flash(message => 'Thanks for logging in!');
     $self->redirect_to('protected');
 }
