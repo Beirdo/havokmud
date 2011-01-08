@@ -1,4 +1,12 @@
-<!doctype html><html>
-    <head><title>HavokMud</title></head>
-    <body><%== content %></body>
+<!doctype html>
+<html>
+    <head>
+        <title>HavokMud</title>
+        <%= stylesheet 'style/style.css' %>
+    </head>
+    <body>
+        <%= include 'layouts/_header' %>
+        <%== content %>
+        <%= include 'layouts/_footer' %>
+    </body>
 </html>

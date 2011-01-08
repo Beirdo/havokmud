@@ -1,11 +1,11 @@
 % layout 'default';
-<%= form_for index => begin %>
+<%= form_for index => (method => 'post') => begin %>
     <% if (param 'user') { %>
         <b>Wrong name or password, please try again.</b><br>
     <% } %>
-    Name:<br>
-    <%= text_field 'user' %><br>
+    Email:<br>
+    <%= text_field 'email' => (size => 40) %><br>
     Password:<br>
-    <%= password_field 'pass' %><br>
+    <%= password_field 'pass' => (size => 40) %><br>
     <%= submit_button 'Login' %>
 <% end %>

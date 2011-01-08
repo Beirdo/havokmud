@@ -1,0 +1,12 @@
+
+<%= tag 'header' => begin %>
+ <%= tag 'h1' => begin %>HavokMud Login<% end %>
+  <%= tag 'nav' => begin %>
+   <%= tag 'ul' => begin %>
+    <%= tag 'li' => begin %><%= link_to register => 'register' %><% end %>
+    <%= tag 'li' => begin %><%= link_to about => '/about' %><% end %>
+   <% end %>
+  <% end %>
+ <%= tag 'div', class => 'clear' %>
+<% end %>
+

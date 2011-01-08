@@ -1,0 +1,7 @@
+
+<%= tag 'footer' => begin %>
+ <%= tag 'div', class => 'clear' %>
+  <%= link_to 'http://github.com/Beirdo/havokmud' => begin %>HavokMud<% end %>
+  (c) 2010 Gavin Hurlbut
+<% end %>
+
