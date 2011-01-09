@@ -146,8 +146,10 @@ void *webServiceCallback(enum mg_event event, struct mg_connection *conn,
 
     switch( event ) {
     case MG_NEW_REQUEST:
+#ifdef DEBUG_WEB
         LogPrint(LOG_INFO, "mongoose: %s %s", 
                            request_info->request_method, request_info->uri );
+#endif
         for( i = 0; i < handlerCount; i++ ) {
             if( !strcmp( request_info->uri, handlers[i].uri ) &&
                 !strcmp( request_info->request_method, handlers[i].method ) ) {
@@ -214,6 +216,7 @@ void sendJSONResponse(struct mg_connection *conn, cJSON *resp)
     time_t      curtime;
 
     buffer = cJSON_Print(resp);
+    cJSON_Delete(resp);
     curtime = time(NULL);
     strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S %Z", 
              localtime(&curtime));
@@ -274,6 +277,7 @@ void *webServiceLogin(struct mg_connection *conn,
     cJSON              *resp;
     char               *email = NULL;
     char               *passwd = NULL;
+    char               *remote = NULL;
     PlayerAccount_t    *acct;
     bool                success;
     char               *md5;
@@ -293,6 +297,11 @@ void *webServiceLogin(struct mg_connection *conn,
     if( item ) {
         passwd = memstrdup( item->valuestring );
     }
+
+    item = cJSON_GetObjectItem(req, "remoteip");
+    if( item ) {
+        remote = memstrdup( item->valuestring );
+    }
     cJSON_Delete(req);
 
     resp = cJSON_CreateObject();
@@ -308,6 +317,7 @@ void *webServiceLogin(struct mg_connection *conn,
             success = FALSE;
         } else {
             success = TRUE;
+            LogPrint(LOG_INFO, "Web Login: %s at %s", email, remote);
             addAccountDetails(resp, acct, "details");
         }
         memfree( md5 );
@@ -320,6 +330,9 @@ void *webServiceLogin(struct mg_connection *conn,
     }
     sendJSONResponse(conn, resp);
 
+    memfree( email );
+    memfree( passwd );
+    memfree( remote );
     freeAccount(acct);
 
     return (void *)1;
@@ -333,6 +346,7 @@ void *webServiceRegister(struct mg_connection *conn,
     cJSON              *resp;
     char               *email = NULL;
     char               *passwd = NULL;
+    char               *remote = NULL;
     PlayerAccount_t    *acct;
     bool                success;
 
@@ -351,6 +365,11 @@ void *webServiceRegister(struct mg_connection *conn,
     if( item ) {
         passwd = memstrdup( item->valuestring );
     }
+
+    item = cJSON_GetObjectItem(req, "remoteip");
+    if( item ) {
+        remote = memstrdup( item->valuestring );
+    }
     cJSON_Delete(req);
 
     resp = cJSON_CreateObject();
@@ -360,6 +379,7 @@ void *webServiceRegister(struct mg_connection *conn,
         success = FALSE;
     } else {
         success = TRUE;
+        LogPrint(LOG_INFO, "Web Registration: %s at %s", email, remote);
         acct = CREATE(PlayerAccount_t);
         acct->email     = memstrdup(email);
         acct->pwd       = MD5Password(email, passwd);
@@ -376,6 +396,9 @@ void *webServiceRegister(struct mg_connection *conn,
     }
     sendJSONResponse(conn, resp);
 
+    memfree( email );
+    memfree( passwd );
+    memfree( remote );
     freeAccount(acct);
 
     return (void *)1;
@@ -388,6 +411,7 @@ void *webServiceConfirm(struct mg_connection *conn,
     cJSON              *item;
     cJSON              *resp;
     char               *code = NULL;
+    char               *remote = NULL;
     PlayerAccount_t    *acct;
     bool                success;
 
@@ -402,6 +426,10 @@ void *webServiceConfirm(struct mg_connection *conn,
         code = memstrdup( item->valuestring );
     }
 
+    item = cJSON_GetObjectItem(req, "remoteip");
+    if( item ) {
+        remote = memstrdup( item->valuestring );
+    }
     cJSON_Delete(req);
 
     resp = cJSON_CreateObject();
@@ -411,6 +439,7 @@ void *webServiceConfirm(struct mg_connection *conn,
         success = FALSE;
     } else {
         success = TRUE;
+        LogPrint(LOG_INFO, "Web Confirmation: %s at %s", acct->email, remote);
         acct->confirmed = TRUE;
         memfree( acct->confcode );
         acct->confcode = NULL;
@@ -424,6 +453,8 @@ void *webServiceConfirm(struct mg_connection *conn,
     }
     sendJSONResponse(conn, resp);
 
+    memfree( code );
+    memfree( remote );
     freeAccount(acct);
 
     return (void *)1;

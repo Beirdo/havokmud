@@ -9,10 +9,11 @@ use base 'Mojolicious::Controller';
 sub index {
     my $self = shift;
 
-    my $email = $self->param('email') || '';
-    my $pass  = $self->param('pass') || '';
+    my $email  = $self->param('email') || '';
+    my $pass   = $self->param('pass') || '';
+    my $remote = $self->req->headers->header('X-Real-IP') || '';
 
-    return $self->render unless $self->users->check($email, $pass);
+    return $self->render unless $self->users->check($email, $pass, $remote);
 
     $self->session(user => $email);
     $self->flash(message => 'Thanks for logging in!');
@@ -22,11 +23,13 @@ sub index {
 sub register {
     my $self = shift;
 
-    my $email = $self->param('email') || '';
-    my $pass  = $self->param('pass') || '';
-    my $pass2 = $self->param('pass2') || '';
+    my $email  = $self->param('email') || '';
+    my $pass   = $self->param('pass') || '';
+    my $pass2  = $self->param('pass2') || '';
+    my $remote = $self->req->headers->header('X-Real-IP') || '';
 
-    return $self->render unless $self->users->register($email, $pass, $pass2);
+    return $self->render unless 
+            $self->users->register($email, $pass, $pass2, $remote);
 
     $self->session(user => $email);
     $self->flash(message => 'Thanks for registering!  Please confirm your ' .
@@ -49,11 +52,12 @@ sub logout {
 sub confirm {
     my $self = shift;
 
-    my $code  = $self->param('code') || '';
+    my $code   = $self->param('code') || '';
+    my $remote = $self->req->headers->header('X-Real-IP') || '';
 
     $self->session(expires => 1);
 
-    if ( $self->users->confirm($code) ) {
+    if ( $self->users->confirm($code, $remote) ) {
         $self->flash(message => 'Thanks for confirming your email address.  ' .
                                 'Please login so you can play.');
     } else {

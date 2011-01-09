@@ -10,13 +10,13 @@ use Mojo::JSON;
 sub new { bless {}, shift }
 
 sub check {
-    my ($self, $email, $pass) = @_;
+    my ($self, $email, $pass, $remote) = @_;
 
     return 0 if (!$email || !$pass);
 
     my $client  = Mojo::Client->new;
     my $json    = Mojo::JSON->new;
-    my $msghash = {email => $email, passwd => $pass};
+    my $msghash = {email => $email, passwd => $pass, remoteip => $remote};
     my $message = {q => $json->encode($msghash)};
     my $posturl = "http://127.0.0.1:8008/login";
     my $tx = $client->post_form($posturl => $message);
@@ -33,13 +33,13 @@ sub check {
 }
 
 sub register {
-    my ($self, $email, $pass, $pass2) = @_;
+    my ($self, $email, $pass, $pass2, $remote) = @_;
 
     return 0 if (!$email || !$pass || !$pass2 || ($pass ne $pass2));
 
     my $client  = Mojo::Client->new;
     my $json    = Mojo::JSON->new;
-    my $msghash = {email => $email, passwd => $pass};
+    my $msghash = {email => $email, passwd => $pass, remoteip => $remote};
     my $message = {q => $json->encode($msghash)};
     my $posturl = "http://127.0.0.1:8008/register";
     my $tx = $client->post_form($posturl => $message);
@@ -56,13 +56,13 @@ sub register {
 }
 
 sub confirm {
-    my ($self, $code) = @_;
+    my ($self, $code, $remote) = @_;
 
     return 0 if (!$code);
 
     my $client  = Mojo::Client->new;
     my $json    = Mojo::JSON->new;
-    my $msghash = {code => $code};
+    my $msghash = {code => $code, remoteip => $remote};
     my $message = {q => $json->encode($msghash)};
     my $posturl = "http://127.0.0.1:8008/confirm";
     my $tx = $client->post_form($posturl => $message);
