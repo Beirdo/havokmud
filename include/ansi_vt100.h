@@ -50,19 +50,16 @@
 /*
  * 00-09 
  */
-#define FG_BLACK      "\033[0;30m"
-#define FG_RED        "\033[0;31m"
-#define FG_GREEN      "\033[0;32m"
-#define FG_BROWN      "\033[0;33m"
-#define FG_BLUE       "\033[0;34m"
-#define FG_MAGENTA    "\033[0;35m"
-#define FG_CYAN       "\033[0;36m"
-#define FG_LT_GRAY    "\033[0;37m"
+#define FG_BLACK      "\033[30m"
+#define FG_RED        "\033[31m"
+#define FG_GREEN      "\033[32m"
+#define FG_BROWN      "\033[33m"
+#define FG_BLUE       "\033[34m"
+#define FG_MAGENTA    "\033[35m"
+#define FG_CYAN       "\033[36m"
+#define FG_LT_GRAY    "\033[37m"
 #define FG_DK_GRAY    "\033[1;30m"
 #define FG_LT_RED     "\033[1;31m"
-/*
- * 10-15 
- */
 #define FG_LT_GREEN   "\033[1;32m"
 #define FG_YELLOW     "\033[1;33m"
 #define FG_LT_BLUE    "\033[1;34m"
