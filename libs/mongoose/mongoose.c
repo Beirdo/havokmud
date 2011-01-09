@@ -1280,6 +1280,7 @@ static void set_close_on_exec(int fd) {
   (void) fcntl(fd, F_SETFD, FD_CLOEXEC);
 }
 
+#if 0
 static int start_thread(struct mg_context *ctx, mg_thread_func_t func,
                         void *param) {
   pthread_t thread_id;
@@ -1297,6 +1298,7 @@ static int start_thread(struct mg_context *ctx, mg_thread_func_t func,
 
   return retval;
 }
+#endif
 
 #ifndef NO_CGI
 static pid_t spawn_process(struct mg_connection *conn, const char *prog,
