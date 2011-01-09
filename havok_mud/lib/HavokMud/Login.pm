@@ -46,4 +46,24 @@ sub logout {
     $self->redirect_to('index');
 }
 
+sub confirm {
+    my $self = shift;
+
+    my $code  = $self->param('code') || '';
+
+    $self->session(expires => 1);
+
+    if ( $self->users->confirm($code) ) {
+        $self->flash(message => 'Thanks for confirming your email address.  ' .
+                                'Please login so you can play.');
+    } else {
+        $self->flash(message => 'Could not confirm.  Perhaps you should ' .
+                                'login and resend the confirmation message.');
+    }
+
+    $self->redirect_to('index');
+}
+
+
+
 1;

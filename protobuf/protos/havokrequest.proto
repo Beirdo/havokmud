@@ -14,7 +14,8 @@ message HavokRequest {
     // Required for GET_SETTING and SET_SETTING
     optional ReqSettingsType settings_data = 16;
 
-    // Required for LOAD_ACCOUNT, SAVE_ACCOUNT and GET_PC_LIST
+    // Required for LOAD_ACCOUNT, LOAD_ACCOUNT_BY_CONFIRM, SAVE_ACCOUNT
+    // and GET_PC_LIST
     optional ReqAccountType account_data = 17;
 
     // Required for LOAD_PC and SAVE_PC and FIND_PC

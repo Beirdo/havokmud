@@ -55,5 +55,24 @@ sub register {
     return 0;
 }
 
+sub confirm {
+    my ($self, $code) = @_;
+
+    return 0 if (!$code);
+
+    my $client  = Mojo::Client->new;
+    my $json    = Mojo::JSON->new;
+    my $msghash = {code => $code};
+    my $message = {q => $json->encode($msghash)};
+    my $posturl = "http://127.0.0.1:8008/confirm";
+    my $tx = $client->post_form($posturl => $message);
+    if (my $res = $tx->success) {
+        return $res->json->{success};
+    }
+
+    # Fail
+    return 0;
+}
+
 1;
 

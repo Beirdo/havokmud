@@ -164,6 +164,7 @@ HavokResponse *db_get_pc_list( HavokRequest *req );
 HavokResponse *db_load_pc( HavokRequest *req );
 HavokResponse *db_save_pc( HavokRequest *req );
 HavokResponse *db_find_pc( HavokRequest *req );
+HavokResponse *db_load_account_by_confirm( HavokRequest *req );
 
 
 /*
@@ -178,6 +179,7 @@ PlayerPC_t *pb_get_pc_list( int account_id );
 PlayerPC_t *pb_load_pc( int account_id, int pc_id );
 void pb_save_pc( PlayerPC_t *pc );
 PlayerPC_t *pb_find_pc( char *name );
+PlayerAccount_t *pb_load_account_by_confirm( char *code );
 
 
 

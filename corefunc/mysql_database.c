@@ -63,6 +63,7 @@ static char ident[] _UNUSED_ =
 HavokResponse *db_mysql_get_setting( HavokRequest *req );
 HavokResponse *db_mysql_set_setting( HavokRequest *req );
 HavokResponse *db_mysql_load_account( HavokRequest *req );
+HavokResponse *db_mysql_load_account_by_confirm( HavokRequest *req );
 HavokResponse *db_mysql_save_account( HavokRequest *req );
 HavokResponse *db_mysql_get_pc_list( HavokRequest *req );
 HavokResponse *db_mysql_load_pc( HavokRequest *req );
@@ -147,20 +148,24 @@ QueryTable_t QueryTable[] = {
     /* 17 */
     { "SELECT `id`, `account_id`, `name` FROM `pcs` WHERE `name` = ?",
       NULL, NULL, FALSE },
+    /* 18 */
+    { "SELECT `id`, `email`, `passwd`, `ansi`, `confirmed`, `confcode` "
+      "FROM `accounts` WHERE `confcode` = ?", NULL, NULL, FALSE },
     /* END */
     { NULL, NULL, NULL, FALSE }
 };
 
 void db_mysql_init( void )
 {
-    db_api_funcs.get_setting  = db_mysql_get_setting;
-    db_api_funcs.set_setting  = db_mysql_set_setting;
-    db_api_funcs.load_account = db_mysql_load_account;
-    db_api_funcs.save_account = db_mysql_save_account;
-    db_api_funcs.get_pc_list  = db_mysql_get_pc_list;
-    db_api_funcs.load_pc      = db_mysql_load_pc;
-    db_api_funcs.save_pc      = db_mysql_save_pc;
-    db_api_funcs.find_pc      = db_mysql_find_pc;
+    db_api_funcs.get_setting             = db_mysql_get_setting;
+    db_api_funcs.set_setting             = db_mysql_set_setting;
+    db_api_funcs.load_account            = db_mysql_load_account;
+    db_api_funcs.load_account_by_confirm = db_mysql_load_account_by_confirm;
+    db_api_funcs.save_account            = db_mysql_save_account;
+    db_api_funcs.get_pc_list             = db_mysql_get_pc_list;
+    db_api_funcs.load_pc                 = db_mysql_load_pc;
+    db_api_funcs.save_pc                 = db_mysql_save_pc;
+    db_api_funcs.find_pc                 = db_mysql_find_pc;
 }
 
 HavokResponse *db_mysql_get_setting( HavokRequest *req )
@@ -232,6 +237,32 @@ HavokResponse *db_mysql_load_account( HavokRequest *req )
 
     db_queue_query( 4, QueryTable, data, 1, result_load_account, (void *)&resp,
                     mutex );
+    pthread_mutex_unlock( mutex );
+    pthread_mutex_destroy( mutex );
+    memfree( mutex );
+
+    return( resp );
+}
+
+HavokResponse *db_mysql_load_account_by_confirm( HavokRequest *req )
+{
+    MYSQL_BIND         *data;
+    pthread_mutex_t    *mutex;
+    HavokResponse      *resp;
+
+    if( !req || !req->account_data->confcode ) {
+        return( NULL );
+    }
+
+    mutex = CREATE(pthread_mutex_t);
+    thread_mutex_init( mutex );
+
+    data = CREATEN(MYSQL_BIND, 1);
+
+    bind_string( &data[0], req->account_data->confcode, MYSQL_TYPE_VAR_STRING );
+
+    db_queue_query( 18, QueryTable, data, 1, result_load_account, 
+                    (void *)&resp, mutex );
     pthread_mutex_unlock( mutex );
     pthread_mutex_destroy( mutex );
     memfree( mutex );

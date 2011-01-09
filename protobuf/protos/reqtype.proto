@@ -11,4 +11,5 @@ enum ReqType {
     LOAD_PC = 5;
     SAVE_PC = 6;
     FIND_PC = 7;
+    LOAD_ACCOUNT_BY_CONFIRM = 8;
 }

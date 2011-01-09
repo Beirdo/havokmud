@@ -363,6 +363,51 @@ PlayerPC_t *pb_find_pc( char *name )
     return( pc );
 }
 
+PlayerAccount_t *pb_load_account_by_confirm( char *code )
+{
+    HavokRequest       *req;
+    HavokResponse      *resp;
+    PlayerAccount_t    *acct;
+
+    if( !code ) {
+        return( NULL );
+    }
+
+    req = protobufCreateRequest();
+    if( !req ) {
+        return( NULL );
+    }
+
+    req->request_type  = REQ_TYPE__LOAD_ACCOUNT_BY_CONFIRM;
+    req->account_data = CREATE(ReqAccountType);
+    req_account_type__init( req->account_data );
+    req->account_data->confcode = memstrlink(code);
+
+    resp = protobufQueue( req, NULL, NULL, TRUE );
+    if( !resp ) {
+        return( NULL );
+    }
+
+    if( !resp->account_data ) {
+        acct = NULL;
+    } else {
+        acct = CREATE(PlayerAccount_t);
+        if( acct ) {
+            acct->email     = memstrlink( resp->account_data->email );
+            acct->id        = resp->account_data->id;
+            acct->pwd       = memstrlink( resp->account_data->passwd );
+            acct->ansi      = resp->account_data->ansi;
+            acct->confirmed = resp->account_data->confirmed;
+            acct->confcode  = memstrlink( resp->account_data->confcode );
+        }
+    }
+
+    protobufDestroyMessage( (ProtobufCMessage *)resp );
+
+    return( acct );
+}
+
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

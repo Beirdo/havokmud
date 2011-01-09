@@ -51,6 +51,8 @@ void *webServiceLogin(struct mg_connection *conn,
                       const struct mg_request_info *request_info);
 void *webServiceRegister(struct mg_connection *conn, 
                          const struct mg_request_info *request_info);
+void *webServiceConfirm(struct mg_connection *conn, 
+                        const struct mg_request_info *request_info);
 
 static struct mg_allocs webServiceAllocs = { memcalloc, memalloc, memfree, 
                                              memrealloc };
@@ -136,7 +138,8 @@ typedef struct {
 
 static webHandle_t handlers[] = {
     { "/login",    "POST", webServiceLogin },
-    { "/register", "POST", webServiceRegister }
+    { "/register", "POST", webServiceRegister },
+    { "/confirm",  "POST", webServiceConfirm }
 };
 static int handlerCount = NELEMENTS(handlers);
 
@@ -368,6 +371,54 @@ void *webServiceRegister(struct mg_connection *conn,
 
         /* Note: includes saving the account */
         CreateSendConfirmEmail(acct);
+    }
+
+    if( success ) {
+        cJSON_AddTrueToObject( resp, "success" );
+    } else {
+        cJSON_AddFalseToObject( resp, "success" );
+    }
+    sendJSONResponse(conn, resp);
+
+    freeAccount(acct);
+
+    return (void *)1;
+}
+
+void *webServiceConfirm(struct mg_connection *conn, 
+                        const struct mg_request_info *request_info)
+{
+    cJSON              *req;
+    cJSON              *item;
+    cJSON              *resp;
+    char               *code = NULL;
+    PlayerAccount_t    *acct;
+    bool                success;
+
+    req = getJSONPayload(conn, "q");
+    if( !req ) {
+        LogPrintNoArg(LOG_INFO, "mongoose: no JSON payload");
+        return NULL;
+    }
+
+    item = cJSON_GetObjectItem(req, "code");
+    if( item ) {
+        code = memstrdup( item->valuestring );
+    }
+
+    cJSON_Delete(req);
+
+    resp = cJSON_CreateObject();
+    acct = pb_load_account_by_confirm(code);
+    if( !acct ) {
+        LogPrint(LOG_INFO, "mongoose: No account with matching code: %s", code);
+        success = FALSE;
+    } else {
+        success = TRUE;
+        acct->confirmed = TRUE;
+        memfree( acct->confcode );
+        acct->confcode = NULL;
+        pb_save_account( acct );
     }
 
     if( success ) {

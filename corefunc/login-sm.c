@@ -1519,7 +1519,7 @@ void DoAccountMenu( PlayerStruct_t *player, char arg )
     case 'e':
     case 'E':
         if( !player->account->confirmed ) {
-	    EnterState(player, STATE_ENTER_CONFIRM_CODE);
+	        EnterState(player, STATE_ENTER_CONFIRM_CODE);
         }
         break;
     case 'r':
@@ -1865,10 +1865,16 @@ void CreateSendConfirmEmail( PlayerAccount_t *acct )
     struct timeval  now;
     void           *ctx;
     char            digest[16];
+    char           *url;
+    char            urlText[1024];
+    char           *confcode;
+    char           *temp;
 
     if( !acct ) {
         return;
     }
+
+    url = pb_get_setting( "webBaseUrl" );
 
     if( !acct->confcode || !*acct->confcode ) {
         /* New email, create new confcode */
@@ -1889,6 +1895,22 @@ void CreateSendConfirmEmail( PlayerAccount_t *acct )
         pb_save_account(acct);
     }
 
+    if( url ) {
+        confcode = memstrdup( acct->confcode );
+        for( temp = confcode; temp && *temp; temp++ ) {
+            if( *temp == ' ' ) {
+                *temp = '+';
+            }
+        }
+
+        snprintf( urlText, 1024,
+                  "Alternatively, you can confirm your email by clicking on "
+                  "the following URL:\r\n\r\n"
+                  "        %s/confirm?code=%s\r\n\r\r",
+                  url, confcode );
+        memfree( confcode );
+    }
+
     snprintf( buffer, MAX_EMAIL_LEN, 
               "\r\n\r\nThank you for joining Havokmud.\r\n\r\n"
               "To confirm that this email is active, please login to your "
@@ -1898,7 +1920,8 @@ void CreateSendConfirmEmail( PlayerAccount_t *acct )
               "Please note that the order of the words is important, but not "
               "the upper/lower\r\n"
               "case of the letters.\r\n\r\n"
-              "Thanks.\r\n\r\n", acct->confcode );
+              "%s"
+              "Thanks.\r\n\r\n", acct->confcode, (url ? urlText : "") );
 
     send_email( acct->email, "Havokmud confirmation email", buffer );
 }

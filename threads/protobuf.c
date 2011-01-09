@@ -211,6 +211,15 @@ HavokResponse *protobufHandle( HavokRequest *req )
 
             return( db_load_account( req ) );
             break;
+        case REQ_TYPE__LOAD_ACCOUNT_BY_CONFIRM:
+            if( !req->account_data ) {
+                LogPrintNoArg( LOG_DEBUG, "No account data on "
+                                          "LOAD_ACCOUNT_BY_CONFIRM" );
+                return( NULL );
+            }
+
+            return( db_load_account_by_confirm( req ) );
+            break;
         case REQ_TYPE__SAVE_ACCOUNT:
             if( !req->account_data ) {
                 LogPrintNoArg( LOG_DEBUG, "No account data on SAVE_ACCOUNT" );

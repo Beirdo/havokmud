@@ -31,6 +31,7 @@ sub startup {
     $r->get('/logout')->to('login#logout')->name('logout');
     $r->get('/login')->to('login#index')->name('index');
     $r->any('/register')->to('login#register')->name('register');
+    $r->get('/confirm')->to('login#confirm')->name('confirm');
     $r->get('/about')->to('about')->name('about');
 }
 

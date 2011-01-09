@@ -73,6 +73,16 @@ HavokResponse *db_load_account( HavokRequest *req )
     return( db_api_funcs.load_account(req) );
 }
 
+HavokResponse *db_load_account_by_confirm( HavokRequest *req )
+{
+    if( !db_api_funcs.load_account_by_confirm ) {
+        LogPrintNoArg( LOG_CRIT, "Database API: no load_account_by_confirm" );
+        return( NULL );
+    }
+
+    return( db_api_funcs.load_account_by_confirm(req) );
+}
+
 HavokResponse *db_save_account( HavokRequest *req )
 {
     if( !db_api_funcs.save_account ) {

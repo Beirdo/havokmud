@@ -35,6 +35,7 @@ typedef struct {
     HavokResponse *(*get_setting)( HavokRequest * );
     HavokResponse *(*set_setting)( HavokRequest * );
     HavokResponse *(*load_account)( HavokRequest * );
+    HavokResponse *(*load_account_by_confirm)( HavokRequest * );
     HavokResponse *(*save_account)( HavokRequest * );
     HavokResponse *(*get_pc_list)( HavokRequest * );
     HavokResponse *(*load_pc)( HavokRequest * );
