@@ -1,6 +1,6 @@
 /*
  *  This file is part of the havokmud package
- *  Copyright (C) 2008 Gavin Hurlbut
+ *  Copyright (C) 2008, 2011 Gavin Hurlbut
  *
  *  havokmud is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@
  */
 
 /*HEADER---------------------------------------------------
-* $Id$
-*
-* Copyright 2008 Gavin Hurlbut
+* Copyright 2008, 2011 Gavin Hurlbut
 * All rights reserved
 *
 */
@@ -39,9 +37,6 @@
 
 #define DEFAULT_STACK_SIZE  (1*1024*1024)
 
-static char ident[] _UNUSED_= 
-    "$Id$";
-
 BalancedBTree_t    *ThreadTree = NULL;
 extern pthread_t    mainThreadId;
 extern pthread_t    cursesOutThreadId;
@@ -58,18 +53,64 @@ typedef struct {
     pthread_t          *threadId;
     char               *name;
     ThreadCallback_t   *callbacks;
-    int			background;
+    int                 background;
     int                 foreground;
 } Thread_t;
 
-char backgroundColors[][8] = { BK_BLACK, BK_LT_GRAY, BK_RED, BK_GREEN, BK_BROWN,
-                              BK_BLUE, BK_MAGENTA, BK_CYAN };
-char foregroundColors[][8] = { FG_BLACK, FG_LT_GRAY, FG_RED, FG_GREEN, FG_BROWN,
-                              FG_BLUE, FG_MAGENTA, FG_CYAN, 
+char backgroundColors[][8] = { BK_BLACK, BK_LT_GRAY, BK_RED, BK_GREEN, 
+                              BK_BROWN, BK_BLUE, BK_MAGENTA, BK_CYAN };
+char foregroundColors[][8] = { FG_BLACK, FG_LT_GRAY, FG_RED, FG_GREEN, 
+                              FG_BROWN, FG_BLUE, FG_MAGENTA, FG_CYAN, 
                               FG_DK_GRAY, FG_LT_RED, FG_LT_GREEN, FG_YELLOW,
                               FG_LT_BLUE, FG_LT_MAGENTA, FG_LT_CYAN, FG_WHITE };
+typedef struct {
+    int     background;
+    int     foreground;
+} Color_t;
+
+Color_t badColors[] = {
+    { 1, 0 }, { 1, 10 }, { 1, 11 }
+};
+int badColorCount = NELEMENTS(badColors);
+
+Color_t lastColor = { 0, 0 };
 
 void ThreadRecurseKill( BalancedBTreeItem_t *node, int signum );
+void ThreadGetNextColor( int *bg, int *fg );
+
+void ThreadGetNextColor( int *bg, int *fg )
+{
+    bool    badColor;
+    int     i;
+
+    if( !fg || !bg ) {
+        return;
+    }
+
+    *fg = lastColor.foreground;
+    *bg = lastColor.background;
+    badColor = TRUE;
+
+    while( badColor ) {
+        (*fg)++;
+        if( *fg == 16 ) {
+            (*bg)++;
+            *fg = 0;
+        }
+        
+        badColor = ((*bg == *fg) || (*fg == 15 && *bg == 1) || 
+                    ((*fg <= 14 && *fg >= 9) && (*bg == *fg - 7)));
+
+        for( i = 0; i < badColorCount && !badColor; i++ ) {
+            if( badColors[i].background == *bg &&
+                badColors[i].foreground == *fg ) {
+                badColor = TRUE;
+            }
+        }
+    }
+    lastColor.foreground = *fg;
+    lastColor.background = *bg;
+}
 
 int thread_mutex_init( pthread_mutex_t *mutex )
 {
@@ -111,6 +152,7 @@ void thread_register( pthread_t *pthreadId, char *name,
 {
     BalancedBTreeItem_t    *item;
     Thread_t               *thread;
+    Color_t                 color;
 
     if( !ThreadTree ) {
         ThreadTree = BalancedBTreeCreate( NULL, BTREE_KEY_PTHREAD );
@@ -128,11 +170,7 @@ void thread_register( pthread_t *pthreadId, char *name,
         memcpy(thread->callbacks, callbacks, sizeof(ThreadCallback_t));
     }
     threadCount++;
-    thread->background = (threadCount - 1) / 15;
-    thread->foreground = (threadCount - 1) % 15;
-    if( thread->foreground >= thread->background) {
-        thread->foreground++;
-    }
+    ThreadGetNextColor( &thread->background, &thread->foreground );
 
     item = CREATE(BalancedBTreeItem_t);
     item->item = (void *)thread;
@@ -165,7 +203,7 @@ void thread_colors( pthread_t pthreadId, char **bg, char **fg )
 {
     BalancedBTreeItem_t    *item;
     Thread_t               *thread;
-    static char		   *empty = "";
+    static char            *empty = "";
 
     item = BalancedBTreeFind( ThreadTree, (void *)&pthreadId, UNLOCKED, FALSE );
     if( !item ) {
@@ -313,4 +351,3 @@ SigFunc_t ThreadGetHandler( pthread_t threadId, int signum, void **parg )
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
-

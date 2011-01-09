@@ -204,6 +204,9 @@ typedef int SOCKET;
 
 #endif // End of Windows and UNIX specific includes
 
+extern void thread_create( pthread_t *pthreadId, void * (*routine)(void *),  
+                           void *arg, char *name, void *callbacks ); 
+
 #include "mongoose.h"
 
 #define MONGOOSE_VERSION "3.0"
@@ -4102,6 +4105,8 @@ struct mg_context *mg_start(mg_callback_t user_callback, void *user_data,
   struct mg_context *ctx, *unaligned;
   const char *name, *value, *default_value;
   int i;
+  int threadCount;
+  pthread_t *threadId;
 
 #if defined(_WIN32)
   WSADATA data;
@@ -4180,16 +4185,20 @@ struct mg_context *mg_start(mg_callback_t user_callback, void *user_data,
   (void) pthread_cond_init(&ctx->sq_empty, NULL);
   (void) pthread_cond_init(&ctx->sq_full, NULL);
 
+  threadCount = atoi(ctx->config[NUM_THREADS]);
+  threadId = (pthread_t *)mg_calloc(threadCount + 1, sizeof(pthread_t));
+
   // Start master (listening) thread
-  start_thread(ctx, (mg_thread_func_t) master_thread, ctx);
+  thread_create( &threadId[0], (mg_thread_func_t)master_thread, ctx, 
+                 "WebMasterThread", NULL );
 
   // Start worker threads
-  for (i = 0; i < atoi(ctx->config[NUM_THREADS]); i++) {
-    if (start_thread(ctx, (mg_thread_func_t) worker_thread, ctx) != 0) {
-      cry(fc(ctx), "Cannot start worker thread: %d", ERRNO);
-    } else {
-      ctx->num_threads++;
-    }
+  for (i = 0; i < threadCount; i++) {
+    char threadName[32];
+    snprintf( threadName, 32, "WebWorkerThread%d", i+1 );
+    thread_create( &threadId[i+1], (mg_thread_func_t)worker_thread, ctx, 
+                   threadName, NULL );
+    ctx->num_threads++;
   }
 
   return ctx;

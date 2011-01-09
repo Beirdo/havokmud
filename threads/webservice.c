@@ -56,6 +56,7 @@ void *webServiceConfirm(struct mg_connection *conn,
 
 static struct mg_allocs webServiceAllocs = { memcalloc, memalloc, memfree, 
                                              memrealloc };
+static struct mg_context *ctx = NULL;
 
 /**
  * @brief Thread to handle WebService requests
@@ -63,20 +64,17 @@ static struct mg_allocs webServiceAllocs = { memcalloc, memalloc, memfree,
  *
  * Receives requests over a web socket and acts on them.
  */
-void *WebServiceThread( void *arg )
+void startWebService( void )
 {
     char               *port;
     char               *logdir;
     char                buf[1024];
     char              **options;
-    struct mg_context  *ctx;
-
-    pthread_mutex_lock( startupMutex );
 
     port = pb_get_setting( "webServicePort" );
     if( !port || !atoi(port) ) {
         LogPrintNoArg( LOG_CRIT, "No WebService Port defined.  Aborting!" );
-        return( NULL );
+        return;
     }
 
     logdir = pb_get_setting( "webServiceLogDir" );
@@ -113,19 +111,17 @@ void *WebServiceThread( void *arg )
     if( !ctx )
     {
         LogPrintNoArg( LOG_CRIT, "Web Service couldn't start!" );
-        return( NULL );
+        return;
     }
+}
 
-    pthread_mutex_unlock( startupMutex );
-
-    while( !GlobalAbort ) {
-        sleep(1);
+void stopWebService( void )
+{
+    if( ctx ) {
+        mg_stop(ctx);
     }
-    
-    mg_stop(ctx);
 
     LogPrintNoArg(LOG_INFO, "Ending WebServiceThread");
-    return( NULL );
 }
 
 typedef void *(*webHandler)(struct mg_connection *, 

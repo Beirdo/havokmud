@@ -35,7 +35,7 @@ RANLIB = ranlib
 # Also, this is turned in many other distros in static linkage builds.
 linux:
 	$(CC) mongoose.c -shared -fPIC -fpic -o $(LIB) $(LINFLAGS)
-	$(CC) mongoose.c main.c -o $(PROG) $(LINFLAGS)
+#	$(CC) mongoose.c main.c -o $(PROG) $(LINFLAGS)
 
 lib:
 	$(CC) -c mongoose.c -o mongoose.o $(LINFLAGS)

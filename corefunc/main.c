@@ -747,6 +747,8 @@ void MainDelayExit( void )
 
     GlobalAbort = TRUE;
 
+    stopWebService();
+
     /* Send out signals from all queues waking up anything waiting on them so
      * the listeners can unblock and die
      */

@@ -257,8 +257,7 @@ void StartThreads( void )
     thread_create( &connectionThreadId, ConnectionThread, &connectThreadArgs,
                    "ConnectionThread", NULL );
 
-    thread_create( &webServiceThreadId, WebServiceThread, NULL, 
-                   "WebServiceThread", NULL );
+    startWebService();
 
     pthread_mutex_lock( startupMutex );
     pthread_mutex_unlock( startupMutex );
