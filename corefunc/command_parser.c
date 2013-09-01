@@ -598,10 +598,17 @@ void AddCommand( CommandDef_t *cmd )
 CommandDef_t *FindCommand( char *string )
 {
     BalancedBTreeItem_t    *item;
+    BalancedBTreeItem_t    *nextItem;
     CommandDef_t           *cmd;
 
     item = BalancedBTreeFind( commandName, (void *)&string, UNLOCKED, TRUE );
     if( item ) {
+        nextItem = BalancedBTreeFindNext( commandName, item, UNLOCKED );
+        if( nextItem && commandName->keyCompareAlt((void *)&string,
+                                                   nextItem->key) ) {
+            /* Partial match with multiple matches */
+            return( NULL );
+        }
         cmd = (CommandDef_t *)item->item;
         return( cmd );
     }
