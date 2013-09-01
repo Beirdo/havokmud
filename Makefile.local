@@ -24,7 +24,7 @@ distclean-local:
 	-${RM} code-review.ps
 
 
-doxygen:
+doxygen:	force
 	doxygen doxygen/Doxyfile
 
 doxygen-rsync:

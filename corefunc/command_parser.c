@@ -604,8 +604,8 @@ CommandDef_t *FindCommand( char *string )
     item = BalancedBTreeFind( commandName, (void *)&string, UNLOCKED, TRUE );
     if( item ) {
         nextItem = BalancedBTreeFindNext( commandName, item, UNLOCKED );
-        if( nextItem && commandName->keyCompareAlt((void *)&string,
-                                                   nextItem->key) ) {
+        if( nextItem && !commandName->keyCompareAlt((void *)&string,
+                                                    nextItem->key) ) {
             /* Partial match with multiple matches */
             return( NULL );
         }
