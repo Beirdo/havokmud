@@ -696,6 +696,11 @@ PlayerState_t do_state_get_email(PlayerStruct_t *player, char *arg)
     char            email[1024];
 
     if (!arg) {
+        if( player->account ) {
+            if( player->account->email ) {
+                player->account->email = NULL;
+            }
+        }
         return( STATE_DISCONNECT );
     } 
     
