@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pcre.h>
 #include "oldexterns.h"
 #include "interthread.h"
 #include "queue.h"
@@ -208,6 +209,11 @@ void StartThreads( void )
     versionAdd( "pthreads", pthreadsVersion );
     versionAdd( "TERM", getenv("TERM") );
 
+    /* Initialize PCRE */
+    versionAdd( "PCRE", pcre_version() );
+    pcre_malloc = memalloc;
+    pcre_free = memfree;
+
     thread_create( &loggingThreadId, LoggingThread, NULL, "LoggingThread", 
                    NULL );
 
@@ -281,6 +287,7 @@ void LogBanner( void )
 {
     LogPrintNoArg( LOG_CRIT, "havokmud  (c) 2010 Gavin Hurlbut" );
     LogPrint( LOG_CRIT, "%s", svn_version() );
+    LogPrint( LOG_INFO, "PCRE version %s", pcre_version() );
 
 #if 0
     cursesTextAdd( WINDOW_HEADER, ALIGN_LEFT, 1, 0, "havokmud" );

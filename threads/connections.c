@@ -543,7 +543,7 @@ void connKickOutput( ConnectionItem_t *connItem )
             connDelFd( connItem->fd, &saveWriteFds );
         }
         connItem->outBufDesc = NULL;
-        if( connItem->player->state == STATE_WIZLOCKED ) {
+        if( connItem->player->state == STATE_DISCONNECT ) {
             connClose( player->connection, LOCKED );
         }
     } else {

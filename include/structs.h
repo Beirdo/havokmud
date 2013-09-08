@@ -72,7 +72,7 @@ typedef enum {
     STATE_SHOW_MOTD,             /**< Show the MOTD text */
     STATE_SHOW_WMOTD,            /**< Show the WMOTD text */
     STATE_SHOW_CREDITS,          /**< Show the Credits text */
-    STATE_WIZLOCKED,             /**< User is locked out, disconnect them */
+    STATE_DISCONNECT,            /**< Disconnect user */
     STATE_PRESS_ENTER,           /**< Await the user hitting enter */
     STATE_SHOW_ACCOUNT_MENU,     /**< Show the account menu */
     STATE_SHOW_PLAYER_LIST,      /**< Show the PC list */
@@ -93,7 +93,8 @@ typedef enum {
     STATE_WAIT_FOR_AUTH,
     STATE_EDIT_EXTRA_DESCR,
     STATE_DELETE_USER,
-    STATE_PLAYING
+    STATE_PLAYING,
+    STATE_NO_CHANGE
 } PlayerState_t;
 
 typedef struct

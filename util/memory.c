@@ -689,6 +689,11 @@ void *MemoryCoalesceThread( void *arg )
     MemoryFragment_t       *fragment, *fragment2;
     MemoryBlock_t          *block;
     LinkedListItem_t       *listItem, *next;
+#ifdef DEBUG_MEMORY
+    uint64                  oldMemAllocTrueBytes;
+    uint64                  oldMemAllocBytes;
+    int                     oldMemAllocBlocks;
+#endif
 
     pthread_mutex_lock( startupMutex );
 
@@ -714,6 +719,12 @@ void *MemoryCoalesceThread( void *arg )
         BalancedBTreeLock( &fragmentFreePool.sizeTree );
 
         gettimeofday( &tv, NULL );
+
+#ifdef DEBUG_MEMORY
+        oldMemAllocTrueBytes = memAllocTrueBytes;
+        oldMemAllocBytes = memAllocBytes;
+        oldMemAllocBlocks = memAllocBlocks;
+#endif
 
         tree = &fragmentDeferPool.addrTree;
 
@@ -813,6 +824,20 @@ void *MemoryCoalesceThread( void *arg )
             memoryFragmentRelease( fragment );
             memoryBlockRelease( block );
         }
+    
+#ifdef DEBUG_MEMORY
+        if( memAllocBytes != oldMemAllocBytes ||
+            memAllocTrueBytes != oldMemAllocTrueBytes ||
+            memAllocBlocks != oldMemAllocBlocks ) {
+            LogPrint( LOG_INFO, "Old Memory allocated: %lld bytes "
+                                "(%lld bytes) in %d blocks", 
+                      oldMemAllocBytes, oldMemAllocTrueBytes,
+                      oldMemAllocBlocks );
+            LogPrint( LOG_INFO, "Memory allocated: %lld bytes "
+                                "(%lld bytes) in %d blocks", 
+                      memAllocBytes, memAllocTrueBytes, memAllocBlocks );
+        }
+#endif
 
         BalancedBTreeUnlock( &fragmentFreePool.sizeTree );
         BalancedBTreeUnlock( &fragmentFreePool.addrTree );
@@ -821,6 +846,11 @@ void *MemoryCoalesceThread( void *arg )
     }
 
     LogPrintNoArg( LOG_INFO, "Ending MemoryCoalesceThread" );
+#ifdef DEBUG_MEMORY
+    LogPrint( LOG_INFO, "Memory allocated: %lld bytes (%lld bytes) in %d "
+                        "blocks", 
+              memAllocBytes, memAllocTrueBytes, memAllocBlocks );
+#endif
     return( NULL );
 }
 
