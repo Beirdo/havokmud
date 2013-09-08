@@ -114,6 +114,7 @@ AC_CHECK_LIB([z], [compress])
 AC_CHECK_LIB([ssl], [MD5_Update])
 AC_CHECK_LIB([mysqlclient], [mysql_query],,
              [AC_MSG_ERROR(libmysqlclient not installed)])
+AC_CHECK_LIB([pcre], [pcre_config],,[AC_MSG_ERROR(libpcre not installed)])
 
 # the mysql include dir comes in via the INCLUDES
 CFLAGS=$CFLAGS_SAVE

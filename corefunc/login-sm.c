@@ -40,6 +40,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <openssl/md5.h>
+#include <pcre.h>
 
 #include "oldstructs.h"
 #include "oldutils.h"
@@ -83,7 +84,7 @@ unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
-bool parseEmail(char *arg, char *name);
+bool parseEmail(char *arg, char *email);
 bool parseName(char *arg, char *name);
 int checkAssName(char *name);
 
@@ -92,47 +93,57 @@ int             bannedUserCount;
 
 
 /**
- * @brief Trims the leading spaces and copies the name
+ * @brief Trims the leading spaces and copies the email
  * @param arg input string
- * @param name output name
+ * @param email output email
  * @return FALSE if the email is invalid, TRUE if valid
  *
  * An invalid email is indicated if the email is too long, or has non-alpha 
  * characters in it (other than @, _, - and .), or is empty
  */
-bool parseEmail(char *arg, char *name)
+#define EMAIL_PATTERN "(?i)\\s*([a-z][a-z0-9._\\-]+@([a-z0-9\\-]+\\.)[a-z]+)\\s*"
+bool parseEmail(char *arg, char *email)
 {
-    int             i;
-    char           *begin;
+    static pcre    *regexp = NULL;
+    static pcre_extra *extra = NULL;
+    int ovector[30];
+    int retval;
+    int len;
 
-    /*
-     * skip whitespaces
-     */
-    arg = skip_spaces(arg);
-    if( !arg ) {
-        return( FALSE );
-    }
-    begin = arg;
+    if( !regexp )
+    {
+        const char *error = NULL;
+        int erroffset;
 
-    for (i = 0; (*name = *arg); arg++, i++, name++) {
-        if ((*arg < 0) || !(isalpha((int)*arg) || *arg == '@' || *arg == '.' ||
-                            *arg == '_' || *arg == '-') ||
-            i > MAX_EMAIL_LENGTH) {
+        regexp = pcre_compile(EMAIL_PATTERN, 0, &error, &erroffset, NULL);
+        if( error )
+        {
+            LogPrint(LOG_CRIT, "Error compiling email regexp: %s at %d",
+                     error, erroffset);
+            return( FALSE );
+        }
+
+        extra = pcre_study(regexp, 0, &error);
+        if( error )
+        {
+            LogPrint(LOG_CRIT, "Error studying email regexp: %s at %d",
+                     error, erroffset);
+            memfree(regexp);
+            regexp = NULL;
             return( FALSE );
         }
     }
 
-    if (!i) {
-        return ( FALSE );
-    }
-
-    if( !(arg = strchr(begin, '@')) ) {
+    retval = pcre_exec(regexp, extra, arg, strlen(arg), 0, 0, ovector, 30);
+    if( retval < 0 )
+    {
+        // Not matched or error
         return( FALSE );
     }
 
-    if( !strchr(arg, '.') ) {
-        return( FALSE );
-    }
+    len = ovector[3] - ovector[2];
+    strncpy(email, &arg[ovector[2]], len);
+    email[len] = '\0';
     return( TRUE );
 }
 
