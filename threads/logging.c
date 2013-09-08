@@ -442,8 +442,8 @@ void LogItemOutput( void *vitem )
             syslog( item->level, "%s", item->message );
             break;
         case LT_CONSOLE:
-            sprintf( line, "%s%s%s %s%s%s\n", bg, fg, timestamp, item->message,
-                     dbg, dfg );
+            snprintf( line, MAX_STRING_LENGTH, "%s%s%s %s%s%s\n", bg, fg, 
+		              timestamp, item->message, dbg, dfg );
             LogWrite( logFile, line, strlen(line) );
             break;
         case LT_FILE:
@@ -451,15 +451,16 @@ void LogItemOutput( void *vitem )
             if( !threadName ) {
                 threadName = unknown;
             }
-            sprintf( line, "%s%s%s %s %s:%d (%s) - %s%s%s\n", bg, fg, 
-                     timestamp, threadName, item->file, item->line, 
-                     item->function, item->message, dbg, dfg );
+            snprintf( line, MAX_STRING_LENGTH,
+                      "%s%s%s %s %s:%d (%s) - %s%s%s\n", bg, fg, timestamp,
+                      threadName, item->file, item->line, item->function,
+                      item->message, dbg, dfg );
             LogWrite( logFile, line, strlen(line) );
             break;
         case LT_NCURSES:
 #if 0
-            sprintf( line, "%s%s%s %s%s%s\n", bg, fg, timestamp, 
-                     item->message, dbg, dfg );
+            snprintf( line, MAX_STRING_LENGTH, "%s%s%s %s%s%s\n", bg, fg,
+                      timestamp, item->message, dbg, dfg );
 
             cursesLogWrite( line );
 #endif

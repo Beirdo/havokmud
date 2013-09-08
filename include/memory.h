@@ -106,6 +106,7 @@ void *memalloc( size_t size );
 void *memcalloc( size_t nmemb, size_t size );
 void memfree( void *buffer );
 void *memrealloc( void *ptr, size_t size );
+char *memsnprintf(size_t size, const char *format, ...);
 char *memstrdup( char *orig );
 char *memstrndup( char *orig, int maxlen );
 char *memstrlink( char *orig );

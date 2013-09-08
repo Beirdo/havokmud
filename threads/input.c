@@ -127,7 +127,7 @@ void *InputThread( void *arg )
              */
             if( player->flush ) {
                 if( player->in_remain ) {
-                    free( player->in_remain );
+                    memfree( player->in_remain );
                 }
                 player->in_remain = NULL;
                 player->in_remain_len = 0;
@@ -333,7 +333,7 @@ void FlushQueue( QueueObject_t *queue, PlayerStruct_t *player )
              */
             memfree( item->line );
             i = QueueRemoveItem( queue, i, LOCKED );
-            free( item );
+            memfree( item );
         }
     }
 

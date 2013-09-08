@@ -187,13 +187,11 @@ void CommandParser( PlayerStruct_t *player, char *line )
 #endif
 
     if (!isalpha((int)*line)) {
-        arg = CREATEN(char, strlen(line) + 2);
+        arg = memsnprintf(strlen(line) + 2, "%c %s", *line, &(line[1]));
         if( !arg ) {
             LogPrintNoArg( LOG_CRIT, "Nasty error in command_interpreter!!!" );
             return;
         }
-
-        sprintf(arg, "%c %s", *line, &(line[1]));
     } else {
         arg = memstrlink( line );
         if( !arg ) {

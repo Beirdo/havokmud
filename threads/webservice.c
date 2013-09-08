@@ -68,7 +68,6 @@ void startWebService( void )
 {
     char               *port;
     char               *logdir;
-    char                buf[1024];
     char              **options;
 
     port = pb_get_setting( "webServicePort" );
@@ -89,11 +88,9 @@ void startWebService( void )
     options[0] = memstrlink("listening_ports");
     options[1] = memstrdup(port);
     options[2] = memstrlink("access_log_file");
-    sprintf( buf, "%s/access.log", logdir );
-    options[3] = memstrdup(buf);
+    options[3] = memsnprintf( 1024, "%s/access.log", logdir );
     options[4] = memstrlink("error_log_file");
-    sprintf( buf, "%s/error.log", logdir );
-    options[5] = memstrdup(buf);
+    options[5] = memsnprintf( 1024, "%s/error.log", logdir );
     options[6] = memstrlink("document_root");
     options[7] = memstrdup("./havokweb/");
     options[8] = NULL;

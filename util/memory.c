@@ -34,6 +34,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <time.h>
 #include <errno.h>
@@ -533,6 +534,22 @@ void memfree( void *buffer )
     fragment->timestamp = tv.tv_sec + TIME_DEFER;
     
     memoryFragmentAdd( &fragmentDeferPool, fragment, UNLOCKED );
+}
+
+char *memsnprintf(size_t size, const char *format, ...)
+{
+    va_list ap;
+    char *buffer;
+
+    buffer = CREATEN(char, size+1);
+    if( !buffer )
+        return( NULL );
+
+    va_start(ap, format);
+    vsnprintf(buffer, size, format, ap);
+    va_end(ap);
+
+    return( buffer );
 }
 
 char *memstrdup( char *orig )
