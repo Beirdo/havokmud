@@ -140,7 +140,7 @@ void enter_state_edit_extra_descr(PlayerStruct_t *player);
 void enter_state_press_enter(PlayerStruct_t *player);
 void enter_state_delete_user(PlayerStruct_t *player);
 
-typedef struct {
+typedef struct _LoginState_t {
     PlayerState_t state;
     DoStateFunc_t handler;
     EnterStateFunc_t enter;
