@@ -68,8 +68,8 @@ namespace havokmud {
         {
         public:
             ConnectionThread(int port, struct timeval timeout) :
-                    HavokThread(), m_port(port), m_count(0), m_fdCount(0),
-                    m_timeout(timeout)  {};
+                    HavokThread("Connection"), m_port(port), m_count(0),
+                    m_fdCount(0), m_timeout(timeout)  {};
             ~ConnectionThread();
 
         private:
@@ -81,4 +81,4 @@ namespace havokmud {
     }
 }
 
-#endif  // __havokmud_thread_connection__
+#endif  // __havokmud_thread_Connection__
