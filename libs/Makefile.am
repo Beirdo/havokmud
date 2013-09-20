@@ -8,7 +8,6 @@ if !HAVE_LIBESMTP
 MY_SUBDIRS += libesmtp-1.0.4
 endif
 
-MY_SUBDIRS += protobuf protobuf-c protojs
-MY_SUBDIRS += cjson mongoose
+MY_SUBDIRS += google-coredumper
 
 include Makefile.local
