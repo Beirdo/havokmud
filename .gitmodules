@@ -1,0 +1,3 @@
+[submodule "libs/google-coredumper"]
+	path = libs/google-coredumper
+	url = git@github.com:Beirdo/google-coredumper
