@@ -28,43 +28,12 @@
 #include <boost/thread/thread.hpp>
 #include <string>
 
+#include "ThreadColors.hpp"
+
 #define NELEMS(x)   (sizeof((x)) / sizeof((x)[0]))
 
 namespace havokmud {
     namespace thread {
-        typedef std::pair<int, int> Color;
-        class HavokThread;
-
-        class ThreadColors {
-        public:
-            explicit ThreadColors();
-            ThreadColors(int bg, int fg)
-                    { m_color = std::make_pair(bg, fg); };
-            ~ThreadColors() {};
-            const std::string &background() const
-                    { return s_backgroundColors[m_color.first]; };
-            const std::string &foreground() const
-                    { return s_foregroundColors[m_color.second]; };
-            const int backgroundNum() const { return m_color.first; };
-            const int foregroundNum() const { return m_color.second; };
-        private:
-            static const std::string    s_backgroundColors[];
-            static const std::string    s_foregroundColors[];
-            static const Color s_badColors[];
-            static const int s_badColorCount;
-            static Color s_lastColor;
-
-            Color   m_color;
-        };
-
-        typedef std::map<boost::thread::id, HavokThread *> ThreadMapType;
-        class ThreadMap : public ThreadMapType {
-        public:
-            void addThread(HavokThread *thread);
-            void removeThread(HavokThread *thread);
-            HavokThread *findThread(boost::thread::id threadId);
-        };
-
         class HavokThread
         {
         public:
@@ -97,6 +66,14 @@ namespace havokmud {
 
             std::string                 m_name;
             ThreadColors                m_color;
+        };
+
+        typedef std::map<boost::thread::id, HavokThread *> ThreadMapType;
+        class ThreadMap : public ThreadMapType {
+        public:
+            void addThread(HavokThread *thread);
+            void removeThread(HavokThread *thread);
+            HavokThread *findThread(boost::thread::id threadId);
         };
     }
 }

@@ -22,8 +22,10 @@
  * @brief ANSI color codes
  */
 
-#ifndef __havokmud_thread_AnsiColors__
-#define __havokmud_thread_AnsiColors__
+#ifndef __havokmud_thread_ThreadColors__
+#define __havokmud_thread_ThreadColors__
+
+#include <utility>      // std::pair
 
 #define FG_BLACK      "\033[30m"
 #define FG_RED        "\033[31m"
@@ -51,4 +53,34 @@
 #define BK_CYAN       "\033[0;46m"
 #define BK_LT_GRAY    "\033[0;47m"
 
-#endif  // __havokmud_thread_AnsiColors__
+namespace havokmud {
+    namespace thread {
+        typedef std::pair<int, int> Color;
+        class HavokThread;
+
+        class ThreadColors {
+        public:
+            explicit ThreadColors();
+            ThreadColors(int bg, int fg)
+                    { m_color = Color(bg, fg); };
+            ~ThreadColors() {};
+            const std::string &background() const
+                    { return s_backgroundColors[m_color.first]; };
+            const std::string &foreground() const
+                    { return s_foregroundColors[m_color.second]; };
+            const int backgroundNum() const { return m_color.first; };
+            const int foregroundNum() const { return m_color.second; };
+        private:
+            static const std::string    s_backgroundColors[];
+            static const std::string    s_foregroundColors[];
+            static const Color s_badColors[];
+            static const int s_badColorCount;
+            static Color s_lastColor;
+
+            Color   m_color;
+        };
+
+    }
+}
+
+#endif  // __havokmud_thread_ThreadColors__

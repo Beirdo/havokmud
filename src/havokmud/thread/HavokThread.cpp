@@ -23,7 +23,7 @@
  */
 
 #include "HavokThread.hpp"
-#include "AnsiColors.hpp"
+#include "ThreadColors.hpp"
 
 namespace {
     static const int DEFAULT_STACK_SIZE = 1 * 1024 * 1024;  // 1MB
@@ -61,12 +61,11 @@ namespace havokmud {
                   FG_LT_BLUE, FG_LT_MAGENTA, FG_LT_CYAN, FG_WHITE };
 
         const Color ThreadColors::s_badColors[] =
-                { std::make_pair(1, 0), std::make_pair(1, 10),
-                  std::make_pair(1, 11) };
+                { Color(1, 0), Color(1, 10), Color(1, 11) };
         const int ThreadColors::s_badColorCount =
                 NELEMS(ThreadColors::s_badColors);
 
-        Color ThreadColors::s_lastColor = std::make_pair(0, 0);
+        Color ThreadColors::s_lastColor = Color(0, 0);
         ThreadColors g_defaultColor(0, 1);
 
         ThreadColors::ThreadColors()
@@ -91,7 +90,7 @@ namespace havokmud {
                                  s_badColors[i].second == fg);
                 }
             }
-            color = std::make_pair(bg, fg);
+            color = Color(bg, fg);
             m_color = color;
             s_lastColor = color;
         }
