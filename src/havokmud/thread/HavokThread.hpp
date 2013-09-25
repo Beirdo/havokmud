@@ -25,19 +25,54 @@
 #ifndef __havokmud_thread_HavokThread__
 #define __havokmud_thread_HavokThread__
 
+#include <boost/thread/thread.hpp>
 #include <string>
+
+#define NELEMS(x)   (sizeof((x)) / sizeof((x)[0]))
 
 namespace havokmud {
     namespace thread {
+        typedef std::pair<int, int> Color;
+        class HavokThread;
+
+        class ThreadColors {
+        public:
+            explicit ThreadColors();
+            ThreadColors(int bg, int fg)
+                    { m_color = std::make_pair(bg, fg); };
+            ~ThreadColors() {};
+            const std::string &background() const
+                    { return s_backgroundColors[m_color.first]; };
+            const std::string &foreground() const
+                    { return s_foregroundColors[m_color.second]; };
+            const int backgroundNum() const { return m_color.first; };
+            const int foregroundNum() const { return m_color.second; };
+        private:
+            static const std::string    s_backgroundColors[];
+            static const std::string    s_foregroundColors[];
+            static const Color s_badColors[];
+            static const int s_badColorCount;
+            static Color s_lastColor;
+
+            Color   m_color;
+        };
+
+        typedef std::map<boost::thread::id, HavokThread *> ThreadMapType;
+        class ThreadMap : public ThreadMapType {
+        public:
+            void addThread(HavokThread *thread);
+            void removeThread(HavokThread *thread);
+            HavokThread *findThread(boost::thread::id threadId);
+        };
 
         class HavokThread
         {
         public:
-            HavokThread();
+            HavokThread(std::string name);
             virtual ~HavokThread();
 
             const std::string &name() const { return m_name; };
-            const int id() const { return m_id; };
+            const boost::thread::id id() const { return m_id; };
 
             const std::string &foreground() const
                 { return m_color.foreground(); };
@@ -55,45 +90,13 @@ namespace havokmud {
             virtual void prv_start() = 0;
             void prv_setColor(int threadNum);
 
-            boost::thread::attributes   m_attr;
+            boost::thread::attributes   m_attrs;
             boost::thread               m_thread;
-            boost::thread_joiner        m_joiner;
+            // boost::thread_joiner        m_joiner;
             boost::thread::id           m_id;
 
             std::string                 m_name;
-            ThreadColors                m_colors;
-        }
-
-        typedef std::pair<int, int> Color;
-
-        class ThreadColors {
-        public:
-            explicit ThreadColors();
-            ThreadColors(int bg, int fg)
-                    { m_color = std::make_pair(bg, fg); };
-            ~ThreadColors() {};
-            const std::string &background() const
-                    { return s_backgroundColor[m_color.first()]; };
-            const std::string &foreground() const
-                    { return s_foregroundColor[m_color.second()]; };
-            const int backgroundNum() const { return m_color.first(); };
-            const int foregroundNum() const { return m_color.second(); };
-        private:
-            static const std::string    s_backgroundColors[];
-            static const std::string    s_foregroundColors[];
-            static const std::list<Color> s_badColors;
-            static const int s_badColorCount;
-            static Color s_lastColor;
-
-            Color   m_color;
-        };
-
-        typedef std::map<boost::thread::id, HavokThread *> ThreadMapType;
-        class ThreadMap : public ThreadMapType {
-        public:
-            void addThread(HavokThread *thread);
-            void removeThread(HavokThread *thread);
-            HavokThread *findThread(boost::thread::id threadId);
+            ThreadColors                m_color;
         };
     }
 }

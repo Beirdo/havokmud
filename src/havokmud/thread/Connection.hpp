@@ -25,10 +25,16 @@
 #ifndef __havokmud_thread_Connection__
 #define __havokmud_thread_Connection__
 
+#include <boost/circular_buffer.hpp>
+#include <boost/bind.hpp>
 #include <string>
+
+#include "HavokThread.hpp"
 
 namespace havokmud {
     namespace objects {
+
+        #define MAX_BUFSIZE 8192
 
         class Player;
 
@@ -36,9 +42,9 @@ namespace havokmud {
         {
         public:
             Connection(int fd, Player *player,
+                       std::string ip,
                        unsigned int inBufferSize = MAX_BUFSIZE,
-                       unsigned int outBufferSize = MAX_BUFSIZE,
-                       std::string ip) :
+                       unsigned int outBufferSize = MAX_BUFSIZE) :
                 m_fd(fd), m_player(player),
                 m_inBuffer(boost::circular_buffer<char>(inBufferSize)),
                 m_outBuffer(boost::circular_buffer<char>(outBufferSize)),
@@ -49,20 +55,22 @@ namespace havokmud {
                        !(inBufferSize & (inBufferSize - 1)));
 
                 // Send off the hostname for resolution
-                g_ResolveThread.resolve(m_hostname, 
-                        boost::bind(&Connection::setHostname, this, _1));
+                //g_ResolveThread.resolve(m_hostname, 
+                //        boost::bind(&Connection::setHostname, this, _1));
             };
             ~Connection();
 
         private:
-            void setHostname(std::string hostname) { m_hostname = hostname };
+            void setHostname(std::string hostname) { m_hostname = hostname; };
 
             int                             m_fd;
             Player                         *m_player;
             boost::circular_buffer<char>    m_inBuffer;
             boost::circular_buffer<char>    m_outBuffer;
-            std::string                     m_hostName;
+            std::string                     m_hostname;
         };
+
+        using havokmud::thread::HavokThread;
 
         class ConnectionThread : public HavokThread
         {
@@ -77,7 +85,7 @@ namespace havokmud {
             int                     m_count;
             int                     m_fdCount;
             struct timeval          m_timeout;
-        }
+        };
     }
 }
 

@@ -23,6 +23,7 @@
  */
 
 #include "HavokThread.hpp"
+#include "AnsiColors.hpp"
 
 namespace {
     static const int DEFAULT_STACK_SIZE = 1 * 1024 * 1024;  // 1MB
@@ -34,12 +35,12 @@ namespace havokmud {
 
         HavokThread::HavokThread(std::string name) : m_name(name)
         {
-            m_attrs.set_size(DEFAULT_STACK_SIZE);
+            m_attrs.set_stack_size(DEFAULT_STACK_SIZE);
             m_thread = boost::thread(m_attrs,
                                      boost::bind(&HavokThread::prv_start,
                                                  this));
-            m_joiner = boost::thread_joiner(m_thread);
-            m_id = boot::this_thread::get_id();
+            //m_joiner = boost::thread_joiner(m_thread);
+            m_id = boost::this_thread::get_id();
             
             m_color = ThreadColors();
             g_threadMap.addThread(this);
@@ -68,11 +69,11 @@ namespace havokmud {
         Color ThreadColors::s_lastColor = std::make_pair(0, 0);
         ThreadColors g_defaultColor(0, 1);
 
-        explicit ThreadColors::ThreadColors()
+        ThreadColors::ThreadColors()
         {
             Color color = s_lastColor;
-            int bg = color.first();
-            int fg = color.second();
+            int bg = color.first;
+            int fg = color.second;
             bool badColor = true;
 
             while (badColor) {
@@ -86,8 +87,8 @@ namespace havokmud {
                             ((fg <= 14 && fg >= 9) && (bg == fg - 7)));
 
                 for (int i = 0; i < s_badColorCount && !badColor; i++) {
-                    badColor |= (s_badColors[i].first()  == bg &&
-                                 s_badColors[i].second() == fg);
+                    badColor |= (s_badColors[i].first  == bg &&
+                                 s_badColors[i].second == fg);
                 }
             }
             color = std::make_pair(bg, fg);
@@ -100,11 +101,12 @@ namespace havokmud {
             if (!thread)
                 return;
 
-            LogPrint(LOG_INFO, "Added Thread as \"%s%s%s%s%s\" (%d/%d)",
-                     thread->background(), thread->foreground(), name,
-                     g_defaultColor.background(), g_defaultColor.foreground(),
-                     thread->backgroundNum(), thread->foregroundNum());
-            insert(thread->id(), thread);
+//            LogPrint(LOG_INFO, "Added Thread as \"%s%s%s%s%s\" (%d/%d)",
+//                     thread->background(), thread->foreground(), name,
+//                     g_defaultColor.background(), g_defaultColor.foreground(),
+//                     thread->backgroundNum(), thread->foregroundNum());
+            insert(std::pair<boost::thread::id, HavokThread *>(thread->id(),
+                                                               thread));
         }
 
         void ThreadMap::removeThread(HavokThread *thread)
@@ -114,7 +116,7 @@ namespace havokmud {
 
             erase(thread->id());
 
-            LogPrint(LOG_INFO, "Removed thread: %s", thread->name());
+//            LogPrint(LOG_INFO, "Removed thread: %s", thread->name());
         }
 
         HavokThread *ThreadMap::findThread(boost::thread::id threadId)
@@ -124,7 +126,7 @@ namespace havokmud {
             if (it == end())
                 return NULL;
 
-            return it->second();
+            return it->second;
         }
     }
 }
