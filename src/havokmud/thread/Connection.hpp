@@ -27,9 +27,12 @@
 
 #include <boost/circular_buffer.hpp>
 #include <boost/bind.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <string>
 
 #include "HavokThread.hpp"
+
+#define IS_POWER_2(x) ((x) != 0 && !((x) & ((x) - 1))
 
 namespace havokmud {
     namespace objects {
@@ -38,36 +41,52 @@ namespace havokmud {
 
         class Player;
 
-        class Connection
+        using boost::asio::ip::tcp;
+
+        class Connection :
+                public boost::enable_shared_from_this<Connection>
         {
         public:
-            Connection(int fd, Player *player,
-                       std::string ip,
-                       unsigned int inBufferSize = MAX_BUFSIZE,
-                       unsigned int outBufferSize = MAX_BUFSIZE) :
-                m_fd(fd), m_player(player),
-                m_inBuffer(boost::circular_buffer<char>(inBufferSize)),
-                m_outBuffer(boost::circular_buffer<char>(outBufferSize)),
-                m_hostname(ip)
-            {
-                // Force a power of two size
-                assert(inBufferSize != 0 &&
-                       !(inBufferSize & (inBufferSize - 1)));
+            typedef boost::shared_ptr<Connection> pointer;
 
-                // Send off the hostname for resolution
-                //g_ResolveThread.resolve(m_hostname, 
-                //        boost::bind(&Connection::setHostname, this, _1));
+            static pointer create(boost::asio::io_service &io_service,
+                                  Player *player;
+                                  unsigned int inBufferSize = MAX_BUFSIZE)
+            {
+                return pointer(new Connection(io_service, player,
+                                              inBufferSize));
             };
+
             ~Connection();
 
-        private:
-            void setHostname(std::string hostname) { m_hostname = hostname; };
+            tcp::socket &socket() const  { return m_socket; };
+            Player *player() const  { return m_player; };
 
-            int                             m_fd;
+            void handle_read(const boost::system::error_code &e,
+                             std::size_t bytes_transferred);
+            void handle_write(const boost::system::error_code &e);
+
+            void send(boost::asio::buffer buffer);
+
+        private:
+            Connection(boost::asio::io_service &io_service, Player *player,
+                       unsigned int inBufferSize = MAX_BUFSIZE);
+
+            void setHostname(std::string hostname) { m_hostname = hostname; };
+            void sendBuffers();
+
+            unsigned char *splitLines(boost::asio::buffer &inBuffer,
+                                      boost::asio::buffer &remainBuf);
+
+            tcp::socket                     m_socket;
             Player                         *m_player;
-            boost::circular_buffer<char>    m_inBuffer;
-            boost::circular_buffer<char>    m_outBuffer;
+            boost::asio::mutable_buffer     m_inBufRemain;
+            unsigned char                  *m_inBufRaw;
+            boost::asio::mutable_buffer     m_inBuf;
+            std::vector<boost::asio::const_buffer>  m_outBufVector;
             std::string                     m_hostname;
+
+            bool                            m_writing;
         };
 
         using havokmud::thread::HavokThread;
