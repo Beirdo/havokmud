@@ -30,8 +30,8 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <string>
 
-#include "HavokThread.hpp"
-#include "Connection.hpp"
+#include "thread/HavokThread.hpp"
+#include "objects/Connection.hpp"
 
 namespace havokmud {
     namespace thread {

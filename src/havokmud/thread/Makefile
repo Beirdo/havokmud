@@ -1,3 +1,5 @@
-CPPFLAGS = -std=c++11
+DIR = thread
+OBJS = ConnectionThread.o HavokThread.o
 
-all:    Connection.o ConnectionThread.o ConnectionManager.o HavokThread.o
+include ../Makefile.common
+

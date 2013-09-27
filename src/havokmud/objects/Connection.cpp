@@ -24,9 +24,9 @@
 
 #include <boost/asio/error.hpp>
 
-#include "Connection.hpp"
-#include "ConnectionManager.hpp"
-#include "misc.hpp"
+#include "objects/Connection.hpp"
+#include "objects/ConnectionManager.hpp"
+#include "util/misc.hpp"
 
 namespace havokmud {
     namespace objects {

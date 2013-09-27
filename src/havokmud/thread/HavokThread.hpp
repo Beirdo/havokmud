@@ -28,8 +28,8 @@
 #include <boost/thread/thread.hpp>
 #include <string>
 
-#include "ThreadColors.hpp"
-#include "misc.hpp"
+#include "thread/ThreadColors.hpp"
+#include "util/misc.hpp"
 
 namespace havokmud {
     namespace thread {

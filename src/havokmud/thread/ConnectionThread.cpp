@@ -24,9 +24,9 @@
 
 #include <string>
 
-#include "Connection.hpp"
-#include "ConnectionThread.hpp"
-#include "ConnectionManager.hpp"
+#include "objects/Connection.hpp"
+#include "thread/ConnectionThread.hpp"
+#include "objects/ConnectionManager.hpp"
 
 namespace havokmud {
     namespace thread {

@@ -22,29 +22,30 @@
  * @brief Connection Manager
  */
 
-#ifndef __havokmud_thread_ConnectionManager__
-#define __havokmud_thread_ConnectionManager__
-
-#include <boost/bind.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <string>
-#include <set>
-
-#include "Connection.hpp"
+#include "objects/Connection.hpp"
+#include "objects/ConnectionManager.hpp"
 
 namespace havokmud {
     namespace objects {
-        class ConnectionManager : private std::set<Connection::pointer>,
-                                  private boost::noncopyable
-        {
-        public:
-            void start(Connection::pointer c);
-            void stop(Connection::pointer c);
-            void stop_all();
-        };
+        ConnectionManager g_connectionManager;
 
-        extern ConnectionManager g_connectionManager;
+        void ConnectionManager::start(Connection::pointer c)
+        {
+            insert(c);
+            c->start();
+        }
+
+        void ConnectionManager::stop(Connection::pointer c)
+        {
+            erase(c);
+            c->stop();
+        }
+
+        void ConnectionManager::stop_all()
+        {
+            std::for_each(begin(), end(), boost::bind(&Connection::stop, _1));
+            clear();
+        }
     }
 }
 
-#endif  // __havokmud_thread_ConnectionManager__

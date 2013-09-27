@@ -22,8 +22,8 @@
  * @brief HavokMud Thread base class
  */
 
-#include "HavokThread.hpp"
-#include "ThreadColors.hpp"
+#include "thread/HavokThread.hpp"
+#include "thread/ThreadColors.hpp"
 
 namespace {
     static const int DEFAULT_STACK_SIZE = 1 * 1024 * 1024;  // 1MB

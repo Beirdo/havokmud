@@ -1,0 +1,11 @@
+CPPFLAGS = -std=c++11 -I../
+
+LIBFILE = libhavok${DIR}.a
+
+${LIBFILE}:	${OBJS}
+	-[ "${OBJS}" != "" ] && ${AR} -crv $@ $+
+
+all:    ${LIBFILE}
+
+clean:
+	-[ "${OBJS} ${LIBFILE}" != "" ] && ${RM} ${OBJS} ${LIBFILE}
