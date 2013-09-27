@@ -19,16 +19,20 @@
 
 /**
  * @file
- * @brief Thread to handle network connections.
+ * @brief Connection handler
  */
 
+#include <boost/asio/error.hpp>
+
 #include "Connection.hpp"
+#include "ConnectionManager.hpp"
+#include "misc.hpp"
 
 namespace havokmud {
-    namespace thread {
+    namespace objects {
         Connection::Connection(boost::asio::io_service &io_service,
-                   Player *player, unsigned int inBufferSize) :
-            m_socket(io_service), m_player(player),
+                               unsigned int inBufferSize) :
+            m_socket(io_service),
             m_inBufRaw(new unsigned char[inBufferSize]),
             m_inBuf(boost::asio::buffer(m_inBufRaw, inBufferSize)),
             m_hostname("unknown")
@@ -45,18 +49,23 @@ namespace havokmud {
                 //                    shared_from_this(), _1));
             }
 
-            // Register this connection with the connection manager
-            //g_connectionManagerThread.addConnection(shared_from_this());
-
             // Set writing state to false
             m_writing = false;
+        }
 
+        void Connection::start()
+        {
             // Start reading
-            m_socket.async_read_some(m_inBuf,
+            m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
                         shared_from_this(),
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
+        }
+
+        void Connection::stop()
+        {
+            m_socket.close();
         }
 
         void Connection::handle_read(const boost::system::error_code &e,
@@ -66,34 +75,35 @@ namespace havokmud {
             {
                 std::vector<boost::asio::const_buffer> inBufVector;
 
-                if (m_inBufRemain.buffer_size()) {
+                if (boost::asio::buffer_size(m_inBufRemain)) {
                     inBufVector.push_back(m_inBufRemain);
                 }
-                inBufVector.push_back(inBuf);
+                inBufVector.push_back(m_inBuf);
 
                 std::vector<unsigned char> data(boost::asio::buffer_size(inBufVector));
-                boost::asio::buffer inBuffer(data);
+                boost::asio::mutable_buffer inBuffer(boost::asio::buffer(data));
                 boost::asio::buffer_copy(inBuffer, inBufVector);
-                boost::asio::buffer remainBuf;
+                boost::asio::const_buffer remainBuf;
                 unsigned char *line;
 
-                while (line = splitLines(inBuffer, remainBuf)) {
+                while (line = prv_splitLines(inBuffer, remainBuf)) {
                     // Dispatch the line
                     // parse(line);
                 }
 
-                if (remainBuf.buffer_size()) {
+                if (boost::asio::buffer_size(remainBuf)) {
                     m_inBufRemain = remainBuf;
                 } else {
-                    m_inBufRemain = boost::asio::mutable_buffer("");
+                    m_inBufRemain = boost::asio::mutable_buffer((void *)"", 0);
                 }
 
-                m_socket.async_read_some(m_inBuf,
-                            shared_from_this(),
-                            boost::asio::placeholders::error,
-                            boost::asio::placeholders::bytes_transferred);
-            } else if (e != boost::error::operation_aborted) {
-                g_connectionManagerThread.remove(shared_from_this());
+                m_socket.async_read_some(boost::asio::buffer(m_inBuf),
+                            boost::bind(&Connection::handle_read,
+                                shared_from_this(),
+                                boost::asio::placeholders::error,
+                                boost::asio::placeholders::bytes_transferred));
+            } else if (e != boost::asio::error::operation_aborted) {
+                g_connectionManager.stop(shared_from_this());
             }
         }
 
@@ -102,12 +112,12 @@ namespace havokmud {
             m_writing = false;
             if (!e) {
                 if (boost::asio::buffer_size(m_outBufVector)) {
-                    sendBuffers();
+                    prv_sendBuffers();
                 }
             }
 
             if (e != boost::asio::error::operation_aborted) {
-                g_connectionManagerThread.remove(shared_from_this());
+                g_connectionManager.stop(shared_from_this());
             }
         }
                 
@@ -116,32 +126,32 @@ namespace havokmud {
                 m_socket.shutdown(tcp::socket::shutdown_both, ignored_ec);
 #endif
 
-        void Connection::send(boost::asio::buffer buffer)
+        void Connection::send(boost::asio::const_buffer buffer)
         {
             m_outBufVector.push_back(buffer);
 
             if (!m_writing) {
-                sendBuffers();
+                prv_sendBuffers();
             }
         }
 
-        void Connection::sendBuffers()
+        void Connection::prv_sendBuffers()
         {
             m_writing = true;
 
             std::vector<unsigned char> data(boost::asio::buffer_size(m_outBufVector));
-            boost::asio::buffer outBuffer(data);
+            std::vector<boost::asio::mutable_buffer> outBuffer(1);
             boost::asio::buffer_copy(outBuffer, m_outBufVector);
-
             m_outBufVector.clear();
+
             boost::asio::async_write(m_socket, outBuffer,
                     boost::bind(&Connection::handle_write,
                                 shared_from_this(),
                                 boost::asio::placeholders::error));
         }
 
-        unsigned char *splitLines(boost::asio::buffer &inBuffer,
-                                  boost::asio::buffer &remainBuf)
+        unsigned char *Connection::prv_splitLines(boost::asio::mutable_buffer &inBuffer,
+                                                  boost::asio::const_buffer &remainBuf)
         {
             unsigned char *line;
 

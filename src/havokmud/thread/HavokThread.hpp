@@ -29,8 +29,7 @@
 #include <string>
 
 #include "ThreadColors.hpp"
-
-#define NELEMS(x)   (sizeof((x)) / sizeof((x)[0]))
+#include "misc.hpp"
 
 namespace havokmud {
     namespace thread {
