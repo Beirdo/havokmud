@@ -1,5 +1,5 @@
 DIR = thread
-OBJS = ConnectionThread.o HavokThread.o
+OBJS = ConnectionThread.o LoggingThread.o HavokThread.o
 
 include ../Makefile.common
 

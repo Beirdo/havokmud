@@ -19,51 +19,54 @@
 
 /**
  * @file
- * @brief Thread to handle network connections.
+ * @brief Thread to handle logging
  */
 
-#ifndef __havokmud_thread_ConnectionThread__
-#define __havokmud_thread_ConnectionThread__
+#ifndef __havokmud_thread_LoggingThread__
+#define __havokmud_thread_LoggingThread__
 
-#include <boost/bind.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/asio/ip/tcp.hpp>
 #include <string>
 
 #include "thread/HavokThread.hpp"
-#include "objects/Connection.hpp"
+
+
+#define LogPrint(level, format, ...) \
+    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
+                             format, ## __VA_ARGS__)
+
+#define LogPrint(level, string) \
+    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, string)
 
 namespace havokmud {
     namespace thread {
 
-        using boost::asio::ip::tcp;
         using havokmud::thread::HavokThread;
-        using havokmud::objects::Connection;
 
-        class ConnectionThread : public HavokThread
+        class LoggingSink;
+
+        class LoggingThread : public HavokThread
         {
         public:
-            ConnectionThread(int port, int timeout) :
-                    HavokThread("Connection"), m_port(std::to_string(port)),
-                    m_timeout(timeout),
-                    m_ioService(), m_acceptor(m_ioService)  {};
-            ~ConnectionThread()  {};
+            LoggingThread() : HavokThread("Logging")  {};
+            ~LoggingThread()  {};
+
+            void print(int level, char *file, int line, const char *function,
+                       char *format, ...);
+
+            bool add(LoggingSink *sink) { m_sinks.insert(sink); };
+            bool remove(LoggingSink *sink)  { m_sinks.remove(sink); };
 
             void handle_stop();
 
         private:
             virtual void prv_start();
-            void prv_start_accept();
-            void prv_handle_accept(const boost::system::error_code &e);
 
-            std::string             m_port;
-            int                     m_timeout;
-
-            boost::asio::io_service m_ioService;
-            tcp::acceptor           m_acceptor;
-            Connection::pointer     m_newConnection;
+            std::set<LoggingSink *> m_sinks;
+            std::queue<LoggingItem> m_logQueue;
         };
+
+        extern LoggingThread g_loggingThread;
     }
 }
 
-#endif  // __havokmud_thread_ConnectionThread__
+#endif  // __havokmud_thread_LoggingThread__
