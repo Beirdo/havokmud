@@ -22,6 +22,7 @@
  * @brief Thread to handle network connections.
  */
 
+#include <iostream>
 #include <string>
 
 #include "objects/Connection.hpp"
@@ -35,7 +36,7 @@ namespace havokmud {
         void ConnectionThread::prv_start()
         {
             tcp::resolver resolver(m_ioService);
-            tcp::resolver::query query("0::0", m_port);
+            tcp::resolver::query query("0.0.0.0", m_port);
             tcp::endpoint endpoint = *resolver.resolve(query);
 
             m_acceptor.open(endpoint.protocol());
@@ -43,6 +44,8 @@ namespace havokmud {
             m_acceptor.listen();
 
             prv_start_accept();
+
+            std::cout << "Listening on 0.0.0.0: " << m_port << std::endl;
 
             m_ioService.run();
         }
@@ -62,6 +65,7 @@ namespace havokmud {
             }
 
             if (!e) {
+                std::cout << "New connection in ConnectionThread" << std::endl;
                 havokmud::objects::g_connectionManager.start(m_newConnection);
             }
 

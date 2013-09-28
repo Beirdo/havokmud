@@ -43,11 +43,11 @@ namespace havokmud {
         class ConnectionThread : public HavokThread
         {
         public:
-            ConnectionThread(int port, struct timeval timeout) :
+            ConnectionThread(int port, int timeout) :
                     HavokThread("Connection"), m_port(std::to_string(port)),
                     m_count(0), m_fdCount(0), m_timeout(timeout),
                     m_ioService(), m_acceptor(m_ioService)  {};
-            ~ConnectionThread();
+            ~ConnectionThread()  {};
 
             void handle_stop();
 
@@ -59,7 +59,7 @@ namespace havokmud {
             std::string             m_port;
             int                     m_count;
             int                     m_fdCount;
-            struct timeval          m_timeout;
+            int                     m_timeout;
 
             boost::asio::io_service m_ioService;
             tcp::acceptor           m_acceptor;

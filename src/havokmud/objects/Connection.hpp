@@ -29,6 +29,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/regex.hpp>
 #include <string>
 
 namespace havokmud {
@@ -48,7 +49,7 @@ namespace havokmud {
 
             Connection(boost::asio::io_service &io_service,
                        unsigned int inBufferSize = MAX_BUFSIZE);
-            ~Connection();
+            ~Connection()  {};
 
             void set_player(Player *player_)  { m_player = player_; };
 
@@ -70,18 +71,19 @@ namespace havokmud {
                     { m_hostname = hostname; };
             void prv_sendBuffers();
 
-            unsigned char *prv_splitLines(boost::asio::mutable_buffer &inBuffer,
-                                          boost::asio::const_buffer &remainBuf);
+            std::string prv_splitLines(boost::asio::mutable_buffer &inBuffer);
 
             tcp::socket                     m_socket;
             Player                         *m_player;
             boost::asio::const_buffer       m_inBufRemain;
+            int                             m_inBufSize;
             unsigned char                  *m_inBufRaw;
             boost::asio::mutable_buffer     m_inBuf;
             std::vector<boost::asio::const_buffer>  m_outBufVector;
             std::string                     m_hostname;
 
             bool                            m_writing;
+            static boost::regex             s_lineRegex;
         };
     }
 }

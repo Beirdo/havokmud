@@ -22,6 +22,8 @@
  * @brief Connection handler
  */
 
+#include <iostream>
+#include <cstring>
 #include <boost/asio/error.hpp>
 
 #include "objects/Connection.hpp"
@@ -30,9 +32,13 @@
 
 namespace havokmud {
     namespace objects {
+        boost::regex Connection::s_lineRegex("[\\s\\n\\r]*(.+?)\\s*$",
+                boost::regex_constants::no_mod_s);
+
         Connection::Connection(boost::asio::io_service &io_service,
                                unsigned int inBufferSize) :
             m_socket(io_service),
+            m_inBufSize(inBufferSize),
             m_inBufRaw(new unsigned char[inBufferSize]),
             m_inBuf(boost::asio::buffer(m_inBufRaw, inBufferSize)),
             m_hostname("unknown")
@@ -55,6 +61,7 @@ namespace havokmud {
 
         void Connection::start()
         {
+            std::cout << "Connection::start" << std::endl;
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
@@ -65,6 +72,7 @@ namespace havokmud {
 
         void Connection::stop()
         {
+            std::cout << "Connection::stop" << std::endl;
             m_socket.close();
         }
 
@@ -83,16 +91,24 @@ namespace havokmud {
                 std::vector<unsigned char> data(boost::asio::buffer_size(inBufVector));
                 boost::asio::mutable_buffer inBuffer(boost::asio::buffer(data));
                 boost::asio::buffer_copy(inBuffer, inBufVector);
-                boost::asio::const_buffer remainBuf;
-                unsigned char *line;
+                boost::asio::mutable_buffer remainBuf;
 
-                while (line = prv_splitLines(inBuffer, remainBuf)) {
+                memset(m_inBufRaw, 0x00, m_inBufSize);
+
+                do {
+                    std::string line = prv_splitLines(inBuffer);
+                    if (line.empty()) {
+                        std::cout << "done splitting" << std::endl;
+                        break;
+                    }
+
+                    std::cout << "Split a line: " << line << std::endl;
                     // Dispatch the line
                     // parse(line);
-                }
+                } while (true);
 
-                if (boost::asio::buffer_size(remainBuf)) {
-                    m_inBufRemain = remainBuf;
+                if (boost::asio::buffer_size(inBuffer)) {
+                    m_inBufRemain = inBuffer;
                 } else {
                     m_inBufRemain = boost::asio::mutable_buffer((void *)"", 0);
                 }
@@ -150,12 +166,30 @@ namespace havokmud {
                                 boost::asio::placeholders::error));
         }
 
-        unsigned char *Connection::prv_splitLines(boost::asio::mutable_buffer &inBuffer,
-                                                  boost::asio::const_buffer &remainBuf)
+        std::string Connection::prv_splitLines(boost::asio::mutable_buffer &inBuffer)
         {
-            unsigned char *line;
+            char *line = boost::asio::buffer_cast<char *>(inBuffer);
+            int length = strlen(line);
+            //std::cout << "inBuffer length: " << length << std::endl;
+            boost::cmatch match;
+            if (boost::regex_search(line, match, s_lineRegex)) {
+                std::string inputLine(match[1].first, match[1].second);
 
-            return NULL;
+                int offset = match[0].second - match[0].first;
+                if (length > offset) {
+                    inBuffer = inBuffer + offset;
+                    length -= offset;
+                    //std::cout << "Match: " << offset << std::endl;
+                } else {
+                    inBuffer = boost::asio::buffer((void *)"", 0);
+                    length = 0;
+                }
+                //std::cout << "inBuffer length: " << length << std::endl;
+                return inputLine;
+            }
+
+            inBuffer = boost::asio::buffer((void *)"", 0);
+            return std::string();
         }
     }
 }
