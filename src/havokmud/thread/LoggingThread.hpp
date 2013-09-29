@@ -29,7 +29,6 @@
 
 #include "thread/HavokThread.hpp"
 
-
 #define LogPrint(level, format, ...) \
     g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
                              format, ## __VA_ARGS__)
@@ -47,22 +46,24 @@ namespace havokmud {
         class LoggingThread : public HavokThread
         {
         public:
-            LoggingThread() : HavokThread("Logging")  {};
+            LoggingThread() : HavokThread("Logging") : m_abort(false)  {};
             ~LoggingThread()  {};
 
             void print(int level, char *file, int line, const char *function,
                        char *format, ...);
 
-            bool add(LoggingSink *sink) { m_sinks.insert(sink); };
-            bool remove(LoggingSink *sink)  { m_sinks.remove(sink); };
+            void add(LoggingSink *sink) { m_sinks.insert(sink); };
+            void remove(LoggingSink &sink);
 
             void handle_stop();
 
         private:
             virtual void prv_start();
+            void outputItem(LoggingItem *item);
 
             std::set<LoggingSink *> m_sinks;
-            std::queue<LoggingItem> m_logQueue;
+            LockingQueue<LoggingItem *> m_logQueue;
+            bool m_abort;
         };
 
         extern LoggingThread g_loggingThread;
