@@ -19,32 +19,39 @@
 
 /**
  * @file
- * @brief Connection Manager
+ * @brief Thread map
  */
 
-#ifndef __havokmud_objects_ConnectionManager__
-#define __havokmud_objects_ConnectionManager__
+#ifndef __havokmud_objects_ThreadMap__
+#define __havokmud_objects_ThreadMap__
 
-#include <boost/bind.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <string>
-#include <set>
-
-#include "objects/Connection.hpp"
+#include <boost/thread/thread.hpp>
+#include <map>
 
 namespace havokmud {
-    namespace objects {
-        class ConnectionManager : private std::set<Connection::pointer>,
-                                  private boost::noncopyable
-        {
-        public:
-            void start(Connection::pointer c);
-            void stop(Connection::pointer c);
-            void stop_all();
-        };
-
-        extern ConnectionManager g_connectionManager;
+    namespace thread {
+        class HavokThread;
     }
 }
 
-#endif  // __havokmud_objects_ConnectionManager__
+namespace havokmud {
+    namespace objects {
+        class ThreadMap {
+            typedef std::map<int, havokmud::thread::HavokThread *> ThreadMapType;
+            typedef std::map<int, boost::thread::id> ThreadIdMapType;
+        public:
+            ThreadMap() : m_nextId(0)  {};
+            int addThread(havokmud::thread::HavokThread *thread);
+            void removeThread(havokmud::thread::HavokThread *thread);
+            havokmud::thread::HavokThread *findThread(boost::thread::id threadId);
+        private:
+            int             m_nextId;
+            ThreadIdMapType m_idMap;
+            ThreadMapType   m_map;
+        };
+    }
+}
+
+extern havokmud::objects::ThreadMap g_threadMap;
+
+#endif  // __havokmud_objects_ThreadMap__

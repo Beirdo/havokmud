@@ -1,6 +1,5 @@
 DIR = thread
-OBJS  = ConnectionThread.o LoggingThread.o ThreadColors.o
-OBJS += ThreadMap.o
+OBJS  = ConnectionThread.o LoggingThread.o
 
 include ../Makefile.common
 

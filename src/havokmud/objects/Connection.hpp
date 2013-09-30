@@ -19,11 +19,11 @@
 
 /**
  * @file
- * @brief Thread to handle network connections.
+ * @brief Connection handling
  */
 
-#ifndef __havokmud_thread_Connection__
-#define __havokmud_thread_Connection__
+#ifndef __havokmud_objects_Connection__
+#define __havokmud_objects_Connection__
 
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -88,4 +88,4 @@ namespace havokmud {
     }
 }
 
-#endif  // __havokmud_thread_Connection__
+#endif  // __havokmud_objects_Connection__

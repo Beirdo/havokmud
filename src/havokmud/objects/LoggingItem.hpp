@@ -22,20 +22,17 @@
  * @brief Logging Items
  */
 
-#ifndef __havokmud_thread_LoggingItem__
-#define __havokmud_thread_LoggingItem__
+#ifndef __havokmud_objects_LoggingItem__
+#define __havokmud_objects_LoggingItem__
 
 #include <string>
 #include <boost/thread.hpp>
 
-#include "thread/ThreadColors.hpp"
+#include "objects/ThreadColors.hpp"
 #include "thread/HavokThread.hpp"
 
 namespace havokmud {
     namespace objects {
-
-        using havokmud::thread::HavokThread;
-
         class LoggingItem
         {
         public:
@@ -56,7 +53,7 @@ namespace havokmud {
                 m_timestamp_us = m_epochtime.tv_usec;
 
                 boost::thread::id threadId = boost::this_thread::get_id();
-                HavokThread *thread = g_threadMap.findThread(threadId);
+                havokmud::thread::HavokThread *thread = g_threadMap.findThread(threadId);
                 if (!thread) {
                     m_threadName = "unknown";
                     m_background = g_defaultColor.background();
@@ -97,4 +94,4 @@ namespace havokmud {
     }
 }
 
-#endif  // __havokmud_thread_LoggingItem__
+#endif  // __havokmud_objects_LoggingItem__

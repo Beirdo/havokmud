@@ -22,8 +22,8 @@
  * @brief Logging Sink base class
  */
 
-#ifndef __havokmud_thread_LoggingSink__
-#define __havokmud_thread_LoggingSink__
+#ifndef __havokmud_objects_LoggingSink__
+#define __havokmud_objects_LoggingSink__
 
 #include <string>
 
@@ -109,4 +109,4 @@ namespace havokmud {
     }
 }
 
-#endif  // __havokmud_thread_LoggingSink__
+#endif  // __havokmud_objects_LoggingSink__

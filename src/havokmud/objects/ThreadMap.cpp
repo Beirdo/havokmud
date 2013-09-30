@@ -23,15 +23,15 @@
  */
 
 #include "thread/HavokThread.hpp"
-#include "thread/ThreadMap.hpp"
+#include "objects/ThreadMap.hpp"
 #include "thread/LoggingThread.hpp"
-#include "thread/ThreadColors.hpp"
+#include "objects/ThreadColors.hpp"
 
-havokmud::thread::ThreadMap g_threadMap;
+havokmud::objects::ThreadMap g_threadMap;
 
 namespace havokmud {
-    namespace thread {
-        int ThreadMap::addThread(HavokThread *thread)
+    namespace objects {
+        int ThreadMap::addThread(havokmud::thread::HavokThread *thread)
         {
             if (!thread)
                 return -1;
@@ -39,7 +39,7 @@ namespace havokmud {
             int index = m_nextId++;
             m_idMap.insert(std::pair<int, boost::thread::id>(index,
                                                              thread->id()));
-            m_map.insert(std::pair<int, HavokThread *>(index, thread));
+            m_map.insert(std::pair<int, havokmud::thread::HavokThread *>(index, thread));
 
             LogPrint(LG_INFO, "Added Thread %d as \"%s%s%s%s%s\" (%d/%d)",
                      index,
@@ -52,7 +52,7 @@ namespace havokmud {
             return index;
         }
 
-        void ThreadMap::removeThread(HavokThread *thread)
+        void ThreadMap::removeThread(havokmud::thread::HavokThread *thread)
         {
             if (!thread)
                 return;
@@ -64,7 +64,7 @@ namespace havokmud {
             m_idMap.erase(thread->index());
         }
 
-        HavokThread *ThreadMap::findThread(boost::thread::id threadId)
+        havokmud::thread::HavokThread *ThreadMap::findThread(boost::thread::id threadId)
         {
             int index = -1;
 

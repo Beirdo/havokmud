@@ -28,7 +28,7 @@
 #include "objects/Connection.hpp"
 #include "thread/ConnectionThread.hpp"
 #include "objects/ConnectionManager.hpp"
-#include "thread/LoggingThread.hpp"
+#include "corefunc/Logging.hpp"
 
 namespace havokmud {
     namespace thread {

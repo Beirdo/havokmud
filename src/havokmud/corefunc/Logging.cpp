@@ -19,33 +19,37 @@
 
 /**
  * @file
- * @brief Thread map
+ * @brief Logging Interface
  */
 
-#ifndef __havokmud_thread_ThreadMap__
-#define __havokmud_thread_ThreadMap__
+#include <string>
+#include <stdarg.h>
 
-#include <boost/thread/thread.hpp>
-#include <map>
+#define _LogLevelNames_
+#include "corefunc/Logging.hpp"
+#include "objects/LoggingItem.hpp"
+#include "objects/LockingQueue.hpp"
 
-namespace havokmud {
-    namespace thread {
-        class ThreadMap {
-            typedef std::map<int, HavokThread *> ThreadMapType;
-            typedef std::map<int, boost::thread::id> ThreadIdMapType;
-        public:
-            ThreadMap() : m_nextId(0)  {};
-            int addThread(HavokThread *thread);
-            void removeThread(HavokThread *thread);
-            HavokThread *findThread(boost::thread::id threadId);
-        private:
-            int             m_nextId;
-            ThreadIdMapType m_idMap;
-            ThreadMapType   m_map;
-        };
-    }
+using havokmud::objects::LoggingItem;
+havokmud::objects::LockingQueue<LoggingItem *> g_logQueue;
+
+LogLevel g_LogLevel = LG_DEBUG;
+
+#define LOGLINE_MAX 1024
+
+void logPrintLine(int level, std::string file, int line,
+                  std::string function, std::string format, ...)
+{
+    char message[LOGLINE_MAX+1];
+    va_list arguments;
+
+    va_start(arguments, format);
+    vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
+    va_end(arguments);
+
+    LoggingItem *item = new LoggingItem(level, file, line, function,
+                                        std::string(message));
+    g_logQueue.add(item);
 }
 
-extern havokmud::thread::ThreadMap g_threadMap;
 
-#endif  // __havokmud_thread_ThreadMap__

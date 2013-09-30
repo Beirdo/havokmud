@@ -22,8 +22,8 @@
  * @brief Locking Queue
  */
 
-#ifndef __havokmud_thread_LockingQueue__
-#define __havokmud_thread_LockingQueue__
+#ifndef __havokmud_objects_LockingQueue__
+#define __havokmud_objects_LockingQueue__
 
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
@@ -65,4 +65,4 @@ namespace havokmud {
     }
 }
 
-#endif  // __havokmud_thread_LockingQueue__
+#endif  // __havokmud_objects_LockingQueue__

@@ -19,19 +19,19 @@
 
 /**
  * @file
- * @brief HavokMud Thread base class
+ * @brief Thread colors
  */
 
 #include <string>
 #include <iostream>
 
-#include "thread/ThreadColors.hpp"
+#include "objects/ThreadColors.hpp"
 #include "util/misc.hpp"
 
-havokmud::thread::ThreadColors g_defaultColor(0, 1);
+havokmud::objects::ThreadColors g_defaultColor(0, 1);
 
 namespace havokmud {
-    namespace thread {
+    namespace objects {
         const std::string ThreadColors::s_backgroundColors[] = 
                 { BK_BLACK, BK_LT_GRAY, BK_RED, BK_GREEN,
                   BK_BROWN, BK_BLUE, BK_MAGENTA, BK_CYAN };

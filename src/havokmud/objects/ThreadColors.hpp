@@ -22,8 +22,8 @@
  * @brief ANSI color codes
  */
 
-#ifndef __havokmud_thread_ThreadColors__
-#define __havokmud_thread_ThreadColors__
+#ifndef __havokmud_objects_ThreadColors__
+#define __havokmud_objects_ThreadColors__
 
 #include <utility>      // std::pair
 
@@ -54,9 +54,8 @@
 #define BK_LT_GRAY    "\033[0;47m"
 
 namespace havokmud {
-    namespace thread {
+    namespace objects {
         typedef std::pair<int, int> Color;
-        class HavokThread;
 
         class ThreadColors {
         public:
@@ -82,6 +81,6 @@ namespace havokmud {
     }
 }
 
-extern havokmud::thread::ThreadColors g_defaultColor;
+extern havokmud::objects::ThreadColors g_defaultColor;
 
-#endif  // __havokmud_thread_ThreadColors__
+#endif  // __havokmud_objects_ThreadColors__

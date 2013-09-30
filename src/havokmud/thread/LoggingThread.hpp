@@ -27,15 +27,10 @@
 
 #include <string>
 
-#include "util/misc.hpp"
 #include "thread/HavokThread.hpp"
 #include "objects/LoggingItem.hpp"
 #include "objects/LoggingSink.hpp"
 #include "objects/LockingQueue.hpp"
-
-#define LogPrint(level, format, ...) \
-    logPrintLine(level, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
-                 (char *)format, ## __VA_ARGS__)
 
 namespace havokmud {
     namespace thread {
@@ -65,44 +60,6 @@ namespace havokmud {
     }
 }
 
-void logPrintLine(int level, std::string file, int line,
-                  std::string function, std::string format, ...);
-
-extern havokmud::thread::LoggingThread *g_loggingThread;
-
-/* Define the log levels (lower number is higher priority) */
-
-typedef enum
-{
-    LG_EMERG = 0,
-    LG_ALERT,
-    LG_CRIT,
-    LG_ERR,
-    LG_WARNING,
-    LG_NOTICE,
-    LG_INFO,
-    LG_DEBUG,
-    LG_UNKNOWN
-} LogLevel;
-
-#ifdef _LogLevelNames_
-std::string g_LogLevelNames[] =
-{
-    "LG_EMERG",
-    "LG_ALERT",
-    "LG_CRIT",
-    "LG_ERR",
-    "LG_WARNING",
-    "LG_NOTICE",
-    "LG_INFO",
-    "LG_DEBUG",
-    "LG_UNKNOWN"
-};
-int g_LogLevelNameCount = NELEMS(g_LogLevelNames);
-#else
-extern std::string g_LogLevelNames[];
-extern int g_LogLevelNameCount;
-#endif
-extern LogLevel g_LogLevel;
+extern havokmud::objects::LockingQueue<havokmud::objects::LoggingItem *> g_logQueue;
 
 #endif  // __havokmud_thread_LoggingThread__

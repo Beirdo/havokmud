@@ -29,7 +29,7 @@
 #include "objects/Connection.hpp"
 #include "objects/ConnectionManager.hpp"
 #include "util/misc.hpp"
-#include "thread/LoggingThread.hpp"
+#include "corefunc/Logging.hpp"
 
 namespace havokmud {
     namespace objects {

@@ -22,21 +22,19 @@
  * @brief Thread to handle logging
  */
 
-#include <iostream>
 #include <string>
 #include <stdarg.h>
 
-#define _LogLevelNames_
+#include "corefunc/Logging.hpp"
 #include "thread/LoggingThread.hpp"
 #include "objects/LoggingSink.hpp"
 #include "objects/LoggingItem.hpp"
 
 #ifndef __CYGWIN__
 #include <syslog.h>
-#endif  // __CYGWIN__
+#endif // __CYGWIN__
 
 using havokmud::objects::LoggingItem;
-static havokmud::objects::LockingQueue<LoggingItem *> logQueue;
 
 namespace havokmud {
     namespace thread {
@@ -65,7 +63,7 @@ namespace havokmud {
             }
 
             while (!m_abort) {
-                LoggingItem *item = logQueue.get();
+                LoggingItem *item = g_logQueue.get();
                 if (!item) {
                     continue;
                 }
@@ -104,24 +102,3 @@ namespace havokmud {
         }
     }
 }
-
-LogLevel g_LogLevel = LG_DEBUG;
-
-#define LOGLINE_MAX 1024
-
-void logPrintLine(int level, std::string file, int line,
-                  std::string function, std::string format, ...)
-{
-    char message[LOGLINE_MAX+1];
-    va_list arguments;
-
-    va_start(arguments, format);
-    vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
-    va_end(arguments);
-
-    LoggingItem *item = new LoggingItem(level, file, line, function,
-                                        std::string(message));
-    logQueue.add(item);
-}
-
-

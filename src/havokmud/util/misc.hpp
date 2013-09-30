@@ -22,12 +22,12 @@
  * @brief Miscellaneous defines
  */
 
-#ifndef __havokmud_thread_misc__
-#define __havokmud_thread_misc__
+#ifndef __havokmud_util_misc__
+#define __havokmud_util_misc__
 
 #define IS_POWER_2(x) ((x) != 0 && !((x) & ((x) - 1)))
 
 #define NELEMS(x)   (sizeof((x)) / sizeof((x)[0]))
 
 
-#endif  // __havokmud_thread_misc__
+#endif  // __havokmud_util_misc__

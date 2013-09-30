@@ -28,14 +28,16 @@
 #include <boost/thread/thread.hpp>
 #include <string>
 
-#include "thread/ThreadColors.hpp"
-#include "thread/ThreadMap.hpp"
+#include "objects/ThreadColors.hpp"
+#include "objects/ThreadMap.hpp"
 #include "util/misc.hpp"
 
 #define DEFAULT_STACK_SIZE 1 * 1024 * 1024  // 1MB
 
 namespace havokmud {
     namespace thread {
+        using havokmud::objects::ThreadColors;
+
         class HavokThread
         {
         public:
@@ -81,7 +83,7 @@ namespace havokmud {
             int                         m_index;
 
             std::string                 m_name;
-            ThreadColors                m_color;
+            havokmud::objects::ThreadColors m_color;
         };
     }
 }

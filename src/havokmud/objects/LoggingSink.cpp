@@ -33,15 +33,12 @@
 #include <boost/format.hpp>
 
 #include "objects/LoggingSink.hpp"
-#include "thread/HavokThread.hpp"
-#include "thread/ThreadMap.hpp"
+#include "objects/ThreadMap.hpp"
 #include "thread/LoggingThread.hpp"
-#include "thread/ThreadColors.hpp"
+#include "objects/ThreadColors.hpp"
 
 namespace havokmud {
     namespace objects {
-        using havokmud::thread::HavokThread;
-
         std::string LoggingSink::s_bg;
         std::string LoggingSink::s_fg;
 

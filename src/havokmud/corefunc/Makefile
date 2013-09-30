@@ -1,5 +1,5 @@
-DIR = core
-OBJS =
+DIR = corefunc
+OBJS = Logging.o
 
 include ../Makefile.common
 
