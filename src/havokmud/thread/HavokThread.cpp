@@ -29,9 +29,10 @@ namespace {
     static const int DEFAULT_STACK_SIZE = 1 * 1024 * 1024;  // 1MB
 }
 
+havokmud::thread::ThreadMap g_threadMap;
+
 namespace havokmud {
     namespace thread {
-        static ThreadMap g_threadMap;
 
         HavokThread::HavokThread(std::string name) : m_name(name)
         {

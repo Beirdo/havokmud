@@ -24,13 +24,28 @@
 
 #include <iostream>
 #include <string>
+#include <stdarg.h>
 
+#define _LogLevelNames_
 #include "thread/LoggingThread.hpp"
 #include "objects/LoggingSink.hpp"
 #include "objects/LoggingItem.hpp"
 
+#ifndef __CYGWIN__
+#include <syslog.h>
+#endif  // __CYGWIN__
+
+havokmud::thread::LoggingThread g_loggingThread;
+
 namespace havokmud {
     namespace thread {
+        using havokmud::objects::StdoutLoggingSink;
+        using havokmud::objects::FileLoggingSink;
+
+#ifndef __CYGWIN__
+        using havokmud::objects::SyslogLoggingSink;
+#endif  // __CYGWIN__
+
         void LoggingThread::prv_start()
         {
             add(new StdoutLoggingSink());
@@ -55,19 +70,20 @@ namespace havokmud {
                     boost::bind(&LoggingThread::remove, this, _1));
         }
 
+        #define LOGLINE_MAX 1024
 
-        void LoggingThread::print(int level, char *file, int line,
-                                  const char *function, char *format, ...)
+        void LoggingThread::print(int level, std::string file, int line,
+                                  std::string function, std::string format, ...)
         {
             char message[LOGLINE_MAX+1];
             va_list arguments;
 
             va_start(arguments, format);
-            vsnprintf(message, LOGLINE_MAX, format, arguments);
+            vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
             va_end(arguments);
 
             LoggingItem *item = new LoggingItem(level, file, line, function,
-                                                message);
+                                                std::string(message));
             m_logQueue.add(item);
         }
 
@@ -83,12 +99,12 @@ namespace havokmud {
             m_abort = true;
         }
 
-        void LoggingThread::remove(LoggingSink &sink)
+        void LoggingThread::remove(LoggingSink *sink)
         {
             std::set<LoggingSink *>::iterator it;
             for (it = m_sinks.begin(); it != m_sinks.end(); ++it) {
-                if (**it == sink) {
-                    m_sinks.remove(*it);
+                if (**it == *sink) {
+                    m_sinks.erase(*it);
                     delete *it;
                     break;
                 }

@@ -27,33 +27,38 @@
 
 #include <string>
 
+#include "util/misc.hpp"
 #include "thread/HavokThread.hpp"
+#include "objects/LoggingItem.hpp"
+#include "objects/LoggingSink.hpp"
+#include "objects/LockingQueue.hpp"
 
 #define LogPrint(level, format, ...) \
     g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
-                             format, ## __VA_ARGS__)
+                          (char *)format, ## __VA_ARGS__)
 
-#define LogPrint(level, string) \
-    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, string)
+#define LogPrintNoArg(level, string) \
+    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
+                          (char *)string)
 
 namespace havokmud {
     namespace thread {
 
         using havokmud::thread::HavokThread;
-
-        class LoggingSink;
+        using havokmud::objects::LoggingItem;
+        using havokmud::objects::LoggingSink;
 
         class LoggingThread : public HavokThread
         {
         public:
-            LoggingThread() : HavokThread("Logging") : m_abort(false)  {};
+            LoggingThread() : HavokThread("Logging"), m_abort(false)  {};
             ~LoggingThread()  {};
 
-            void print(int level, char *file, int line, const char *function,
-                       char *format, ...);
+            void print(int level, std::string file, int line,
+                       std::string function, std::string format, ...);
 
             void add(LoggingSink *sink) { m_sinks.insert(sink); };
-            void remove(LoggingSink &sink);
+            void remove(LoggingSink *sink);
 
             void handle_stop();
 
@@ -62,12 +67,47 @@ namespace havokmud {
             void outputItem(LoggingItem *item);
 
             std::set<LoggingSink *> m_sinks;
-            LockingQueue<LoggingItem *> m_logQueue;
+            havokmud::objects::LockingQueue<LoggingItem *> m_logQueue;
             bool m_abort;
         };
-
-        extern LoggingThread g_loggingThread;
     }
 }
+
+extern havokmud::thread::LoggingThread g_loggingThread;
+
+/* Define the log levels (lower number is higher priority) */
+
+typedef enum
+{
+    LG_EMERG = 0,
+    LG_ALERT,
+    LG_CRIT,
+    LG_ERR,
+    LG_WARNING,
+    LG_NOTICE,
+    LG_INFO,
+    LG_DEBUG,
+    LG_UNKNOWN
+} LogLevel;
+
+#ifdef _LogLevelNames_
+std::string g_LogLevelNames[] =
+{
+    "LG_EMERG",
+    "LG_ALERT",
+    "LG_CRIT",
+    "LG_ERR",
+    "LG_WARNING",
+    "LG_NOTICE",
+    "LG_INFO",
+    "LG_DEBUG",
+    "LG_UNKNOWN"
+};
+int g_LogLevelNameCount = NELEMS(g_LogLevelNames);
+#else
+extern std::string g_LogLevelNames[];
+extern int g_LogLevelNameCount;
+#endif
+extern LogLevel g_LogLevel;
 
 #endif  // __havokmud_thread_LoggingThread__

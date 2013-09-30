@@ -27,6 +27,12 @@
 
 #include <string>
 
+#include "objects/LoggingItem.hpp"
+
+#define DEBUG_FILE "/var/log/havokmud.log"
+
+extern bool g_debug;
+
 namespace havokmud {
     namespace objects {
 
@@ -35,8 +41,8 @@ namespace havokmud {
         class LoggingSink
         {
         public:
-            LoggingSink(LogSinkType type) : m_type(type) : m_open(false) {};
-            virtual ~LoggingSink()  { if (m_open) close(); };
+            LoggingSink(LogSinkType type);
+            virtual ~LoggingSink()  {};
 
             LogSinkType type() const  { return m_type; };
             virtual bool operator==(const LoggingSink &b) = 0;
@@ -44,20 +50,23 @@ namespace havokmud {
         private:
             virtual bool open() = 0;
             virtual void close() = 0;
+        protected:
             LogSinkType         m_type;
             bool                m_open;
+            static std::string  s_bg;
+            static std::string  s_fg;
         };
 
         class StdoutLoggingSink : public LoggingSink
         {
         public:
             StdoutLoggingSink() : LoggingSink(Console), m_fd(1) {};
-            virtual ~StdoutLoggingSink()  {};
+            virtual ~StdoutLoggingSink()  { if (m_open) close(); };
 
             virtual bool operator==(const LoggingSink &b);
             virtual void outputItem(LoggingItem *item);
         private:
-            virtual bool open()  { m_open = true; };
+            virtual bool open()  { m_open = true; return true; };
             virtual void close()  { m_open = false; };
 
             int m_fd;
@@ -67,8 +76,8 @@ namespace havokmud {
         {
         public:
             FileLoggingSink(std::string filename) : LoggingSink(File), m_fd(-1),
-                    m_filename(filename);
-            virtual ~FileLoggingSink()  {};
+                    m_filename(filename)  {};
+            virtual ~FileLoggingSink()  { if (m_open) close(); };
 
             virtual bool operator==(const LoggingSink &b);
             virtual void outputItem(LoggingItem *item);
@@ -80,11 +89,13 @@ namespace havokmud {
             std::string m_filename;
         };
 
+#ifndef __CYGWIN__
         class SyslogLoggingSink : public LoggingSink
         {
         public:
-            SyslogLoggingSink() : LoggingSink(Syslog);
-            virtual ~SyslogLoggingSink()  {};
+            SyslogLoggingSink(int facility) : LoggingSink(Syslog),
+                    m_facility(facility)  {};
+            virtual ~SyslogLoggingSink()  { if (m_open) close(); };
 
             virtual bool operator==(const LoggingSink &b);
             virtual void outputItem(LoggingItem *item);
@@ -94,6 +105,7 @@ namespace havokmud {
 
             int m_facility;
         };
+#endif  // __CYGWIN__
     }
 }
 

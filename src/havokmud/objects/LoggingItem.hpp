@@ -26,6 +26,7 @@
 #define __havokmud_thread_LoggingItem__
 
 #include <string>
+#include <boost/thread.hpp>
 
 namespace havokmud {
     namespace objects {
@@ -33,9 +34,10 @@ namespace havokmud {
         class LoggingItem
         {
         public:
-            LoggingItem(int level, char *file, int line, const char *function,
-                        char *message) : m_level(level), m_file(file),
-                    m_function(function), m_message(message),
+            LoggingItem(int level, std::string &file, int line,
+                        std::string &function, std::string message) :
+                    m_level(level), m_file(file), m_function(function),
+                    m_message(message),
                     m_threadId(boost::this_thread::get_id())
             {
                 gettimeofday(&m_timestamp, NULL);
@@ -44,18 +46,18 @@ namespace havokmud {
             ~LoggingItem()  {};
 
             int level() const  { return m_level; };
-            const char *file() const  { return m_file; };
+            std::string file() const  { return m_file; };
             int line() const  { return m_line; };
-            const char *function() const  { return m_function; };
-            const std::string &message() const  { return m_message; };
-            boost::thread::id &threadId() const  { return m_threadId; };
+            std::string function() const  { return m_function; };
+            std::string message() const  { return m_message; };
+            const boost::thread::id &threadId() const  { return m_threadId; };
             struct timeval timestamp() const  { return m_timestamp; };
 
         private:
             int                 m_level;
-            const char         *m_file;
+            std::string         m_file;
             int                 m_line;
-            const char         *m_function;
+            std::string         m_function;
             std::string         m_message;
             boost::thread::id   m_threadId;
             struct timeval      m_timestamp;

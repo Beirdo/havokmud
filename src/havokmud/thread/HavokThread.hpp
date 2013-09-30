@@ -77,4 +77,7 @@ namespace havokmud {
     }
 }
 
+extern havokmud::thread::ThreadMap g_threadMap;
+extern boost::thread::id g_mainThreadId;
+
 #endif  // __havokmud_thread_HavokThread__
