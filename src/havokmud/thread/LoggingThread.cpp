@@ -48,13 +48,11 @@ namespace havokmud {
 
         LoggingThread::LoggingThread() : HavokThread("Logging"), m_abort(false)
         {
-            m_thread = boost::thread(m_attrs,
-                                     boost::bind(&LoggingThread::prv_start,
-                                                 this));
+            pro_initialize<LoggingThread>();
         }
         
 
-        void LoggingThread::prv_start()
+        void LoggingThread::start()
         {
             add(new StdoutLoggingSink());
 #ifndef __CYGWIN__

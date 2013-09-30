@@ -60,10 +60,10 @@ namespace havokmud {
             void add(LoggingSink *sink) { m_sinks.insert(sink); };
             void remove(LoggingSink *sink);
 
+            virtual void start();
             void handle_stop();
 
         private:
-            virtual void prv_start();
             void outputItem(LoggingItem *item);
 
             std::set<LoggingSink *> m_sinks;

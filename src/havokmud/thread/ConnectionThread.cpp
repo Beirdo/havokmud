@@ -38,12 +38,10 @@ namespace havokmud {
                 m_timeout(timeout),
                 m_ioService(), m_acceptor(m_ioService)
         {
-            m_thread = boost::thread(m_attrs,
-                                     boost::bind(&ConnectionThread::prv_start,
-                                                 this));
+            pro_initialize<ConnectionThread>();
         }
 
-        void ConnectionThread::prv_start()
+        void ConnectionThread::start()
         {
             tcp::resolver resolver(m_ioService);
             tcp::resolver::query query("0.0.0.0", m_port);

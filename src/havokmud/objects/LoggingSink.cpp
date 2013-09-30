@@ -99,7 +99,7 @@ namespace havokmud {
                 LogPrint(LG_UNKNOWN,
                          "Closed Log output on fd %d due to errors", m_fd);
                 close();
-                g_loggingThread.remove(this);
+                g_loggingThread->remove(this);
             }
         }
 
@@ -156,7 +156,7 @@ namespace havokmud {
                 LogPrint(LG_UNKNOWN,
                          "Closed Log output on fd %d due to errors", m_fd);
                 close();
-                g_loggingThread.remove(this);
+                g_loggingThread->remove(this);
             }
         }
 

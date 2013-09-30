@@ -29,15 +29,21 @@
 #include <string>
 
 #include "thread/ThreadColors.hpp"
+#include "thread/ThreadMap.hpp"
 #include "util/misc.hpp"
+
+#define DEFAULT_STACK_SIZE 1 * 1024 * 1024  // 1MB
 
 namespace havokmud {
     namespace thread {
         class HavokThread
         {
         public:
-            HavokThread(std::string name);
-            virtual ~HavokThread();
+            HavokThread(std::string name) : m_name(name)  {};
+            virtual ~HavokThread()
+            {
+                g_threadMap.removeThread(this);
+            }
 
             const std::string &name() const { return m_name; };
             const boost::thread::id id() const { return m_id; };
@@ -54,10 +60,21 @@ namespace havokmud {
 
             bool joinable()  { return m_thread.joinable(); };
             void join()  { m_thread.join(); };
+            virtual void start() = 0;
 
-        private:
-            virtual void prv_start() = 0;
-            void prv_setColor(int threadNum);
+	    protected:
+            template<class ThreadClass> void pro_initialize()
+            {
+                m_attrs.set_stack_size(DEFAULT_STACK_SIZE);
+                m_thread = boost::thread(m_attrs,
+                         boost::bind(&ThreadClass::start,
+                                     dynamic_cast<ThreadClass *>(this)));
+                //m_joiner = boost::thread_joiner(m_thread);
+                m_id = boost::this_thread::get_id();
+                
+                m_color = ThreadColors();
+                m_index = g_threadMap.addThread(this);
+            };
 
             boost::thread::attributes   m_attrs;
             boost::thread               m_thread;

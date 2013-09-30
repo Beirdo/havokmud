@@ -46,10 +46,10 @@ namespace havokmud {
             ConnectionThread(int port, int timeout);
             ~ConnectionThread()  {};
 
+            virtual void start();
             void handle_stop();
 
         private:
-            virtual void prv_start();
             void prv_start_accept();
             void prv_handle_accept(const boost::system::error_code &e);
 
