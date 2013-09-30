@@ -80,6 +80,7 @@ namespace havokmud {
             Color   m_color;
         };
 
+        extern ThreadColors g_defaultColor;
     }
 }
 

@@ -35,7 +35,7 @@
 #include <syslog.h>
 #endif  // __CYGWIN__
 
-havokmud::thread::LoggingThread g_loggingThread;
+//havokmud::thread::LoggingThread g_loggingThread;
 
 namespace havokmud {
     namespace thread {
@@ -45,6 +45,14 @@ namespace havokmud {
 #ifndef __CYGWIN__
         using havokmud::objects::SyslogLoggingSink;
 #endif  // __CYGWIN__
+
+        LoggingThread::LoggingThread() : HavokThread("Logging"), m_abort(false)
+        {
+            m_thread = boost::thread(m_attrs,
+                                     boost::bind(&LoggingThread::prv_start,
+                                                 this));
+        }
+        
 
         void LoggingThread::prv_start()
         {

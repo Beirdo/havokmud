@@ -34,12 +34,12 @@
 #include "objects/LockingQueue.hpp"
 
 #define LogPrint(level, format, ...) \
-    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
-                          (char *)format, ## __VA_ARGS__)
+    g_loggingThread->print(level, __FILE__, __LINE__, __FUNCTION__, \
+                           (char *)format, ## __VA_ARGS__)
 
 #define LogPrintNoArg(level, string) \
-    g_loggingThread.print(level, __FILE__, __LINE__, __FUNCTION__, \
-                          (char *)string)
+    g_loggingThread->print(level, __FILE__, __LINE__, __FUNCTION__, \
+                           (char *)string)
 
 namespace havokmud {
     namespace thread {
@@ -51,7 +51,7 @@ namespace havokmud {
         class LoggingThread : public HavokThread
         {
         public:
-            LoggingThread() : HavokThread("Logging"), m_abort(false)  {};
+            LoggingThread();
             ~LoggingThread()  {};
 
             void print(int level, std::string file, int line,
@@ -73,7 +73,7 @@ namespace havokmud {
     }
 }
 
-extern havokmud::thread::LoggingThread g_loggingThread;
+extern havokmud::thread::LoggingThread *g_loggingThread;
 
 /* Define the log levels (lower number is higher priority) */
 

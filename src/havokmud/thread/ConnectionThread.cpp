@@ -33,6 +33,16 @@ namespace havokmud {
     namespace thread {
         using boost::asio::ip::tcp;
 
+        ConnectionThread::ConnectionThread(int port, int timeout) :
+                HavokThread("Connection"), m_port(std::to_string(port)),
+                m_timeout(timeout),
+                m_ioService(), m_acceptor(m_ioService)
+        {
+            m_thread = boost::thread(m_attrs,
+                                     boost::bind(&ConnectionThread::prv_start,
+                                                 this));
+        }
+
         void ConnectionThread::prv_start()
         {
             tcp::resolver resolver(m_ioService);

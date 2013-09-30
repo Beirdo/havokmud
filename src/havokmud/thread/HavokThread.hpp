@@ -41,6 +41,7 @@ namespace havokmud {
 
             const std::string &name() const { return m_name; };
             const boost::thread::id id() const { return m_id; };
+            const int index() const { return m_index; };
 
             const std::string &foreground() const
                 { return m_color.foreground(); };
@@ -62,22 +63,14 @@ namespace havokmud {
             boost::thread               m_thread;
             // boost::thread_joiner        m_joiner;
             boost::thread::id           m_id;
+            int                         m_index;
 
             std::string                 m_name;
             ThreadColors                m_color;
         };
-
-        typedef std::map<boost::thread::id, HavokThread *> ThreadMapType;
-        class ThreadMap : public ThreadMapType {
-        public:
-            void addThread(HavokThread *thread);
-            void removeThread(HavokThread *thread);
-            HavokThread *findThread(boost::thread::id threadId);
-        };
     }
 }
 
-extern havokmud::thread::ThreadMap g_threadMap;
 extern boost::thread::id g_mainThreadId;
 
 #endif  // __havokmud_thread_HavokThread__

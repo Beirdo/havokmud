@@ -19,38 +19,33 @@
 
 /**
  * @file
- * @brief HavokMud Thread base class
+ * @brief Thread map
  */
 
-#include "thread/HavokThread.hpp"
-#include "thread/ThreadMap.hpp"
-#include "thread/ThreadColors.hpp"
-#include "thread/LoggingThread.hpp"
+#ifndef __havokmud_thread_ThreadMap__
+#define __havokmud_thread_ThreadMap__
 
-namespace {
-    static const int DEFAULT_STACK_SIZE = 1 * 1024 * 1024;  // 1MB
-}
+#include <boost/thread/thread.hpp>
+#include <map>
 
 namespace havokmud {
     namespace thread {
-
-        HavokThread::HavokThread(std::string name) : m_name(name)
-        {
-            m_attrs.set_stack_size(DEFAULT_STACK_SIZE);
-            m_thread = boost::thread(m_attrs,
-                                     boost::bind(&HavokThread::prv_start,
-                                                 this));
-            //m_joiner = boost::thread_joiner(m_thread);
-            m_id = boost::this_thread::get_id();
-            
-            m_color = ThreadColors();
-            m_index = g_threadMap.addThread(this);
-        }
-
-        HavokThread::~HavokThread()
-        {
-            g_threadMap.removeThread(this);
-        }
+        class ThreadMap {
+            typedef std::map<int, HavokThread *> ThreadMapType;
+            typedef std::map<int, boost::thread::id> ThreadIdMapType;
+        public:
+            ThreadMap() : m_nextId(0)  {};
+            int addThread(HavokThread *thread);
+            void removeThread(HavokThread *thread);
+            HavokThread *findThread(boost::thread::id threadId);
+        private:
+            int             m_nextId;
+            ThreadIdMapType m_idMap;
+            ThreadMapType   m_map;
+        };
     }
 }
 
+extern havokmud::thread::ThreadMap g_threadMap;
+
+#endif  // __havokmud_thread_ThreadMap__

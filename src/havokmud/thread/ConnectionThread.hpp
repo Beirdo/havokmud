@@ -43,10 +43,7 @@ namespace havokmud {
         class ConnectionThread : public HavokThread
         {
         public:
-            ConnectionThread(int port, int timeout) :
-                    HavokThread("Connection"), m_port(std::to_string(port)),
-                    m_timeout(timeout),
-                    m_ioService(), m_acceptor(m_ioService)  {};
+            ConnectionThread(int port, int timeout);
             ~ConnectionThread()  {};
 
             void handle_stop();
