@@ -34,12 +34,11 @@
 #include "objects/LockingQueue.hpp"
 
 #define LogPrint(level, format, ...) \
-    g_loggingThread->print(level, __FILE__, __LINE__, __FUNCTION__, \
-                           (char *)format, ## __VA_ARGS__)
+    logPrintLine(level, __FILE__, __LINE__, __FUNCTION__, \
+                 (char *)format, ## __VA_ARGS__)
 
 #define LogPrintNoArg(level, string) \
-    g_loggingThread->print(level, __FILE__, __LINE__, __FUNCTION__, \
-                           (char *)string)
+    logPrintLine(level, __FILE__, __LINE__, __FUNCTION__, (char *)string)
 
 namespace havokmud {
     namespace thread {
@@ -54,9 +53,6 @@ namespace havokmud {
             LoggingThread();
             ~LoggingThread()  {};
 
-            void print(int level, std::string file, int line,
-                       std::string function, std::string format, ...);
-
             void add(LoggingSink *sink) { m_sinks.insert(sink); };
             void remove(LoggingSink *sink);
 
@@ -67,11 +63,13 @@ namespace havokmud {
             void outputItem(LoggingItem *item);
 
             std::set<LoggingSink *> m_sinks;
-            havokmud::objects::LockingQueue<LoggingItem *> m_logQueue;
             bool m_abort;
         };
     }
 }
+
+void logPrintLine(int level, std::string file, int line,
+                  std::string function, std::string format, ...);
 
 extern havokmud::thread::LoggingThread *g_loggingThread;
 

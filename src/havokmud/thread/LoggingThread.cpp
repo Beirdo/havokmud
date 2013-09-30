@@ -35,7 +35,8 @@
 #include <syslog.h>
 #endif  // __CYGWIN__
 
-//havokmud::thread::LoggingThread g_loggingThread;
+using havokmud::objects::LoggingItem;
+static havokmud::objects::LockingQueue<LoggingItem *> logQueue;
 
 namespace havokmud {
     namespace thread {
@@ -64,7 +65,7 @@ namespace havokmud {
             }
 
             while (!m_abort) {
-                LoggingItem *item = m_logQueue.get();
+                LoggingItem *item = logQueue.get();
                 if (!item) {
                     continue;
                 }
@@ -74,23 +75,6 @@ namespace havokmud {
 
             std::for_each(m_sinks.begin(), m_sinks.end(),
                     boost::bind(&LoggingThread::remove, this, _1));
-        }
-
-        #define LOGLINE_MAX 1024
-
-        void LoggingThread::print(int level, std::string file, int line,
-                                  std::string function, std::string format, ...)
-        {
-            char message[LOGLINE_MAX+1];
-            va_list arguments;
-
-            va_start(arguments, format);
-            vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
-            va_end(arguments);
-
-            LoggingItem *item = new LoggingItem(level, file, line, function,
-                                                std::string(message));
-            m_logQueue.add(item);
         }
 
         void LoggingThread::outputItem(LoggingItem *item)
@@ -115,7 +99,25 @@ namespace havokmud {
                     break;
                 }
             }
-        };
+        }
     }
 }
+
+#define LOGLINE_MAX 1024
+
+void logPrintLine(int level, std::string file, int line,
+                  std::string function, std::string format, ...)
+{
+    char message[LOGLINE_MAX+1];
+    va_list arguments;
+
+    va_start(arguments, format);
+    vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
+    va_end(arguments);
+
+    LoggingItem *item = new LoggingItem(level, file, line, function,
+                                        std::string(message));
+    logQueue.add(item);
+}
+
 
