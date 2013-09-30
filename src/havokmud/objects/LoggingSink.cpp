@@ -36,6 +36,7 @@
 #include "thread/HavokThread.hpp"
 #include "thread/ThreadMap.hpp"
 #include "thread/LoggingThread.hpp"
+#include "thread/ThreadColors.hpp"
 
 namespace havokmud {
     namespace objects {
@@ -48,11 +49,8 @@ namespace havokmud {
                 m_open(false)
         {
             if (s_bg.empty() || s_fg.empty()) {
-                HavokThread *thread = g_threadMap.findThread(g_mainThreadId);
-                if (thread) {
-                    s_bg = thread->background();
-                    s_fg = thread->foreground();
-                }
+                s_bg = g_defaultColor.background();
+                s_fg = g_defaultColor.foreground();
             }
         }
 
@@ -68,30 +66,14 @@ namespace havokmud {
 
         void StdoutLoggingSink::outputItem(LoggingItem *item)
         {
-            std::string bg;
-            std::string fg;
-
-            if (!m_open && !open())
+            if (!m_open && !open()) {
+                g_loggingThread->remove(this);
                 return;
-
-            HavokThread *thread = g_threadMap.findThread(item->threadId());
-            if (!thread) {
-                bg = "";
-                fg = "";
-            } else {
-                bg = thread->background();
-                fg = thread->foreground();
             }
 
-            char timestamp[22];
-            time_t sec = (time_t)item->timestamp().tv_sec;
-            struct tm ts;
-            localtime_r((const time_t *)&sec, &ts);
-            strftime(timestamp, 21, "%Y-%b-%d %H:%M:%S",
-                     (const struct tm *)&ts);
-
-            std::string line = bg + fg + timestamp + item->message()
-                    + s_bg + s_fg;
+            std::string line = item->background() + item->foreground()
+                    + item->timestamp() + "  " + item->message()
+                    + s_bg + s_fg + "\n";
 
             int result = ::write(m_fd, line.c_str(), line.length());
 
@@ -119,36 +101,17 @@ namespace havokmud {
 
         void FileLoggingSink::outputItem(LoggingItem *item)
         {
-            std::string threadName;
-            std::string bg;
-            std::string fg;
-
-            if (!m_open && !open())
+            if (!m_open && !open()) {
+                g_loggingThread->remove(this);
                 return;
-
-            HavokThread *thread = g_threadMap.findThread(item->threadId());
-            if (!thread) {
-                threadName = "unknown";
-                bg = "";
-                fg = "";
-            } else {
-                threadName = thread->name();
-                bg = thread->background();
-                fg = thread->foreground();
             }
 
-            char timestamp[22];
-            time_t sec = (time_t)item->timestamp().tv_sec;
-            struct tm ts;
-            localtime_r((const time_t *)&sec, &ts);
-            strftime(timestamp, 21, "%Y-%b-%d %H:%M:%S",
-                     (const struct tm *)&ts);
-
-            std::string line = bg + fg + timestamp
-                 + str(boost::format(".%06d") % item->timestamp().tv_usec)
-                 + "  " + threadName + " " + item->file() + ":"
+            std::string line = item->background() + item->foreground()
+                 + item->timestamp()
+                 + str(boost::format(".%06d") % item->timestamp_us())
+                 + "  " + item->threadName() + " " + item->file() + ":"
                  + std::to_string(item->line()) + " (" + item->function()
-                 + ") - " + item->message() + s_bg + s_fg;
+                 + ") - " + item->message() + s_bg + s_fg + "\n";
 
             int result = ::write(m_fd, line.c_str(), line.length());
 
@@ -207,8 +170,10 @@ namespace havokmud {
 
         void SyslogLoggingSink::outputItem(LoggingItem *item)
         {
-            if (!m_open && !open())
+            if (!m_open && !open()) {
+                g_loggingThread->remove(this);
                 return;
+            }
 
             ::syslog(item->level(), "%s", item->message().c_str());
         }

@@ -28,30 +28,58 @@
 #include <string>
 #include <boost/thread.hpp>
 
+#include "thread/ThreadColors.hpp"
+#include "thread/HavokThread.hpp"
+
 namespace havokmud {
     namespace objects {
+
+        using havokmud::thread::HavokThread;
 
         class LoggingItem
         {
         public:
             LoggingItem(int level, std::string &file, int line,
                         std::string &function, std::string message) :
-                    m_level(level), m_file(file), m_function(function),
-                    m_message(message),
-                    m_threadId(boost::this_thread::get_id())
+                    m_level(level), m_file(file), m_line(line),
+                    m_function(function), m_message(message)
             {
-                gettimeofday(&m_timestamp, NULL);
+                gettimeofday(&m_epochtime, NULL);
+
+                char timestamp[22];
+                time_t sec = (time_t)m_epochtime.tv_sec;
+                struct tm ts;
+                localtime_r((const time_t *)&sec, &ts);
+                strftime(timestamp, 21, "%Y-%b-%d %H:%M:%S",
+                         (const struct tm *)&ts);
+                m_timestamp = std::string(timestamp);
+                m_timestamp_us = m_epochtime.tv_usec;
+
+                boost::thread::id threadId = boost::this_thread::get_id();
+                HavokThread *thread = g_threadMap.findThread(threadId);
+                if (!thread) {
+                    m_threadName = "unknown";
+                    m_background = g_defaultColor.background();
+                    m_foreground = g_defaultColor.foreground();
+                } else {
+                    m_threadName = thread->name();
+                    m_background = thread->background();
+                    m_foreground = thread->foreground();
+                }
             };
 
             ~LoggingItem()  {};
 
             int level() const  { return m_level; };
-            std::string file() const  { return m_file; };
+            const std::string &file() const  { return m_file; };
             int line() const  { return m_line; };
-            std::string function() const  { return m_function; };
-            std::string message() const  { return m_message; };
-            const boost::thread::id &threadId() const  { return m_threadId; };
-            struct timeval timestamp() const  { return m_timestamp; };
+            const std::string &function() const  { return m_function; };
+            const std::string &message() const  { return m_message; };
+            const std::string &timestamp() const  { return m_timestamp; };
+            int timestamp_us() const { return m_timestamp_us; };
+            const std::string &threadName() const  { return m_threadName; };
+            const std::string &background() const  { return m_background; };
+            const std::string &foreground() const  { return m_foreground; };
 
         private:
             int                 m_level;
@@ -59,8 +87,12 @@ namespace havokmud {
             int                 m_line;
             std::string         m_function;
             std::string         m_message;
-            boost::thread::id   m_threadId;
-            struct timeval      m_timestamp;
+            struct timeval      m_epochtime;
+            std::string         m_timestamp;
+            int                 m_timestamp_us;
+            std::string         m_threadName;
+            std::string         m_background;
+            std::string         m_foreground;
         };
     }
 }

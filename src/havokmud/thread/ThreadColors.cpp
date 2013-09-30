@@ -23,9 +23,12 @@
  */
 
 #include <string>
+#include <iostream>
 
 #include "thread/ThreadColors.hpp"
 #include "util/misc.hpp"
+
+havokmud::thread::ThreadColors g_defaultColor(0, 1);
 
 namespace havokmud {
     namespace thread {
@@ -44,7 +47,6 @@ namespace havokmud {
                 NELEMS(ThreadColors::s_badColors);
 
         Color ThreadColors::s_lastColor = Color(0, 0);
-        ThreadColors g_defaultColor(0, 1);
 
         ThreadColors::ThreadColors()
         {

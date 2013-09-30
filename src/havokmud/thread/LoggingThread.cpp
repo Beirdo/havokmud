@@ -79,8 +79,10 @@ namespace havokmud {
 
         void LoggingThread::outputItem(LoggingItem *item)
         {
-            std::for_each(m_sinks.begin(), m_sinks.end(),
-                    boost::bind(&LoggingSink::outputItem, _1, item));
+            if (item->level() <= g_LogLevel) {
+                std::for_each(m_sinks.begin(), m_sinks.end(),
+                        boost::bind(&LoggingSink::outputItem, _1, item));
+            }
             delete item;
         }
 
@@ -102,6 +104,8 @@ namespace havokmud {
         }
     }
 }
+
+LogLevel g_LogLevel = LG_DEBUG;
 
 #define LOGLINE_MAX 1024
 

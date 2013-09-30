@@ -28,36 +28,37 @@
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
 #include <queue>
+#include <iostream>
 
 namespace havokmud {
     namespace objects {
 
         template <class QueueItem>
-        class LockingQueue : private std::queue<QueueItem>
+        class LockingQueue
         {
         public:
             void add(QueueItem item)
             {
-                {
-                    boost::lock_guard<boost::mutex> lock(m_mutex);
-                    this->push(item);
-                }
-
-                m_cond.notify_one();
+                boost::mutex::scoped_lock lock(m_mutex);
+                m_queue.push(item);
+                m_cond.notify_all();
             };
 
             QueueItem get()
             {
-                boost::unique_lock<boost::mutex> lock(m_mutex);
-                while (this->empty())
+                boost::mutex::scoped_lock lock(m_mutex);
+                while (m_queue.empty())
                 {
                     m_cond.wait(lock);
                 }
 
-                QueueItem item = this->front();
-                this->pop();
+                QueueItem item = m_queue.front();
+                m_queue.pop();
+
+                return item;
             };
         private:
+            std::queue<QueueItem> m_queue;
             boost::condition_variable m_cond;
             boost::mutex m_mutex;
         };

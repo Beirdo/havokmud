@@ -34,11 +34,8 @@
 #include "objects/LockingQueue.hpp"
 
 #define LogPrint(level, format, ...) \
-    logPrintLine(level, __FILE__, __LINE__, __FUNCTION__, \
+    logPrintLine(level, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
                  (char *)format, ## __VA_ARGS__)
-
-#define LogPrintNoArg(level, string) \
-    logPrintLine(level, __FILE__, __LINE__, __FUNCTION__, (char *)string)
 
 namespace havokmud {
     namespace thread {

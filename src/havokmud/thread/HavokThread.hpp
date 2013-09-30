@@ -46,13 +46,13 @@ namespace havokmud {
             }
 
             const std::string &name() const { return m_name; };
-            const boost::thread::id id() const { return m_id; };
+            const boost::thread::id &id() const { return m_id; };
             const int index() const { return m_index; };
 
             const std::string &foreground() const
                 { return m_color.foreground(); };
             const std::string &background() const
-                { return m_color.foreground(); };
+                { return m_color.background(); };
             const int foregroundNum() const
                 { return m_color.foregroundNum(); };
             const int backgroundNum() const
@@ -70,9 +70,7 @@ namespace havokmud {
                          boost::bind(&ThreadClass::start,
                                      dynamic_cast<ThreadClass *>(this)));
                 //m_joiner = boost::thread_joiner(m_thread);
-                m_id = boost::this_thread::get_id();
-                
-                m_color = ThreadColors();
+                m_id = m_thread.get_id();
                 m_index = g_threadMap.addThread(this);
             };
 

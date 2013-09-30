@@ -29,6 +29,7 @@
 #include "objects/Connection.hpp"
 #include "objects/ConnectionManager.hpp"
 #include "util/misc.hpp"
+#include "thread/LoggingThread.hpp"
 
 namespace havokmud {
     namespace objects {
@@ -61,7 +62,7 @@ namespace havokmud {
 
         void Connection::start()
         {
-            std::cout << "Connection::start" << std::endl;
+            LogPrint(LG_INFO, "Connection::start");
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
@@ -72,7 +73,7 @@ namespace havokmud {
 
         void Connection::stop()
         {
-            std::cout << "Connection::stop" << std::endl;
+            LogPrint(LG_INFO, "Connection::stop");
             m_socket.close();
         }
 
@@ -98,11 +99,11 @@ namespace havokmud {
                 do {
                     std::string line = prv_splitLines(inBuffer);
                     if (line.empty()) {
-                        std::cout << "done splitting" << std::endl;
+                        LogPrint(LG_INFO, "done splitting");
                         break;
                     }
 
-                    std::cout << "Split a line: " << line << std::endl;
+                    LogPrint(LG_INFO, "Split a line: %s", line.c_str());
                     // Dispatch the line
                     // parse(line);
                 } while (true);
@@ -170,7 +171,7 @@ namespace havokmud {
         {
             char *line = boost::asio::buffer_cast<char *>(inBuffer);
             int length = strlen(line);
-            //std::cout << "inBuffer length: " << length << std::endl;
+            //LogPrint(LG_DEBUG, "inBuffer length: %d", length);
             boost::cmatch match;
             if (boost::regex_search(line, match, s_lineRegex)) {
                 std::string inputLine(match[1].first, match[1].second);
@@ -179,12 +180,12 @@ namespace havokmud {
                 if (length > offset) {
                     inBuffer = inBuffer + offset;
                     length -= offset;
-                    //std::cout << "Match: " << offset << std::endl;
+                    //LogPrint(LG_DEBUG, "Match: %d", offset);
                 } else {
                     inBuffer = boost::asio::buffer((void *)"", 0);
                     length = 0;
                 }
-                //std::cout << "inBuffer length: " << length << std::endl;
+                //LogPrint(LG_DEBUG, "inBuffer length: %d", length);
                 return inputLine;
             }
 

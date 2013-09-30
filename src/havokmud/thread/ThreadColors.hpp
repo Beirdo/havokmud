@@ -79,9 +79,9 @@ namespace havokmud {
 
             Color   m_color;
         };
-
-        extern ThreadColors g_defaultColor;
     }
 }
+
+extern havokmud::thread::ThreadColors g_defaultColor;
 
 #endif  // __havokmud_thread_ThreadColors__

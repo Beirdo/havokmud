@@ -25,6 +25,7 @@
 #include "thread/HavokThread.hpp"
 #include "thread/ThreadMap.hpp"
 #include "thread/LoggingThread.hpp"
+#include "thread/ThreadColors.hpp"
 
 havokmud::thread::ThreadMap g_threadMap;
 
@@ -36,6 +37,10 @@ namespace havokmud {
                 return -1;
 
             int index = m_nextId++;
+            m_idMap.insert(std::pair<int, boost::thread::id>(index,
+                                                             thread->id()));
+            m_map.insert(std::pair<int, HavokThread *>(index, thread));
+
             LogPrint(LG_INFO, "Added Thread %d as \"%s%s%s%s%s\" (%d/%d)",
                      index,
                      thread->background().c_str(), thread->foreground().c_str(),
@@ -43,10 +48,6 @@ namespace havokmud {
                      g_defaultColor.background().c_str(),
                      g_defaultColor.foreground().c_str(),
                      thread->backgroundNum(), thread->foregroundNum());
-
-            m_idMap.insert(std::pair<int, boost::thread::id>(index,
-                                                             thread->id()));
-            m_map.insert(std::pair<int, HavokThread *>(index, thread));
 
             return index;
         }
@@ -56,11 +57,11 @@ namespace havokmud {
             if (!thread)
                 return;
 
-            m_map.erase(thread->index());
-            m_idMap.erase(thread->index());
-
             LogPrint(LG_INFO, "Removed thread  %d: %s", thread->index(),
                      thread->name().c_str());
+
+            m_map.erase(thread->index());
+            m_idMap.erase(thread->index());
         }
 
         HavokThread *ThreadMap::findThread(boost::thread::id threadId)

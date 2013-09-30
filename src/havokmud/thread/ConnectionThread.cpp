@@ -28,6 +28,7 @@
 #include "objects/Connection.hpp"
 #include "thread/ConnectionThread.hpp"
 #include "objects/ConnectionManager.hpp"
+#include "thread/LoggingThread.hpp"
 
 namespace havokmud {
     namespace thread {
@@ -53,7 +54,7 @@ namespace havokmud {
 
             prv_start_accept();
 
-            std::cout << "Listening on 0.0.0.0: " << m_port << std::endl;
+            LogPrint(LG_INFO, "Listening on 0.0.0.0: %s", m_port.c_str());
 
             m_ioService.run();
         }
@@ -73,7 +74,7 @@ namespace havokmud {
             }
 
             if (!e) {
-                std::cout << "New connection in ConnectionThread" << std::endl;
+                LogPrint(LG_INFO, "New connection in ConnectionThread");
                 havokmud::objects::g_connectionManager.start(m_newConnection);
             }
 
