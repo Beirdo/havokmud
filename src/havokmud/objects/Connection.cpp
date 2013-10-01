@@ -67,7 +67,8 @@ namespace havokmud {
                                     shared_from_this(), _1));
             }
 
-            LogPrint(LG_INFO, "Connection::start");
+            LogPrint(LG_INFO, "Connection::start: %s (%s)", m_ip.c_str(),
+                     m_hostname.c_str());
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
@@ -78,7 +79,8 @@ namespace havokmud {
 
         void Connection::stop()
         {
-            LogPrint(LG_INFO, "Connection::stop");
+            LogPrint(LG_INFO, "Connection::stop: %s (%s)", m_ip.c_str(),
+                     m_hostname.c_str());
             m_socket.close();
         }
 
