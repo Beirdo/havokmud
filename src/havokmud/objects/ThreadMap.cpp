@@ -24,7 +24,8 @@
 
 #include "thread/HavokThread.hpp"
 #include "objects/ThreadMap.hpp"
-#include "thread/LoggingThread.hpp"
+//#include "thread/LoggingThread.hpp"
+#include "corefunc/Logging.hpp"
 #include "objects/ThreadColors.hpp"
 
 havokmud::objects::ThreadMap g_threadMap;

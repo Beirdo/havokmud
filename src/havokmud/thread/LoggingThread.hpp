@@ -61,5 +61,6 @@ namespace havokmud {
 }
 
 extern havokmud::objects::LockingQueue<havokmud::objects::LoggingItem *> g_logQueue;
+extern havokmud::thread::LoggingThread *g_loggingThread;
 
 #endif  // __havokmud_thread_LoggingThread__

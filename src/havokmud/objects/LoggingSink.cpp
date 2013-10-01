@@ -35,6 +35,7 @@
 #include "objects/LoggingSink.hpp"
 #include "objects/ThreadMap.hpp"
 #include "thread/LoggingThread.hpp"
+#include "corefunc/Logging.hpp"
 #include "objects/ThreadColors.hpp"
 
 namespace havokmud {

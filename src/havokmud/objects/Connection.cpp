@@ -26,6 +26,7 @@
 #include <cstring>
 #include <boost/asio/error.hpp>
 
+#include "thread/ResolveThread.hpp"
 #include "objects/Connection.hpp"
 #include "objects/ConnectionManager.hpp"
 #include "util/misc.hpp"
@@ -47,21 +48,25 @@ namespace havokmud {
             // Force a power of two size
             assert(IS_POWER_2(inBufferSize));
 
-            boost::system::error_code ec;
-            tcp::endpoint endpoint = m_socket.remote_endpoint(ec);
-            if (!ec) {
-                // Send off the hostname for resolution
-                //g_ResolveThread.resolve(endpoint,
-                //        boost::bind(&Connection::setHostname,
-                //                    shared_from_this(), _1));
-            }
-
             // Set writing state to false
             m_writing = false;
         }
 
         void Connection::start()
         {
+            // Resolve the IP
+            boost::system::error_code ec;
+            tcp::endpoint endpoint = m_socket.remote_endpoint(ec);
+            if (!ec && g_resolveThread) {
+                boost::asio::ip::address ip(endpoint.address());
+                prv_set_ip(ip.to_string());
+
+                // Send off the hostname for resolution
+                g_resolveThread->resolve(endpoint,
+                        boost::bind(&Connection::prv_handle_resolve,
+                                    shared_from_this(), _1));
+            }
+
             LogPrint(LG_INFO, "Connection::start");
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),

@@ -2,10 +2,12 @@
 #include "thread/HavokThread.hpp"
 #include "thread/ConnectionThread.hpp"
 #include "thread/LoggingThread.hpp"
+#include "thread/ResolveThread.hpp"
 
 boost::thread::id g_mainThreadId;
 bool g_debug = true;
 havokmud::thread::LoggingThread *g_loggingThread;
+havokmud::thread::ResolveThread *g_resolveThread;
 
 namespace havokmud {
     namespace thread {
@@ -29,6 +31,7 @@ namespace havokmud {
             g_mainThreadId = boost::this_thread::get_id();
 
             g_loggingThread = new havokmud::thread::LoggingThread();
+            g_resolveThread = new havokmud::thread::ResolveThread();
 
             havokmud::thread::ConnectionThread connectionThread(1234, 1000);
 

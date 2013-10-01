@@ -66,8 +66,8 @@ namespace havokmud {
             void send(boost::asio::const_buffer buffer);
 
         private:
-
-            void prv_setHostname(std::string hostname)
+            void prv_set_ip(std::string ip)  { m_ip = ip; };
+            void prv_handle_resolve(std::string hostname)
                     { m_hostname = hostname; };
             void prv_sendBuffers();
 
@@ -80,6 +80,7 @@ namespace havokmud {
             unsigned char                  *m_inBufRaw;
             boost::asio::mutable_buffer     m_inBuf;
             std::vector<boost::asio::const_buffer>  m_outBufVector;
+            std::string                     m_ip;
             std::string                     m_hostname;
 
             bool                            m_writing;
