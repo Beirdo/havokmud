@@ -1,5 +1,5 @@
 DIR = corefunc
-OBJS = Logging.o
+OBJS = Logging.o LoginStateFunctions.o LoginStateMachine.o
 
 include ../Makefile.common
 

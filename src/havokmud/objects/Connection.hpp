@@ -63,7 +63,9 @@ namespace havokmud {
                              std::size_t bytes_transferred);
             void handle_write(const boost::system::error_code &e);
 
+            void send(char *format, ...);
             void send(boost::asio::const_buffer buffer);
+            void sendRaw(char *data, int length);
 
         private:
             void prv_set_ip(std::string ip)  { m_ip = ip; };
