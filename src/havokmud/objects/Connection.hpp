@@ -37,7 +37,9 @@ namespace havokmud {
 
         #define MAX_BUFSIZE 8192
 
+        class Account;
         class Player;
+        class LoginStateMachine;
 
         using boost::asio::ip::tcp;
 
@@ -51,13 +53,19 @@ namespace havokmud {
                        unsigned int inBufferSize = MAX_BUFSIZE);
             ~Connection()  {};
 
-            void set_player(Player *player_)  { m_player = player_; };
+            void setPlayer(Player *player_)  { m_player = player_; };
+            void setAccount(Account *account_)  { m_account = account_; };
+            void setLoginStateMachine(LoginStateMachine *sm)
+                    { m_loginStateMachine = sm; };
 
             void start();
             void stop();
 
             tcp::socket &socket()  { return m_socket; };
             Player *player() const  { return m_player; };
+            Account *account() const  { return m_account; };
+            LoginStateMachine *loginStateMachine() const
+                    { return m_loginStateMachine; };
 
             void handle_read(const boost::system::error_code &e,
                              std::size_t bytes_transferred);
@@ -77,6 +85,9 @@ namespace havokmud {
 
             tcp::socket                     m_socket;
             Player                         *m_player;
+            Account                        *m_account;
+            LoginStateMachine              *m_loginStateMachine;
+
             boost::asio::const_buffer       m_inBufRemain;
             int                             m_inBufSize;
             unsigned char                  *m_inBufRaw;

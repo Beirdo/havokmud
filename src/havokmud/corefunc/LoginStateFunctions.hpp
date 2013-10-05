@@ -79,7 +79,6 @@ namespace havokmud {
         const std::string &do_state_get_new_password(const std::string &line);
         const std::string &do_state_confirm_new_password(const std::string &line);
         const std::string &do_state_enter_confirm_code(const std::string &line);
-        const std::string &do_state_resend_confirm_email(const std::string &line);
         const std::string &do_state_show_creation_menu(const std::string &line);
         const std::string &do_state_choose_name(const std::string &line);
         const std::string &do_state_choose_sex(const std::string &line);

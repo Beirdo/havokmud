@@ -59,7 +59,7 @@ namespace havokmud {
             { "enter confirm code", enter_state_enter_confirm_code,
               do_state_enter_confirm_code },
             { "resend confirm email", enter_state_resend_confirm_email,
-              do_state_resend_confirm_email },
+              boost::none },
             { "show creation menu", enter_state_show_creation_menu,
               do_state_show_creation_menu },
             { "choose name", enter_state_choose_name, do_state_choose_name },
