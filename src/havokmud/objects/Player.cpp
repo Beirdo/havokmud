@@ -41,9 +41,18 @@ namespace havokmud {
             return NULL;
         }
 
+        void Player::load()
+        {
+            // Database load of player
+        }
+
         void Player::save()
         {
             // Database save of player
+        }
+
+        void Player::rollAbilities()
+        {
         }
 
     }

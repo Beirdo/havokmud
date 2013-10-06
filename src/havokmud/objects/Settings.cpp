@@ -33,7 +33,7 @@ namespace havokmud {
             load(std::string());
         }
 
-        bool Settings::load(const std::String &setting)
+        bool Settings::load(const std::string &setting)
         {
             // Database load of setting
             return false;

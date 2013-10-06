@@ -41,7 +41,7 @@ namespace havokmud {
         public:
             Player(const std::string &name, int accountId) : m_id(s_nextId++),
                     m_accountId(accountId), m_name(name), m_attributes(this) {};
-            ~Player();
+            ~Player()  {};
 
             static Player *findPlayer(const std::string &name);
             static Player *findPlayer(int id);

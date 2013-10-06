@@ -232,7 +232,7 @@ void opiemd5final(unsigned char *digest, void *ctx)
 
   /* Zeroize sensitive information. */
   memset((void *) context, 0, sizeof(*context));
-  memfree(ctx);
+  free(ctx);
 }
 
 /* MD5 basic transformation. Transforms state based on block.  */

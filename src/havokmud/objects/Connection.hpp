@@ -34,11 +34,14 @@
 
 #include "objects/Account.hpp"
 #include "objects/Player.hpp"
-#include "thread/InputThread.hpp"
 
 namespace havokmud {
     namespace corefunc {
         class LoginStateMachine;
+    }
+
+    namespace thread {
+        class InputThread;
     }
 
     namespace objects {

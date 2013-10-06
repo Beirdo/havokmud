@@ -23,6 +23,7 @@
  */
 
 #include <iostream>
+#include <stdarg.h>
 #include <cstring>
 #include <boost/asio/error.hpp>
 
@@ -31,6 +32,7 @@
 #include "objects/ConnectionManager.hpp"
 #include "util/misc.hpp"
 #include "corefunc/Logging.hpp"
+#include "thread/InputThread.hpp"
 #include "thread/LoginThread.hpp"
 #include "thread/PlayingThread.hpp"
 
@@ -46,8 +48,10 @@ namespace havokmud {
         boost::regex Connection::s_lineRegex("[\\s\\n\\r]*(.+?)\\s*$",
                 boost::regex_constants::no_mod_s);
 
-        unsigned char echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
-        unsigned char echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
+        unsigned char Connection::echo_on[] =
+                { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
+        unsigned char Connection::echo_off[] =
+                { IAC, WILL, TELOPT_ECHO, '\0' };
 
         Connection::Connection(boost::asio::io_service &io_service,
                                unsigned int inBufferSize) :
@@ -173,6 +177,26 @@ namespace havokmud {
             if (!m_writing) {
                 prv_sendBuffers();
             }
+        }
+
+#define LOGLINE_MAX 1024
+
+        void Connection::send(std::string format, ...)
+        {
+            char message[LOGLINE_MAX+1];
+            va_list arguments;
+
+            va_start(arguments, format);
+            vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
+            va_end(arguments);
+
+            sendRaw((const unsigned char *)message, strlen(message));
+        }
+
+        void Connection::sendRaw(const unsigned char *data, int length)
+        {
+            boost::asio::const_buffer buffer((void *)data, length);
+            send(buffer);
         }
 
         void Connection::prv_sendBuffers()

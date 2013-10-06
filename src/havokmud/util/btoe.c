@@ -2193,7 +2193,7 @@ int opieetob ( char *out, char *e )
   rval = 1;
 
 opiebtoeret:
-  memfree(input);
+  free(input);
   return rval;
 }
 

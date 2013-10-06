@@ -22,12 +22,13 @@
  * @brief Account object
  */
 
+#include <openssl/md5.h>
+
 #include "objects/Account.hpp"
 #include "objects/Settings.hpp"
 #include "corefunc/Logging.hpp"
 #include "util/md5.hpp"
 
-#include <openssl/md5.h>
 #include <sys/time.h>
 
 namespace havokmud {
@@ -49,6 +50,10 @@ namespace havokmud {
         void Account::save()
         {
             // Database save of account/players
+        }
+
+        void Account::addPlayer(Player *player)
+        {
         }
 
         void Account::createConfirmCode()

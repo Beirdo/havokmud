@@ -55,7 +55,7 @@ namespace havokmud {
                     m_abort(false)  {};
             virtual ~InputThread()  {};
 
-            virtual void start();
+            virtual void start() = 0;
             void handle_stop();
 
             void enqueueInput(Connection *connection, const std::string &line);

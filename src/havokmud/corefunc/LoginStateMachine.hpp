@@ -44,8 +44,9 @@ namespace havokmud {
         {
         public:
             LoginState(std::string name,
-                       LoginEntryFunction enterState,
-                       LoginStateFunction doState);
+                       LoginEntryFunction enterState_,
+                       LoginStateFunction doState_) : m_name(name),
+                    m_enterState(enterState_), m_doState(doState_)  {};
             ~LoginState()  {};
 
             int id() const  { return m_id; };

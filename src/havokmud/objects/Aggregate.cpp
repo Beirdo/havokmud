@@ -98,7 +98,7 @@ namespace havokmud {
             }
         }
 
-        unsigned int to_unsigned_int(boost::any value)
+        unsigned int Aggregate::to_unsigned_int(boost::any value)
         {
             try {
                 unsigned int retValue = boost::any_cast<unsigned int>(value);
@@ -109,7 +109,7 @@ namespace havokmud {
             }
         }
 
-        bool to_bool(boost::any value)
+        bool Aggregate::to_bool(boost::any value)
         {
             try {
                 bool retValue = boost::any_cast<bool>(value);
@@ -117,6 +117,17 @@ namespace havokmud {
             }
             catch(const boost::bad_any_cast &) {
                 return false;
+            }
+        }
+
+        std::string Aggregate::to_string(boost::any value)
+        {
+            try {
+                std::string retValue = boost::any_cast<std::string>(value);
+                return retValue;
+            }
+            catch(const boost::bad_any_cast &) {
+                return std::string();
             }
         }
 

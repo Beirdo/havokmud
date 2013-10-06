@@ -28,9 +28,16 @@
 #include "corefunc/Logging.hpp"
 #include "thread/InputThread.hpp"
 #include "corefunc/LoginStateMachine.hpp"
+#include "objects/Connection.hpp"
 
 namespace havokmud {
+    namespace objects {
+        class Connection;
+    }
+
     namespace thread {
+
+        using havokmud::objects::Connection;
 
         void InputThread::handle_stop()
         {
