@@ -27,6 +27,7 @@
 
 #include "objects/PlayerAttributes.hpp"
 #include <string>
+#include <map>
 
 namespace havokmud {
     namespace objects {
@@ -50,8 +51,12 @@ namespace havokmud {
 
             int id() const  { return m_id; };
             int accountId() const  { return m_accountId; };
+            const std::string &name() const  { return m_name; };
 
-            PlayerAttributes &attributes() const  { return m_attributes; };
+            void setReroll(int rolls);
+
+            PlayerAttributes &attributes()  { return m_attributes; };
+            void rollAbilities();
 
         private:
             int m_id;

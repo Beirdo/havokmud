@@ -31,6 +31,7 @@
 namespace havokmud {
     namespace objects {
         class Connection;
+        class Player;
 
         class Account
         {
@@ -42,6 +43,8 @@ namespace havokmud {
             static Account *findAccount(const std::string &email);
             static Account *findAccount(int id);
             void save();
+
+            void addPlayer(Player *player);
 
             int id() const  { return m_id; };
             void setEmail(const std::string &email)  { m_email = email; };

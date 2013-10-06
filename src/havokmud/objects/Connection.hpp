@@ -32,14 +32,20 @@
 #include <boost/regex.hpp>
 #include <string>
 
+#include "objects/Account.hpp"
+#include "objects/Player.hpp"
+
 namespace havokmud {
+    namespace corefunc {
+        class LoginStateMachine;
+    }
+
     namespace objects {
 
         #define MAX_BUFSIZE 8192
 
         class Account;
         class Player;
-        class LoginStateMachine;
 
         using boost::asio::ip::tcp;
 
@@ -49,13 +55,16 @@ namespace havokmud {
         public:
             typedef boost::shared_ptr<Connection> pointer;
 
+            static unsigned char echo_on[];
+            static unsigned char echo_off[];
+
             Connection(boost::asio::io_service &io_service,
                        unsigned int inBufferSize = MAX_BUFSIZE);
             ~Connection()  {};
 
             void setPlayer(Player *player_)  { m_player = player_; };
             void setAccount(Account *account_)  { m_account = account_; };
-            void setLoginStateMachine(LoginStateMachine *sm)
+            void setLoginStateMachine(havokmud::corefunc::LoginStateMachine *sm)
                     { m_loginStateMachine = sm; };
 
             void start();
@@ -64,16 +73,18 @@ namespace havokmud {
             tcp::socket &socket()  { return m_socket; };
             Player *player() const  { return m_player; };
             Account *account() const  { return m_account; };
-            LoginStateMachine *loginStateMachine() const
+            havokmud::corefunc::LoginStateMachine *loginStateMachine() const
                     { return m_loginStateMachine; };
 
             void handle_read(const boost::system::error_code &e,
                              std::size_t bytes_transferred);
             void handle_write(const boost::system::error_code &e);
 
-            void send(char *format, ...);
+            void send(std::string format, ...);
             void send(boost::asio::const_buffer buffer);
-            void sendRaw(char *data, int length);
+            void sendRaw(const unsigned char *data, int length);
+
+            const std::string &hostname() const { return m_hostname; };
 
         private:
             void prv_set_ip(std::string ip)  { m_ip = ip; };
@@ -86,7 +97,7 @@ namespace havokmud {
             tcp::socket                     m_socket;
             Player                         *m_player;
             Account                        *m_account;
-            LoginStateMachine              *m_loginStateMachine;
+            havokmud::corefunc::LoginStateMachine *m_loginStateMachine;
 
             boost::asio::const_buffer       m_inBufRemain;
             int                             m_inBufSize;

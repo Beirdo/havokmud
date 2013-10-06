@@ -32,7 +32,7 @@
 #include <sstream>
 #include <string>
 
-#include "objects/PlayerAttributes.hpp"
+#include "objects/Aggregate.hpp"
 
 namespace havokmud {
     namespace objects {
@@ -49,7 +49,7 @@ namespace havokmud {
             void load();
             void save();
 
-            void remove(const std::string &attribs,
+            void remove(const std::string &attrib,
                         const std::string &source)
             {
                 std::string attrKey   = attrib + "." + source;
@@ -63,12 +63,19 @@ namespace havokmud {
             void set(const std::string &attrib,
                      const std::string &source, T value)
             {
-                boost::any  mapValue  = value;
+                boost::any  anyValue  = value;
+                std::string mapValue;
+                try {
+                    mapValue = boost::any_cast<std::string>(anyValue);
+                }
+                catch(const boost::bad_any_cast &) {
+                }
+
                 std::string attrKey   = attrib + "." + source;
                 std::string sourceKey = source + "." + attrib;
 
-                m_attributeTree.put<boost::any>(attrKey, mapValue);
-                m_attributeSourceTree.put<boost::any>(sourceKey, mapValue);
+                m_attributeTree.put(attrKey, mapValue);
+                m_attributeSourceTree.put(sourceKey, mapValue);
             };
 
             template <class T>
@@ -76,15 +83,16 @@ namespace havokmud {
                   const std::string &source)
             {
                 if (source.empty()) {
-                    return getAggregate(attrib);
+                    return getAggregate<T>(attrib);
                 }
 
                 std::string attrKey = attrib + "." + source;
-                boost::any mapValue =
-                        m_attributeTree.get<boost::any>(attrKey, boost::any());
+                std::string mapValue =
+                      m_attributeTree.get<std::string>(attrKey, std::string());
 
                 try {
-                    T value = boost::any_cast<T>(mapValue);
+                    boost::any anyValue = mapValue;
+                    T value = boost::any_cast<T>(anyValue);
                     return value;
                 }
                 catch(const boost::bad_any_cast &) {
@@ -97,14 +105,17 @@ namespace havokmud {
             {
                 std::string aggOpText = get<std::string>(attrib, "aggregate");
                 if (aggOpText.empty())
-                    return T();
+                    aggOpText = "+";
 
                 Aggregate agg(aggOpText);
                 ptree attribTree = m_attributeTree.get_child(attrib);
 
+                agg.setCore(attribTree.get<std::string>("core-pc",
+                                                        std::string()));
+
                 BOOST_FOREACH(ptree::value_type &v, attribTree) {
-                    if (v.first != "aggregate") {
-                        agg.aggregate(v.second.data);
+                    if (v.first != "aggregate" && v.first != "core-pc") {
+                        agg.aggregate(v.second.data());
                     }
                 }
 

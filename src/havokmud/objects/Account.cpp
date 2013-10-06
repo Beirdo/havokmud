@@ -23,7 +23,12 @@
  */
 
 #include "objects/Account.hpp"
+#include "objects/Settings.hpp"
 #include "corefunc/Logging.hpp"
+#include "util/md5.hpp"
+
+#include <openssl/md5.h>
+#include <sys/time.h>
 
 namespace havokmud {
     namespace objects {
@@ -57,7 +62,7 @@ namespace havokmud {
             std::string     confcode;
             char           *temp;
 
-            url = g_protobuf.get("webBaseUrl");
+            url = g_settings.get<std::string>("webBaseUrl");
 
             if( m_confirmCode.empty() ) {
                 /* New email, create new confcode */
@@ -72,7 +77,7 @@ namespace havokmud {
                 opiemd5final((unsigned char *)digest, ctx);
 
                 /* Convert the MD5 digest into English words */
-                unsigned char words[40];
+                char words[40];
                 opiebtoe(words, digest);
 
                 m_confirmCode = std::string(words);
@@ -80,11 +85,11 @@ namespace havokmud {
                 save();
             }
 
-            if( url ) {
+            if( !url.empty() ) {
                 confcode = std::string(m_confirmCode);
-                for( temp = confcode; temp && *temp; temp++ ) {
-                    if( *temp == ' ' ) {
-                        *temp = '+';
+                for(int i = 0; i < confcode.length(); i++) {
+                    if( confcode[i] == ' ' ) {
+                        confcode[i] = '+';
                     }
                 }
 
@@ -102,28 +107,29 @@ namespace havokmud {
                      "Please note that the order of the words is important, but not "
                      "the upper/lower\r\n"
                      "case of the letters.\r\n\r\n"
-                   + (url ? urlText : "") + "Thanks.\r\n\r\n";
+                   + (url.empty() ? "" : urlText) + "Thanks.\r\n\r\n";
 
-            send_email(m_email, "Havokmud confirmation email", buffer.c_str());
+            // TODO
+            // send_email(m_email, "Havokmud confirmation email", buffer.c_str());
         }
 
         std::string Account::hashPassword(const std::string &password)
         {
-            static char     hex[16] = "0123456789abcdef";
+            static char     hex[] = "0123456789abcdef";
             unsigned char   md[16];
             
-            if( email.empty() || passwd.empty() ) {
+            if( m_email.empty() || password.empty() ) {
                 return std::string();
             }
 
-            std::string realm = g_protobuf.get("gameRealm");
+            std::string realm = g_settings.get<std::string>("gameRealm");
             if (realm.empty()) {
                 realm = std::string("havokmud");
             }
 
-            std::string buf = m_email + ":" + realm + ":" + passwd;
+            std::string buf = m_email + ":" + realm + ":" + password;
 
-            MD5(buf.c_str(), buf.length(), md);
+            MD5((const unsigned char *)buf.c_str(), buf.length(), md);
 
             std::string outbuf;
             for( int i = 0; i < 16; i++ ) {

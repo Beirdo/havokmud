@@ -25,15 +25,17 @@
 #ifndef __havokmud_corefunc_LoginStateMachine__
 #define __havokmud_corefunc_LoginStateMachine__
 
+#include <boost/function.hpp>
 #include "objects/Connection.hpp"
+#include <string>
 
 namespace havokmud {
     namespace corefunc {
         using havokmud::objects::Connection;
 
-        typedef boost::function<void (Connection *)> LoginEntryFunction;
-        typedef boost::function<const std::string &(Connection *,
-                const std::string &)> LoginStateFunction;
+        typedef boost::function<void ()> LoginEntryFunction;
+        typedef boost::function<const std::string (const std::string &)>
+                LoginStateFunction;
 
         class LoginStateMachine;
 
@@ -41,14 +43,14 @@ namespace havokmud {
         {
         public:
             LoginState(std::string name,
-                       boost::optional<LoginEntryFunction> enterState,
-                       boost::optional<LoginStateFunction> doState);
+                       LoginEntryFunction enterState,
+                       LoginStateFunction doState);
             ~LoginState()  {};
 
             int id() const  { return m_id; };
             const std::string &name() const  { return m_name; };
-            void enter() const  { if (m_enterState)  m_enterState(); };
-            const std::string &do(std::string line) const
+            void enter()  { if (m_enterState)  m_enterState(); };
+            const std::string doState(std::string line)
             { 
                 if (m_doState) 
                     return m_doState(line);
@@ -61,12 +63,12 @@ namespace havokmud {
                     { m_connection = connection; };
 
         private:
-            std::shared_ptr<LoginStateMachiner> m_machine;
+            std::shared_ptr<LoginStateMachine> m_machine;
             havokmud::objects::Connection      *m_connection;
             int                                 m_id;
             std::string                         m_name;
-            boost::optional<LoginEntryFunction> m_enterState;
-            boost::optional<LoginStateFunction> m_doState;
+            LoginEntryFunction m_enterState;
+            LoginStateFunction m_doState;
         };
 
         class LoginStateMap : private std::map<int, std::shared_ptr<LoginState> >
@@ -74,7 +76,7 @@ namespace havokmud {
         public:
             void add(int id, std::shared_ptr<LoginState> state)
             {
-                insert(std::pair<int, LoginState *>(id, state));
+                insert(std::pair<int, std::shared_ptr<LoginState> >(id, state));
             }
 
             std::shared_ptr<LoginState> findState(int id)
@@ -85,7 +87,7 @@ namespace havokmud {
                 return it->second;
             }
 
-            std::shared_ptr<LoginState> *findState(const std::string &name)
+            std::shared_ptr<LoginState> findState(const std::string &name)
             {
                 iterator it;
                 for (it = begin(); it != end(); ++it) {
@@ -99,8 +101,8 @@ namespace havokmud {
 
         typedef struct {
             std::string name;
-            boost::optional<LoginEntryFunction> enterState;
-            boost::optional<LoginStateFunction> doState;
+            LoginEntryFunction enterState;
+            LoginStateFunction doState;
         } LoginStateItem;
 
         typedef std::vector<LoginStateItem> LoginStateTable;

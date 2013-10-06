@@ -32,10 +32,20 @@
 #include "util/misc.hpp"
 #include "corefunc/Logging.hpp"
 
+
+// Taken from arpa/telnet.h as IP collides with boost
+#define	IAC	255		/* interpret as command: */
+#define	WONT	252		/* I won't use option */
+#define	WILL	251		/* I will use option */
+#define TELOPT_ECHO	1	/* echo */
+
 namespace havokmud {
     namespace objects {
         boost::regex Connection::s_lineRegex("[\\s\\n\\r]*(.+?)\\s*$",
                 boost::regex_constants::no_mod_s);
+
+        unsigned char echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
+        unsigned char echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 
         Connection::Connection(boost::asio::io_service &io_service,
                                unsigned int inBufferSize) :

@@ -32,7 +32,7 @@
 
 namespace havokmud {
     namespace corefunc {
-        static std::string loginStates[] = {
+        static LoginStateItem loginStates[] = {
             { "initial", enter_state_initial, do_state_initial },
             { "get email", enter_state_get_email, do_state_get_email },
             { "confirm email", enter_state_confirm_email,
@@ -46,7 +46,7 @@ namespace havokmud {
             { "show motd", enter_state_show_motd, do_state_show_motd },
             { "show wmotd", enter_state_show_wmotd, do_state_show_wmotd },
             { "show credits", enter_state_show_credits, do_state_show_credits },
-            { "disconnect", enter_state_disconnect, boost::none },
+            { "disconnect", enter_state_disconnect, 0 },
             { "press enter", enter_state_press_enter, do_state_press_enter },
             { "show account menu", enter_state_show_account_menu,
               do_state_show_account_menu },
@@ -58,8 +58,7 @@ namespace havokmud {
               do_state_confirm_new_password },
             { "enter confirm code", enter_state_enter_confirm_code,
               do_state_enter_confirm_code },
-            { "resend confirm email", enter_state_resend_confirm_email,
-              boost::none },
+            { "resend confirm email", enter_state_resend_confirm_email, 0 },
             { "show creation menu", enter_state_show_creation_menu,
               do_state_show_creation_menu },
             { "choose name", enter_state_choose_name, do_state_choose_name },
@@ -78,27 +77,31 @@ namespace havokmud {
             { "edit extra descr", enter_state_edit_extra_descr,
               do_state_edit_extra_descr },
             { "delete user", enter_state_delete_user, do_state_delete_user },
-            { "playing", boost::none, boost::none },
-            { "no change", boost::none, boost::none }
+            { "playing", 0, 0 },
+            { "no change", 0, 0 }
         };
 
         LoginStateMachine *g_loginStateMachine = NULL;
 
         void initialize(void)
         {
-            LoginStateTable table(loginStates, NELEMS(loginStates));
+            LoginStateTable table(loginStates,
+                                  loginStates + NELEMS(loginStates));
 
-            g_loginStateMachine = new LoginStateMachine(table, "initial");
+            g_loginStateMachine = new LoginStateMachine(table, "initial",
+                                                        "playing");
         }
 
         LoginStateMachine::LoginStateMachine(const LoginStateTable &states,
-                                             const std::string &startState)
+                                             const std::string &startState,
+                                             const std::string &exitState)
         {
             m_stateMap = std::shared_ptr<LoginStateMap>(new LoginStateMap);
-            for(LoginStateTable::iterator it = states.begin();
+            for(LoginStateTable::const_iterator it = states.begin();
                 it != states.end(); ++it ) {
-                LoginState *state = new LoginState(it->name, it->enterState,
-                                                   it->doState);
+                std::shared_ptr<LoginState>
+                        state(new LoginState(it->name, it->enterState,
+                                             it->doState));
                 m_stateMap->add(state->id(), state);
             }
             
@@ -108,14 +111,14 @@ namespace havokmud {
 
         LoginStateMachine::LoginStateMachine(const LoginStateMachine &old) :
                 m_stateMap(old.m_stateMap), m_initialState(old.m_initialState),
-                m_exitState(old.m_existState)
+                m_exitState(old.m_exitState)
         {
             enterState(m_initialState);
         }
 
         void LoginStateMachine::enterState(const std::string &name)
         {
-            LoginState *state = m_stateMap->findState(name);
+            std::shared_ptr<LoginState> state = m_stateMap->findState(name);
             if (!state)
                 state = m_initialState;
 
@@ -124,22 +127,19 @@ namespace havokmud {
 
         void LoginStateMachine::enterState(std::shared_ptr<LoginState> state)
         {
-            if (state->enter)
-                state->enter();
+            state->enter();
 
             m_currentState = state;
         }
 
         bool LoginStateMachine::handleLine(const std::string &line)
         {
-            if (m_currentState->do) {
-                std::string name = m_currentState->do(line);
-                if (name != "no change") {
-                    LoginState *state = m_stateMap->findState(name);
-                    if (!state)
-                        state = m_initialState;
-                    enterState(state);
-                }
+            std::string name = m_currentState->doState(line);
+            if (name != "no change") {
+                std::shared_ptr<LoginState> state = m_stateMap->findState(name);
+                if (!state)
+                    state = m_initialState;
+                enterState(state);
             }
 
             return (m_currentState == m_exitState);

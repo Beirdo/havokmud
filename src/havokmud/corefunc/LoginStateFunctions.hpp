@@ -63,34 +63,34 @@ namespace havokmud {
         // State action functions
         // typedef boost::function<const std::string &(const std::string &)>
         //         LoginStateFunction;
-        const std::string &do_state_initial(const std::string &line);
-        const std::string &do_state_get_email(const std::string &line);
-        const std::string &do_state_confirm_email(const std::string &line);
-        const std::string &do_state_get_new_user_password(const std::string &line);
-        const std::string &do_state_confirm_password(const std::string &line);
-        const std::string &do_state_get_password(const std::string &line);
-        const std::string &do_state_choose_ansi(const std::string &line);
-        const std::string &do_state_show_motd(const std::string &line);
-        const std::string &do_state_show_wmotd(const std::string &line);
-        const std::string &do_state_show_credits(const std::string &line);
-        const std::string &do_state_press_enter(const std::string &line);
-        const std::string &do_state_show_account_menu(const std::string &line);
-        const std::string &do_state_show_player_list(const std::string &line);
-        const std::string &do_state_get_new_password(const std::string &line);
-        const std::string &do_state_confirm_new_password(const std::string &line);
-        const std::string &do_state_enter_confirm_code(const std::string &line);
-        const std::string &do_state_show_creation_menu(const std::string &line);
-        const std::string &do_state_choose_name(const std::string &line);
-        const std::string &do_state_choose_sex(const std::string &line);
-        const std::string &do_state_choose_race(const std::string &line);
-        const std::string &do_state_choose_class(const std::string &line);
-        const std::string &do_state_choose_stats(const std::string &line);
-        const std::string &do_state_choose_alignment(const std::string &line);
-        const std::string &do_state_reroll_abilities(const std::string &line);
-        const std::string &do_state_show_login_menu(const std::string &line);
-        const std::string &do_state_wait_for_auth(const std::string &line);
-        const std::string &do_state_edit_extra_descr(const std::string &line);
-        const std::string &do_state_delete_user(const std::string &line);
+        const std::string do_state_initial(const std::string &line);
+        const std::string do_state_get_email(const std::string &line);
+        const std::string do_state_confirm_email(const std::string &line);
+        const std::string do_state_get_new_user_password(const std::string &line);
+        const std::string do_state_confirm_password(const std::string &line);
+        const std::string do_state_get_password(const std::string &line);
+        const std::string do_state_choose_ansi(const std::string &line);
+        const std::string do_state_show_motd(const std::string &line);
+        const std::string do_state_show_wmotd(const std::string &line);
+        const std::string do_state_show_credits(const std::string &line);
+        const std::string do_state_press_enter(const std::string &line);
+        const std::string do_state_show_account_menu(const std::string &line);
+        const std::string do_state_show_player_list(const std::string &line);
+        const std::string do_state_get_new_password(const std::string &line);
+        const std::string do_state_confirm_new_password(const std::string &line);
+        const std::string do_state_enter_confirm_code(const std::string &line);
+        const std::string do_state_show_creation_menu(const std::string &line);
+        const std::string do_state_choose_name(const std::string &line);
+        const std::string do_state_choose_sex(const std::string &line);
+        const std::string do_state_choose_race(const std::string &line);
+        const std::string do_state_choose_class(const std::string &line);
+        const std::string do_state_choose_stats(const std::string &line);
+        const std::string do_state_choose_alignment(const std::string &line);
+        const std::string do_state_reroll_abilities(const std::string &line);
+        const std::string do_state_show_login_menu(const std::string &line);
+        const std::string do_state_wait_for_auth(const std::string &line);
+        const std::string do_state_edit_extra_descr(const std::string &line);
+        const std::string do_state_delete_user(const std::string &line);
 
     }
 }

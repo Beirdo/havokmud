@@ -25,11 +25,13 @@
 #include "corefunc/Logging.hpp"
 #include "corefunc/LoginStateMachine.hpp"
 #include "corefunc/LoginStateFunctions.hpp"
+#include "objects/Settings.hpp"
 
 namespace havokmud {
     namespace corefunc {
 
         using havokmud::objects::Connection;
+        using havokmud::objects::Player;
 
         // Entry functions
         // typedef boost::function<void (Connection *connection)>
@@ -46,26 +48,26 @@ namespace havokmud {
         void enter_state_confirm_email(Connection *connection)
         {
             connection->send("Did I get that right, %s (Y/N)? ",
-                    connection->account()->email());
+                    connection->account()->email().c_str());
         }
 
         void enter_state_get_new_user_password(Connection *connection)
         {
             connection->send("Give me a password for %s: ",
-                    connection->account()->email());
-            connection->sendRaw(echo_off, 4);
+                    connection->account()->email().c_str());
+            connection->sendRaw(havokmud::objects::Connection::echo_off, 4);
         }
 
         void enter_state_confirm_password(Connection *connection)
         {
             connection->send("Password: ");
-            connection->sendRaw(echo_off, 4);
+            connection->sendRaw(Connection::echo_off, 4);
         }
 
         void enter_state_get_password(Connection *connection)
         {
             connection->send("Please retype password: ");
-            connection->sendRaw(echo_off, 4):
+            connection->sendRaw(Connection::echo_off, 4);
         }
 
         void enter_state_choose_ansi(Connection *connection)
@@ -109,7 +111,7 @@ namespace havokmud {
         {
             connection->send("\n\r\n\r$c0009-=$c0015Havok Account Menu [%s]"
                              "$c0009=-\n\r\n\r",
-                             connection->account()->email());
+                             connection->account()->email().c_str());
             connection->send("$c00151) $c0012ANSI Colors.\n\r");
             connection->send("$c00152) $c0012Change your password.\n\r");
             connection->send("$c00153) $c0012View the MOTD.\n\r");
@@ -133,13 +135,13 @@ namespace havokmud {
         void enter_state_get_new_password(Connection *connection)
         {
             connection->send("Enter a new password: ");
-            connection->sendRaw(echo_off, 4);
+            connection->sendRaw(Connection::echo_off, 4);
         }
 
         void enter_state_confirm_new_password(Connection *connection)
         {
             connection->send("Please retype password: ");
-            connection->send(echo_off, 4);
+            connection->sendRaw(Connection::echo_off, 4);
         }
 
         void enter_state_enter_confirm_code(Connection *connection)
@@ -169,7 +171,7 @@ namespace havokmud {
 
         void enter_state_choose_sex(Connection *connection)
         {
-            connection->send("What is your sex (M)ale/(F)emale/(N)eutral? ")
+            connection->send("What is your sex (M)ale/(F)emale/(N)eutral? ");
         }
 
         void enter_state_choose_race(Connection *connection)
@@ -212,39 +214,39 @@ namespace havokmud {
         // State action functions
         // typedef boost::function<const std::string &(Connection *connection,
         //         const std::string &)> LoginStateFunction;
-        const std::string &do_state_initial(Connection *connection,
+        const std::string do_state_initial(Connection *connection,
                 const std::string &line)
         {
             return("get email");
         }
 
-        const std::string &do_state_get_email(Connection *connection,
+        const std::string do_state_get_email(Connection *connection,
                 const std::string &line)
         {
         }
 
-        const std::string &do_state_confirm_email(Connection *connection,
+        const std::string do_state_confirm_email(Connection *connection,
                 const std::string &line)
         {
         }
 
-        const std::string &do_state_get_new_user_password(Connection *connection,
+        const std::string do_state_get_new_user_password(Connection *connection,
                 const std::string &line)
         {
         }
 
-        const std::string &do_state_confirm_password(Connection *connection,
+        const std::string do_state_confirm_password(Connection *connection,
                 const std::string &line)
         {
         }
 
-        const std::string &do_state_get_password(Connection *connection,
+        const std::string do_state_get_password(Connection *connection,
                 const std::string &line)
         {
             if (line.empty())
                 return("disconnect");
 
-            if (!checkPassword(line)) {
+            if (!connection->account()->checkPassword(line)) {
                 connection->send("Wrong password.\n\r");
                 LogPrint(LG_INFO, "%s entered a wrong password",
                          connection->account()->email().c_str());
@@ -253,11 +255,11 @@ namespace havokmud {
 
             LogPrint(LG_INFO, "%s[%s] has connected",
                      connection->account()->email().c_str(),
-                     connection->hostName().c_str());
+                     connection->hostname().c_str());
             return("show account menu");
         }
 
-        const std::string &do_state_choose_ansi(Connection *connection,
+        const std::string do_state_choose_ansi(Connection *connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -285,7 +287,7 @@ namespace havokmud {
             }
 
             connection->account()->save();
-            if (connection->account()->confirmCode().empty())
+            if (connection->account()->confirmCode().empty()) {
                 // Send the confirmation code by email
                 connection->loginStateMachine()->enterState("resend confirm email");
             }
@@ -293,31 +295,31 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string &do_state_show_motd(Connection *connection,
+        const std::string do_state_show_motd(Connection *connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string &do_state_show_wmotd(Connection *connection,
+        const std::string do_state_show_wmotd(Connection *connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string &do_state_show_credits(Connection *connection,
+        const std::string do_state_show_credits(Connection *connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string &do_state_press_enter(Connection *connection,
+        const std::string do_state_press_enter(Connection *connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string &do_state_show_account_menu(Connection *connection,
+        const std::string do_state_show_account_menu(Connection *connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -371,44 +373,44 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string &do_state_show_player_list(Connection *connection,
+        const std::string do_state_show_player_list(Connection *connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string &do_state_get_new_password(Connection *connection,
+        const std::string do_state_get_new_password(Connection *connection,
                 const std::string &line)
         {
             if (line.length() <= 10) {
-                connection->sendRaw(echo_on, 6);
+                connection->sendRaw(Connection::echo_on, 6);
                 connection->send("Illegal password.\n\r");
                 return("get new password");
             }
 
             connection->account()->setNewPassword(line);
-            connection->sendRaw(echo_on, 6);
+            connection->sendRaw(Connection::echo_on, 6);
             return("confirm new password");
         }
 
-        const std::string &do_state_confirm_new_password(Connection *connection,
+        const std::string do_state_confirm_new_password(Connection *connection,
                 const std::string &line)
         {
             if (!connection->account()->confirmPassword(line)) {
-                connection->sendRaw(echo_on, 6);
+                connection->sendRaw(Connection::echo_on, 6);
                 connection->send("Passwords don't match.\n\r");
                 return("show account menu");
             } 
 
-            connection->sendRaw(echo_on, 6);
-            connection->account->setPassword();
+            connection->sendRaw(Connection::echo_on, 6);
+            connection->account()->setPassword();
             connection->send("Password changed...\n\r");
             connection->account()->save();
 
             return("show account menu");
         }
 
-        const std::string &do_state_enter_confirm_code(Connection *connection,
+        const std::string do_state_enter_confirm_code(Connection *connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -432,7 +434,7 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string &do_state_show_creation_menu(Connection *connection,
+        const std::string do_state_show_creation_menu(Connection *connection,
                 const std::string &line)
         {
             if( line.empty() ) {
@@ -441,7 +443,6 @@ namespace havokmud {
             }
 
             int             bitcount;
-            ch = player->charData;
 
             switch (tolower(line[0])) 
             {
@@ -456,6 +457,7 @@ namespace havokmud {
             case '4':
                 return("choose class");
             case '5':
+#if 0
                 connection->player()->setReroll(20);
                 if (connection->player()->classes().size() != 0) {
                     return("choose stats");
@@ -463,6 +465,7 @@ namespace havokmud {
                     connection->send("\nPlease select a class first.\n\r");
                     return("no change");
                 }
+#endif
                 break;
             case '6':
                 return("choose alignment");
@@ -475,6 +478,7 @@ namespace havokmud {
                 }
 #endif
 
+#if 0
                 if (connection->player()->sex() == 0) {
                     connection->send("Please enter a proper sex.");
                     return("show creation menu");
@@ -489,10 +493,11 @@ namespace havokmud {
                     connection->send("Please pick your stats.");
                     return("show creation menu");
                 }
+#endif
 
                 LogPrint(LG_INFO, "%s [%s] new player.",
                          connection->player()->name().c_str(),
-                         connection->hostName().c_str());
+                         connection->hostname().c_str());
 
                 /*
                  * now that classes are set, initialize
@@ -500,7 +505,7 @@ namespace havokmud {
 #if 0
                 init_char(ch);
 #endif
-                connection->player()->save(AUTO_RENT);
+                connection->player()->save();
 
                 return("show account menu");
             default:
@@ -510,15 +515,16 @@ namespace havokmud {
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_name(Connection *connection,
+        const std::string do_state_choose_name(Connection *connection,
                 const std::string &line)
         {
             if( line.empty() ) {
-                connection.send("Never mind then.\n\r");
+                connection->send("Never mind then.\n\r");
                 return("show creation menu");
             } 
             
             Player *player = Player::findPlayer(line);
+
             if (player) {
                 if (connection->account()->id() != player->accountId()) {
                     connection->send("Name taken.\n\r");
@@ -529,7 +535,7 @@ namespace havokmud {
                 connection->setPlayer(player);
                 connection->player()->load();
 
-                if( connection->player()->getAttribute<bool>("complete",
+                if( connection->player()->attributes().get<bool>("complete",
                             "core-pc") ) {
                     connection->send("That PC is completed!\n\r");
                     connection->setPlayer(NULL);
@@ -544,23 +550,18 @@ namespace havokmud {
             /* TODO: check for banned names */
             player = new Player(line, connection->account()->id());
             connection->account()->addPlayer(player);
-            connection->account()->setPlayer(player);
-            player->setAttribute<bool>("complete", "core-pc", false);
+            connection->setPlayer(player);
+            player->attributes().set<bool>("complete", "core-pc", false);
 
-            std::string setting = g_protobuf.get("MaxReroll");
-            if (setting.empty()) {
-                player->setAttribute<int>("rerolls", "core-pc", 1);
-            } else {
-                player->setAttribute<int>("rerolls", "core-pc",
-                                        std::stoi(setting) + 1 );
-            }
+            int setting = g_settings.get<int>("MaxReroll");
+            player->attributes().set<int>("rerolls", "core-pc", setting + 1);
 
-            connection->player()->RollAbilities();
+            connection->player()->rollAbilities();
             connection->player()->save();
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_sex(Connection *connection,
+        const std::string do_state_choose_sex(Connection *connection,
                 const std::string &line)
         {
             /*
@@ -571,19 +572,20 @@ namespace havokmud {
                 return("choose sex");
             }
 
+#if 0
             switch (tolower(line[0])) {
             case 'm':
-                connection->player()->setAttribute<int>("sex", "core-pc",
+                connection->player()->attributes().set<int>("sex", "core-pc",
                         SEX_MALE);
                 break;
 
             case 'f':
-                connection->player()->setAttribute<int>("sex", "core-pc",
+                connection->player()->attributes().set<int>("sex", "core-pc",
                         SEX_FEMALE);
                 break;
 
             case 'n':
-                connection->player()->setAttribute<int>("sex", "core-pc",
+                connection->player()->attributes().set<int>("sex", "core-pc",
                         SEX_NEUTRAL);
                 break;
 
@@ -591,60 +593,61 @@ namespace havokmud {
                 connection->send("That's not a sex..\n\r");
                 return("choose sex");
             }
+#endif
 
             connection->player()->save();
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_race(Connection *connection,
+        const std::string do_state_choose_race(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_class(Connection *connection,
+        const std::string do_state_choose_class(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_stats(Connection *connection,
+        const std::string do_state_choose_stats(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_choose_alignment(Connection *connection,
+        const std::string do_state_choose_alignment(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_reroll_abilities(Connection *connection,
+        const std::string do_state_reroll_abilities(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_show_login_menu(Connection *connection,
+        const std::string do_state_show_login_menu(Connection *connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string &do_state_wait_for_auth(Connection *connection,
+        const std::string do_state_wait_for_auth(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string &do_state_edit_extra_descr(Connection *connection,
+        const std::string do_state_edit_extra_descr(Connection *connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string &do_state_delete_user(Connection *connection,
+        const std::string do_state_delete_user(Connection *connection,
                 const std::string &line)
         {
             return("show creation menu");
