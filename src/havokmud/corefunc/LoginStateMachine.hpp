@@ -33,9 +33,10 @@ namespace havokmud {
     namespace corefunc {
         using havokmud::objects::Connection;
 
-        typedef boost::function<void ()> LoginEntryFunction;
-        typedef boost::function<const std::string (const std::string &)>
-                LoginStateFunction;
+        typedef boost::function<void (Connection *connection)>
+                LoginEntryFunction;
+        typedef boost::function<const std::string (Connection *connection,
+                const std::string &)> LoginStateFunction;
 
         class LoginStateMachine;
 
@@ -49,22 +50,23 @@ namespace havokmud {
 
             int id() const  { return m_id; };
             const std::string &name() const  { return m_name; };
-            void enter()  { if (m_enterState)  m_enterState(); };
-            const std::string doState(std::string line)
+            void enter(Connection *connection)
+            {
+                if (m_enterState)
+                    m_enterState(connection);
+            };
+            const std::string doState(Connection *connection, std::string line)
             { 
                 if (m_doState) 
-                    return m_doState(line);
+                    return m_doState(connection, line);
                 return m_name;
             };
 
             void setMachine(std::shared_ptr<LoginStateMachine> machine)
                     { m_machine = machine; };
-            void setConnection(havokmud::objects::Connection *connection)
-                    { m_connection = connection; };
 
         private:
-            std::shared_ptr<LoginStateMachine> m_machine;
-            havokmud::objects::Connection      *m_connection;
+            std::shared_ptr<LoginStateMachine>  m_machine;
             int                                 m_id;
             std::string                         m_name;
             LoginEntryFunction m_enterState;
@@ -115,9 +117,13 @@ namespace havokmud {
                               const std::string &exitState);
             LoginStateMachine(const LoginStateMachine &old);
             ~LoginStateMachine()  {};
+            static void initialize();
 
             bool handleLine(const std::string &line);
             void enterState(const std::string &name);
+
+            void setConnection(havokmud::objects::Connection *connection)
+                    { m_connection = connection; };
         private:
             void enterState(std::shared_ptr<LoginState> state);
 
@@ -125,8 +131,12 @@ namespace havokmud {
             std::shared_ptr<LoginState>     m_currentState;
             std::shared_ptr<LoginState>     m_initialState;
             std::shared_ptr<LoginState>     m_exitState;
+
+            havokmud::objects::Connection  *m_connection;
         };
     }
 }
+
+extern havokmud::corefunc::LoginStateMachine *g_loginStateMachine;
 
 #endif  // __havokmud_corefunc_LoginStateMachine__

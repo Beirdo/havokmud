@@ -29,68 +29,96 @@ namespace havokmud {
     namespace corefunc {
         // Entry functions
         // typedef boost::function<void ()> LoginEntryFunction;
-        void enter_state_initial();
-        void enter_state_get_email();
-        void enter_state_confirm_email();
-        void enter_state_get_new_user_password();
-        void enter_state_confirm_password();
-        void enter_state_get_password();
-        void enter_state_choose_ansi();
-        void enter_state_show_motd();
-        void enter_state_show_wmotd();
-        void enter_state_show_credits();
-        void enter_state_disconnect();
-        void enter_state_press_enter();
-        void enter_state_show_account_menu();
-        void enter_state_show_player_list();
-        void enter_state_get_new_password();
-        void enter_state_confirm_new_password();
-        void enter_state_enter_confirm_code();
-        void enter_state_resend_confirm_email();
-        void enter_state_show_creation_menu();
-        void enter_state_choose_name();
-        void enter_state_choose_sex();
-        void enter_state_choose_race();
-        void enter_state_choose_class();
-        void enter_state_choose_stats();
-        void enter_state_choose_alignment();
-        void enter_state_reroll_abilities();
-        void enter_state_show_login_menu();
-        void enter_state_wait_for_auth();
-        void enter_state_edit_extra_descr();
-        void enter_state_delete_user();
+        void enter_state_initial(Connection *connection);
+        void enter_state_get_email(Connection *connection);
+        void enter_state_confirm_email(Connection *connection);
+        void enter_state_get_new_user_password(Connection *connection);
+        void enter_state_confirm_password(Connection *connection);
+        void enter_state_get_password(Connection *connection);
+        void enter_state_choose_ansi(Connection *connection);
+        void enter_state_show_motd(Connection *connection);
+        void enter_state_show_wmotd(Connection *connection);
+        void enter_state_show_credits(Connection *connection);
+        void enter_state_disconnect(Connection *connection);
+        void enter_state_press_enter(Connection *connection);
+        void enter_state_show_account_menu(Connection *connection);
+        void enter_state_show_player_list(Connection *connection);
+        void enter_state_get_new_password(Connection *connection);
+        void enter_state_confirm_new_password(Connection *connection);
+        void enter_state_enter_confirm_code(Connection *connection);
+        void enter_state_resend_confirm_email(Connection *connection);
+        void enter_state_show_creation_menu(Connection *connection);
+        void enter_state_choose_name(Connection *connection);
+        void enter_state_choose_sex(Connection *connection);
+        void enter_state_choose_race(Connection *connection);
+        void enter_state_choose_class(Connection *connection);
+        void enter_state_choose_stats(Connection *connection);
+        void enter_state_choose_alignment(Connection *connection);
+        void enter_state_reroll_abilities(Connection *connection);
+        void enter_state_show_login_menu(Connection *connection);
+        void enter_state_wait_for_auth(Connection *connection);
+        void enter_state_edit_extra_descr(Connection *connection);
+        void enter_state_delete_user(Connection *connection);
 
         // State action functions
         // typedef boost::function<const std::string &(const std::string &)>
         //         LoginStateFunction;
-        const std::string do_state_initial(const std::string &line);
-        const std::string do_state_get_email(const std::string &line);
-        const std::string do_state_confirm_email(const std::string &line);
-        const std::string do_state_get_new_user_password(const std::string &line);
-        const std::string do_state_confirm_password(const std::string &line);
-        const std::string do_state_get_password(const std::string &line);
-        const std::string do_state_choose_ansi(const std::string &line);
-        const std::string do_state_show_motd(const std::string &line);
-        const std::string do_state_show_wmotd(const std::string &line);
-        const std::string do_state_show_credits(const std::string &line);
-        const std::string do_state_press_enter(const std::string &line);
-        const std::string do_state_show_account_menu(const std::string &line);
-        const std::string do_state_show_player_list(const std::string &line);
-        const std::string do_state_get_new_password(const std::string &line);
-        const std::string do_state_confirm_new_password(const std::string &line);
-        const std::string do_state_enter_confirm_code(const std::string &line);
-        const std::string do_state_show_creation_menu(const std::string &line);
-        const std::string do_state_choose_name(const std::string &line);
-        const std::string do_state_choose_sex(const std::string &line);
-        const std::string do_state_choose_race(const std::string &line);
-        const std::string do_state_choose_class(const std::string &line);
-        const std::string do_state_choose_stats(const std::string &line);
-        const std::string do_state_choose_alignment(const std::string &line);
-        const std::string do_state_reroll_abilities(const std::string &line);
-        const std::string do_state_show_login_menu(const std::string &line);
-        const std::string do_state_wait_for_auth(const std::string &line);
-        const std::string do_state_edit_extra_descr(const std::string &line);
-        const std::string do_state_delete_user(const std::string &line);
+        const std::string do_state_initial(Connection *connection,
+                const std::string &line);
+        const std::string do_state_get_email(Connection *connection,
+                const std::string &line);
+        const std::string do_state_confirm_email(Connection *connection,
+                const std::string &line);
+        const std::string do_state_get_new_user_password(Connection *connection,
+                const std::string &line);
+        const std::string do_state_confirm_password(Connection *connection,
+                const std::string &line);
+        const std::string do_state_get_password(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_ansi(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_motd(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_wmotd(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_credits(Connection *connection,
+                const std::string &line);
+        const std::string do_state_press_enter(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_account_menu(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_player_list(Connection *connection,
+                const std::string &line);
+        const std::string do_state_get_new_password(Connection *connection,
+                const std::string &line);
+        const std::string do_state_confirm_new_password(Connection *connection,
+                const std::string &line);
+        const std::string do_state_enter_confirm_code(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_creation_menu(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_name(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_sex(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_race(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_class(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_stats(Connection *connection,
+                const std::string &line);
+        const std::string do_state_choose_alignment(Connection *connection,
+                const std::string &line);
+        const std::string do_state_reroll_abilities(Connection *connection,
+                const std::string &line);
+        const std::string do_state_show_login_menu(Connection *connection,
+                const std::string &line);
+        const std::string do_state_wait_for_auth(Connection *connection,
+                const std::string &line);
+        const std::string do_state_edit_extra_descr(Connection *connection,
+                const std::string &line);
+        const std::string do_state_delete_user(Connection *connection,
+                const std::string &line);
 
     }
 }

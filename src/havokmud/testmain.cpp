@@ -3,11 +3,16 @@
 #include "thread/ConnectionThread.hpp"
 #include "thread/LoggingThread.hpp"
 #include "thread/ResolveThread.hpp"
+#include "thread/LoginThread.hpp"
+#include "thread/PlayingThread.hpp"
 
 boost::thread::id g_mainThreadId;
 bool g_debug = true;
 havokmud::thread::LoggingThread *g_loggingThread;
 havokmud::thread::ResolveThread *g_resolveThread;
+havokmud::thread::LoginThread   *g_loginThread;
+havokmud::thread::PlayingThread *g_playingThread;
+havokmud::thread::PlayingThread *g_immortalPlayingThread;
 
 namespace havokmud {
     namespace thread {
@@ -32,6 +37,9 @@ namespace havokmud {
 
             g_loggingThread = new havokmud::thread::LoggingThread();
             g_resolveThread = new havokmud::thread::ResolveThread();
+            g_loginThread = new havokmud::thread::LoginThread();
+            g_playingThread = new havokmud::thread::PlayingThread(false);
+            g_immortalPlayingThread = new havokmud::thread::PlayingThread(true);
 
             havokmud::thread::ConnectionThread connectionThread(1234, 1000);
 

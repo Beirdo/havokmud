@@ -34,6 +34,7 @@
 
 #include "objects/Account.hpp"
 #include "objects/Player.hpp"
+#include "thread/InputThread.hpp"
 
 namespace havokmud {
     namespace corefunc {
@@ -86,6 +87,7 @@ namespace havokmud {
 
             const std::string &hostname() const { return m_hostname; };
 
+            void enterPlaying();
         private:
             void prv_set_ip(std::string ip)  { m_ip = ip; };
             void prv_handle_resolve(std::string hostname)
@@ -98,6 +100,7 @@ namespace havokmud {
             Player                         *m_player;
             Account                        *m_account;
             havokmud::corefunc::LoginStateMachine *m_loginStateMachine;
+            havokmud::thread::InputThread  *m_inputThread;
 
             boost::asio::const_buffer       m_inBufRemain;
             int                             m_inBufSize;

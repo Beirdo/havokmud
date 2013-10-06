@@ -81,9 +81,7 @@ namespace havokmud {
             { "no change", 0, 0 }
         };
 
-        LoginStateMachine *g_loginStateMachine = NULL;
-
-        void initialize(void)
+        void LoginStateMachine::initialize()
         {
             LoginStateTable table(loginStates,
                                   loginStates + NELEMS(loginStates));
@@ -127,14 +125,14 @@ namespace havokmud {
 
         void LoginStateMachine::enterState(std::shared_ptr<LoginState> state)
         {
-            state->enter();
+            state->enter(m_connection);
 
             m_currentState = state;
         }
 
         bool LoginStateMachine::handleLine(const std::string &line)
         {
-            std::string name = m_currentState->doState(line);
+            std::string name = m_currentState->doState(m_connection, line);
             if (name != "no change") {
                 std::shared_ptr<LoginState> state = m_stateMap->findState(name);
                 if (!state)
@@ -146,3 +144,6 @@ namespace havokmud {
         }
     }
 }
+
+havokmud::corefunc::LoginStateMachine *g_loginStateMachine = NULL;
+

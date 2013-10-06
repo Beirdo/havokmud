@@ -57,6 +57,7 @@ namespace havokmud {
 
             PlayerAttributes &attributes()  { return m_attributes; };
             void rollAbilities();
+            bool isImmortal()  { return false; };
 
         private:
             int m_id;

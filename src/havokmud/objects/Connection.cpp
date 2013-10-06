@@ -31,6 +31,8 @@
 #include "objects/ConnectionManager.hpp"
 #include "util/misc.hpp"
 #include "corefunc/Logging.hpp"
+#include "thread/LoginThread.hpp"
+#include "thread/PlayingThread.hpp"
 
 
 // Taken from arpa/telnet.h as IP collides with boost
@@ -77,8 +79,11 @@ namespace havokmud {
                                     shared_from_this(), _1));
             }
 
+            m_inputThread = g_loginThread;
+
             LogPrint(LG_INFO, "Connection::start: %s (%s)", m_ip.c_str(),
                      m_hostname.c_str());
+
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
@@ -92,6 +97,7 @@ namespace havokmud {
             LogPrint(LG_INFO, "Connection::stop: %s (%s)", m_ip.c_str(),
                      m_hostname.c_str());
             m_socket.close();
+            m_inputThread->removeConnection(this);
         }
 
         void Connection::handle_read(const boost::system::error_code &e,
@@ -122,7 +128,7 @@ namespace havokmud {
 
                     LogPrint(LG_INFO, "Split a line: %s", line.c_str());
                     // Dispatch the line
-                    // parse(line);
+                    m_inputThread->enqueueInput(this, line);
                 } while (true);
 
                 if (boost::asio::buffer_size(inBuffer)) {
@@ -208,6 +214,15 @@ namespace havokmud {
 
             inBuffer = boost::asio::buffer((void *)"", 0);
             return std::string();
+        }
+
+        void Connection::enterPlaying()
+        {
+            if (m_player->isImmortal()) {
+                m_inputThread = g_immortalPlayingThread;
+            } else {
+                m_inputThread = g_playingThread;
+            }
         }
     }
 }
