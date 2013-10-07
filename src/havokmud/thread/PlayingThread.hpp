@@ -42,7 +42,7 @@ namespace havokmud {
             ~PlayingThread()  {};
 
             virtual void start();
-            virtual void removeConnection(Connection *connection);
+            void removeConnection(boost::shared_ptr<Connection> connection);
 
         private:
             bool m_immortal;

@@ -42,9 +42,9 @@ namespace havokmud {
             void stop(Connection::pointer c);
             void stop_all();
         };
-
-        extern ConnectionManager g_connectionManager;
     }
 }
+
+extern havokmud::objects::ConnectionManager g_connectionManager;
 
 #endif  // __havokmud_objects_ConnectionManager__

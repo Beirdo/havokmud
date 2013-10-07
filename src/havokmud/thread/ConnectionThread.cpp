@@ -76,7 +76,7 @@ namespace havokmud {
 
             if (!e) {
                 LogPrint(LG_INFO, "New connection in ConnectionThread");
-                havokmud::objects::g_connectionManager.start(m_newConnection);
+                g_connectionManager.start(m_newConnection);
             }
 
             prv_start_accept();
@@ -85,7 +85,7 @@ namespace havokmud {
         void ConnectionThread::handle_stop()
         {
             m_acceptor.close();
-            havokmud::objects::g_connectionManager.stop_all();
+            g_connectionManager.stop_all();
         }
     }
 }

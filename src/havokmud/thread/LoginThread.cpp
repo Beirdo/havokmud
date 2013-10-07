@@ -41,29 +41,33 @@ namespace havokmud {
             LoginStateMachine::initialize();
         }
         
-        void LoginThread::initialize(Connection *connection)
+        void LoginThread::initialize(boost::shared_ptr<Connection> connection)
         {
             LoginStateMachine *machine = 
                     new LoginStateMachine(g_loginStateMachine, connection);
-            m_connectionMap.insert(std::pair<Connection *,
+            m_connectionMap.insert(std::pair<boost::shared_ptr<Connection>,
                             LoginStateMachine *>(connection, machine));
         }
 
         void LoginThread::start()
         {
             while (!m_abort) {
-                LogPrint(LG_INFO, "Getting input item");
+                //LogPrint(LG_INFO, "Getting input item");
                 InputQueueItem *item = m_inQueue.get();
                 if (!item) {
                     continue;
                 }
 
-                Connection *connection = item->first;
+                boost::shared_ptr<Connection> connection = item->first;
                 std::string line = std::string(item->second);
-                // delete item;
+                delete item;
 
-                LogPrint(LG_INFO, "Input from connection %d - %s",
-                         connection->id(), line.c_str());
+                if (!connection->isOpen()) {
+                    continue;
+                }
+
+                //LogPrint(LG_INFO, "Input from connection %d - %s",
+                //         connection->id(), line.c_str());
                 LoginStateMachine *machine = NULL;
 
                 LoginConnectionMap::iterator it =
@@ -76,8 +80,8 @@ namespace havokmud {
                     machine = it->second;
                 }
 
-                LogPrint(LG_INFO, "Connection %d, State Machine %p",
-                         connection->id(), machine);
+                //LogPrint(LG_INFO, "Connection %d, State Machine %p",
+                //         connection->id(), machine);
 
                 if (machine->handleLine(line)) {
                     LogPrint(LG_INFO, "Entering play mode");
@@ -87,7 +91,7 @@ namespace havokmud {
             }
         }
 
-        void LoginThread::removeConnection(Connection *connection)
+        void LoginThread::removeConnection(boost::shared_ptr<Connection> connection)
         {
             LogPrint(LG_INFO, "Removing connection %d", connection->id());
             LoginConnectionMap::iterator it = m_connectionMap.find(connection);

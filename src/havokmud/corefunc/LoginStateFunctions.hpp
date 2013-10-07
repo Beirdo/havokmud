@@ -29,95 +29,95 @@ namespace havokmud {
     namespace corefunc {
         // Entry functions
         // typedef boost::function<void ()> LoginEntryFunction;
-        void enter_state_initial(Connection *connection);
-        void enter_state_get_email(Connection *connection);
-        void enter_state_confirm_email(Connection *connection);
-        void enter_state_get_new_user_password(Connection *connection);
-        void enter_state_confirm_password(Connection *connection);
-        void enter_state_get_password(Connection *connection);
-        void enter_state_choose_ansi(Connection *connection);
-        void enter_state_show_motd(Connection *connection);
-        void enter_state_show_wmotd(Connection *connection);
-        void enter_state_show_credits(Connection *connection);
-        void enter_state_disconnect(Connection *connection);
-        void enter_state_press_enter(Connection *connection);
-        void enter_state_show_account_menu(Connection *connection);
-        void enter_state_show_player_list(Connection *connection);
-        void enter_state_get_new_password(Connection *connection);
-        void enter_state_confirm_new_password(Connection *connection);
-        void enter_state_enter_confirm_code(Connection *connection);
-        void enter_state_resend_confirm_email(Connection *connection);
-        void enter_state_show_creation_menu(Connection *connection);
-        void enter_state_choose_name(Connection *connection);
-        void enter_state_choose_sex(Connection *connection);
-        void enter_state_choose_race(Connection *connection);
-        void enter_state_choose_class(Connection *connection);
-        void enter_state_choose_stats(Connection *connection);
-        void enter_state_choose_alignment(Connection *connection);
-        void enter_state_reroll_abilities(Connection *connection);
-        void enter_state_show_login_menu(Connection *connection);
-        void enter_state_wait_for_auth(Connection *connection);
-        void enter_state_edit_extra_descr(Connection *connection);
-        void enter_state_delete_user(Connection *connection);
+        void enter_state_initial(Connection::pointer connection);
+        void enter_state_get_email(Connection::pointer connection);
+        void enter_state_confirm_email(Connection::pointer connection);
+        void enter_state_get_new_user_password(Connection::pointer connection);
+        void enter_state_confirm_password(Connection::pointer connection);
+        void enter_state_get_password(Connection::pointer connection);
+        void enter_state_choose_ansi(Connection::pointer connection);
+        void enter_state_show_motd(Connection::pointer connection);
+        void enter_state_show_wmotd(Connection::pointer connection);
+        void enter_state_show_credits(Connection::pointer connection);
+        void enter_state_disconnect(Connection::pointer connection);
+        void enter_state_press_enter(Connection::pointer connection);
+        void enter_state_show_account_menu(Connection::pointer connection);
+        void enter_state_show_player_list(Connection::pointer connection);
+        void enter_state_get_new_password(Connection::pointer connection);
+        void enter_state_confirm_new_password(Connection::pointer connection);
+        void enter_state_enter_confirm_code(Connection::pointer connection);
+        void enter_state_resend_confirm_email(Connection::pointer connection);
+        void enter_state_show_creation_menu(Connection::pointer connection);
+        void enter_state_choose_name(Connection::pointer connection);
+        void enter_state_choose_sex(Connection::pointer connection);
+        void enter_state_choose_race(Connection::pointer connection);
+        void enter_state_choose_class(Connection::pointer connection);
+        void enter_state_choose_stats(Connection::pointer connection);
+        void enter_state_choose_alignment(Connection::pointer connection);
+        void enter_state_reroll_abilities(Connection::pointer connection);
+        void enter_state_show_login_menu(Connection::pointer connection);
+        void enter_state_wait_for_auth(Connection::pointer connection);
+        void enter_state_edit_extra_descr(Connection::pointer connection);
+        void enter_state_delete_user(Connection::pointer connection);
 
         // State action functions
         // typedef boost::function<const std::string &(const std::string &)>
         //         LoginStateFunction;
-        const std::string do_state_initial(Connection *connection,
+        const std::string do_state_initial(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_get_email(Connection *connection,
+        const std::string do_state_get_email(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_confirm_email(Connection *connection,
+        const std::string do_state_confirm_email(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_get_new_user_password(Connection *connection,
+        const std::string do_state_get_new_user_password(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_confirm_password(Connection *connection,
+        const std::string do_state_confirm_password(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_get_password(Connection *connection,
+        const std::string do_state_get_password(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_ansi(Connection *connection,
+        const std::string do_state_choose_ansi(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_motd(Connection *connection,
+        const std::string do_state_show_motd(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_wmotd(Connection *connection,
+        const std::string do_state_show_wmotd(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_credits(Connection *connection,
+        const std::string do_state_show_credits(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_press_enter(Connection *connection,
+        const std::string do_state_press_enter(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_account_menu(Connection *connection,
+        const std::string do_state_show_account_menu(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_player_list(Connection *connection,
+        const std::string do_state_show_player_list(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_get_new_password(Connection *connection,
+        const std::string do_state_get_new_password(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_confirm_new_password(Connection *connection,
+        const std::string do_state_confirm_new_password(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_enter_confirm_code(Connection *connection,
+        const std::string do_state_enter_confirm_code(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_creation_menu(Connection *connection,
+        const std::string do_state_show_creation_menu(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_name(Connection *connection,
+        const std::string do_state_choose_name(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_sex(Connection *connection,
+        const std::string do_state_choose_sex(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_race(Connection *connection,
+        const std::string do_state_choose_race(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_class(Connection *connection,
+        const std::string do_state_choose_class(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_stats(Connection *connection,
+        const std::string do_state_choose_stats(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_choose_alignment(Connection *connection,
+        const std::string do_state_choose_alignment(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_reroll_abilities(Connection *connection,
+        const std::string do_state_reroll_abilities(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_show_login_menu(Connection *connection,
+        const std::string do_state_show_login_menu(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_wait_for_auth(Connection *connection,
+        const std::string do_state_wait_for_auth(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_edit_extra_descr(Connection *connection,
+        const std::string do_state_edit_extra_descr(Connection::pointer connection,
                 const std::string &line);
-        const std::string do_state_delete_user(Connection *connection,
+        const std::string do_state_delete_user(Connection::pointer connection,
                 const std::string &line);
 
     }

@@ -45,7 +45,8 @@ namespace havokmud {
         using havokmud::objects::Connection;
         using havokmud::corefunc::LoginStateMachine;
 
-        typedef std::pair<Connection *, std::string> InputQueueItem;
+        typedef std::pair<boost::shared_ptr<Connection> , std::string>
+                InputQueueItem;
 
         class InputThread : public HavokThread
         {
@@ -57,8 +58,9 @@ namespace havokmud {
             virtual void start() = 0;
             void handle_stop();
 
-            void enqueueInput(Connection *connection, const std::string &line);
-            virtual void removeConnection(Connection *connection) = 0;
+            void enqueueInput(boost::shared_ptr<Connection> connection,
+                              const std::string &line);
+            virtual void removeConnection(boost::shared_ptr<Connection> connection) = 0;
 
         protected:
             havokmud::objects::LockingQueue<InputQueueItem *> m_inQueue;

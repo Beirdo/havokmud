@@ -46,9 +46,6 @@
 
 namespace havokmud {
     namespace objects {
-        boost::regex Connection::s_lineRegex("[\\s\\n\\r]*(.+?)\\s*$",
-                boost::regex_constants::no_mod_s);
-
         unsigned char Connection::echo_on[] =
                 { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
         unsigned char Connection::echo_off[] =
@@ -92,7 +89,7 @@ namespace havokmud {
             LogPrint(LG_INFO, "Connection::start: %s (%s)", m_ip.c_str(),
                      m_hostname.c_str());
 
-            g_loginThread->initialize(this);
+            g_loginThread->initialize(shared_from_this());
 
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
@@ -104,10 +101,13 @@ namespace havokmud {
 
         void Connection::stop()
         {
-            LogPrint(LG_INFO, "Connection::stop: %s (%s)", m_ip.c_str(),
-                     m_hostname.c_str());
-            m_socket.close();
-            m_inputThread->removeConnection(this);
+            if (m_socket.is_open()) {
+                LogPrint(LG_INFO, "Connection::stop: %s (%s)", m_ip.c_str(),
+                         m_hostname.c_str());
+                m_socket.close();
+                m_inputThread->removeConnection(shared_from_this());
+                m_inputThread = NULL;
+            }
         }
 
         void Connection::handle_read(const boost::system::error_code &e,
@@ -130,15 +130,28 @@ namespace havokmud {
                 memset(m_inBufRaw, 0x00, m_inBufSize);
 
                 do {
-                    std::string line = prv_splitLines(inBuffer);
-                    if (line.empty()) {
+                    std::string line;
+                    if (!prv_splitLines(inBuffer, line)) {
                         break;
+                    }
+
+                    if ((unsigned char)line[0] == 0xFF) {
+                        // Telnet control codes should be eaten.
+                        break;
+                    }
+
+                    if ((unsigned char)line[0] == 0x0A ||
+                        (unsigned char)line[0] == 0x0D) {
+                        // blank line
+                        line = std::string();
                     }
 
                     // Dispatch the line
                     //LogPrint(LG_INFO, "Enqueuing line (%d) - %s", m_id,
                     //         line.c_str());
-                    m_inputThread->enqueueInput(this, line);
+                    if (m_inputThread) {
+                        m_inputThread->enqueueInput(shared_from_this(), line);
+                    }
                 } while (true);
 
                 //LogPrint(LG_INFO, "Done with lines, time to read again");
@@ -155,6 +168,8 @@ namespace havokmud {
                                 boost::asio::placeholders::error,
                                 boost::asio::placeholders::bytes_transferred));
             } else if (e != boost::asio::error::operation_aborted) {
+                LogPrint(LG_INFO, "Handle read: connection %d, e = %d",
+                         m_id, *(int *)&e);
                 g_connectionManager.stop(shared_from_this());
             }
         }
@@ -237,13 +252,17 @@ namespace havokmud {
                                 boost::asio::placeholders::error));
         }
 
-        std::string Connection::prv_splitLines(boost::asio::mutable_buffer &inBuffer)
+        boost::regex Connection::s_lineRegex("[ \\t]*((.+?)|(\\r?\\n))[\\s\\n\\r]*$",
+                boost::regex_constants::no_mod_s);
+
+        bool Connection::prv_splitLines(boost::asio::mutable_buffer &inBuffer,
+                                        std::string &line)
         {
-            char *line = boost::asio::buffer_cast<char *>(inBuffer);
-            int length = strlen(line);
+            char *linebuf = boost::asio::buffer_cast<char *>(inBuffer);
+            int length = strlen(linebuf);
             //LogPrint(LG_DEBUG, "inBuffer length: %d", length);
             boost::cmatch match;
-            if (boost::regex_search(line, match, s_lineRegex)) {
+            if (boost::regex_search(linebuf, match, s_lineRegex)) {
                 std::string inputLine(match[1].first, match[1].second);
 
                 int offset = match[0].second - match[0].first;
@@ -256,11 +275,13 @@ namespace havokmud {
                     length = 0;
                 }
                 //LogPrint(LG_DEBUG, "inBuffer length: %d", length);
-                return inputLine;
+                line = inputLine;
+                return true;
             }
 
             inBuffer = boost::asio::buffer((void *)"", 0);
-            return std::string();
+            line = std::string();
+            return false;
         }
 
         void Connection::enterPlaying()

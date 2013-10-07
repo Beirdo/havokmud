@@ -33,7 +33,8 @@
 namespace havokmud {
     namespace thread {
 
-        typedef std::map<Connection *, LoginStateMachine *> LoginConnectionMap;
+        typedef std::map<Connection::pointer, LoginStateMachine *>
+                LoginConnectionMap;
 
         class LoginThread : public InputThread
         {
@@ -42,9 +43,9 @@ namespace havokmud {
             ~LoginThread()  {};
 
             virtual void start();
-            virtual void removeConnection(Connection *connection);
+            void removeConnection(boost::shared_ptr<Connection> connection);
 
-            void initialize(Connection *connection);
+            void initialize(boost::shared_ptr<Connection> connection);
 
         private:
             LoginConnectionMap m_connectionMap;

@@ -26,6 +26,7 @@
 #include "corefunc/LoginStateMachine.hpp"
 #include "corefunc/LoginStateFunctions.hpp"
 #include "objects/Settings.hpp"
+#include "objects/ConnectionManager.hpp"
 
 namespace havokmud {
     namespace corefunc {
@@ -35,9 +36,9 @@ namespace havokmud {
         using havokmud::objects::Account;
 
         // Entry functions
-        // typedef boost::function<void (Connection *connection)>
+        // typedef boost::function<void (Connection::pointer connection)>
         //         LoginEntryFunction;
-        void enter_state_initial(Connection *connection)
+        void enter_state_initial(Connection::pointer connection)
         {
 //            connection->send(login);
             connection->send("If you're using Tintin or Lyntin, your client "
@@ -47,74 +48,74 @@ namespace havokmud {
             connection->loginStateMachine()->enterState("get email");
         }
 
-        void enter_state_get_email(Connection *connection)
+        void enter_state_get_email(Connection::pointer connection)
         {
             connection->send("What is your account name (email address)? ");
         }
 
-        void enter_state_confirm_email(Connection *connection)
+        void enter_state_confirm_email(Connection::pointer connection)
         {
             connection->send("Did I get that right, %s (Y/N)? ",
                     connection->account()->email().c_str());
         }
 
-        void enter_state_get_new_user_password(Connection *connection)
+        void enter_state_get_new_user_password(Connection::pointer connection)
         {
             connection->send("Give me a password for %s: ",
                     connection->account()->email().c_str());
             connection->sendRaw(havokmud::objects::Connection::echo_off, 4);
         }
 
-        void enter_state_confirm_password(Connection *connection)
+        void enter_state_confirm_password(Connection::pointer connection)
         {
             connection->send("Password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
-        void enter_state_get_password(Connection *connection)
+        void enter_state_get_password(Connection::pointer connection)
         {
             connection->send("Please retype password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
-        void enter_state_choose_ansi(Connection *connection)
+        void enter_state_choose_ansi(Connection::pointer connection)
         {
             connection->send("Would you like ansi colors? (Yes or No)");
         }
 
-        void enter_state_show_motd(Connection *connection)
+        void enter_state_show_motd(Connection::pointer connection)
         { 
             connection->send("MOTD will eventually be read from the "
                              "database.\n\r\n\r");
             connection->send("\n\r\n[PRESS RETURN]");
         }
 
-        void enter_state_show_wmotd(Connection *connection)
+        void enter_state_show_wmotd(Connection::pointer connection)
         {
             connection->send("WMOTD will eventually be read from the "
                              "database.\n\r\n\r");
             connection->send("\n\r\n[PRESS RETURN]");
         }
 
-        void enter_state_show_credits(Connection *connection)
+        void enter_state_show_credits(Connection::pointer connection)
         {
             connection->send("Credits will eventually be read from the "
                              "database.\n\r\n\r");
             connection->send("\n\r\n[PRESS RETURN]");
         }
 
-        void enter_state_disconnect(Connection *connection)
+        void enter_state_disconnect(Connection::pointer connection)
         {
             connection->send("Goodbye.\n\r");
-            connection->stop();
+            g_connectionManager.stop(connection);
         }
 
-        void enter_state_press_enter(Connection *connection)
+        void enter_state_press_enter(Connection::pointer connection)
         {
             connection->send("\n\r<Press enter to continue>");
         }
 
-        void enter_state_show_account_menu(Connection *connection)
+        void enter_state_show_account_menu(Connection::pointer connection)
         {
             connection->send("\n\r\n\r$c0009-=$c0015Havok Account Menu [%s]"
                              "$c0009=-\n\r\n\r",
@@ -135,29 +136,29 @@ namespace havokmud {
             connection->send("$c0011Please pick an option: \n\r");
         } 
 
-        void enter_state_show_player_list(Connection *connection)
+        void enter_state_show_player_list(Connection::pointer connection)
         {
         }
 
-        void enter_state_get_new_password(Connection *connection)
+        void enter_state_get_new_password(Connection::pointer connection)
         {
             connection->send("Enter a new password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
-        void enter_state_confirm_new_password(Connection *connection)
+        void enter_state_confirm_new_password(Connection::pointer connection)
         {
             connection->send("Please retype password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
-        void enter_state_enter_confirm_code(Connection *connection)
+        void enter_state_enter_confirm_code(Connection::pointer connection)
         {
             connection->send("Please enter the confirmation code you were "
                              "emailed:  ");
         }
 
-        void enter_state_resend_confirm_email(Connection *connection)
+        void enter_state_resend_confirm_email(Connection::pointer connection)
         {
             if( connection->account()->confirmCode().empty() ) {
                 connection->send("Sending your confirmation email...\n\r");
@@ -167,71 +168,72 @@ namespace havokmud {
             connection->account()->createConfirmCode();
         }
 
-        void enter_state_show_creation_menu(Connection *connection)
+        void enter_state_show_creation_menu(Connection::pointer connection)
         {
         }
 
-        void enter_state_choose_name(Connection *connection)
+        void enter_state_choose_name(Connection::pointer connection)
         {
             connection->send("Choose the name of your new PC: ");
         }
 
-        void enter_state_choose_sex(Connection *connection)
+        void enter_state_choose_sex(Connection::pointer connection)
         {
             connection->send("What is your sex (M)ale/(F)emale/(N)eutral? ");
         }
 
-        void enter_state_choose_race(Connection *connection)
+        void enter_state_choose_race(Connection::pointer connection)
         {
         }
 
-        void enter_state_choose_class(Connection *connection)
+        void enter_state_choose_class(Connection::pointer connection)
         {
         }
 
-        void enter_state_choose_stats(Connection *connection)
+        void enter_state_choose_stats(Connection::pointer connection)
         {
         }
 
-        void enter_state_choose_alignment(Connection *connection)
+        void enter_state_choose_alignment(Connection::pointer connection)
         {
         }
 
-        void enter_state_reroll_abilities(Connection *connection)
+        void enter_state_reroll_abilities(Connection::pointer connection)
         {
         }
 
-        void enter_state_show_login_menu(Connection *connection)
+        void enter_state_show_login_menu(Connection::pointer connection)
         {
         }
 
-        void enter_state_wait_for_auth(Connection *connection)
+        void enter_state_wait_for_auth(Connection::pointer connection)
         {
         }
 
-        void enter_state_edit_extra_descr(Connection *connection)
+        void enter_state_edit_extra_descr(Connection::pointer connection)
         {
         }
 
-        void enter_state_delete_user(Connection *connection)
+        void enter_state_delete_user(Connection::pointer connection)
         {
         }
 
 
         // State action functions
-        // typedef boost::function<const std::string &(Connection *connection,
+        // typedef boost::function<const std::string &(Connection::pointer connection,
         //         const std::string &)> LoginStateFunction;
-        const std::string do_state_initial(Connection *connection,
+        const std::string do_state_initial(Connection::pointer connection,
                 const std::string &line)
         {
             return("get email");
         }
 
-        const std::string do_state_get_email(Connection *connection,
+        const std::string do_state_get_email(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.empty()) {
-                if (!connection->account()->email().empty()) {
+                if (connection->account() &&
+                    !connection->account()->email().empty()) {
                     connection->account()->setEmail(std::string());
                 }
 
@@ -276,7 +278,7 @@ namespace havokmud {
             return("confirm email");
         }
 
-        const std::string do_state_confirm_email(Connection *connection,
+        const std::string do_state_confirm_email(Connection::pointer connection,
                 const std::string &line)
         {
             if(line.empty()) {
@@ -301,17 +303,19 @@ namespace havokmud {
             }
         }
 
-        const std::string do_state_get_new_user_password(Connection *connection,
+        const std::string do_state_get_new_user_password(Connection::pointer connection,
                 const std::string &line)
         {
+            return std::string("no change");    // TODO
         }
 
-        const std::string do_state_confirm_password(Connection *connection,
+        const std::string do_state_confirm_password(Connection::pointer connection,
                 const std::string &line)
         {
+            return std::string("no change");    // TODO
         }
 
-        const std::string do_state_get_password(Connection *connection,
+        const std::string do_state_get_password(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.empty())
@@ -330,7 +334,7 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string do_state_choose_ansi(Connection *connection,
+        const std::string do_state_choose_ansi(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -366,31 +370,31 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string do_state_show_motd(Connection *connection,
+        const std::string do_state_show_motd(Connection::pointer connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string do_state_show_wmotd(Connection *connection,
+        const std::string do_state_show_wmotd(Connection::pointer connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string do_state_show_credits(Connection *connection,
+        const std::string do_state_show_credits(Connection::pointer connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string do_state_press_enter(Connection *connection,
+        const std::string do_state_press_enter(Connection::pointer connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string do_state_show_account_menu(Connection *connection,
+        const std::string do_state_show_account_menu(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -444,13 +448,13 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string do_state_show_player_list(Connection *connection,
+        const std::string do_state_show_player_list(Connection::pointer connection,
                 const std::string &line)
         {
             return("show account menu");
         }
 
-        const std::string do_state_get_new_password(Connection *connection,
+        const std::string do_state_get_new_password(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.length() <= 10) {
@@ -464,7 +468,7 @@ namespace havokmud {
             return("confirm new password");
         }
 
-        const std::string do_state_confirm_new_password(Connection *connection,
+        const std::string do_state_confirm_new_password(Connection::pointer connection,
                 const std::string &line)
         {
             if (!connection->account()->confirmPassword(line)) {
@@ -481,7 +485,7 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string do_state_enter_confirm_code(Connection *connection,
+        const std::string do_state_enter_confirm_code(Connection::pointer connection,
                 const std::string &line)
         {
             if (line.empty()) {
@@ -505,7 +509,7 @@ namespace havokmud {
             return("show account menu");
         }
 
-        const std::string do_state_show_creation_menu(Connection *connection,
+        const std::string do_state_show_creation_menu(Connection::pointer connection,
                 const std::string &line)
         {
             if( line.empty() ) {
@@ -586,7 +590,7 @@ namespace havokmud {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_name(Connection *connection,
+        const std::string do_state_choose_name(Connection::pointer connection,
                 const std::string &line)
         {
             if( line.empty() ) {
@@ -632,7 +636,7 @@ namespace havokmud {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_sex(Connection *connection,
+        const std::string do_state_choose_sex(Connection::pointer connection,
                 const std::string &line)
         {
             /*
@@ -670,55 +674,55 @@ namespace havokmud {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_race(Connection *connection,
+        const std::string do_state_choose_race(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_class(Connection *connection,
+        const std::string do_state_choose_class(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_stats(Connection *connection,
+        const std::string do_state_choose_stats(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_choose_alignment(Connection *connection,
+        const std::string do_state_choose_alignment(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_reroll_abilities(Connection *connection,
+        const std::string do_state_reroll_abilities(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_show_login_menu(Connection *connection,
+        const std::string do_state_show_login_menu(Connection::pointer connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string do_state_wait_for_auth(Connection *connection,
+        const std::string do_state_wait_for_auth(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");
         }
 
-        const std::string do_state_edit_extra_descr(Connection *connection,
+        const std::string do_state_edit_extra_descr(Connection::pointer connection,
                 const std::string &line)
         {
             return("show login menu");
         }
 
-        const std::string do_state_delete_user(Connection *connection,
+        const std::string do_state_delete_user(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");

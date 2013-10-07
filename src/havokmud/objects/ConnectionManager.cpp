@@ -27,7 +27,6 @@
 
 namespace havokmud {
     namespace objects {
-        ConnectionManager g_connectionManager;
 
         void ConnectionManager::start(Connection::pointer c)
         {
@@ -48,4 +47,6 @@ namespace havokmud {
         }
     }
 }
+
+havokmud::objects::ConnectionManager g_connectionManager;
 

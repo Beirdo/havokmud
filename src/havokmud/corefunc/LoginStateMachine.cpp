@@ -30,6 +30,8 @@
 #include "corefunc/LoginStateMachine.hpp"
 #include "corefunc/LoginStateFunctions.hpp"
 
+std::string toHex(const std::string &line);
+
 namespace havokmud {
     namespace corefunc {
         int LoginState::s_nextId = 0;
@@ -110,7 +112,7 @@ namespace havokmud {
         }
 
         LoginStateMachine::LoginStateMachine(LoginStateMachine *base,
-                                             Connection *connection) :
+                                             Connection::pointer connection) :
                 m_stateMap(base->m_stateMap),
                 m_initialState(base->m_initialState),
                 m_exitState(base->m_exitState),
@@ -140,20 +142,31 @@ namespace havokmud {
         {
             LogPrint(LG_INFO, "Current State: %s, Connection %d, Line - %s",
                      m_currentState->name().c_str(), m_connection->id(),
-                     line.c_str());
+                     toHex(line).c_str());
             std::string name = m_currentState->doState(m_connection, line);
             LogPrint(LG_INFO, "Next state: %s", name.c_str());
 
             if (name != "no change") {
-                std::shared_ptr<LoginState> state = m_stateMap->findState(name);
-                if (!state)
-                    state = m_initialState;
-                enterState(state);
+                enterState(name);
             }
 
             return (m_currentState == m_exitState);
         }
     }
+}
+
+std::string toHex(const std::string &line)
+{
+    std::string output;
+    char hex[3];
+
+    for (std::string::const_iterator it = line.begin(); it != line.end(); ++it)
+    {
+        sprintf(hex, "%02X ", (unsigned char)*it);
+        output += std::string(hex);
+    }
+
+    return output;
 }
 
 havokmud::corefunc::LoginStateMachine *g_loginStateMachine = NULL;

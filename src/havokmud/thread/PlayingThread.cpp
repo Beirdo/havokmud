@@ -46,7 +46,7 @@ namespace havokmud {
                     continue;
                 }
 
-                Connection *connection = item->first;
+                boost::shared_ptr<Connection> connection = item->first;
                 std::string line = item->second;
 
                 LogPrint(LG_INFO, "Recieved: connection %d - line: %s",
@@ -73,8 +73,9 @@ namespace havokmud {
             }
         }
 
-        void PlayingThread::removeConnection(Connection *connection)
+        void PlayingThread::removeConnection(boost::shared_ptr<Connection> connection)
         {
+            LogPrint(LG_INFO, "Disconnect in playing thread");
 #if 0
             ConnectionMap::iterator it = m_connectionMap.find(connection);
             if (it == m_connectionMap.end())

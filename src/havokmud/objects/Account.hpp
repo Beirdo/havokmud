@@ -27,6 +27,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <string>
+#include "objects/Connection.hpp"
 
 namespace havokmud {
     namespace objects {
@@ -36,7 +37,7 @@ namespace havokmud {
         class Account
         {
         public:
-            Account(Connection *connection) : m_id(s_nextId++),
+            Account(boost::shared_ptr<Connection> connection) : m_id(s_nextId++),
                     m_connection(connection), m_confirmed(false)  {};
             ~Account();
 
@@ -92,10 +93,14 @@ namespace havokmud {
 
             bool confirmed() const  { return m_confirmed; };
             bool ansi() const  { return m_ansi; };
-            Connection *connection() const  { return m_connection; };
+            boost::shared_ptr<Connection> connection() const
+            {
+                return m_connection;
+            };
+
         private:
             int m_id;
-            Connection *m_connection;
+            boost::shared_ptr<Connection> m_connection;
             std::string m_email;
             std::string m_confirmCode;
             bool m_confirmed;

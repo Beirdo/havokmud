@@ -44,7 +44,7 @@ namespace havokmud {
             m_abort = true;
         }
 
-        void InputThread::enqueueInput(Connection *connection,
+        void InputThread::enqueueInput(Connection::pointer connection,
                                        const std::string &line)
         {
             InputQueueItem *item = new InputQueueItem(connection,

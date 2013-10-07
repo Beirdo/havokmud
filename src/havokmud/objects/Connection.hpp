@@ -76,6 +76,7 @@ namespace havokmud {
             void start();
             void stop();
 
+            bool isOpen()  { return m_socket.is_open(); };
             bool isSiteLocked()  { return false; };
 
             int id()  { return m_id; };
@@ -102,7 +103,8 @@ namespace havokmud {
                     { m_hostname = hostname; };
             void prv_sendBuffer();
 
-            std::string prv_splitLines(boost::asio::mutable_buffer &inBuffer);
+            bool prv_splitLines(boost::asio::mutable_buffer &inBuffer,
+                                std::string &line);
 
             int                             m_id;
             tcp::socket                     m_socket;
