@@ -47,7 +47,8 @@ namespace havokmud {
         void InputThread::enqueueInput(Connection *connection,
                                        const std::string &line)
         {
-            InputQueueItem *item = new InputQueueItem(connection, line);
+            InputQueueItem *item = new InputQueueItem(connection,
+                                                      std::string(line));
             m_inQueue.add(item);
         }
     }

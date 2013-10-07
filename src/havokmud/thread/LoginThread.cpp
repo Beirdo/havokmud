@@ -45,37 +45,46 @@ namespace havokmud {
         void LoginThread::start()
         {
             while (!m_abort) {
+                LogPrint(LG_INFO, "Getting input item");
                 InputQueueItem *item = m_inQueue.get();
                 if (!item) {
                     continue;
                 }
 
                 Connection *connection = item->first;
-                const std::string &line = item->second;
-                LoginStateMachine *machine;
+                std::string line = std::string(item->second);
+                // delete item;
 
-                ConnectionMap::iterator it = m_connectionMap.find(connection);
+                LogPrint(LG_INFO, "Input from connection %d - %s",
+                         connection->id(), line.c_str());
+                LoginStateMachine *machine = NULL;
+
+                LoginConnectionMap::iterator it =
+                        m_connectionMap.find(connection);
                 if (it == m_connectionMap.end()) {
-                    machine = new LoginStateMachine(*g_loginStateMachine);
-                    machine->setConnection(connection);
+                    machine = new LoginStateMachine(g_loginStateMachine,
+                                                    connection);
                     m_connectionMap.insert(std::pair<Connection *,
                                     LoginStateMachine *>(connection, machine));
                 } else {
                     machine = it->second;
                 }
 
-                if (!machine->handleLine(line)) {
+                LogPrint(LG_INFO, "Connection %d, State Machine %p",
+                         connection->id(), machine);
+
+                if (machine->handleLine(line)) {
+                    LogPrint(LG_INFO, "Entering play mode");
                     removeConnection(connection);
                     connection->enterPlaying();
                 }
-
-                delete item;
             }
         }
 
         void LoginThread::removeConnection(Connection *connection)
         {
-            ConnectionMap::iterator it = m_connectionMap.find(connection);
+            LogPrint(LG_INFO, "Removing connection %d", connection->id());
+            LoginConnectionMap::iterator it = m_connectionMap.find(connection);
             if (it == m_connectionMap.end())
                 return;
 

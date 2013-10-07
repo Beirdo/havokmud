@@ -49,6 +49,7 @@ namespace havokmud {
             tcp::endpoint endpoint = *resolver.resolve(query);
 
             m_acceptor.open(endpoint.protocol());
+            m_acceptor.set_option(tcp::acceptor::reuse_address(true));
             m_acceptor.bind(endpoint);
             m_acceptor.listen();
 

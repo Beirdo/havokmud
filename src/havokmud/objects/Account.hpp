@@ -42,6 +42,7 @@ namespace havokmud {
 
             static Account *findAccount(const std::string &email);
             static Account *findAccount(int id);
+            static bool checkEmail(const std::string &email)  { return true; };
             void save();
 
             void addPlayer(Player *player);

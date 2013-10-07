@@ -31,6 +31,7 @@
 #include <boost/asio/buffer.hpp>
 #include <boost/regex.hpp>
 #include <string>
+#include <queue>
 
 #include "objects/Account.hpp"
 #include "objects/Player.hpp"
@@ -61,6 +62,7 @@ namespace havokmud {
 
             static unsigned char echo_on[];
             static unsigned char echo_off[];
+            static int s_nextId;
 
             Connection(boost::asio::io_service &io_service,
                        unsigned int inBufferSize = MAX_BUFSIZE);
@@ -74,6 +76,9 @@ namespace havokmud {
             void start();
             void stop();
 
+            bool isSiteLocked()  { return false; };
+
+            int id()  { return m_id; };
             tcp::socket &socket()  { return m_socket; };
             Player *player() const  { return m_player; };
             Account *account() const  { return m_account; };
@@ -85,7 +90,7 @@ namespace havokmud {
             void handle_write(const boost::system::error_code &e);
 
             void send(std::string format, ...);
-            void send(boost::asio::const_buffer buffer);
+            void send(boost::asio::mutable_buffer buffer);
             void sendRaw(const unsigned char *data, int length);
 
             const std::string &hostname() const { return m_hostname; };
@@ -95,10 +100,11 @@ namespace havokmud {
             void prv_set_ip(std::string ip)  { m_ip = ip; };
             void prv_handle_resolve(std::string hostname)
                     { m_hostname = hostname; };
-            void prv_sendBuffers();
+            void prv_sendBuffer();
 
             std::string prv_splitLines(boost::asio::mutable_buffer &inBuffer);
 
+            int                             m_id;
             tcp::socket                     m_socket;
             Player                         *m_player;
             Account                        *m_account;
@@ -109,7 +115,9 @@ namespace havokmud {
             int                             m_inBufSize;
             unsigned char                  *m_inBufRaw;
             boost::asio::mutable_buffer     m_inBuf;
-            std::vector<boost::asio::const_buffer>  m_outBufVector;
+            std::queue<boost::asio::const_buffer *>  m_outBufQueue;
+            boost::asio::const_buffer      *m_outBuf;
+            const char                     *m_outBufRaw;
             std::string                     m_ip;
             std::string                     m_hostname;
 

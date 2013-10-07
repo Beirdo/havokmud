@@ -32,6 +32,7 @@ namespace havokmud {
 
         using havokmud::objects::Connection;
         using havokmud::objects::Player;
+        using havokmud::objects::Account;
 
         // Entry functions
         // typedef boost::function<void (Connection *connection)>
@@ -223,11 +224,75 @@ namespace havokmud {
         const std::string do_state_get_email(Connection *connection,
                 const std::string &line)
         {
+            if (line.empty()) {
+                if (!connection->account()->email().empty()) {
+                    connection->account()->setEmail(std::string());
+                }
+
+                return("disconnect");
+            } 
+            
+            if (!Account::checkEmail(line)) {
+                connection->send("Illegal email address, please try again.\r\n");
+                connection->send("Email: ");
+                return("no change");
+            }
+
+            if (connection->isSiteLocked()) {
+                connection->send("Sorry, this site is temporarily banned.\n\r");
+                return("disconnect");
+            }
+
+            connection->setAccount(Account::findAccount(line));
+            if( connection->account() ) {
+                /*
+                 * connecting an existing account ...
+                 */
+                return("get password");
+            }
+            
+            /*
+             * player unknown gotta make a new
+             */
+#if 0
+            if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
+                connection->send("Sorry, no new accounts at this time\n\r");
+                return("disconnect");
+            }
+#endif
+
+            /*
+             * move forward creating new character
+             */
+            connection->setAccount(new Account(connection));
+            connection->account()->setEmail(line);
+
+            return("confirm email");
         }
 
         const std::string do_state_confirm_email(Connection *connection,
                 const std::string &line)
         {
+            if(line.empty()) {
+                /*
+                 * Please do Y or N
+                 */
+                connection->send("Please type Yes or No? ");
+                return("no change");
+            }
+
+            switch(tolower(line[0])) {
+            case 'y':
+                connection->sendRaw(Connection::echo_on, 4);
+                connection->send("New account.\n\r");
+                return("get new user password");
+            case 'n':
+                connection->send("Ok, what IS it, then? ");
+                return("get email");
+            default:
+                connection->send("Please type Yes or No? ");
+                return("no change");
+            }
         }
 
         const std::string do_state_get_new_user_password(Connection *connection,

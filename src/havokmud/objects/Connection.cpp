@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #include <cstring>
 #include <boost/asio/error.hpp>
+#include <boost/foreach.hpp>
 
 #include "thread/ResolveThread.hpp"
 #include "objects/Connection.hpp"
@@ -53,8 +54,11 @@ namespace havokmud {
         unsigned char Connection::echo_off[] =
                 { IAC, WILL, TELOPT_ECHO, '\0' };
 
+        int Connection::s_nextId = 1;
+
         Connection::Connection(boost::asio::io_service &io_service,
                                unsigned int inBufferSize) :
+            m_id(s_nextId++),
             m_socket(io_service),
             m_inBufSize(inBufferSize),
             m_inBufRaw(new unsigned char[inBufferSize]),
@@ -126,14 +130,16 @@ namespace havokmud {
                 do {
                     std::string line = prv_splitLines(inBuffer);
                     if (line.empty()) {
-                        LogPrint(LG_INFO, "done splitting");
                         break;
                     }
 
-                    LogPrint(LG_INFO, "Split a line: %s", line.c_str());
                     // Dispatch the line
+                    //LogPrint(LG_INFO, "Enqueuing line (%d) - %s", m_id,
+                    //         line.c_str());
                     m_inputThread->enqueueInput(this, line);
                 } while (true);
+
+                //LogPrint(LG_INFO, "Done with lines, time to read again");
 
                 if (boost::asio::buffer_size(inBuffer)) {
                     m_inBufRemain = inBuffer;
@@ -153,14 +159,17 @@ namespace havokmud {
 
         void Connection::handle_write(const boost::system::error_code &e)
         {
+            delete [] m_outBufRaw;
+            delete m_outBuf;
+            m_outBufRaw = NULL;
             m_writing = false;
             if (!e) {
-                if (boost::asio::buffer_size(m_outBufVector)) {
-                    prv_sendBuffers();
+                if (m_outBufQueue.size()) {
+                    prv_sendBuffer();
                 }
-            }
-
-            if (e != boost::asio::error::operation_aborted) {
+            } else if (e != boost::asio::error::operation_aborted) {
+                LogPrint(LG_INFO, "Handle write: connection %d, e = %d",
+                         m_id, *(int *)&e);
                 g_connectionManager.stop(shared_from_this());
             }
         }
@@ -170,12 +179,18 @@ namespace havokmud {
                 m_socket.shutdown(tcp::socket::shutdown_both, ignored_ec);
 #endif
 
-        void Connection::send(boost::asio::const_buffer buffer)
+        void Connection::send(boost::asio::mutable_buffer buffer)
         {
-            m_outBufVector.push_back(buffer);
+            int len = boost::asio::buffer_size(buffer);
+            char *buf = new char[len];
+            boost::asio::mutable_buffer
+                *newBuffer(new boost::asio::mutable_buffer(buf, len));
+            boost::asio::buffer_copy(*newBuffer, buffer);
+
+            m_outBufQueue.push((boost::asio::const_buffer *)(newBuffer));
 
             if (!m_writing) {
-                prv_sendBuffers();
+                prv_sendBuffer();
             }
         }
 
@@ -190,25 +205,31 @@ namespace havokmud {
             vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
             va_end(arguments);
 
-            sendRaw((const unsigned char *)message, strlen(message));
+            LogPrint(LG_INFO, "Line to send to connection %d: %s",
+                     m_id, message);
+            sendRaw((const unsigned char *)message, strlen(message)+1);
         }
 
         void Connection::sendRaw(const unsigned char *data, int length)
         {
-            boost::asio::const_buffer buffer((void *)data, length);
+            boost::asio::mutable_buffer
+                    buffer(boost::asio::buffer((void *)data, length));
             send(buffer);
         }
 
-        void Connection::prv_sendBuffers()
+        void Connection::prv_sendBuffer()
         {
             m_writing = true;
 
-            std::vector<unsigned char> data(boost::asio::buffer_size(m_outBufVector));
-            std::vector<boost::asio::mutable_buffer> outBuffer(1);
-            boost::asio::buffer_copy(outBuffer, m_outBufVector);
-            m_outBufVector.clear();
+            std::vector<boost::asio::const_buffer> outBufVector;
+            m_outBuf = m_outBufQueue.front();
+            m_outBufRaw = boost::asio::buffer_cast<const char *>(*m_outBuf);
 
-            boost::asio::async_write(m_socket, outBuffer,
+            outBufVector.push_back(*m_outBuf);
+            m_outBufQueue.pop();
+
+            LogPrint(LG_INFO, "Writing buffer to connection %d", m_id);
+            boost::asio::async_write(m_socket, outBufVector,
                     boost::bind(&Connection::handle_write,
                                 shared_from_this(),
                                 boost::asio::placeholders::error));

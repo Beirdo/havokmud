@@ -33,6 +33,8 @@
 namespace havokmud {
     namespace thread {
 
+        typedef std::map<Connection *, LoginStateMachine *> LoginConnectionMap;
+
         class LoginThread : public InputThread
         {
         public:
@@ -43,7 +45,7 @@ namespace havokmud {
             virtual void removeConnection(Connection *connection);
 
         private:
-            ConnectionMap m_connectionMap;
+            LoginConnectionMap m_connectionMap;
         };
     }
 }

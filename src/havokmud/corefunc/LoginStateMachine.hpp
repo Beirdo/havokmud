@@ -26,6 +26,7 @@
 #define __havokmud_corefunc_LoginStateMachine__
 
 #include <boost/function.hpp>
+#include "corefunc/Logging.hpp"
 #include "objects/Connection.hpp"
 #include <string>
 
@@ -46,7 +47,8 @@ namespace havokmud {
             LoginState(std::string name,
                        LoginEntryFunction enterState_,
                        LoginStateFunction doState_) : m_name(name),
-                    m_enterState(enterState_), m_doState(doState_)  {};
+                    m_enterState(enterState_), m_doState(doState_),
+                    m_id(s_nextId++)  {};
             ~LoginState()  {};
 
             int id() const  { return m_id; };
@@ -56,7 +58,8 @@ namespace havokmud {
                 if (m_enterState)
                     m_enterState(connection);
             };
-            const std::string doState(Connection *connection, std::string line)
+            const std::string doState(Connection *connection,
+                                      const std::string &line)
             { 
                 if (m_doState) 
                     return m_doState(connection, line);
@@ -72,34 +75,41 @@ namespace havokmud {
             std::string                         m_name;
             LoginEntryFunction m_enterState;
             LoginStateFunction m_doState;
+
+            static int s_nextId;
         };
 
         class LoginStateMap : private std::map<int, std::shared_ptr<LoginState> >
         {
         public:
-            void add(int id, std::shared_ptr<LoginState> state)
+            typedef std::map<int, std::shared_ptr<LoginState> > StateIdMap;
+            typedef std::map<std::string, std::shared_ptr<LoginState> > StateNameMap;
+
+            void add(std::shared_ptr<LoginState> state)
             {
-                insert(std::pair<int, std::shared_ptr<LoginState> >(id, state));
+                m_idMap.insert(std::pair<int, std::shared_ptr<LoginState> >(state->id(), state));
+                m_nameMap.insert(std::pair<std::string, std::shared_ptr<LoginState> >(state->name(), state));
             }
 
             std::shared_ptr<LoginState> findState(int id)
             {
-                iterator it = find(id);
-                if (it == end())
+                StateIdMap::iterator it = m_idMap.find(id);
+                if (it == m_idMap.end())
                     return NULL;
                 return it->second;
             }
 
             std::shared_ptr<LoginState> findState(const std::string &name)
             {
-                iterator it;
-                for (it = begin(); it != end(); ++it) {
-                    if (it->second->name() == name)
-                        return it->second;
-                }
-
-                return NULL;
+                StateNameMap::iterator it = m_nameMap.find(name);
+                if (it == m_nameMap.end())
+                    return NULL;
+                return it->second;
             }
+
+        private:
+            StateIdMap m_idMap;
+            StateNameMap m_nameMap;
         };
 
         typedef struct {
@@ -116,15 +126,13 @@ namespace havokmud {
             LoginStateMachine(const LoginStateTable &states,
                               const std::string &startState,
                               const std::string &exitState);
-            LoginStateMachine(const LoginStateMachine &old);
+            LoginStateMachine(LoginStateMachine *base, Connection *connection);
             ~LoginStateMachine()  {};
             static void initialize();
 
-            bool handleLine(const std::string &line);
+            bool handleLine(std::string line);
             void enterState(const std::string &name);
 
-            void setConnection(havokmud::objects::Connection *connection)
-                    { m_connection = connection; };
         private:
             void enterState(std::shared_ptr<LoginState> state);
 

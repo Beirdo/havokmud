@@ -47,7 +47,10 @@ namespace havokmud {
                 }
 
                 Connection *connection = item->first;
-                const std::string &line = item->second;
+                std::string line = item->second;
+
+                LogPrint(LG_INFO, "Recieved: connection %d - line: %s",
+                         connection->id(), line.c_str());
 
 #if 0
                 ConnectionMap::iterator it = m_connectionMap.find(connection);

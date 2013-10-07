@@ -45,8 +45,7 @@ namespace havokmud {
         using havokmud::objects::Connection;
         using havokmud::corefunc::LoginStateMachine;
 
-        typedef std::pair<Connection *, const std::string &> InputQueueItem;
-        typedef std::map<Connection *, LoginStateMachine *> ConnectionMap;
+        typedef std::pair<Connection *, std::string> InputQueueItem;
 
         class InputThread : public HavokThread
         {

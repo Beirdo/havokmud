@@ -32,6 +32,8 @@
 
 namespace havokmud {
     namespace corefunc {
+        int LoginState::s_nextId = 0;
+
         static LoginStateItem loginStates[] = {
             { "initial", enter_state_initial, do_state_initial },
             { "get email", enter_state_get_email, do_state_get_email },
@@ -100,16 +102,19 @@ namespace havokmud {
                 std::shared_ptr<LoginState>
                         state(new LoginState(it->name, it->enterState,
                                              it->doState));
-                m_stateMap->add(state->id(), state);
+                m_stateMap->add(state);
             }
             
             m_initialState = m_stateMap->findState(startState);
             m_exitState = m_stateMap->findState(exitState);
         }
 
-        LoginStateMachine::LoginStateMachine(const LoginStateMachine &old) :
-                m_stateMap(old.m_stateMap), m_initialState(old.m_initialState),
-                m_exitState(old.m_exitState)
+        LoginStateMachine::LoginStateMachine(LoginStateMachine *base,
+                                             Connection *connection) :
+                m_stateMap(base->m_stateMap),
+                m_initialState(base->m_initialState),
+                m_exitState(base->m_exitState),
+                m_connection(connection)
         {
             enterState(m_initialState);
         }
@@ -125,14 +130,20 @@ namespace havokmud {
 
         void LoginStateMachine::enterState(std::shared_ptr<LoginState> state)
         {
+            LogPrint(LG_INFO, "Entering state: %s", state->name().c_str());
             state->enter(m_connection);
 
             m_currentState = state;
         }
 
-        bool LoginStateMachine::handleLine(const std::string &line)
+        bool LoginStateMachine::handleLine(std::string line)
         {
+            LogPrint(LG_INFO, "Current State: %s, Connection %d, Line - %s",
+                     m_currentState->name().c_str(), m_connection->id(),
+                     line.c_str());
             std::string name = m_currentState->doState(m_connection, line);
+            LogPrint(LG_INFO, "Next state: %s", name.c_str());
+
             if (name != "no change") {
                 std::shared_ptr<LoginState> state = m_stateMap->findState(name);
                 if (!state)
