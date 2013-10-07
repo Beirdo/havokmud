@@ -41,6 +41,13 @@ namespace havokmud {
             LoginStateMachine::initialize();
         }
         
+        void LoginThread::initialize(Connection *connection)
+        {
+            LoginStateMachine *machine = 
+                    new LoginStateMachine(g_loginStateMachine, connection);
+            m_connectionMap.insert(std::pair<Connection *,
+                            LoginStateMachine *>(connection, machine));
+        }
 
         void LoginThread::start()
         {
@@ -62,10 +69,9 @@ namespace havokmud {
                 LoginConnectionMap::iterator it =
                         m_connectionMap.find(connection);
                 if (it == m_connectionMap.end()) {
-                    machine = new LoginStateMachine(g_loginStateMachine,
-                                                    connection);
-                    m_connectionMap.insert(std::pair<Connection *,
-                                    LoginStateMachine *>(connection, machine));
+                    // Shouldn't happen
+                    initialize(connection);
+                    machine = connection->loginStateMachine();
                 } else {
                     machine = it->second;
                 }

@@ -39,6 +39,12 @@ namespace havokmud {
         //         LoginEntryFunction;
         void enter_state_initial(Connection *connection)
         {
+//            connection->send(login);
+            connection->send("If you're using Tintin or Lyntin, your client "
+                             "may not display the password\n\r"
+                             "sequence unless you change your settings. "
+                             "Please do not be discouraged.\n\r\n\r");
+            connection->loginStateMachine()->enterState("get email");
         }
 
         void enter_state_get_email(Connection *connection)

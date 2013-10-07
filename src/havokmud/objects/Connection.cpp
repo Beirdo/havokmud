@@ -92,6 +92,8 @@ namespace havokmud {
             LogPrint(LG_INFO, "Connection::start: %s (%s)", m_ip.c_str(),
                      m_hostname.c_str());
 
+            g_loginThread->initialize(this);
+
             // Start reading
             m_socket.async_read_some(boost::asio::buffer(m_inBuf),
                     boost::bind(&Connection::handle_read,
@@ -205,9 +207,9 @@ namespace havokmud {
             vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
             va_end(arguments);
 
-            LogPrint(LG_INFO, "Line to send to connection %d: %s",
-                     m_id, message);
-            sendRaw((const unsigned char *)message, strlen(message)+1);
+            //LogPrint(LG_INFO, "Line to send to connection %d: %s",
+            //         m_id, message);
+            sendRaw((const unsigned char *)message, strlen(message));
         }
 
         void Connection::sendRaw(const unsigned char *data, int length)
@@ -228,7 +230,7 @@ namespace havokmud {
             outBufVector.push_back(*m_outBuf);
             m_outBufQueue.pop();
 
-            LogPrint(LG_INFO, "Writing buffer to connection %d", m_id);
+            //LogPrint(LG_INFO, "Writing buffer to connection %d", m_id);
             boost::asio::async_write(m_socket, outBufVector,
                     boost::bind(&Connection::handle_write,
                                 shared_from_this(),

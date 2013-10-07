@@ -44,6 +44,8 @@ namespace havokmud {
             virtual void start();
             virtual void removeConnection(Connection *connection);
 
+            void initialize(Connection *connection);
+
         private:
             LoginConnectionMap m_connectionMap;
         };
