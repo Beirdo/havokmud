@@ -61,7 +61,7 @@ namespace havokmud {
 
         void enter_state_get_new_user_password(Connection::pointer connection)
         {
-            connection->send("Give me a password for %s: ",
+            connection->send("Give me a password for %s (at least 8 characters): ",
                     connection->account()->email().c_str());
             connection->sendRaw(havokmud::objects::Connection::echo_off, 4);
         }
@@ -80,7 +80,7 @@ namespace havokmud {
 
         void enter_state_choose_ansi(Connection::pointer connection)
         {
-            connection->send("Would you like ansi colors? (Yes or No)");
+            connection->send("Would you like ANSI colors? (Yes or No) ");
         }
 
         void enter_state_show_motd(Connection::pointer connection)
@@ -253,25 +253,16 @@ namespace havokmud {
 
             connection->setAccount(Account::findAccount(line));
             if( connection->account() ) {
-                /*
-                 * connecting an existing account ...
-                 */
+                // connecting an existing account ...
                 return("get password");
             }
             
-            /*
-             * player unknown gotta make a new
-             */
-#if 0
-            if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
+            if (g_settings.get<bool>("wizlocked")) {
                 connection->send("Sorry, no new accounts at this time\n\r");
                 return("disconnect");
             }
-#endif
 
-            /*
-             * move forward creating new character
-             */
+            // move forward creating new character
             connection->setAccount(new Account(connection));
             connection->account()->setEmail(line);
 
@@ -282,9 +273,6 @@ namespace havokmud {
                 const std::string &line)
         {
             if(line.empty()) {
-                /*
-                 * Please do Y or N
-                 */
                 connection->send("Please type Yes or No? ");
                 return("no change");
             }
@@ -295,7 +283,7 @@ namespace havokmud {
                 connection->send("New account.\n\r");
                 return("get new user password");
             case 'n':
-                connection->send("Ok, what IS it, then? ");
+                connection->send("Ok, what IS it, then?\n\r");
                 return("get email");
             default:
                 connection->send("Please type Yes or No? ");
@@ -303,17 +291,55 @@ namespace havokmud {
             }
         }
 
+        const std::string do_common_get_new_password(Connection::pointer connection,
+                const std::string &line, const std::string &failState,
+                const std::string &successState)
+        {
+            if (line.length() < 8) {
+                connection->sendRaw(Connection::echo_on, 6);
+                connection->send("Illegal password (must be at least 8 characters).\n\r");
+                return(failState);
+            }
+
+            connection->account()->setNewPassword(line);
+            connection->sendRaw(Connection::echo_on, 6);
+            return(successState);
+        }
+
+        const std::string do_common_confirm_password(Connection::pointer connection,
+                const std::string &line, const std::string &failState,
+                const std::string &successState, bool verbose)
+        {
+            if (!connection->account()->confirmPassword(line)) {
+                connection->sendRaw(Connection::echo_on, 6);
+                connection->send("Passwords don't match.\n\r");
+                return(failState);
+            } 
+
+            connection->sendRaw(Connection::echo_on, 6);
+            connection->account()->setPassword();
+
+            if (verbose)
+                connection->send("Password changed...\n\r");
+
+            connection->account()->save();
+            return(successState);
+        }
+
         const std::string do_state_get_new_user_password(Connection::pointer connection,
                 const std::string &line)
         {
-            return std::string("no change");    // TODO
+            return(do_common_get_new_password(connection, line,
+                   "get new user password", "confirm new password"));
         }
 
-        const std::string do_state_confirm_password(Connection::pointer connection,
+        const std::string do_state_confirm_new_password(Connection::pointer connection,
                 const std::string &line)
         {
-            return std::string("no change");    // TODO
+            return(do_common_confirm_password(connection, line,
+                   "get new user password", "choose ansi", false));
         }
+
 
         const std::string do_state_get_password(Connection::pointer connection,
                 const std::string &line)
@@ -339,7 +365,7 @@ namespace havokmud {
         {
             if (line.empty()) {
                 connection->send("Please type Yes or No.\n\r"
-                                 "Would you like ANSI colors? :");
+                                 "Would you like ANSI colors? ");
                 return("no change");
             }
 
@@ -357,14 +383,15 @@ namespace havokmud {
 
             default:
                 connection->send("Please type Yes or No.\n\r"
-                                 "Would you like ANSI colors? :");
+                                 "Would you like ANSI colors? ");
                 return("no change");
             }
 
             connection->account()->save();
             if (connection->account()->confirmCode().empty()) {
                 // Send the confirmation code by email
-                connection->loginStateMachine()->enterState("resend confirm email");
+                connection->loginStateMachine()->
+                        enterState("resend confirm email");
             }
 
             return("show account menu");
@@ -457,32 +484,15 @@ namespace havokmud {
         const std::string do_state_get_new_password(Connection::pointer connection,
                 const std::string &line)
         {
-            if (line.length() <= 10) {
-                connection->sendRaw(Connection::echo_on, 6);
-                connection->send("Illegal password.\n\r");
-                return("get new password");
-            }
-
-            connection->account()->setNewPassword(line);
-            connection->sendRaw(Connection::echo_on, 6);
-            return("confirm new password");
+            return(do_common_get_new_password(connection, line,
+                   "get new password", "confirm password"));
         }
 
-        const std::string do_state_confirm_new_password(Connection::pointer connection,
+        const std::string do_state_confirm_password(Connection::pointer connection,
                 const std::string &line)
         {
-            if (!connection->account()->confirmPassword(line)) {
-                connection->sendRaw(Connection::echo_on, 6);
-                connection->send("Passwords don't match.\n\r");
-                return("show account menu");
-            } 
-
-            connection->sendRaw(Connection::echo_on, 6);
-            connection->account()->setPassword();
-            connection->send("Password changed...\n\r");
-            connection->account()->save();
-
-            return("show account menu");
+            return(do_common_confirm_password(connection, line, 
+                    "show account menu", "show account menu", true));
         }
 
         const std::string do_state_enter_confirm_code(Connection::pointer connection,

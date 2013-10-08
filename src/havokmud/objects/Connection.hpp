@@ -125,6 +125,7 @@ namespace havokmud {
 
             bool                            m_writing;
             static boost::regex             s_lineRegex;
+            static boost::regex             s_colorRegex;
         };
     }
 }

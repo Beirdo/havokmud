@@ -211,7 +211,24 @@ namespace havokmud {
             }
         }
 
+        std::string colorize(boost::smatch match, bool ansi, bool &matched)
+        {
+            int bg = std::stoi(std::string(match[1].first, match[1].second));
+            int fg = std::stoi(std::string(match[2].first, match[2].second));
+            ThreadColors color(bg, fg);
+
+            std::string out;
+            if (ansi) {
+                out = color.background() + color.foreground();
+                matched = true;
+            }
+
+            return out;
+        } 
+
 #define LOGLINE_MAX 1024
+
+        boost::regex Connection::s_colorRegex("\\$\\$?[cC](\\d\\d)(\\d\\d)");
 
         void Connection::send(std::string format, ...)
         {
@@ -222,9 +239,23 @@ namespace havokmud {
             vsnprintf(message, LOGLINE_MAX, format.c_str(), arguments);
             va_end(arguments);
 
+            std::string outMessage = std::string(message);
+            bool ansi = account() && account()->ansi();
+            bool matched = false;
+
+            boost::function<std::string (boost::smatch)> formatFunc =
+                    boost::bind(&colorize, _1, ansi, matched);
+            std::string final = boost::regex_replace(outMessage, s_colorRegex,
+                                                     formatFunc);
+
+            if (ansi && matched) {
+                final += g_defaultColor.background()
+                      +  g_defaultColor.foreground();
+            }
+
             //LogPrint(LG_INFO, "Line to send to connection %d: %s",
             //         m_id, message);
-            sendRaw((const unsigned char *)message, strlen(message));
+            sendRaw((const unsigned char *)final.c_str(), final.length());
         }
 
         void Connection::sendRaw(const unsigned char *data, int length)

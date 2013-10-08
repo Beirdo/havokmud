@@ -74,13 +74,13 @@ namespace havokmud {
             bool confirmPassword(const std::string &password)
             {
                 return (!m_newPassword.empty() &&
-                        m_newPassword != hashPassword(password));
+                        m_newPassword == hashPassword(password));
             };
 
             bool checkPassword(const std::string &password)
             {
                 return (!m_password.empty() &&
-                        m_password != hashPassword(password));
+                        m_password == hashPassword(password));
             }
 
             const std::string &email() const   { return m_email; };

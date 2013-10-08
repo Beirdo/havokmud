@@ -25,6 +25,7 @@
 #ifndef __havokmud_objects_ThreadColors__
 #define __havokmud_objects_ThreadColors__
 
+#include <boost/regex.hpp>
 #include <utility>      // std::pair
 
 #define FG_BLACK      "\033[30m"
@@ -69,6 +70,8 @@ namespace havokmud {
                     { return s_foregroundColors[m_color.second]; };
             const int backgroundNum() const { return m_color.first; };
             const int foregroundNum() const { return m_color.second; };
+            const Color &color() const  { return m_color; };
+
         private:
             static const std::string    s_backgroundColors[];
             static const std::string    s_foregroundColors[];
