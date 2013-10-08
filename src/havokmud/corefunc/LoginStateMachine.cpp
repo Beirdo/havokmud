@@ -116,6 +116,7 @@ namespace havokmud {
                 m_stateMap(base->m_stateMap),
                 m_initialState(base->m_initialState),
                 m_exitState(base->m_exitState),
+                m_currentState(m_initialState),
                 m_connection(connection)
         {
             connection->setLoginStateMachine(this);
@@ -133,19 +134,16 @@ namespace havokmud {
 
         void LoginStateMachine::enterState(std::shared_ptr<LoginState> state)
         {
-            LogPrint(LG_INFO, "Entering state: %s", state->name().c_str());
+            LogPrint(LG_INFO, "Connection %d: state: %s -> %s",
+                     m_connection->id(), m_currentState->name().c_str(),
+                     state->name().c_str());
             m_currentState = state;
             state->enter(m_connection);
         }
 
         bool LoginStateMachine::handleLine(std::string line)
         {
-            LogPrint(LG_INFO, "Current State: %s, Connection %d, Line - %s",
-                     m_currentState->name().c_str(), m_connection->id(),
-                     toHex(line).c_str());
             std::string name = m_currentState->doState(m_connection, line);
-            LogPrint(LG_INFO, "Next state: %s", name.c_str());
-
             if (name != "no change") {
                 enterState(name);
             }

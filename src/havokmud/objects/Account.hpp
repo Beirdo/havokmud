@@ -26,6 +26,7 @@
 #define __havokmud_objects_Account__
 
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 #include <string>
 #include "objects/Connection.hpp"
 
@@ -43,7 +44,7 @@ namespace havokmud {
 
             static Account *findAccount(const std::string &email);
             static Account *findAccount(int id);
-            static bool checkEmail(const std::string &email)  { return true; };
+            static bool checkEmail(const std::string &email);
             void save();
 
             void addPlayer(Player *player);
@@ -109,6 +110,7 @@ namespace havokmud {
             std::string m_newPassword;
 
             static int s_nextId;
+            static boost::regex s_emailRegex;
         };
     }
 }

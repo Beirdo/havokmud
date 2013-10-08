@@ -144,6 +144,13 @@ namespace havokmud {
 
             return( outbuf );
         }
+
+        boost::regex Account::s_emailRegex("(?i)([a-z][a-z0-9._\\-]+@([a-z0-9\\-]+\\.)[a-z]+)");
+        bool Account::checkEmail(const std::string &email)
+        {
+            boost::smatch match;
+            return boost::regex_match(email, match, s_emailRegex);
+        }
     }
 }
 

@@ -144,9 +144,9 @@ namespace havokmud {
             void enterState(std::shared_ptr<LoginState> state);
 
             std::shared_ptr<LoginStateMap>  m_stateMap;
-            std::shared_ptr<LoginState>     m_currentState;
             std::shared_ptr<LoginState>     m_initialState;
             std::shared_ptr<LoginState>     m_exitState;
+            std::shared_ptr<LoginState>     m_currentState;
 
             havokmud::objects::Connection::pointer  m_connection;
         };
