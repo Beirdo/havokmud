@@ -57,6 +57,10 @@ namespace havokmud {
                                unsigned int inBufferSize) :
             m_id(s_nextId++),
             m_socket(io_service),
+            m_player(NULL),
+            m_account(NULL),
+            m_loginStateMachine(NULL),
+            m_inputThread(NULL),
             m_inBufSize(inBufferSize),
             m_inBufRaw(new unsigned char[inBufferSize]),
             m_inBuf(boost::asio::buffer(m_inBufRaw, inBufferSize)),
@@ -137,12 +141,14 @@ namespace havokmud {
 
                     if ((unsigned char)line[0] == 0xFF) {
                         // Telnet control codes should be eaten.
+                        // LogPrint(LG_INFO, "Control Codes");
                         break;
                     }
 
                     if ((unsigned char)line[0] == 0x0A ||
                         (unsigned char)line[0] == 0x0D) {
                         // blank line
+                        // LogPrint(LG_INFO, "Blank Line");
                         line = std::string();
                     }
 
@@ -211,7 +217,7 @@ namespace havokmud {
             }
         }
 
-        std::string colorize(boost::smatch match, bool ansi, bool &matched)
+        std::string Connection::colorize(boost::smatch match, bool ansi)
         {
             int bg = std::stoi(std::string(match[1].first, match[1].second));
             int fg = std::stoi(std::string(match[2].first, match[2].second));
@@ -220,7 +226,7 @@ namespace havokmud {
             std::string out;
             if (ansi) {
                 out = color.background() + color.foreground();
-                matched = true;
+                m_colorized = true;
             }
 
             return out;
@@ -241,14 +247,14 @@ namespace havokmud {
 
             std::string outMessage = std::string(message);
             bool ansi = account() && account()->ansi();
-            bool matched = false;
+            m_colorized = false;
 
             boost::function<std::string (boost::smatch)> formatFunc =
-                    boost::bind(&colorize, _1, ansi, matched);
+                    boost::bind(&Connection::colorize, this, _1, ansi);
             std::string final = boost::regex_replace(outMessage, s_colorRegex,
                                                      formatFunc);
 
-            if (ansi && matched) {
+            if (ansi && m_colorized) {
                 final += g_defaultColor.background()
                       +  g_defaultColor.foreground();
             }

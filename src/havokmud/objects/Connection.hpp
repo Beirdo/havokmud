@@ -97,6 +97,7 @@ namespace havokmud {
             const std::string &hostname() const { return m_hostname; };
 
             void enterPlaying();
+            std::string colorize(boost::smatch match, bool ansi);
         private:
             void prv_set_ip(std::string ip)  { m_ip = ip; };
             void prv_handle_resolve(std::string hostname)
@@ -126,6 +127,7 @@ namespace havokmud {
             bool                            m_writing;
             static boost::regex             s_lineRegex;
             static boost::regex             s_colorRegex;
+            bool                            m_colorized;
         };
     }
 }

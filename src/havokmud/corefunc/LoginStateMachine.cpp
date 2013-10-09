@@ -143,6 +143,7 @@ namespace havokmud {
 
         bool LoginStateMachine::handleLine(std::string line)
         {
+            //LogPrint(LG_INFO, "Line: %s", toHex(line).c_str());
             std::string name = m_currentState->doState(m_connection, line);
             if (name != "no change") {
                 enterState(name);
