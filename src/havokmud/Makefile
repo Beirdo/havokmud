@@ -1,10 +1,11 @@
 SUBDIRS = corefunc objects plugin thread util
-CPPFLAGS = -g -std=c++11 -I.
+CPPFLAGS = -g -std=c++11 -I. -I ../../include
 
 LIBS  = -L thread -L objects -L corefunc -L util
 LIBS += -lhavokthread -lhavokobjects -lhavokcorefunc -lhavokutil
 LIBS += -lhavokthread -lhavokobjects -lhavokcorefunc -lhavokutil
 LIBS += -lboost_thread -lboost_system -lboost_regex -lcrypto
+LIBS += -L ../../lib -lesmtp
 
 .PHONY: force
 

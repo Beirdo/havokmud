@@ -22,7 +22,6 @@
  * @brief Thread to resolve IPs to hostnames asynchronously
  */
 
-#include <iostream>
 #include <string>
 #include <sys/time.h>
 

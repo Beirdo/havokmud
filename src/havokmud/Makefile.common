@@ -1,4 +1,4 @@
-CPPFLAGS = -g -std=c++11 -I../
+CPPFLAGS = -g -std=c++11 -I../ -I ../../../include
 
 LIBFILE = libhavok${DIR}.a
 
