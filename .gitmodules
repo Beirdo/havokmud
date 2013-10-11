@@ -1,3 +1,6 @@
 [submodule "libs/google-coredumper"]
 	path = libs/google-coredumper
 	url = git@github.com:Beirdo/google-coredumper
+[submodule "libs/mysql-connector-cpp"]
+	path = libs/mysql-connector-cpp
+	url = git@github.com:Beirdo/mysql-connector-cpp.git
