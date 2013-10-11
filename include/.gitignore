@@ -4,6 +4,9 @@ auth-plugin.h
 config.h
 libesmtp.h
 stamp-h1
-google
+google/
+cppconn/
 cJSON.h
 mongoose.h
+mysql_connection.h
+mysql_driver.h
