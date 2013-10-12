@@ -22,25 +22,43 @@
  * @brief Thread to handle database requests 
  */
 
+#include <sstream>
 #include <string>
 #include <stdarg.h>
+#include <cppconn/statement.h>
+#include <cppconn/resultset.h>
+#include <cppconn/resultset_metadata.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "thread/DatabaseThread.hpp"
 #include "corefunc/Logging.hpp"
 #include "objects/Settings.hpp"
 #include "objects/Email.hpp"
+#include "corefunc/DatabaseHandler.hpp"
 
 namespace havokmud {
     namespace thread {
 
         DatabaseThread::DatabaseThread() : HavokThread("Database"),
-                m_abort(false)
+                m_abort(false), m_server("tcp://localhost:3306"),
+                m_user("havokmud"), m_password("havokmud"),
+                m_database("havokdevel")
         {
             pro_initialize<DatabaseThread>();
         }
 
         void DatabaseThread::start()
         {
+            m_driver = sql::mysql::get_mysql_driver_instance();
+            LogPrint(LG_INFO, "MySQL Connector/C++ version %d.%d.%d",
+                     m_driver->getMajorVersion(), m_driver->getMinorVersion(),
+                     m_driver->getPatchVersion());
+            LogPrint(LG_INFO, "MySQL server: %s with user %s",
+                     m_server.c_str(), m_user.c_str());
+            m_connection = m_driver->connect(m_server, m_user, m_password);
+
+            DatabaseHandler::initialize();
 
             while (!m_abort)
             {
@@ -48,11 +66,98 @@ namespace havokmud {
                 if (!request)
                     continue;
 
-                boost::shared_ptr<DatabaseResponse> response =
-                        handleRequest(request);
-                if (request->callback)
-                    request->callback(response);
+                handleRequest(request);
             }
+        }
+
+        void DatabaseThread::handleRequest(RequestPointer request)
+        {
+            ResponsePointer response();
+
+            // use request->m_query
+            boost::shared_ptr<sql::Statement>
+                    statement(m_connection->createStatement());
+            boost::shared_ptr<sql::ResultSet>
+                    resultSet(statement->executeQuery(request->query()));
+            if (request->requiresResponse()) {
+                boost::shared_ptr<sql::ResultSetMetadata>
+                        resultMetadata(resultSet->getMetaData());
+
+                int rowCount = resultSet->rowsCount();
+                int columnCount = resultMetadata->getColumnCount();
+
+                std::vector<std::string> columnNames;
+                for (int i = 1; i <= columnCount; i++) {
+                    columnNames.push_back(resultMetadata->getColumnName(i));
+                }
+
+                std::string jsonResult("[");
+                for (int rowNum = 1; rowNum <= rowCount; rowNum++) {
+                    resultSet->next();
+
+                    jsonResult += "{";
+                    for (int i = 1; i <= columnCount; i++) {
+                        jsonResult += "\"" + columnNames[i-1] + "\":\"" 
+                                   +  resultSet->getString(i) + "\"";
+                        if (i != columnCount)
+                            jsonResult += ", ";
+                    }
+
+                    jsonResult += "}";
+                    if (rowNum != rowCount)
+                        jsonResult += ", ";
+                }
+                jsonResult += "]";
+
+                int insertId;
+                if (request->requiresInsertId()) {
+                    boost::shared_ptr<sql::Statement>
+                            statement2(m_connection->createStatement());
+                    boost::shared_ptr<sql::ResultSet>
+                            resultSet2(statement2->executeQuery("SELECT LAST_INSERT_ID();"));
+
+                    resultSet2->next();
+                    insertId = resultSet2->getInt(1);
+                }
+
+                response.reset(new DatabaseResponse(jsonResult, insertId));
+
+                request->setResponse(response);
+                request->mutex().unlock();
+            }
+        }
+
+        ResponsePointer DatabaseThread::doRequest(RequestPointer request)
+        {
+            ResponsePointer response();
+
+            if (request->requiresResponse()) {
+                request->mutex().lock();
+            }
+
+            m_queue.add(request);
+
+            if (request->requiresResponse()) {
+                request->mutex().lock();
+                response = request->response();
+            }
+        }
+
+        std::string DatabaseThread::doRequest(const std::string &jsonRequest)
+        {
+            std::stringstream ss;
+            ss << jsonRequest;
+            boost::property_tree::ptree pt;
+            boost::property_tree::read_json(ss, pt);
+
+            std::string command = pt.get<std::string>("command");
+            DatabaseHander *handler = DatabaseHandler::findCommand(command);
+            if (!handler)
+                return std::string();
+
+            RequestPointer request(handler->getRequest(pt.get_child("data")));
+            ResponsePointer response(doRequest(request));
+            return response->response();
         }
     }
 }
