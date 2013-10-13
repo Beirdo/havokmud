@@ -29,6 +29,7 @@
 #include <boost/thread.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace havokmud {
     namespace objects {
@@ -42,27 +43,35 @@ namespace havokmud {
         {
         public:
             DatabaseRequest(const std::string &query_,
+                            const boost::property_tree::ptree &data_,
                             bool requiresResponse_ = false,
-                            bool requiresInsertId_ = false) : m_query(query_),
+                            bool requiresInsertId_ = false,
+                            const std::string &chainCommand_ = std::string()) :
+                    m_query(query_), m_data(data_),
                     m_requiresResponse(requiresResponse_),
-                    m_requiresInsertId(requiresInsertId_), m_response()  {};
+                    m_requiresInsertId(requiresInsertId_), 
+                    m_chainCommand(chainCommand_), m_response()  {};
 
             ~DatabaseRequest()  {};
 
-            boost::mutex &mutex() const    { return m_mutex; };
+            boost::mutex &mutex()          { return m_mutex; };
             bool requiresResponse() const  { return m_requiresResponse; };
             bool requiresInsertId() const  { return m_requiresInsertId; };
 
             const std::string &query()     { return m_query; };
+            const std::string &chainCommand()  { return m_chainCommand; };
+            const boost::property_tree::ptree &data()  { return m_data; };
 
             void setResponse(ResponsePointer response_)
-                    { m_response = response; };
+                    { m_response = response_; };
             ResponsePointer response()     { return m_response; };
 
         private:
             const std::string   m_query;
+            const boost::property_tree::ptree m_data;
             bool                m_requiresResponse;
             bool                m_requiresInsertId;
+            const std::string   m_chainCommand;
 
             boost::mutex        m_mutex;
             ResponsePointer     m_response;

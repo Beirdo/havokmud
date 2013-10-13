@@ -5,7 +5,7 @@ LIBS  = -L thread -L objects -L corefunc -L util
 LIBS += -lhavokthread -lhavokobjects -lhavokcorefunc -lhavokutil
 LIBS += -lhavokthread -lhavokobjects -lhavokcorefunc -lhavokutil
 LIBS += -lboost_thread -lboost_system -lboost_regex -lcrypto
-LIBS += -L ../../lib -lesmtp
+LIBS += -L ../../lib -lesmtp -lmysqlcppconn
 
 .PHONY: force
 

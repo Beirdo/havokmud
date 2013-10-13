@@ -26,6 +26,7 @@
 #define __havokmud_thread_DatabaseThread__
 
 #include <string>
+#include <boost/regex.hpp>
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 
@@ -39,6 +40,8 @@ namespace havokmud {
 
         using havokmud::thread::HavokThread;
         using havokmud::objects::LockingQueue;
+        using havokmud::objects::DatabaseRequest;
+        using havokmud::objects::DatabaseResponse;
 
         typedef boost::shared_ptr<DatabaseRequest>  RequestPointer;
         typedef boost::shared_ptr<DatabaseResponse> ResponsePointer;
@@ -61,13 +64,15 @@ namespace havokmud {
 
             LockingQueue<RequestPointer> m_queue;
 
-            boost::shared_ptr<sql::mysql::MySQL_Driver> m_driver;
+            sql::Driver *m_driver;
             boost::shared_ptr<sql::Connection>          m_connection;
 
             const std::string m_server;
             const std::string m_user;
             const std::string m_password;
             const std::string m_database;
+
+            static boost::regex s_chainRegex;
         };
     }
 }

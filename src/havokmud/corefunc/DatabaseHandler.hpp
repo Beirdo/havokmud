@@ -26,32 +26,40 @@
 #define __havokmud_corefunc_DatabaseHandler__
 
 #include <string>
+#include <map>
 #include <boost/thread.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+
+#include "objects/DatabaseRequest.hpp"
+#include "util/misc.hpp"
 
 namespace havokmud {
     namespace objects {
         class DatabaseRequest;
+    }
 
-        typedef boost::shared_ptr<Databasequest> RequestPointer;
+    namespace corefunc {
+        using havokmud::objects::DatabaseRequest;
+        typedef boost::shared_ptr<DatabaseRequest> RequestPointer;
 
         class DatabaseHandler
         {
         public:
             DatabaseHandler(const std::string &command_,
                             const std::string &query_,
-                            const std::string &parameters_[],
+                            const std::vector<std::string> &parameters_,
                             bool requiresResponse_ = false,
-                            bool requiresInsertId_ = false) :
+                            bool requiresInsertId_ = false,
+                            const std::string &chainCommand_ = std::string()) :
                     m_command(command_), m_query(query_),
                     m_requiresResponse(requiresResponse_),
-                    m_requiresInsertId(requiresInsertId_), m_response()
+                    m_requiresInsertId(requiresInsertId_),
+                    m_chainCommand(chainCommand_)
             {
-                int count = NELEMS(parameters_);
-                for (int i = 0; i < count; i++) {
-                    m_parameters.push_back(parameters_[i]);
-                }
                 s_handlerMap.insert(std::pair<std::string, DatabaseHandler *>
                         (m_command, this));
             };
@@ -61,13 +69,15 @@ namespace havokmud {
                 s_handlerMap.erase(m_command);
             };
 
-            const std::string &command()   { return m_command; };
-            const std::string &query()     { return m_query; };
+            const std::string &command() const  { return m_command; };
+            const std::string &query() const    { return m_query; };
             bool requiresResponse() const  { return m_requiresResponse; };
             bool requiresInsertId() const  { return m_requiresInsertId; };
-            std::vector<std::string> parameters() const { m_parameters; };
+            std::vector<std::string> parameters() const
+                    { return m_parameters; };
+            const std::string &chainCommand() const  { return m_chainCommand; };
 
-            static void initialize()  {};
+            static void initialize();
 
             static DatabaseHandler *findCommand(const std::string &command_)
             {
@@ -80,20 +90,7 @@ namespace havokmud {
                 return it->second;
             };
 
-            RequestPointer getRequest(const boost::property_tree::ptree &data)
-            {
-                boost::format q(query());
-                std::vector<std::string> params(parameters());
-                BOOST_FOREACH(std::string &param, params) {
-                    std::string value(data.get<std::string>(param));
-                    q % value;
-                }
-
-                RequestPointer request(new DatabaseRequest(q,
-                        requiresResponse(), requiresInsertId()));
-
-                return request;
-            };
+            RequestPointer getRequest(const boost::property_tree::ptree &data);
 
         private:
             const std::string   m_command;
@@ -101,6 +98,7 @@ namespace havokmud {
             bool                m_requiresResponse;
             bool                m_requiresInsertId;
             std::vector<std::string> m_parameters;
+            const std::string   m_chainCommand;
 
             static std::map<std::string, DatabaseHandler *> s_handlerMap;
         };

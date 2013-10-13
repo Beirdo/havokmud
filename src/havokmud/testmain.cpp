@@ -6,6 +6,8 @@
 #include "thread/LoginThread.hpp"
 #include "thread/PlayingThread.hpp"
 #include "thread/SmtpThread.hpp"
+#include "thread/SmtpThread.hpp"
+#include "thread/DatabaseThread.hpp"
 
 boost::thread::id g_mainThreadId;
 bool g_debug = true;
@@ -15,6 +17,7 @@ havokmud::thread::LoginThread   *g_loginThread;
 havokmud::thread::PlayingThread *g_playingThread;
 havokmud::thread::PlayingThread *g_immortalPlayingThread;
 havokmud::thread::SmtpThread    *g_smtpThread;
+havokmud::thread::DatabaseThread *g_databaseThread;
 
 namespace havokmud {
     namespace thread {
@@ -38,6 +41,7 @@ namespace havokmud {
             g_mainThreadId = boost::this_thread::get_id();
 
             g_loggingThread = new havokmud::thread::LoggingThread();
+            g_databaseThread = new havokmud::thread::DatabaseThread();
             g_resolveThread = new havokmud::thread::ResolveThread();
             g_loginThread = new havokmud::thread::LoginThread();
             g_playingThread = new havokmud::thread::PlayingThread(false);

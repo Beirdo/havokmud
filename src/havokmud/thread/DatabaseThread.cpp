@@ -25,6 +25,8 @@
 #include <sstream>
 #include <string>
 #include <stdarg.h>
+#include <cppconn/driver.h>
+#include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/resultset.h>
 #include <cppconn/resultset_metadata.h>
@@ -40,6 +42,8 @@
 namespace havokmud {
     namespace thread {
 
+        using havokmud::corefunc::DatabaseHandler;
+
         DatabaseThread::DatabaseThread() : HavokThread("Database"),
                 m_abort(false), m_server("tcp://localhost:3306"),
                 m_user("havokmud"), m_password("havokmud"),
@@ -50,13 +54,13 @@ namespace havokmud {
 
         void DatabaseThread::start()
         {
-            m_driver = sql::mysql::get_mysql_driver_instance();
+            m_driver = get_driver_instance();
             LogPrint(LG_INFO, "MySQL Connector/C++ version %d.%d.%d",
                      m_driver->getMajorVersion(), m_driver->getMinorVersion(),
                      m_driver->getPatchVersion());
             LogPrint(LG_INFO, "MySQL server: %s with user %s",
                      m_server.c_str(), m_user.c_str());
-            m_connection = m_driver->connect(m_server, m_user, m_password);
+            m_connection.reset(m_driver->connect(m_server, m_user, m_password));
 
             DatabaseHandler::initialize();
 
@@ -72,7 +76,7 @@ namespace havokmud {
 
         void DatabaseThread::handleRequest(RequestPointer request)
         {
-            ResponsePointer response();
+            ResponsePointer response;
 
             // use request->m_query
             boost::shared_ptr<sql::Statement>
@@ -80,8 +84,8 @@ namespace havokmud {
             boost::shared_ptr<sql::ResultSet>
                     resultSet(statement->executeQuery(request->query()));
             if (request->requiresResponse()) {
-                boost::shared_ptr<sql::ResultSetMetadata>
-                        resultMetadata(resultSet->getMetaData());
+                sql::ResultSetMetaData *resultMetadata =
+                        resultSet->getMetaData();
 
                 int rowCount = resultSet->rowsCount();
                 int columnCount = resultMetadata->getColumnCount();
@@ -125,11 +129,38 @@ namespace havokmud {
                 request->setResponse(response);
                 request->mutex().unlock();
             }
+
+            if (!request->chainCommand().empty())
+            {
+                int rowCount = resultSet->rowsCount();
+                std::string chainCommand = request->chainCommand();
+                boost::smatch match;
+                if (boost::regex_match(chainCommand, match, s_chainRegex)) {
+                    std::string newCommand(match[1].first, match[1].second);
+                    newCommand += ":";
+                    if (rowCount) {
+                        newCommand.append(match[2].first, match[2].second);
+                    } else {
+                        newCommand.append(match[3].first, match[3].second);
+                    }
+
+                    DatabaseHandler *handler =
+                            DatabaseHandler::findCommand(newCommand);
+                    if (handler) {
+                        RequestPointer
+                            chainRequest(handler->getRequest(request->data()));
+                        ResponsePointer chainResponse(doRequest(chainRequest));
+                        request->setResponse(chainResponse);
+                    }
+                }
+            }
         }
+
+        boost::regex DatabaseThread::s_chainRegex("(.*?):(.*?):(.*?)");
 
         ResponsePointer DatabaseThread::doRequest(RequestPointer request)
         {
-            ResponsePointer response();
+            ResponsePointer response;
 
             if (request->requiresResponse()) {
                 request->mutex().lock();
@@ -151,7 +182,7 @@ namespace havokmud {
             boost::property_tree::read_json(ss, pt);
 
             std::string command = pt.get<std::string>("command");
-            DatabaseHander *handler = DatabaseHandler::findCommand(command);
+            DatabaseHandler *handler = DatabaseHandler::findCommand(command);
             if (!handler)
                 return std::string();
 
