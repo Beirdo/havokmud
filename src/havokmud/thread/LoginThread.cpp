@@ -37,8 +37,6 @@ namespace havokmud {
         LoginThread::LoginThread() : InputThread("Login")
         {
             pro_initialize<LoginThread>();
-
-            LoginStateMachine::initialize();
         }
         
         void LoginThread::initialize(boost::shared_ptr<Connection> connection)
@@ -51,6 +49,9 @@ namespace havokmud {
 
         void LoginThread::start()
         {
+            LoginStateMachine::initialize();
+            m_startupMutex.unlock();
+
             while (!m_abort) {
                 //LogPrint(LG_INFO, "Getting input item");
                 InputQueueItem *item = m_inQueue.get();

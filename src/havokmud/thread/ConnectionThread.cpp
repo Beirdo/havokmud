@@ -57,6 +57,8 @@ namespace havokmud {
 
             LogPrint(LG_INFO, "Listening on 0.0.0.0: %s", m_port.c_str());
 
+            m_startupMutex.unlock();
+
             m_ioService.run();
         }
 

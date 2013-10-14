@@ -48,9 +48,7 @@ namespace havokmud {
 
         LoggingThread::LoggingThread() : HavokThread("Logging"), m_abort(false)
         {
-            m_mutex.lock();
             pro_initialize<LoggingThread>();
-            m_mutex.lock();
         }
         
 
@@ -65,7 +63,7 @@ namespace havokmud {
                 add(new FileLoggingSink(DEBUG_FILE));
             }
 
-            m_mutex.unlock();
+            m_startupMutex.unlock();
 
             while (!m_abort) {
                 LoggingItem *item = g_logQueue.get();

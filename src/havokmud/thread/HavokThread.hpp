@@ -25,7 +25,7 @@
 #ifndef __havokmud_thread_HavokThread__
 #define __havokmud_thread_HavokThread__
 
-#include <boost/thread/thread.hpp>
+#include <boost/thread.hpp>
 #include <string>
 
 #include "objects/ThreadColors.hpp"
@@ -67,6 +67,7 @@ namespace havokmud {
 	    protected:
             template<class ThreadClass> void pro_initialize()
             {
+                m_startupMutex.lock();
                 m_attrs.set_stack_size(DEFAULT_STACK_SIZE);
                 m_thread = boost::thread(m_attrs,
                          boost::bind(&ThreadClass::start,
@@ -74,6 +75,7 @@ namespace havokmud {
                 //m_joiner = boost::thread_joiner(m_thread);
                 m_id = m_thread.get_id();
                 m_index = g_threadMap.addThread(this);
+                m_startupMutex.lock();
             };
 
             boost::thread::attributes   m_attrs;
@@ -84,6 +86,7 @@ namespace havokmud {
 
             std::string                 m_name;
             havokmud::objects::ThreadColors m_color;
+            boost::mutex                m_startupMutex;
         };
     }
 }

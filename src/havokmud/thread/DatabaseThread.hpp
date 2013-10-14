@@ -74,7 +74,6 @@ namespace havokmud {
             const std::string m_database;
 
             static boost::regex s_chainRegex;
-            boost::mutex m_mutex;
         };
     }
 }

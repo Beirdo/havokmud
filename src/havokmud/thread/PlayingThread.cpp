@@ -40,6 +40,7 @@ namespace havokmud {
 
         void PlayingThread::start()
         {
+            m_startupMutex.unlock();
             while (!m_abort) {
                 InputQueueItem *item = m_inQueue.get();
                 if (!item) {

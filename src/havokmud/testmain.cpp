@@ -39,6 +39,7 @@ namespace havokmud {
         void MainThread::start()
         {
             g_mainThreadId = boost::this_thread::get_id();
+            m_startupMutex.unlock();
 
             g_loggingThread = new havokmud::thread::LoggingThread();
             g_databaseThread = new havokmud::thread::DatabaseThread();

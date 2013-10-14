@@ -57,7 +57,6 @@ namespace havokmud {
 
             std::set<LoggingSink *> m_sinks;
             bool m_abort;
-            boost::mutex m_mutex;
         };
     }
 }

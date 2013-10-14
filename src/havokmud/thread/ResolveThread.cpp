@@ -44,6 +44,8 @@ namespace havokmud {
 
         void ResolveThread::start()
         {
+            m_startupMutex.unlock();
+
             prv_resolve_request();
 
             m_ioService.run();

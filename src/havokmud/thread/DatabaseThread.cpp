@@ -52,9 +52,7 @@ namespace havokmud {
                 m_user("havokmud"), m_password("havokmud"),
                 m_database("havokdevel")
         {
-            m_mutex.lock();
             pro_initialize<DatabaseThread>();
-            m_mutex.lock();
         }
 
         void DatabaseThread::start()
@@ -72,7 +70,7 @@ namespace havokmud {
             m_connection->setSchema(m_database);
 
             DatabaseHandler::initialize();
-            m_mutex.unlock();
+            m_startupMutex.unlock();
 
             while (!m_abort)
             {

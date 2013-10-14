@@ -26,10 +26,10 @@
 #define __havokmud_thread_SmtpThread__
 
 #include <string>
+#include <boost/thread.hpp>
 
 #include "thread/HavokThread.hpp"
 #include "objects/LockingQueue.hpp"
-//#include "objects/Email.hpp"
 
 extern "C" {
 #include <libesmtp.h>

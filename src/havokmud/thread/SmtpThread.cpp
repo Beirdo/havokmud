@@ -136,6 +136,8 @@ namespace havokmud {
                 LogPrint(LG_INFO, "libESMTP Version %s", buffer);
             }
 
+            m_startupMutex.unlock();
+
             while (!m_abort)
             {
                 boost::shared_ptr<Email> email = m_queue.get();
