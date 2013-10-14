@@ -68,13 +68,13 @@ namespace havokmud {
 
         void enter_state_confirm_password(Connection::pointer connection)
         {
-            connection->send("Password: ");
+            connection->send("Please retype password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
         void enter_state_get_password(Connection::pointer connection)
         {
-            connection->send("Please retype password: ");
+            connection->send("Password: ");
             connection->sendRaw(Connection::echo_off, 4);
         }
 
@@ -344,6 +344,7 @@ namespace havokmud {
         const std::string do_state_get_password(Connection::pointer connection,
                 const std::string &line)
         {
+            connection->sendRaw(Connection::echo_on, 6);
             if (line.empty())
                 return("disconnect");
 

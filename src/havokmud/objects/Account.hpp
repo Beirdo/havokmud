@@ -28,18 +28,36 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <string>
+#include <map>
+#include <list>
 #include "objects/Connection.hpp"
 
 namespace havokmud {
     namespace objects {
         class Connection;
         class Player;
+        class Account;
+
+        typedef std::map<const std::string, Account *> AccountMap;
 
         class Account
         {
         public:
-            Account(boost::shared_ptr<Connection> connection) : m_id(s_nextId++),
-                    m_connection(connection), m_confirmed(false)  {};
+            Account(boost::shared_ptr<Connection> connection_) :
+                    m_id(s_nextId++), m_connection(connection_), m_email(),
+                    m_confirmCode(), m_confirmed(false), m_ansi(false),
+                    m_password() {};
+
+            Account(int id_, const std::string &email_,
+                    const std::string &confirmCode_, bool confirmed_,
+                    bool ansi_, const std::string &password_) :
+                m_id(id_), m_connection(), m_email(email_),
+                m_confirmCode(confirmCode_), m_confirmed(confirmed_),
+                m_ansi(ansi_), m_password(password_)
+            {
+                s_acctMap.insert(std::pair<const std::string, Account *>
+                        (email_, this));
+            }
             ~Account();
 
             static Account *findAccount(const std::string &email);
@@ -47,10 +65,38 @@ namespace havokmud {
             static bool checkEmail(const std::string &email);
             void save();
 
-            void addPlayer(Player *player);
+            void addPlayer(Player *player)
+            {
+                m_players.push_back(player);
+            };
+
+            void removePlayer(Player *player)
+            {
+                m_players.remove(player);
+            };
+            void loadPlayers();
+            void savePlayers();
+            const std::list<Player *> &players()  { return m_players; };
 
             int id() const  { return m_id; };
-            void setEmail(const std::string &email)  { m_email = email; };
+
+            void setEmail(const std::string &email_)
+            {
+                if (!m_email.empty()) {
+                    std::map<std::string, Account *>::iterator it =
+                            s_acctMap.find(m_email);
+
+                    if (it != s_acctMap.end())
+                        s_acctMap.erase(m_email);
+                }
+
+                m_email = email_;
+                if (!email_.empty()) {
+                    s_acctMap.insert(std::pair<std::string, Account *>
+                            (email_, this));
+                }
+            };
+
             void createConfirmCode();
             void setAnsi(bool ansi)  { m_ansi = ansi; };
             void setConfirmed(bool confirmed)
@@ -94,6 +140,9 @@ namespace havokmud {
 
             bool confirmed() const  { return m_confirmed; };
             bool ansi() const  { return m_ansi; };
+
+            void setConnection(boost::shared_ptr<Connection> connection_)
+                    { m_connection = connection_; };
             boost::shared_ptr<Connection> connection() const
             {
                 return m_connection;
@@ -108,9 +157,11 @@ namespace havokmud {
             bool m_ansi;
             std::string m_password;
             std::string m_newPassword;
+            std::list<Player *> m_players;
 
             static int s_nextId;
             static boost::regex s_emailRegex;
+            static AccountMap s_acctMap;
         };
     }
 }

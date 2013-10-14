@@ -26,6 +26,7 @@
 #define __havokmud_thread_LoggingThread__
 
 #include <string>
+#include <boost/thread.hpp>
 
 #include "thread/HavokThread.hpp"
 #include "objects/LoggingItem.hpp"
@@ -56,6 +57,7 @@ namespace havokmud {
 
             std::set<LoggingSink *> m_sinks;
             bool m_abort;
+            boost::mutex m_mutex;
         };
     }
 }

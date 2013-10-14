@@ -30,8 +30,10 @@
 #include <cppconn/statement.h>
 #include <cppconn/resultset.h>
 #include <cppconn/resultset_metadata.h>
+#include <cppconn/exception.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/thread.hpp>
 
 #include "thread/DatabaseThread.hpp"
 #include "corefunc/Logging.hpp"
@@ -43,13 +45,16 @@ namespace havokmud {
     namespace thread {
 
         using havokmud::corefunc::DatabaseHandler;
+        using boost::property_tree::ptree;
 
         DatabaseThread::DatabaseThread() : HavokThread("Database"),
                 m_abort(false), m_server("tcp://localhost:3306"),
                 m_user("havokmud"), m_password("havokmud"),
                 m_database("havokdevel")
         {
+            m_mutex.lock();
             pro_initialize<DatabaseThread>();
+            m_mutex.lock();
         }
 
         void DatabaseThread::start()
@@ -58,11 +63,16 @@ namespace havokmud {
             LogPrint(LG_INFO, "MySQL Connector/C++ version %d.%d.%d",
                      m_driver->getMajorVersion(), m_driver->getMinorVersion(),
                      m_driver->getPatchVersion());
+
             LogPrint(LG_INFO, "MySQL server: %s with user %s",
                      m_server.c_str(), m_user.c_str());
             m_connection.reset(m_driver->connect(m_server, m_user, m_password));
 
+            LogPrint(LG_INFO, "Using database %s", m_database.c_str());
+            m_connection->setSchema(m_database);
+
             DatabaseHandler::initialize();
+            m_mutex.unlock();
 
             while (!m_abort)
             {
@@ -76,13 +86,38 @@ namespace havokmud {
 
         void DatabaseThread::handleRequest(RequestPointer request)
         {
-            ResponsePointer response;
+            ResponsePointer response = ResponsePointer();
 
-            // use request->m_query
+            //LogPrint(LG_INFO, "handle query: %s", request->query().c_str());
             boost::shared_ptr<sql::Statement>
                     statement(m_connection->createStatement());
-            boost::shared_ptr<sql::ResultSet>
-                    resultSet(statement->executeQuery(request->query()));
+            boost::shared_ptr<sql::ResultSet> resultSet;
+            try {
+                resultSet.reset(statement->executeQuery(request->query()));
+            } catch (sql::SQLException &e) {
+                // This should happen on UPDATEs
+                request->setResponse(response);
+                if (request->requiresResponse())
+                    request->mutex().unlock();
+
+                if (e.getErrorCode() != 0 || e.getSQLState() != "00000") {
+                    /*
+                    The MySQL Connector/C++ throws three different exceptions:
+
+                    - sql::MethodNotImplementedException
+                        (derived from sql::SQLException)
+                    - sql::InvalidArgumentException
+                        (derived from sql::SQLException)
+                    - sql::SQLException (derived from std::runtime_error)
+                    */
+                    // Use what(), getErrorCode() and getSQLState()
+                    LogPrint(LG_CRIT, "MySQL err: %s (MySQL error code: %d, "
+                                      "SQLState: %s)", e.what(),
+                            e.getErrorCode(), e.getSQLState().c_str());
+                }
+                return;
+            }
+
             if (request->requiresResponse()) {
                 sql::ResultSetMetaData *resultMetadata =
                         resultSet->getMetaData();
@@ -95,7 +130,9 @@ namespace havokmud {
                     columnNames.push_back(resultMetadata->getColumnName(i));
                 }
 
-                std::string jsonResult("[");
+                std::string jsonResult("");
+                if (rowCount != 1)
+                    jsonResult += "[";
                 for (int rowNum = 1; rowNum <= rowCount; rowNum++) {
                     resultSet->next();
 
@@ -111,9 +148,11 @@ namespace havokmud {
                     if (rowNum != rowCount)
                         jsonResult += ", ";
                 }
-                jsonResult += "]";
+                if (rowCount != 1)
+                    jsonResult += "]";
+                //LogPrint(LG_INFO, "Result: %s", jsonResult.c_str());
 
-                int insertId;
+                int insertId = -1;
                 if (request->requiresInsertId()) {
                     boost::shared_ptr<sql::Statement>
                             statement2(m_connection->createStatement());
@@ -125,9 +164,7 @@ namespace havokmud {
                 }
 
                 response.reset(new DatabaseResponse(jsonResult, insertId));
-
                 request->setResponse(response);
-                request->mutex().unlock();
             }
 
             if (!request->chainCommand().empty())
@@ -143,16 +180,23 @@ namespace havokmud {
                     } else {
                         newCommand.append(match[3].first, match[3].second);
                     }
+                    //LogPrint(LG_INFO, "New command: %s", newCommand.c_str());
 
                     DatabaseHandler *handler =
                             DatabaseHandler::findCommand(newCommand);
                     if (handler) {
                         RequestPointer
                             chainRequest(handler->getRequest(request->data()));
-                        ResponsePointer chainResponse(doRequest(chainRequest));
+                        handleRequest(chainRequest);
+                        ResponsePointer chainResponse =
+                            chainRequest->response();
                         request->setResponse(chainResponse);
                     }
                 }
+            }
+
+            if (request->requiresResponse()) {
+                request->mutex().unlock();
             }
         }
 
@@ -160,7 +204,7 @@ namespace havokmud {
 
         ResponsePointer DatabaseThread::doRequest(RequestPointer request)
         {
-            ResponsePointer response;
+            ResponsePointer resp = ResponsePointer();
 
             if (request->requiresResponse()) {
                 request->mutex().lock();
@@ -170,25 +214,40 @@ namespace havokmud {
 
             if (request->requiresResponse()) {
                 request->mutex().lock();
-                response = request->response();
+                resp = request->response();
             }
+
+            return resp;
         }
 
-        std::string DatabaseThread::doRequest(const std::string &jsonRequest)
+        std::string DatabaseThread::doRequest(const std::string jsonRequest)
         {
+            //LogPrint(LG_INFO, "JSON query: %s", jsonRequest.c_str());
+
             std::stringstream ss;
             ss << jsonRequest;
-            boost::property_tree::ptree pt;
-            boost::property_tree::read_json(ss, pt);
+            boost::shared_ptr<ptree> pt(new ptree);
+            boost::property_tree::read_json(ss, *pt);
 
-            std::string command = pt.get<std::string>("command");
+            std::string command = pt->get<std::string>("command");
             DatabaseHandler *handler = DatabaseHandler::findCommand(command);
             if (!handler)
                 return std::string();
 
-            RequestPointer request(handler->getRequest(pt.get_child("data")));
-            ResponsePointer response(doRequest(request));
-            return response->response();
+            boost::shared_ptr<ptree> dataPtr(new ptree(pt->get_child("data")));
+            RequestPointer req(handler->getRequest(dataPtr));
+            ResponsePointer resp = doRequest(req);
+            if (!resp)
+                return std::string();
+
+            std::string strResponse = resp->response();
+            if (strResponse.empty() || strResponse == "[]") {
+                int insertId = resp->insertId();
+                if (insertId != -1)
+                    strResponse = "{\"insertId\":" + std::to_string(insertId)
+                                + "}";
+            }
+            return strResponse;
         }
     }
 }

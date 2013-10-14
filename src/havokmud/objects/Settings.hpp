@@ -29,6 +29,8 @@
 #include <string>
 #include <map>
 
+#include "corefunc/Logging.hpp"
+
 namespace havokmud {
     namespace objects {
 
@@ -43,13 +45,21 @@ namespace havokmud {
             bool load(const std::string &setting);
             void save(const std::string &setting);
 
+            void refresh(void)
+            {
+                m_map.clear();
+            }
+
             template <class T>
-            void set(const std::string &setting, T value)
+            void set(const std::string &setting, T value, bool doSave = true)
             {
                 boost::any mapValue  = value;
+                //LogPrint(LG_INFO, "Setting %s to %s", setting.c_str(),
+                //         boost::any_cast<std::string>(mapValue).c_str());
                 m_map[setting] = mapValue;
 
-                save(setting);
+                if (doSave)
+                    save(setting);
             };
 
             template <class T>
@@ -64,6 +74,8 @@ namespace havokmud {
                 }
 
                 boost::any mapValue = it->second;
+                //LogPrint(LG_INFO, "Getting setting %s = %s", setting.c_str(),
+                //         boost::any_cast<std::string>(mapValue).c_str());
 
                 try {
                     T value = boost::any_cast<T>(mapValue);

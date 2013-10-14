@@ -22,12 +22,14 @@
  * @brief Account object
  */
 
+#include <boost/foreach.hpp>
 #include <openssl/md5.h>
 
 #include "objects/Account.hpp"
 #include "objects/Settings.hpp"
 #include "corefunc/Logging.hpp"
 #include "util/md5.hpp"
+#include "thread/DatabaseThread.hpp"
 
 #include <sys/time.h>
 
@@ -35,25 +37,120 @@ namespace havokmud {
     namespace objects {
         int Account::s_nextId = 0;
 
+        AccountMap Account::s_acctMap;
+
+        Account::~Account()
+        {
+            if (!m_email.empty())
+                s_acctMap.erase(m_email);
+        }
+
         Account *Account::findAccount(const std::string &email)
         {
             // Database read of account/players by email address
-            return NULL;
+            std::map<std::string, Account *>::iterator it =
+                    s_acctMap.find(email);
+            if (it != s_acctMap.end())
+                return it->second;
+
+            std::string jsonRequest = "{\"command\":\"load account\", \"data\":"
+                                      "{\"email\":\"" + email + "\"}}";
+            std::string results = g_databaseThread->doRequest(jsonRequest);
+            //LogPrint(LG_INFO, "Results: %s", results.c_str());
+
+            std::stringstream ss;
+            ss << results;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return NULL;
+            }
+
+            if (pt.get<int>("id", -1) == -1) {
+                return NULL;
+            }
+
+            Account *acct = new Account(pt.get<int>("id", -1),
+                    pt.get<std::string>("email", std::string()),
+                    pt.get<std::string>("confcode", std::string()),
+                    pt.get<bool>("confirmed", false),
+                    pt.get<bool>("ansi", false),
+                    pt.get<std::string>("passwd", std::string()));
+            return acct;
         }
 
         Account *Account::findAccount(int id)
         {
             // Database read of account/players by id
-            return NULL;
+            BOOST_FOREACH(AccountMap::value_type &i, s_acctMap) {
+                if (i.second->id() == id)
+                    return i.second;
+            }
+
+            std::string jsonRequest = "{\"command\":\"load account id\", "
+                                      "\"data\":{\"id\":\""
+                                    + std::to_string(id) + "\"}}";
+            std::string results = g_databaseThread->doRequest(jsonRequest);
+            //LogPrint(LG_INFO, "Results: %s", results.c_str());
+
+            std::stringstream ss;
+            ss << results;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return NULL;
+            }
+
+            if (pt.get<int>("id", -1) == -1) {
+                return NULL;
+            }
+
+            Account *acct = new Account(pt.get<int>("id", -1),
+                    pt.get<std::string>("email", std::string()),
+                    pt.get<std::string>("confcode", std::string()),
+                    pt.get<bool>("confirmed", false),
+                    pt.get<bool>("ansi", false),
+                    pt.get<std::string>("passwd", std::string()));
+            return acct;
         }
 
         void Account::save()
         {
             // Database save of account/players
-        }
+            std::string jsonRequest = "{\"command\":\"save account\", \"data\":"
+                                      "{\"email\":\"" + m_email + "\", "
+                                      "\"id\":" + std::to_string(m_id) + ", "
+                                      "\"passwd\":\"" + m_password + "\", "
+                                      "\"ansi\":\"" + std::to_string(m_ansi)
+                                    + "\", \"confirmed\":\"" 
+                                    + std::to_string(m_confirmed) + "\", "
+                                      "\"confcode\":\"" + m_confirmCode
+                                    + "\"}}";
+            std::string results = g_databaseThread->doRequest(jsonRequest);
+            //LogPrint(LG_INFO, "Results: %s", results.c_str());
 
-        void Account::addPlayer(Player *player)
-        {
+            if (results.empty())
+                return;
+
+            std::stringstream ss;
+            ss << results;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return;
+            }
+
+            if (pt.get<int>("insertId", -1) == -1) {
+                return;
+            }
+
+            m_id = pt.get<int>("insertId");
         }
 
         void Account::createConfirmCode()

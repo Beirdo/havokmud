@@ -58,6 +58,7 @@ namespace havokmud {
                     m_command(command_), m_query(query_),
                     m_requiresResponse(requiresResponse_),
                     m_requiresInsertId(requiresInsertId_),
+                    m_parameters(parameters_),
                     m_chainCommand(chainCommand_)
             {
                 s_handlerMap.insert(std::pair<std::string, DatabaseHandler *>
@@ -90,7 +91,7 @@ namespace havokmud {
                 return it->second;
             };
 
-            RequestPointer getRequest(const boost::property_tree::ptree &data);
+            RequestPointer getRequest(boost::shared_ptr<boost::property_tree::ptree> data);
 
         private:
             const std::string   m_command;

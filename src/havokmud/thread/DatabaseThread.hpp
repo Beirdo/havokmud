@@ -27,6 +27,7 @@
 
 #include <string>
 #include <boost/regex.hpp>
+#include <boost/thread.hpp>
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 
@@ -57,7 +58,7 @@ namespace havokmud {
 
             void handleRequest(RequestPointer request);
             ResponsePointer doRequest(RequestPointer request);
-            std::string doRequest(const std::string &jsonRequest);
+            std::string doRequest(const std::string jsonRequest);
 
         private:
             bool                m_abort;
@@ -73,6 +74,7 @@ namespace havokmud {
             const std::string m_database;
 
             static boost::regex s_chainRegex;
+            boost::mutex m_mutex;
         };
     }
 }

@@ -9,8 +9,6 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
@@ -36,11 +34,11 @@ namespace havokmud {
                     m_response(response_), m_insertId(insertId_)  {};
             ~DatabaseResponse()  {};
 
-            const std::string &response() const { return m_response; };
+            const std::string response() { return m_response; };
             int insertId() const  { return m_insertId; };
 
         private:
-            const std::string   m_response;
+            std::string   m_response;
             int m_insertId;
         };
     }

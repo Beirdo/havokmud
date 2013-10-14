@@ -22,26 +22,55 @@
  * @brief Account object
  */
 
+#include <sstream>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+
 #include "objects/Settings.hpp"
 #include "corefunc/Logging.hpp"
+#include "thread/DatabaseThread.hpp"
 
 namespace havokmud {
     namespace objects {
 
         Settings::Settings()
         {
-            load(std::string());
         }
 
         bool Settings::load(const std::string &setting)
         {
             // Database load of setting
+            std::string json = "{\"command\":\"get setting\", "
+                               "\"data\":{\"name\":\"" + setting + "\"}}";
+            std::string results = g_databaseThread->doRequest(json);
+            //LogPrint(LG_INFO, "Results: %s", results.c_str());
+
+            std::stringstream ss;
+            ss << results;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return false;
+            }
+
+            std::string value(pt.get<std::string>("value", std::string()));
+            if (!value.empty()) {
+                set<std::string>(setting, value, false);
+                return true;
+            }
             return false;
         }
 
         void Settings::save(const std::string &setting)
         {
             // Database save of setting
+            std::string json = "{\"command\":\"set setting\", "
+                               "\"data\":{\"name\":\"" + setting + "\","
+                               "\"value\":\"" + get<std::string>(setting)
+                             + "\"}}";
+            std::string results = g_databaseThread->doRequest(json);
         }
     }
 }
