@@ -30,6 +30,8 @@
 #include "corefunc/Logging.hpp"
 #include "util/md5.hpp"
 #include "thread/DatabaseThread.hpp"
+#include "objects/Email.hpp"
+#include "thread/SmtpThread.hpp"
 
 #include <sys/time.h>
 
@@ -211,8 +213,9 @@ namespace havokmud {
                      "case of the letters.\r\n\r\n"
                    + (url.empty() ? "" : urlText) + "Thanks.\r\n\r\n";
 
-            // TODO
-            // send_email(m_email, "Havokmud confirmation email", buffer.c_str());
+            boost::shared_ptr<Email> email(new Email(m_email,
+                    "Havokmud confirmation email", buffer));
+            g_smtpThread->send(email);
         }
 
         std::string Account::hashPassword(const std::string &password)

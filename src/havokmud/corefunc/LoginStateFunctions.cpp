@@ -462,7 +462,7 @@ namespace havokmud {
                 if (!confirmed) {
                     // Resend the confirmation email
                     connection->loginStateMachine()->
-                            enterState("resend_confirm_email");
+                            enterState("resend confirm email");
                 }
                 break;
             case 'q':

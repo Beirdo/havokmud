@@ -63,6 +63,10 @@ namespace havokmud {
                     m_background = thread->background();
                     m_foreground = thread->foreground();
                 }
+
+                while (m_message.back() == '\n' || m_message.back() == '\r') {
+                    m_message.erase(m_message.length() - 1, 1);
+                }
             };
 
             ~LoggingItem()  {};

@@ -60,7 +60,7 @@ namespace havokmud {
             }
 
 #if 0
-            LogPrint( LOG_INFO, "SMTP event %d", event_no );
+            LogPrint(LG_INFO, "SMTP event %d", event_no);
 #endif
 
             va_end(alist);
