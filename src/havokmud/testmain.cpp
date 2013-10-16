@@ -8,6 +8,8 @@
 #include "thread/SmtpThread.hpp"
 #include "thread/SmtpThread.hpp"
 #include "thread/DatabaseThread.hpp"
+#include "thread/DatabaseUpgradeThread.hpp"
+#include "corefunc/CoreDatabaseSchema.hpp"
 
 boost::thread::id g_mainThreadId;
 bool g_debug = true;
@@ -43,6 +45,9 @@ namespace havokmud {
 
             g_loggingThread = new havokmud::thread::LoggingThread();
             g_databaseThread = new havokmud::thread::DatabaseThread();
+
+            havokmud::thread::DatabaseUpgradeThread coreDbUpgrade(havokmud::corefunc::coreDatabaseSchema);
+
             g_resolveThread = new havokmud::thread::ResolveThread();
             g_loginThread = new havokmud::thread::LoginThread();
             g_playingThread = new havokmud::thread::PlayingThread(false);

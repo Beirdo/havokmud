@@ -31,29 +31,33 @@
 
 #include "thread/HavokThread.hpp"
 #include "objects/LockingQueue.hpp"
-#include "objects/DatabaseResponse.hpp"
 #include "objects/DatabaseRequest.hpp"
+#include "objects/DatabaseSchema.hpp"
+
+#define CURRENT_CORE_SCHEMA 5
 
 #if 0
 namespace havokmud {
     namespace thread {
 
         using havokmud::thread::HavokThread;
+        using havokmud::objects::DatabaseRequest;
+        using havokmud::objects::DatabaseSchema;
 
         typedef boost::shared_ptr<DatabaseRequest>  RequestPointer;
-        typedef boost::shared_ptr<DatabaseResponse> ResponsePointer;
 
         class DatabaseUpgradeThread : public HavokThread
         {
         public:
-            DatabaseUpgradeThread(int supportedVersion);
+            DatabaseUpgradeThread(const DatabaseSchema &schema);
             ~DatabaseUpgradeThread()  {};
 
             virtual void start();
             void handle_stop()  {};
 
         private:
-            int m_supportedVersion;
+            DatabaseSchema m_schema;
+            std::string m_setting;
         };
     }
 }

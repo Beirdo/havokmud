@@ -22,34 +22,53 @@
  * @brief Thread to handle database upgrades 
  */
 
+#include <boost/foreach.hpp>
 #include <string>
 
 #include "thread/DatabaseUpgradeThread.hpp"
 #include "thread/DatabaseThread.hpp"
 #include "corefunc/Logging.hpp"
 #include "objects/Settings.hpp"
+#include "util/misc.hpp"
 
 #if 0
 namespace havokmud {
     namespace thread {
 
-        DatabaseUpgradeThread::DatabaseUpgradeThread(int supportedVersion) :
+        DatabaseUpgradeThread::DatabaseUpgradeThread(const DatabaseSchema &schema_) :
                 HavokThread("DatabaseUpgrade"),
-                m_supportedVersion(supportedVersion)
+                m_schema(schema_)
         {
             pro_initialize<DatabaseUpgradeThread>();
         }
 
-        void DatabaseThread::start()
+        void DatabaseUpgradeThread::start()
         {
-            int currentVersion = g_settings.get<int>("dbSchema");
-            LogPrint(LG_INFO, "Database schema version %d, supported %d",
-                     currentVersion, m_supportedVersion);
-            while (currentVersion < m_supportedVersion)
-            {
-                // Upgrade from current to current+1
-                currentVersion++;
-                g_setting.set<int>("dbSchema", currentVersion);
+            m_setting = "dbSchema." + m_schema.name();
+            int currentVersion = g_settings.get<int>(m_setting);
+            LogPrint(LG_INFO, "Database %s schema version %d, supported %d",
+                     m_schema.name().c_str(), currentVersion,
+                     m_schema.supportedVersion());
+            if (currentVersion <= 0) {
+                BOOST_FOREACH(const std::string &query, m_schema.baseSchema()) {
+                    RequestPointer request(new DatabaseRequest(query,
+                            boost::shared_ptr<boost::property_tree::ptree>()));
+                    g_databaseThread->doRequest(request);
+                };
+                g_settings.set<int>(m_setting, m_schema.supportedVersion());
+            } else {
+                while (currentVersion <= m_schema.supportedVersion())
+                {
+                    BOOST_FOREACH(const std::string &query,
+                                  m_schema.upgradeItems()[currentVersion]) {
+                        RequestPointer request(new DatabaseRequest(query,
+                             boost::shared_ptr<boost::property_tree::ptree>()));
+                        g_databaseThread->doRequest(request);
+                    }
+                    // Upgrade from current to current+1
+                    currentVersion++;
+                    g_settings.set<int>(m_setting, currentVersion);
+                }
             }
             m_startupMutex.unlock();
         }
