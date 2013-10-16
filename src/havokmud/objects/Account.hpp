@@ -62,6 +62,8 @@ namespace havokmud {
 
             static Account *findAccount(const std::string &email);
             static Account *findAccount(int id);
+            static Account *create(const std::string &jsonResponse);
+
             static bool checkEmail(const std::string &email);
             void save();
 

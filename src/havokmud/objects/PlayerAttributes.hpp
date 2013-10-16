@@ -123,6 +123,8 @@ namespace havokmud {
             };
 
         private:
+            void setFromJsonNode(const ptree &node);
+
             Player         *m_player;
             ptree           m_attributeTree;
             ptree           m_attributeSourceTree;

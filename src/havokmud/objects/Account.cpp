@@ -57,30 +57,7 @@ namespace havokmud {
 
             std::string jsonRequest = "{\"command\":\"load account\", \"data\":"
                                       "{\"email\":\"" + email + "\"}}";
-            std::string results = g_databaseThread->doRequest(jsonRequest);
-            //LogPrint(LG_INFO, "Results: %s", results.c_str());
-
-            std::stringstream ss;
-            ss << results;
-            boost::property_tree::ptree pt;
-            try {
-                boost::property_tree::read_json(ss, pt);
-            } catch (std::exception const &e) {
-                LogPrint(LG_CRIT, "Error: %s", e.what());
-                return NULL;
-            }
-
-            if (pt.get<int>("id", -1) == -1) {
-                return NULL;
-            }
-
-            Account *acct = new Account(pt.get<int>("id", -1),
-                    pt.get<std::string>("email", std::string()),
-                    pt.get<std::string>("confcode", std::string()),
-                    pt.get<bool>("confirmed", false),
-                    pt.get<bool>("ansi", false),
-                    pt.get<std::string>("passwd", std::string()));
-            return acct;
+            return create(g_databaseThread->doRequest(jsonRequest));
         }
 
         Account *Account::findAccount(int id)
@@ -94,11 +71,13 @@ namespace havokmud {
             std::string jsonRequest = "{\"command\":\"load account id\", "
                                       "\"data\":{\"id\":\""
                                     + std::to_string(id) + "\"}}";
-            std::string results = g_databaseThread->doRequest(jsonRequest);
-            //LogPrint(LG_INFO, "Results: %s", results.c_str());
+            return create(g_databaseThread->doRequest(jsonRequest));
+        }
 
+        Account *Account::create(const std::string &jsonResponse)
+        {
             std::stringstream ss;
-            ss << results;
+            ss << jsonResponse;
             boost::property_tree::ptree pt;
             try {
                 boost::property_tree::read_json(ss, pt);

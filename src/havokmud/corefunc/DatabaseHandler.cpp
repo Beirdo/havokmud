@@ -66,7 +66,25 @@ static const HandlerItem handlers[] = {
                         "`confirmed`, `confcode`) VALUES ('%1%', '%2%', '%3%', "
                         "'%4%', '%5%')",
                         { "email", "passwd", "ansi", "confirmed", "confcode" },
-                        false, true, "" }
+                        false, true, "" },
+    { "find player", "SELECT `id`, `account_id`, `name` "
+                      "FROM `pcs` WHERE `name` = '%1%'",
+                      { "name" }, true, false, "" },
+    { "find player id", "SELECT `id`, `account_id`, `name` "
+                      "FROM `pcs` WHERE `id` = %1%",
+                      { "id" }, true, false, "" },
+    { "save player", "SELECT `id`, `account_id`, `name` "
+                      "FROM `pcs` WHERE `id` = %1%",
+                      { "id" }, true, false, "save player:1:2" },
+    { "save player:1", "UPDATE `pcs` SET `account_id` = %1%, "
+                       "`name` = '%2%' WHERE `id` = %3%",
+                       { "account_id", "name", "id" }, false, false, "" },
+    { "save player:2", "INSERT INTO `pcs` (`account_id`, `name`) "
+                       "VALUES (%1%, '%2%')",
+                       { "account_id", "name" }, false, true, "" },
+    { "load attributes", "SELECT `attribsrc`, `attribjson` FROM `pcattribs` "
+                         "WHERE `pc_id` = %1%",
+                       { "pc_id" }, true, false, "" },
 };
 static const int handlerCount = NELEMS(handlers);
 

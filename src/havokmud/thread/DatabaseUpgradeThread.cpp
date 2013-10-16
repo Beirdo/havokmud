@@ -29,6 +29,7 @@
 #include "corefunc/Logging.hpp"
 #include "objects/Settings.hpp"
 
+#if 0
 namespace havokmud {
     namespace thread {
 
@@ -54,4 +55,4 @@ namespace havokmud {
         }
     }
 }
-
+#endif

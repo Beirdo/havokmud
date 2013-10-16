@@ -34,6 +34,7 @@
 #include "objects/DatabaseResponse.hpp"
 #include "objects/DatabaseRequest.hpp"
 
+#if 0
 namespace havokmud {
     namespace thread {
 
@@ -56,5 +57,6 @@ namespace havokmud {
         };
     }
 }
+#endif
 
 #endif  // __havokmud_thread_DatabaseUpgradeThread__

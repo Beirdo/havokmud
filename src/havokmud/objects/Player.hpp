@@ -39,12 +39,14 @@ namespace havokmud {
         class Player
         {
         public:
-            Player(const std::string &name, int accountId) : m_id(s_nextId++),
-                    m_accountId(accountId), m_name(name), m_attributes(this) {};
+            Player(const std::string &name_, int accountId_, int id_ = -1) :
+                    m_id(id_), m_accountId(accountId_), m_name(name_),
+                    m_attributes(this) {};
             ~Player()  {};
 
             static Player *findPlayer(const std::string &name);
             static Player *findPlayer(int id);
+            static Player *create(const std::string &jsonResponse);
 
             void load();
             void save();
@@ -65,8 +67,6 @@ namespace havokmud {
             std::string m_name;
 
             PlayerAttributes m_attributes;
-
-            static int s_nextId;
         };
     }
 }

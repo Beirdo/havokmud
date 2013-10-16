@@ -24,37 +24,91 @@
 
 #include "objects/Player.hpp"
 #include "corefunc/Logging.hpp"
+#include "thread/DatabaseThread.hpp"
 
 namespace havokmud {
     namespace objects {
-        int Player::s_nextId = 0;
 
         Player *Player::findPlayer(const std::string &name)
         {
             // Database read of player by name
-            return NULL;
+            std::string jsonRequest = "{\"command\":\"get player\", \"data\":"
+                                      "{\"name\":\"" + name + "\"}}";
+            return create(g_databaseThread->doRequest(jsonRequest));
         }
 
         Player *Player::findPlayer(int id)
         {
             // Database read of player by id
-            return NULL;
+            std::string jsonRequest = "{\"command\":\"get player id\", "
+                                      "\"data\":{\"id\":"
+                                    + std::to_string(id) + "}}";
+            return create(g_databaseThread->doRequest(jsonRequest));
+
+        }
+
+        Player *Player::create(const std::string &jsonResponse)
+        {
+            std::stringstream ss;
+            ss << jsonResponse;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return NULL;
+            }
+
+            if (pt.get<int>("id", -1) == -1) {
+                return NULL;
+            }
+
+            Player *player = new Player(
+                    pt.get<std::string>("name", std::string()),
+                    pt.get<int>("account_id", -1),
+                    pt.get<int>("id", -1));
+            return player;
         }
 
         void Player::load()
         {
-            // Database load of player
+            // Database load of player - note name/id/account_id are loaded
+            m_attributes.load();
         }
 
         void Player::save()
         {
             // Database save of player
+            std::string jsonRequest = "{\"command\":\"save player\", \"data\":"
+                                      "{\"id\":" + std::to_string(m_id) + ", "
+                                      "\"account_id\":\""
+                                    + std::to_string(m_accountId) + ", "
+                                      "\"name\":\"" + m_name + "\"}}";
+            std::string results = g_databaseThread->doRequest(jsonRequest);
+
+            if (results.empty())
+                return;
+
+            std::stringstream ss;
+            ss << results;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return;
+            }
+
+            if (pt.get<int>("insertId", -1) != -1) {
+                m_id = pt.get<int>("insertId");
+            }
+
+            m_attributes.save();
         }
 
         void Player::rollAbilities()
         {
         }
-
     }
 }
 
