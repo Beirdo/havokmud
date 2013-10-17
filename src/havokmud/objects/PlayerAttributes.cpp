@@ -144,6 +144,8 @@ namespace havokmud {
                 std::string attribJson;
                 ss >> attribJson;
 
+                LogPrint(LG_INFO, "Source: %s, JSON: %s", source.c_str(),
+                         attribJson.c_str());
                 jsonRequest = "{\"command\":\"save attributes\", \"data\":{"
                               "\"pc_id\":" + std::to_string(m_player->id())
                             + ", \"attribsrc\":\"" + source + "\", "
