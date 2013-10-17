@@ -34,7 +34,7 @@ namespace havokmud {
         using havokmud::objects::DatabaseSchemaItem;
         using havokmud::objects::DatabaseSchema;
 
-        static const int coreSupportedVersion = 5;
+        static const int coreSupportedVersion = 6;
 
         static const DatabaseSchemaItem coreBaseSchema = {
             "CREATE TABLE `settings` (\n"
@@ -64,11 +64,12 @@ namespace havokmud {
             ")\n",
 
             "CREATE TABLE `pcattribs` (\n"
-            "  `pc_id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            "  `pc_id` int(11) NOT NULL,\n"
             "  `attribsrc` varchar(255) NOT NULL,\n"
             "  `attribjson` longtext NOT NULL,\n"
-            "  PRIMARY KEY (`pc_id`),\n"
-            "  KEY `attribsrc` (`attribsrc`)\n"
+            "  `to_delete` tinyint not null default 0,\n"
+            "  INDEX (`pc_id`),\n"
+            "  INDEX (`attribsrc`)\n"
             ")\n"
         };
 
@@ -76,8 +77,8 @@ namespace havokmud {
             // 0 -> 1
             {},
             // 1 -> 2
-            { "ALTER TABLE `accounts` ADD `confirmed` TINYINT DEFAULT 0 "
-              "NOT NULL,\n"
+            { "ALTER TABLE `accounts` "
+              "ADD `confirmed` TINYINT DEFAULT 0 NOT NULL,\n"
               "ADD `confcode` VARCHAR( 255 ) NOT NULL,\n"
               "ADD KEY ( `confcode` );"
             },
@@ -134,9 +135,14 @@ namespace havokmud {
               ")\n"
             },
             // 4 -> 5
-            { "ALTER TABLE `accounts` CHANGE `passwd` "
-              "`passwd` VARCHAR(32) NOT NULL" }
+            { "ALTER TABLE `accounts` "
+              "CHANGE `passwd` `passwd` VARCHAR(32) NOT NULL" },
             // 5 -> 6
+            { "ALTER TABLE `pcattribs` "
+              "CHANGE `pc_id` `pc_id` int(11) NOT NULL, "
+              "ADD `to_delete` TINYINT DEFAULT 0 NOT NULL, "
+              "DROP PRIMARY KEY, "
+              "ADD INDEX (`pc_id`)" },
         };
 
         DatabaseSchema coreDatabaseSchema("core", coreSupportedVersion,

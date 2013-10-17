@@ -85,6 +85,23 @@ static const HandlerItem handlers[] = {
     { "load attributes", "SELECT `attribsrc`, `attribjson` FROM `pcattribs` "
                          "WHERE `pc_id` = %1%",
                        { "pc_id" }, true, false, "" },
+    { "expire attributes", "UPDATE `pcattrib` SET `to_delete` = 1 "
+                           "WHERE `pc_id` = %1%", { "pc_id" },
+                           false, false, "" },
+    { "save attributes", "SELECT `pc_id` FROM `pcattribs` WHERE `pc_id` = %1% "
+                         "AND `attribsrc` = '%2%'", { "pc_id", "attribsrc" },
+                         true, false, "save attributes:1:2" },
+    { "save attributes:1", "UPDATE `pcattribs` SET `attribjson` = %1%, "
+                           "`to_delete` = 0 WHERE `pc_id` = %2% "
+                           "AND `attribsrc` = '%3%'",
+                           { "attribjson", "pc_id", "attribsrc" },
+                           false, false, "" },
+    { "save attributes:2", "INSERT INTO `pcattribs` (`pc_id`, `attribsrc`, "
+                           "`attribjson`) VALUES (%1%, '%2%', '%3')",
+                           { "pc_id", "attribsrc", "attribjson" },
+                           false, false, "" },
+    { "purge attributes", "DELETE FROM `pcattribs` WHERE `pc_id` = %1% "
+                          "AND `to_delete = 1", { "pc_id" }, false, false, "" },
 };
 static const int handlerCount = NELEMS(handlers);
 

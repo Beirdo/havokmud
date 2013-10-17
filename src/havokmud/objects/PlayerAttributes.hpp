@@ -29,6 +29,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/any.hpp>
 #include <boost/foreach.hpp>
+#include <boost/regex.hpp>
 #include <sstream>
 #include <string>
 
@@ -128,6 +129,7 @@ namespace havokmud {
             Player         *m_player;
             ptree           m_attributeTree;
             ptree           m_attributeSourceTree;
+            static boost::regex s_saveRegex;
         };
     }
 }

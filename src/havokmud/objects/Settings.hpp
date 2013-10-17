@@ -25,7 +25,7 @@
 #ifndef __havokmud_objects_Settings__
 #define __havokmud_objects_Settings__
 
-#include <boost/any.hpp>
+#include <boost/lexical_cast.hpp>
 #include <string>
 #include <map>
 
@@ -34,7 +34,7 @@
 namespace havokmud {
     namespace objects {
 
-        typedef std::map<std::string, boost::any> SettingsMap;
+        typedef std::map<std::string, std::string> SettingsMap;
 
         class Settings
         {
@@ -53,9 +53,16 @@ namespace havokmud {
             template <class T>
             void set(const std::string &setting, T value, bool doSave = true)
             {
-                boost::any mapValue  = value;
+                std::string mapValue;
+                try {
+                    mapValue = boost::lexical_cast<std::string>(value);
+                }
+                catch(const boost::bad_lexical_cast &) {
+                    return;
+                }
+
                 //LogPrint(LG_INFO, "Setting %s to %s", setting.c_str(),
-                //         boost::any_cast<std::string>(mapValue).c_str());
+                //         mapValue.c_str());
                 m_map[setting] = mapValue;
 
                 if (doSave)
@@ -73,15 +80,15 @@ namespace havokmud {
                     it = m_map.find(setting);
                 }
 
-                boost::any mapValue = it->second;
+                std::string mapValue = it->second;
                 //LogPrint(LG_INFO, "Getting setting %s = %s", setting.c_str(),
-                //         boost::any_cast<std::string>(mapValue).c_str());
+                //         mapValue.c_str());
 
                 try {
-                    T value = boost::any_cast<T>(mapValue);
+                    T value = boost::lexical_cast<T>(mapValue);
                     return value;
                 }
-                catch(const boost::bad_any_cast &) {
+                catch(const boost::bad_lexical_cast &) {
                     return T();
                 }
             };

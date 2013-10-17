@@ -31,9 +31,10 @@
 #include "objects/Settings.hpp"
 #include "util/misc.hpp"
 
-#if 0
 namespace havokmud {
     namespace thread {
+
+        using boost::property_tree::ptree;
 
         DatabaseUpgradeThread::DatabaseUpgradeThread(const DatabaseSchema &schema_) :
                 HavokThread("DatabaseUpgrade"),
@@ -50,20 +51,24 @@ namespace havokmud {
                      m_schema.name().c_str(), currentVersion,
                      m_schema.supportedVersion());
             if (currentVersion <= 0) {
+                LogPrint(LG_INFO, "Installing %s schema version %d",
+                         m_schema.name().c_str(), m_schema.supportedVersion());
                 BOOST_FOREACH(const std::string &query, m_schema.baseSchema()) {
-                    RequestPointer request(new DatabaseRequest(query,
-                            boost::shared_ptr<boost::property_tree::ptree>()));
+                    RequestPointer request(new DatabaseRequest(query));
                     g_databaseThread->doRequest(request);
-                };
+                }
                 g_settings.set<int>(m_setting, m_schema.supportedVersion());
             } else {
-                while (currentVersion <= m_schema.supportedVersion())
+                while (currentVersion < m_schema.supportedVersion())
                 {
+                    LogPrint(LG_INFO, "Upgrading %s schema to version %d",
+                             m_schema.name().c_str(), currentVersion+1);
                     BOOST_FOREACH(const std::string &query,
                                   m_schema.upgradeItems()[currentVersion]) {
-                        RequestPointer request(new DatabaseRequest(query,
-                             boost::shared_ptr<boost::property_tree::ptree>()));
-                        g_databaseThread->doRequest(request);
+                        if (!query.empty()) {
+                            RequestPointer request(new DatabaseRequest(query));
+                            g_databaseThread->doRequest(request);
+                        }
                     }
                     // Upgrade from current to current+1
                     currentVersion++;
@@ -74,4 +79,3 @@ namespace havokmud {
         }
     }
 }
-#endif

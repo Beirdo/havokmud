@@ -46,11 +46,21 @@ namespace havokmud {
                             boost::shared_ptr<boost::property_tree::ptree> data_,
                             bool requiresResponse_ = false,
                             bool requiresInsertId_ = false,
-                            const std::string &chainCommand_ = std::string()) :
+                            const std::string chainCommand_ = "") :
                     m_query(query_), m_data(data_),
                     m_requiresResponse(requiresResponse_),
                     m_requiresInsertId(requiresInsertId_), 
                     m_chainCommand(chainCommand_), m_response()  {};
+
+            DatabaseRequest(const std::string &query_,
+                            bool requiresResponse_ = false,
+                            bool requiresInsertId_ = false,
+                            const std::string chainCommand_ = "") :
+                    m_query(query_), m_data(),
+                    m_requiresResponse(requiresResponse_),
+                    m_requiresInsertId(requiresInsertId_), 
+                    m_chainCommand(chainCommand_), m_response()  {};
+
 
             ~DatabaseRequest()  {};
 

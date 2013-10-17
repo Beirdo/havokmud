@@ -22,6 +22,10 @@
  * @brief Player Attributes object
  */
 
+#include <sstream>
+#include <set>
+#include <string>
+
 #include "objects/Player.hpp"
 #include "objects/PlayerAttributes.hpp"
 #include "corefunc/Logging.hpp"
@@ -30,11 +34,31 @@
 namespace havokmud {
     namespace objects {
 
+        std::string sanitize(const std::string &inString)
+        {
+            boost::regex regex("([\"])");
+            const char *format = "(?1\\\")";
+
+            std::string outString = boost::regex_replace(inString, regex,
+                                                         format);
+            return outString;
+        }
+
+        std::string desanitize(const std::string &inString)
+        {
+            boost::regex regex("(\\\")");
+            const char *format = "(?1\")";
+
+            std::string outString = boost::regex_replace(inString, regex,
+                                                         format);
+            return outString;
+        }
+
         void PlayerAttributes::load()
         {
             // Load the player attributes from the database
             std::string jsonRequest = "{\"command\":\"load attributes\", "
-                                      "\"data\":" "{\"pc_id\":"
+                                      "\"data\":{\"pc_id\":"
                                     + std::to_string(m_player->id()) + "}}";
             std::string results = g_databaseThread->doRequest(jsonRequest);
 
@@ -78,7 +102,7 @@ namespace havokmud {
                 return;
 
             std::stringstream ss;
-            ss << jsonAttribs;
+            ss << desanitize(jsonAttribs);
             boost::property_tree::ptree pt;
             try {
                 boost::property_tree::read_json(ss, pt);
@@ -92,11 +116,47 @@ namespace havokmud {
             }
         }
 
+        boost::regex PlayerAttributes::s_saveRegex("(.*?)[.].*?");
+
         void PlayerAttributes::save()
         {
             // Save the player attributes to the database
-        }
+            std::string jsonRequest = "{\"command\":\"expire attributes\", "
+                                      "\"data\":{\"pc_id\":"
+                                    + std::to_string(m_player->id()) + "}}";
+            std::string results = g_databaseThread->doRequest(jsonRequest);
 
+            std::set<std::string> sourceSet;
+
+            BOOST_FOREACH(ptree::value_type &v, m_attributeTree) {
+                boost::smatch match;
+                if (boost::regex_match(v.first, match, s_saveRegex)) {
+                    std::string source(match[1].first, match[1].second);
+
+                    sourceSet.insert(source);
+                }
+            }
+
+            BOOST_FOREACH(const std::string &source, sourceSet) {
+                std::stringstream ss;
+                ptree attribTree = m_attributeSourceTree.get_child(source);
+                boost::property_tree::write_json(ss, attribTree, false);
+                std::string attribJson;
+                ss >> attribJson;
+
+                jsonRequest = "{\"command\":\"save attributes\", \"data\":{"
+                              "\"pc_id\":" + std::to_string(m_player->id())
+                            + ", \"attribsrc\":\"" + source + "\", "
+                              "\"attribjson\":\"" + sanitize(attribJson)
+                            + "\"}}";
+                results = g_databaseThread->doRequest(jsonRequest);
+            }
+
+            jsonRequest = "{\"command\":\"purge attributes\", "
+                          "\"data\":{\"pc_id\":"
+                        + std::to_string(m_player->id()) + "}}";
+            results = g_databaseThread->doRequest(jsonRequest);
+        }
     }
 }
 

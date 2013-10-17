@@ -36,7 +36,6 @@
 
 #define CURRENT_CORE_SCHEMA 5
 
-#if 0
 namespace havokmud {
     namespace thread {
 
@@ -61,6 +60,5 @@ namespace havokmud {
         };
     }
 }
-#endif
 
 #endif  // __havokmud_thread_DatabaseUpgradeThread__
