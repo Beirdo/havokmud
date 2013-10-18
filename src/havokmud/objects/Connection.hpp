@@ -69,7 +69,7 @@ namespace havokmud {
             ~Connection()  {};
 
             void setPlayer(Player *player_)  { m_player = player_; };
-            void setAccount(Account *account_)  { m_account = account_; };
+            void setAccount(Account *account_);
             void setLoginStateMachine(havokmud::corefunc::LoginStateMachine *sm)
                     { m_loginStateMachine = sm; };
 

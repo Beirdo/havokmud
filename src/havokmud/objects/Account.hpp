@@ -44,7 +44,7 @@ namespace havokmud {
         {
         public:
             Account(boost::shared_ptr<Connection> connection_) :
-                    m_id(s_nextId++), m_connection(connection_), m_email(),
+                    m_id(-1), m_connection(connection_), m_email(),
                     m_confirmCode(), m_confirmed(false), m_ansi(false),
                     m_password() {};
 
@@ -161,7 +161,6 @@ namespace havokmud {
             std::string m_newPassword;
             std::list<Player *> m_players;
 
-            static int s_nextId;
             static boost::regex s_emailRegex;
             static AccountMap s_acctMap;
         };

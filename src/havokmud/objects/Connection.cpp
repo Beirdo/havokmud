@@ -329,6 +329,12 @@ namespace havokmud {
                 m_inputThread = g_playingThread;
             }
         }
+
+        void Connection::setAccount(Account *account_)
+        {
+            m_account = account_;
+            m_account->setConnection(shared_from_this());
+        }
     }
 }
 

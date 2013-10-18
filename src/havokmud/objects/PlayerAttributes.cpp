@@ -36,21 +36,16 @@ namespace havokmud {
 
         std::string sanitize(const std::string &inString)
         {
+            // Change all " to \\" for the database, gets saved as \", then
+            // on readback, it goes back to ".  All fricking odd.
             boost::regex regex("([\"])");
-            const char *format = "(?1\\\")";
+            const char *format = "(?1\\\\\\\\\\\\\\\\\\\\\")";
 
+            //LogPrint(LG_INFO, "In string: %s", inString.c_str());
             std::string outString = boost::regex_replace(inString, regex,
-                                                         format);
-            return outString;
-        }
-
-        std::string desanitize(const std::string &inString)
-        {
-            boost::regex regex("(\\\")");
-            const char *format = "(?1\")";
-
-            std::string outString = boost::regex_replace(inString, regex,
-                                                         format);
+                                                         format,
+                                                         boost::format_all);
+            //LogPrint(LG_INFO, "Out string: %s", outString.c_str());
             return outString;
         }
 
@@ -65,6 +60,7 @@ namespace havokmud {
             if (results.empty())
                 return;
 
+            //LogPrint(LG_INFO, "Results: %s", results.c_str());
             std::stringstream ss;
             ss << results;
             boost::property_tree::ptree pt;
@@ -79,13 +75,14 @@ namespace havokmud {
                 return;
             }
 
-            ptree root = pt.front().second;
+            //LogPrint(LG_INFO, "Root: %s -> %s", pt.front().first.c_str(),
+            //         pt.front().second.data().c_str());
 
-            if (root.front().first != "") {
+            if (pt.front().first != "") {
                 // Single row - the front should be named "attribsrc"
-                setFromJsonNode(root);
+                setFromJsonNode(pt);
             } else {
-                BOOST_FOREACH(ptree::value_type &row, root) {
+                BOOST_FOREACH(ptree::value_type &row, pt) {
                     setFromJsonNode(row.second);
                 }
             }
@@ -98,11 +95,14 @@ namespace havokmud {
             std::string jsonAttribs = node.get<std::string>("attribjson",
                                                             std::string());
 
+            //LogPrint(LG_INFO, "source: %s, json: %s", source.c_str(),
+            //         jsonAttribs.c_str());
+
             if (source.empty() || jsonAttribs.empty())
                 return;
 
             std::stringstream ss;
-            ss << desanitize(jsonAttribs);
+            ss << jsonAttribs;
             boost::property_tree::ptree pt;
             try {
                 boost::property_tree::read_json(ss, pt);
@@ -112,11 +112,9 @@ namespace havokmud {
             }
 
             BOOST_FOREACH(ptree::value_type &v, pt) {
-                set<std::string>(source, v.first, v.second.data());
+                set<std::string>(v.first, source, v.second.data());
             }
         }
-
-        boost::regex PlayerAttributes::s_saveRegex("(.*?)[.].*?");
 
         void PlayerAttributes::save()
         {
@@ -126,31 +124,20 @@ namespace havokmud {
                                     + std::to_string(m_player->id()) + "}}";
             std::string results = g_databaseThread->doRequest(jsonRequest);
 
-            std::set<std::string> sourceSet;
-
-            BOOST_FOREACH(ptree::value_type &v, m_attributeTree) {
-                boost::smatch match;
-                if (boost::regex_match(v.first, match, s_saveRegex)) {
-                    std::string source(match[1].first, match[1].second);
-
-                    sourceSet.insert(source);
-                }
-            }
-
-            BOOST_FOREACH(const std::string &source, sourceSet) {
+            BOOST_FOREACH(ptree::value_type &v, m_attributeSourceTree) {
                 std::stringstream ss;
-                ptree attribTree = m_attributeSourceTree.get_child(source);
-                boost::property_tree::write_json(ss, attribTree, false);
+                boost::property_tree::write_json(ss, v.second, false);
                 std::string attribJson;
                 ss >> attribJson;
 
-                LogPrint(LG_INFO, "Source: %s, JSON: %s", source.c_str(),
-                         attribJson.c_str());
+                //LogPrint(LG_INFO, "Source: %s, JSON: %s", v.first.c_str(),
+                //         attribJson.c_str());
                 jsonRequest = "{\"command\":\"save attributes\", \"data\":{"
                               "\"pc_id\":" + std::to_string(m_player->id())
-                            + ", \"attribsrc\":\"" + source + "\", "
+                            + ", \"attribsrc\":\"" + v.first + "\", "
                               "\"attribjson\":\"" + sanitize(attribJson)
                             + "\"}}";
+                //LogPrint(LG_INFO, "JSON: %s", jsonRequest.c_str());
                 results = g_databaseThread->doRequest(jsonRequest);
             }
 

@@ -27,12 +27,13 @@
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/any.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 #include <sstream>
 #include <string>
 
+#include "corefunc/Logging.hpp"
 #include "objects/Aggregate.hpp"
 
 namespace havokmud {
@@ -64,12 +65,15 @@ namespace havokmud {
             void set(const std::string &attrib,
                      const std::string &source, T value)
             {
-                boost::any  anyValue  = value;
                 std::string mapValue;
                 try {
-                    mapValue = boost::any_cast<std::string>(anyValue);
+                    mapValue = boost::lexical_cast<std::string>(value);
+                    // LogPrint(LG_INFO, "attrib: %s, value: %s",
+                    //     attrib.c_str(), mapValue.c_str());
                 }
-                catch(const boost::bad_any_cast &) {
+                catch(const boost::bad_lexical_cast &e) {
+                    LogPrint(LG_INFO, "oops: %s", e.what());
+                    return;
                 }
 
                 std::string attrKey   = attrib + "." + source;
@@ -81,7 +85,7 @@ namespace havokmud {
 
             template <class T>
             T get(const std::string &attrib,
-                  const std::string &source)
+                  const std::string &source, T defaultValue = T())
             {
                 if (source.empty()) {
                     return getAggregate<T>(attrib);
@@ -91,13 +95,15 @@ namespace havokmud {
                 std::string mapValue =
                       m_attributeTree.get<std::string>(attrKey, std::string());
 
+                //LogPrint(LG_INFO, "attrKey: %s, value: %s", attrKey.c_str(),
+                //         mapValue.c_str());
+
                 try {
-                    boost::any anyValue = mapValue;
-                    T value = boost::any_cast<T>(anyValue);
+                    T value = boost::lexical_cast<T>(mapValue);
                     return value;
                 }
-                catch(const boost::bad_any_cast &) {
-                    return T();
+                catch(const boost::bad_lexical_cast &e) {
+                    return defaultValue;
                 }
             };
 
@@ -129,7 +135,6 @@ namespace havokmud {
             Player         *m_player;
             ptree           m_attributeTree;
             ptree           m_attributeSourceTree;
-            static boost::regex s_saveRegex;
         };
     }
 }

@@ -72,8 +72,6 @@ namespace havokmud {
             { "choose stats", enter_state_choose_stats, do_state_choose_stats },
             { "choose alignment", enter_state_choose_alignment,
               do_state_choose_alignment },
-            { "reroll abilities", enter_state_reroll_abilities,
-              do_state_reroll_abilities },
             { "show login menu", enter_state_show_login_menu,
               do_state_show_login_menu },
             { "wait for auth", enter_state_wait_for_auth,

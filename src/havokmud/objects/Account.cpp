@@ -37,8 +37,6 @@
 
 namespace havokmud {
     namespace objects {
-        int Account::s_nextId = 0;
-
         AccountMap Account::s_acctMap;
 
         Account::~Account()

@@ -70,12 +70,12 @@ namespace havokmud {
             };
 
             template <class T>
-            T get(const std::string &setting)
+            T get(const std::string &setting, T defaultValue = T())
             {
                 SettingsMap::iterator it = m_map.find(setting);
                 if (it == m_map.end()) {
                     if (!load(setting)) {
-                        return T();
+                        return defaultValue;
                     }
                     it = m_map.find(setting);
                 }
@@ -89,7 +89,7 @@ namespace havokmud {
                     return value;
                 }
                 catch(const boost::bad_lexical_cast &) {
-                    return T();
+                    return defaultValue;
                 }
             };
 

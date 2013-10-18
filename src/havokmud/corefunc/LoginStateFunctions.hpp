@@ -54,7 +54,6 @@ namespace havokmud {
         void enter_state_choose_class(Connection::pointer connection);
         void enter_state_choose_stats(Connection::pointer connection);
         void enter_state_choose_alignment(Connection::pointer connection);
-        void enter_state_reroll_abilities(Connection::pointer connection);
         void enter_state_show_login_menu(Connection::pointer connection);
         void enter_state_wait_for_auth(Connection::pointer connection);
         void enter_state_edit_extra_descr(Connection::pointer connection);
@@ -108,8 +107,6 @@ namespace havokmud {
         const std::string do_state_choose_stats(Connection::pointer connection,
                 const std::string &line);
         const std::string do_state_choose_alignment(Connection::pointer connection,
-                const std::string &line);
-        const std::string do_state_reroll_abilities(Connection::pointer connection,
                 const std::string &line);
         const std::string do_state_show_login_menu(Connection::pointer connection,
                 const std::string &line);

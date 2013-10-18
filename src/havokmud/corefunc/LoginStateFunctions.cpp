@@ -160,7 +160,8 @@ namespace havokmud {
 
         void enter_state_resend_confirm_email(Connection::pointer connection)
         {
-            if( connection->account()->confirmCode().empty() ) {
+            if( !connection->account()->confirmed() &&
+                connection->account()->confirmCode().empty() ) {
                 connection->send("Sending your confirmation email...\n\r");
             } else {
                 connection->send("Resending your confirmation email...\n\r");
@@ -168,8 +169,56 @@ namespace havokmud {
             connection->account()->createConfirmCode();
         }
 
+        enum { SEX_UNKNOWN, SEX_NEUTRAL, SEX_MALE, SEX_FEMALE };
+
         void enter_state_show_creation_menu(Connection::pointer connection)
         {
+            Player *player = connection->player();
+            static const char *Sex[] = { "not chosen", "Neutral", "Male",
+                                         "Female" };
+
+            connection->send("$c0009-=$c0015Havok Character Creation Menu"
+                             "$c0009=-\n\r\n\r");
+
+            int rerolls = 0;
+
+            if (player) {
+                rerolls = player->attributes().get<int>("rerolls", "core-pc");
+                connection->send("Current Ability Roll: %d, %d, %d, %d, %d, %d\n\r"
+                             "Available Rerolls: %d\n\r\n\r", 
+                             player->attributes().get<int>("roll1", "core-pc"),
+                             player->attributes().get<int>("roll2", "core-pc"),
+                             player->attributes().get<int>("roll3", "core-pc"),
+                             player->attributes().get<int>("roll4", "core-pc"),
+                             player->attributes().get<int>("roll5", "core-pc"),
+                             player->attributes().get<int>("roll6", "core-pc"),
+                             rerolls);
+            }
+
+            connection->send("$c00151) $c0012Name. [$c0015%s$c0012]\n\r",
+                             ((!player || player->name().empty()) ?
+                              "not chosen" : player->name().c_str()));
+            connection->send("$c00152) $c0012Gender. [$c0015%s$c0012]\n\r",
+                             (player ? 
+                              Sex[player->attributes().get<int>("sex",
+                                                                "core-pc")] :
+                              "not chosen"));
+            connection->send("$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
+                             "TODO");
+            connection->send("$c00154) $c0012Class. [$c0015%s$c0012]\n\r",
+                             "TODO");
+
+            connection->send("$c00155) $c0012Character Stats. [$c0015%s$c0012]\n\r",
+                             "TODO");
+            connection->send("$c00156) $c0012Alignment. [$c0015%s$c0012]\n\r\n\r",
+                             "TODO");
+
+            if( rerolls ) {
+                connection->send("$c0015R) $c0012Reroll Ability Scores.\n\r\n\r" );
+            }
+
+            connection->send("$c0015D) $c0012Done!\n\r\n\r");
+            connection->send("$c0011Please pick an option: \n\r");
         }
 
         void enter_state_choose_name(Connection::pointer connection)
@@ -195,10 +244,6 @@ namespace havokmud {
         }
 
         void enter_state_choose_alignment(Connection::pointer connection)
-        {
-        }
-
-        void enter_state_reroll_abilities(Connection::pointer connection)
         {
         }
 
@@ -389,6 +434,7 @@ namespace havokmud {
             }
 
             connection->account()->save();
+
             if (connection->account()->confirmCode().empty()) {
                 // Send the confirmation code by email
                 connection->loginStateMachine()->
@@ -535,7 +581,9 @@ namespace havokmud {
             case '1':
                 return("choose name");
             case 'r':
-                return("reroll abilities");
+                connection->player()->rollAbilities();
+                connection->player()->save();
+                return("show creation menu");
             case '2':
                 return("choose sex");
             case '3':
@@ -618,6 +666,7 @@ namespace havokmud {
                     return("choose name");
                 }
                 
+                connection->send("Continuing interrupted character creation\n\r");
                 connection->setPlayer(player);
                 connection->player()->load();
 
@@ -634,12 +683,14 @@ namespace havokmud {
 
             // New character name!
             /* TODO: check for banned names */
-            player = new Player(line, connection->account()->id());
+            connection->send("Creating new character\n\r");
+            player = new Player(line, connection->account());
             connection->account()->addPlayer(player);
             connection->setPlayer(player);
             player->attributes().set<bool>("complete", "core-pc", false);
 
-            int setting = g_settings.get<int>("MaxReroll");
+            int setting = g_settings.get<int>("MaxReroll", 0);
+            LogPrint(LG_INFO, "MaxReroll: %d", setting);
             player->attributes().set<int>("rerolls", "core-pc", setting + 1);
 
             connection->player()->rollAbilities();
@@ -658,7 +709,6 @@ namespace havokmud {
                 return("choose sex");
             }
 
-#if 0
             switch (tolower(line[0])) {
             case 'm':
                 connection->player()->attributes().set<int>("sex", "core-pc",
@@ -679,7 +729,6 @@ namespace havokmud {
                 connection->send("That's not a sex..\n\r");
                 return("choose sex");
             }
-#endif
 
             connection->player()->save();
             return("show creation menu");
@@ -704,12 +753,6 @@ namespace havokmud {
         }
 
         const std::string do_state_choose_alignment(Connection::pointer connection,
-                const std::string &line)
-        {
-            return("show creation menu");
-        }
-
-        const std::string do_state_reroll_abilities(Connection::pointer connection,
                 const std::string &line)
         {
             return("show creation menu");

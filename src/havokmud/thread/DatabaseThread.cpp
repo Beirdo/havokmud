@@ -86,18 +86,54 @@ namespace havokmud {
         {
             ResponsePointer response = ResponsePointer();
 
-            //LogPrint(LG_INFO, "handle query: %s", request->query().c_str());
+            //LogPrint(LG_INFO, "handle query: %s, %d, %d",
+            //         request->query().c_str(), request->requiresResponse(),
+            //         request->requiresInsertId());
+
             boost::shared_ptr<sql::Statement>
                     statement(m_connection->createStatement());
-            boost::shared_ptr<sql::ResultSet> resultSet;
-            try {
-                resultSet.reset(statement->executeQuery(request->query()));
-            } catch (sql::SQLException &e) {
-                // This should happen on UPDATEs
-                request->setResponse(response);
-                if (request->requiresResponse())
-                    request->mutex().unlock();
 
+            int rowCount = 0;
+            std::string jsonResult("");
+            try {
+                boost::shared_ptr<sql::ResultSet>
+                        resultSet(statement->executeQuery(request->query()));
+
+                if (request->requiresResponse()) {
+                    sql::ResultSetMetaData *resultMetadata =
+                            resultSet->getMetaData();
+
+                    rowCount = resultSet->rowsCount();
+                    int columnCount = resultMetadata->getColumnCount();
+
+                    std::vector<std::string> columnNames;
+                    for (int i = 1; i <= columnCount; i++) {
+                        columnNames.push_back(resultMetadata->getColumnName(i));
+                    }
+
+                    if (rowCount != 1)
+                        jsonResult += "[";
+                    for (int rowNum = 1; rowNum <= rowCount; rowNum++) {
+                        resultSet->next();
+
+                        jsonResult += "{";
+                        for (int i = 1; i <= columnCount; i++) {
+                            jsonResult += "\"" + columnNames[i-1] + "\":\"" 
+                                       +  resultSet->getString(i) + "\"";
+                            if (i != columnCount)
+                                jsonResult += ", ";
+                        }
+
+                        jsonResult += "}";
+                        if (rowNum != rowCount)
+                            jsonResult += ", ";
+                    }
+                    if (rowCount != 1)
+                        jsonResult += "]";
+                    //LogPrint(LG_INFO, "Result: %s", jsonResult.c_str());
+                }
+            } catch (sql::SQLException &e) {
+                // This should happen on UPDATEs and INSERTs
                 if (e.getErrorCode() != 0 || e.getSQLState() != "00000") {
                     /*
                     The MySQL Connector/C++ throws three different exceptions:
@@ -112,62 +148,33 @@ namespace havokmud {
                     LogPrint(LG_CRIT, "MySQL err: %s (MySQL error code: %d, "
                                       "SQLState: %s)", e.what(),
                             e.getErrorCode(), e.getSQLState().c_str());
+
+                    request->setResponse(response);
+                    if (request->requiresResponse())
+                        request->mutex().unlock();
+                    return;
                 }
-                return;
             }
 
-            if (request->requiresResponse()) {
-                sql::ResultSetMetaData *resultMetadata =
-                        resultSet->getMetaData();
+            int insertId = -1;
+            if (request->requiresInsertId()) {
+                boost::shared_ptr<sql::Statement>
+                        statement2(m_connection->createStatement());
+                boost::shared_ptr<sql::ResultSet>
+                        resultSet2(statement2->executeQuery("SELECT LAST_INSERT_ID();"));
 
-                int rowCount = resultSet->rowsCount();
-                int columnCount = resultMetadata->getColumnCount();
+                resultSet2->next();
+                insertId = resultSet2->getInt(1);
+                //LogPrint(LG_INFO, "insertId: %d", insertId);
+            }
 
-                std::vector<std::string> columnNames;
-                for (int i = 1; i <= columnCount; i++) {
-                    columnNames.push_back(resultMetadata->getColumnName(i));
-                }
-
-                std::string jsonResult("");
-                if (rowCount != 1)
-                    jsonResult += "[";
-                for (int rowNum = 1; rowNum <= rowCount; rowNum++) {
-                    resultSet->next();
-
-                    jsonResult += "{";
-                    for (int i = 1; i <= columnCount; i++) {
-                        jsonResult += "\"" + columnNames[i-1] + "\":\"" 
-                                   +  resultSet->getString(i) + "\"";
-                        if (i != columnCount)
-                            jsonResult += ", ";
-                    }
-
-                    jsonResult += "}";
-                    if (rowNum != rowCount)
-                        jsonResult += ", ";
-                }
-                if (rowCount != 1)
-                    jsonResult += "]";
-                //LogPrint(LG_INFO, "Result: %s", jsonResult.c_str());
-
-                int insertId = -1;
-                if (request->requiresInsertId()) {
-                    boost::shared_ptr<sql::Statement>
-                            statement2(m_connection->createStatement());
-                    boost::shared_ptr<sql::ResultSet>
-                            resultSet2(statement2->executeQuery("SELECT LAST_INSERT_ID();"));
-
-                    resultSet2->next();
-                    insertId = resultSet2->getInt(1);
-                }
-
+            if (request->requiresResponse() || request->requiresInsertId()) {
                 response.reset(new DatabaseResponse(jsonResult, insertId));
                 request->setResponse(response);
             }
 
             if (!request->chainCommand().empty())
             {
-                int rowCount = resultSet->rowsCount();
                 std::string chainCommand = request->chainCommand();
                 boost::smatch match;
                 if (boost::regex_match(chainCommand, match, s_chainRegex)) {
@@ -241,6 +248,7 @@ namespace havokmud {
             std::string strResponse = resp->response();
             if (strResponse.empty() || strResponse == "[]") {
                 int insertId = resp->insertId();
+                //LogPrint(LG_INFO, "Final: insertId: %d", insertId);
                 if (insertId != -1)
                     strResponse = "{\"insertId\":" + std::to_string(insertId)
                                 + "}";

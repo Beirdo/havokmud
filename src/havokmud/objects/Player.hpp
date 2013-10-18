@@ -39,9 +39,8 @@ namespace havokmud {
         class Player
         {
         public:
-            Player(const std::string &name_, int accountId_, int id_ = -1) :
-                    m_id(id_), m_accountId(accountId_), m_name(name_),
-                    m_attributes(this) {};
+            Player(const std::string &name_, int accountId_, int id_ = -1);
+            Player(const std::string &name_, Account *account_, int id_ = -1);
             ~Player()  {};
 
             static Player *findPlayer(const std::string &name);
@@ -54,6 +53,7 @@ namespace havokmud {
             int id() const  { return m_id; };
             int accountId() const  { return m_accountId; };
             const std::string &name() const  { return m_name; };
+            Account *account() const  { return m_account; };
 
             void setReroll(int rolls);
 
@@ -61,10 +61,13 @@ namespace havokmud {
             void rollAbilities();
             bool isImmortal()  { return false; };
 
+            int dice(int number, int size, int add, int discard);
+
         private:
             int m_id;
             int m_accountId;
             std::string m_name;
+            Account *m_account;
 
             PlayerAttributes m_attributes;
         };
