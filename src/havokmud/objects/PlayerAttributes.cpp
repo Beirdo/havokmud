@@ -30,24 +30,12 @@
 #include "objects/PlayerAttributes.hpp"
 #include "corefunc/Logging.hpp"
 #include "thread/DatabaseThread.hpp"
+#include "util/sanitize.hpp"
 
 namespace havokmud {
     namespace objects {
 
-        std::string sanitize(const std::string &inString)
-        {
-            // Change all " to \\" for the database, gets saved as \", then
-            // on readback, it goes back to ".  All fricking odd.
-            boost::regex regex("([\"])");
-            const char *format = "(?1\\\\\\\\\\\\\\\\\\\\\")";
-
-            //LogPrint(LG_INFO, "In string: %s", inString.c_str());
-            std::string outString = boost::regex_replace(inString, regex,
-                                                         format,
-                                                         boost::format_all);
-            //LogPrint(LG_INFO, "Out string: %s", outString.c_str());
-            return outString;
-        }
+        using havokmud::util::sanitize;
 
         void PlayerAttributes::load()
         {

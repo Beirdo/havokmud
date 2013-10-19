@@ -32,14 +32,24 @@ namespace havokmud {
         public:
             DatabaseResponse(const std::string &response_, int insertId_) :
                     m_response(response_), m_insertId(insertId_)  {};
+            DatabaseResponse(const std::string &errMsg_, int errCode_,
+                             const std::string &sqlState_) :
+                    m_response(), m_insertId(-1), m_errMsg(errMsg_),
+                    m_errCode(errCode_), m_sqlState(sqlState_)  {};
             ~DatabaseResponse()  {};
 
             const std::string response() { return m_response; };
             int insertId() const  { return m_insertId; };
+            const std::string errMsg()  { return m_errMsg; };
+            int errCode() const  { return m_errCode; };
+            const std::string sqlState()  { return m_sqlState; };
 
         private:
-            std::string   m_response;
-            int m_insertId;
+            std::string m_response;
+            int         m_insertId;
+            std::string m_errMsg;
+            int         m_errCode;
+            std::string m_sqlState;
         };
     }
 }

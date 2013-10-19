@@ -40,12 +40,14 @@
 #include "objects/Settings.hpp"
 #include "objects/Email.hpp"
 #include "corefunc/DatabaseHandler.hpp"
+#include "util/sanitize.hpp"
 
 namespace havokmud {
     namespace thread {
 
         using havokmud::corefunc::DatabaseHandler;
         using boost::property_tree::ptree;
+        using havokmud::util::sanitize;
 
         DatabaseThread::DatabaseThread() : HavokThread("Database"),
                 m_abort(false), m_server("tcp://localhost:3306"),
@@ -149,6 +151,8 @@ namespace havokmud {
                                       "SQLState: %s)", e.what(),
                             e.getErrorCode(), e.getSQLState().c_str());
 
+                    response.reset(new DatabaseResponse(e.what(),
+                            e.getErrorCode(), e.getSQLState()));
                     request->setResponse(response);
                     if (request->requiresResponse())
                         request->mutex().unlock();
@@ -249,9 +253,15 @@ namespace havokmud {
             if (strResponse.empty() || strResponse == "[]") {
                 int insertId = resp->insertId();
                 //LogPrint(LG_INFO, "Final: insertId: %d", insertId);
-                if (insertId != -1)
+                if (insertId != -1) {
                     strResponse = "{\"insertId\":" + std::to_string(insertId)
                                 + "}";
+                } else if (!resp->errMsg().empty()) {
+                    strResponse = "{\"error\":{\"message\":\""
+                                + sanitize(resp->errMsg()) + "\",\"code\":"
+                                + std::to_string(resp->errCode()) + ","
+                                + "\"state\":\"" + resp->sqlState() + "\"}}";
+                }
             }
             return strResponse;
         }
