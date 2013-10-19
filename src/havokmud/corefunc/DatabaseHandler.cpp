@@ -104,6 +104,8 @@ static const HandlerItem handlers[] = {
     { "purge attributes", "DELETE FROM `pcattribs` WHERE `pc_id` = %1% "
                           "AND `to_delete` = 1", { "pc_id" },
                           false, false, "" },
+    { "load player list", "SELECT `id`, `name` FROM `pcs` WHERE "
+                          "`account_id` = %1%", { "id" }, true, false, "" },
 };
 static const int handlerCount = NELEMS(handlers);
 

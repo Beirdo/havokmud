@@ -90,8 +90,8 @@ namespace havokmud {
 
             m_inputThread = g_loginThread;
 
-            LogPrint(LG_INFO, "Connection::start: %s (%s)", m_ip.c_str(),
-                     m_hostname.c_str());
+            LogPrint(LG_INFO, "Connection %d: start: %s (%s)", m_id,
+                    m_ip.c_str(), m_hostname.c_str());
 
             g_loginThread->initialize(shared_from_this());
 
@@ -106,8 +106,8 @@ namespace havokmud {
         void Connection::stop()
         {
             if (m_socket.is_open()) {
-                LogPrint(LG_INFO, "Connection::stop: %s (%s)", m_ip.c_str(),
-                         m_hostname.c_str());
+                LogPrint(LG_INFO, "Connection %d: stop: %s (%s)", m_id,
+                        m_ip.c_str(), m_hostname.c_str());
                 m_socket.close();
                 m_inputThread->removeConnection(shared_from_this());
                 m_inputThread = NULL;

@@ -138,6 +138,19 @@ namespace havokmud {
 
         void enter_state_show_player_list(Connection::pointer connection)
         {
+            std::list<Player *> players = connection->account()->players();
+            if (players.empty()) {
+                connection->send("\n\r\n\rYour account has no players yet.\n\r\n\r");
+                connection->send("\n\rPress enter to continue\n\r");
+                return;
+            }
+
+            connection->send("Players:\n\r"
+                             "------------------------------------------\n\r");
+            BOOST_FOREACH(Player *player, players) {
+                connection->send(player->name() + "\n\r");
+            }
+            connection->send("\n\rPress enter to continue\n\r");
         }
 
         void enter_state_get_new_password(Connection::pointer connection)
@@ -299,6 +312,7 @@ namespace havokmud {
             connection->setAccount(Account::findAccount(line));
             if( connection->account() ) {
                 // connecting an existing account ...
+                connection->account()->loadPlayers();
                 return("get password");
             }
             

@@ -77,7 +77,6 @@ namespace havokmud {
                 m_players.remove(player);
             };
             void loadPlayers();
-            void savePlayers();
             const std::list<Player *> &players()  { return m_players; };
 
             int id() const  { return m_id; };

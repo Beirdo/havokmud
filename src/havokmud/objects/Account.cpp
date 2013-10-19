@@ -228,6 +228,42 @@ namespace havokmud {
             boost::smatch match;
             return boost::regex_match(email, match, s_emailRegex);
         }
+
+        void Account::loadPlayers()
+        {
+            std::string jsonRequest = "{\"command\":\"load player list\", "
+                                      "\"data\":{\"id\":\""
+                                    + std::to_string(m_id) + "\"}}";
+            std::string jsonResponse = g_databaseThread->doRequest(jsonRequest);
+
+            std::stringstream ss;
+            ss << jsonResponse;
+            boost::property_tree::ptree pt;
+            try {
+                boost::property_tree::read_json(ss, pt);
+            } catch (std::exception const &e) {
+                LogPrint(LG_CRIT, "Error: %s", e.what());
+                return;
+            }
+
+            if (pt.empty()) {
+                return;
+            }
+
+            Player *player;
+            if (pt.front().first != "") {
+                // Single row
+                player = new Player(pt.get<std::string>("name"), m_id,
+                                    pt.get<int>("id"));
+                addPlayer(player);
+            } else {
+                BOOST_FOREACH(ptree::value_type &row, pt) {
+                    player = new Player(row.second.get<std::string>("name"),
+                                        m_id, row.second.get<int>("id"));
+                    addPlayer(player);
+                }
+            }
+        }
     }
 }
 
